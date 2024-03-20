@@ -43,7 +43,7 @@ class Clamp(torch.nn.Module):
         r"""Clamp all elements in input into the range ``[min, max]``.
 
         Args:
-            tensor: Specifies the input tensor.
+            tensor: The input tensor.
 
         Returns:
             The output tensor with the same shape as the input.

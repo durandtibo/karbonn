@@ -6,10 +6,17 @@ from __future__ import annotations
 __all__ = ["is_module_config", "setup_module"]
 
 import logging
+from unittest.mock import Mock
 
-from objectory import factory
-from objectory.utils import is_object_config
 from torch.nn import Module
+
+from karbonn.utils.imports import check_objectory, is_objectory_available
+
+if is_objectory_available():
+    import objectory
+else:  # pragma: no cover
+    objectory = Mock()
+
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +46,8 @@ def is_module_config(config: dict) -> bool:
 
     ```
     """
-    return is_object_config(config, Module)
+    check_objectory()
+    return objectory.utils.is_object_config(config, Module)
 
 
 def setup_module(module: Module | dict) -> Module:
@@ -65,7 +73,8 @@ def setup_module(module: Module | dict) -> Module:
     """
     if isinstance(module, dict):
         logger.info("Initializing a `torch.nn.Module` from its configuration... ")
-        module = factory(**module)
+        check_objectory()
+        module = objectory.factory(**module)
     if not isinstance(module, Module):
         logger.warning(f"module is not a `torch.nn.Module` (received: {type(module)})")
     return module
