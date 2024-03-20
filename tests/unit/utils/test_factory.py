@@ -5,7 +5,13 @@ from unittest.mock import patch
 
 import pytest
 import torch
-from objectory import OBJECT_TARGET
+
+from karbonn.utils.imports import is_objectory_available
+
+if is_objectory_available():
+    from objectory import OBJECT_TARGET
+else:  # pragma: no cover
+    OBJECT_TARGET = "_target_"
 
 from karbonn import is_module_config, setup_module
 from karbonn.testing import objectory_available
