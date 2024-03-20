@@ -33,6 +33,7 @@ packages = [
 # Core dependencies
 python = ">=3.9,<3.13"
 torch = ">=1.12,<3.0"
+objectory = ">=0.1,<1.0"
 
 # Optional dependencies
 numpy = { version = ">=1.22,<2.0", optional = true }
@@ -255,7 +256,3 @@ max-doc-length = 72
 force-sort-within-sections = true
 combine-as-imports = true
 known-first-party = ["src"]
-
-[tool.ruff.lint.flake8-import-conventions]
-[tool.ruff.lint.flake8-import-conventions.aliases]
-numpy = "np"
