@@ -1,0 +1,53 @@
+r"""Contain the Snake activation module."""
+
+from __future__ import annotations
+
+__all__ = ["Snake"]
+
+from typing import TYPE_CHECKING
+
+from torch import nn
+
+if TYPE_CHECKING:
+    import torch
+
+
+class Snake(nn.Module):
+    r"""Implements the Snake activation layer.
+
+    Snake was proposed in the following paper:
+
+        Neural Networks Fail to Learn Periodic Functions and How to Fix It.
+        Ziyin L., Hartwig T., Ueda M.
+        NeurIPS, 2020. (http://arxiv.org/pdf/2006.08195)
+
+    Args:
+        frequency: The frequency.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn import Snake
+    >>> m = Snake()
+    >>> m
+    Snake(frequency=1.0)
+    >>> output = m(torch.arange(8).view(2, 4))
+    >>> output
+    tensor([[0.0000, 1.7081, 2.8268, 3.0199],
+            [4.5728, 5.9195, 6.0781, 7.4316]])
+
+    ```
+    """
+
+    def __init__(self, frequency: float = 1.0) -> None:
+        super().__init__()
+        self._frequency = float(frequency)
+
+    def extra_repr(self) -> str:
+        return f"frequency={self._frequency}"
+
+    def forward(self, tensor: torch.Tensor) -> torch.Tensor:
+        two_freq = 2 * self._frequency
+        return tensor - tensor.mul(two_freq).cos().div(two_freq) + 1 / two_freq
