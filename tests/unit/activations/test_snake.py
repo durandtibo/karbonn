@@ -6,7 +6,7 @@ from coola.utils.tensor import get_available_devices
 
 from karbonn import Snake
 
-SIZES = ((1, 1), (2, 3), (2, 3, 4), (2, 3, 4, 5))
+SHAPES = [(2,), (2, 3), (2, 3, 4), (2, 3, 4, 5)]
 
 
 ###########################
@@ -45,11 +45,11 @@ def test_snake_forward_frequency_2() -> None:
 
 
 @pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("size", SIZES)
-def test_snake_forward_size(size: tuple[int, ...], device: str) -> None:
+@pytest.mark.parametrize("shape", SHAPES)
+def test_snake_forward_shape(shape: tuple[int, ...], device: str) -> None:
     device = torch.device(device)
     module = Snake().to(device=device)
-    out = module(torch.randn(*size, device=device))
-    assert out.shape == size
+    out = module(torch.randn(*shape, device=device))
+    assert out.shape == shape
     assert out.dtype == torch.float
     assert out.device == device
