@@ -7,6 +7,8 @@ from coola.utils.tensor import get_available_devices
 
 from karbonn import Asinh, Exp, Expm1, Log, Log1p, SafeExp, SafeLog, Sinh
 
+SHAPES = [(2,), (2, 3), (2, 3, 4), (2, 3, 4, 5)]
+
 ###########################
 #     Tests for Asinh     #
 ###########################
@@ -23,6 +25,17 @@ def test_asinh_forward(device: str) -> None:
             dtype=torch.float,
             device=device,
         ),
+    )
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("shape", SHAPES)
+def test_asinh_forward_shape(device: str, shape: tuple[int, ...]) -> None:
+    device = torch.device(device)
+    module = Asinh().to(device=device)
+    assert objects_are_allclose(
+        module(torch.ones(*shape, device=device)),
+        torch.full(shape, fill_value=0.8813735842704773, device=device),
     )
 
 
@@ -45,6 +58,16 @@ def test_exp_forward(device: str) -> None:
     )
 
 
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("shape", SHAPES)
+def test_exp_forward_shape(device: str, shape: tuple[int, ...]) -> None:
+    device = torch.device(device)
+    module = Exp().to(device=device)
+    assert objects_are_allclose(
+        module(torch.zeros(*shape, device=device)), torch.ones(*shape, device=device)
+    )
+
+
 ###########################
 #     Tests for Expm1     #
 ###########################
@@ -61,6 +84,16 @@ def test_expm1_forward(device: str) -> None:
             dtype=torch.float,
             device=device,
         ),
+    )
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("shape", SHAPES)
+def test_expm1_forward_shape(device: str, shape: tuple[int, ...]) -> None:
+    device = torch.device(device)
+    module = Expm1().to(device=device)
+    assert objects_are_allclose(
+        module(torch.zeros(*shape, device=device)), torch.zeros(*shape, device=device)
     )
 
 
@@ -81,6 +114,17 @@ def test_log_forward(device: str) -> None:
     )
 
 
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("shape", SHAPES)
+def test_log_forward_shape(device: str, shape: tuple[int, ...]) -> None:
+    device = torch.device(device)
+    module = Log().to(device=device)
+    assert objects_are_allclose(
+        module(torch.ones(*shape, device=device)),
+        torch.zeros(*shape, device=device),
+    )
+
+
 ###########################
 #     Tests for Log1p     #
 ###########################
@@ -95,6 +139,16 @@ def test_log1p_forward(device: str) -> None:
         torch.tensor(
             [0.0, 0.6931471805599453, 1.0986122886681098], dtype=torch.float, device=device
         ),
+    )
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("shape", SHAPES)
+def test_log1p_forward_shape(device: str, shape: tuple[int, ...]) -> None:
+    device = torch.device(device)
+    module = Log1p().to(device=device)
+    assert objects_are_allclose(
+        module(torch.zeros(*shape, device=device)), torch.zeros(*shape, device=device)
     )
 
 
@@ -132,6 +186,16 @@ def test_safe_exp_forward_max_10(device: str) -> None:
             dtype=torch.float,
             device=device,
         ),
+    )
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("shape", SHAPES)
+def test_safe_exp_forward_shape(device: str, shape: tuple[int, ...]) -> None:
+    device = torch.device(device)
+    module = SafeExp().to(device=device)
+    assert objects_are_allclose(
+        module(torch.zeros(*shape, device=device)), torch.ones(*shape, device=device)
     )
 
 
@@ -181,6 +245,16 @@ def test_safe_log_forward_min_minus_1(device: str) -> None:
     )
 
 
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("shape", SHAPES)
+def test_safe_log_forward_shape(device: str, shape: tuple[int, ...]) -> None:
+    device = torch.device(device)
+    module = SafeLog().to(device=device)
+    assert objects_are_allclose(
+        module(torch.ones(*shape, device=device)), torch.zeros(*shape, device=device)
+    )
+
+
 ##########################
 #     Tests for Sinh     #
 ##########################
@@ -197,4 +271,15 @@ def test_sinh_forward(device: str) -> None:
             dtype=torch.float,
             device=device,
         ),
+    )
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("shape", SHAPES)
+def test_sinh_forward_shape(device: str, shape: tuple[int, ...]) -> None:
+    device = torch.device(device)
+    module = Sinh().to(device=device)
+    assert objects_are_allclose(
+        module(torch.ones(*shape, device=device)),
+        torch.full(shape, fill_value=1.175201177597046, device=device),
     )

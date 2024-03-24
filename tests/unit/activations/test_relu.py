@@ -6,7 +6,7 @@ from coola.utils.tensor import get_available_devices
 
 from karbonn import ReLUn, SquaredReLU
 
-SIZES = ((1, 1), (2, 3), (2, 3, 4), (2, 3, 4, 5))
+SHAPES = [(2,), (2, 3), (2, 3, 4), (2, 3, 4, 5)]
 
 ###########################
 #     Tests for ReLUn     #
@@ -35,12 +35,15 @@ def test_relun_forward_max_value_2(device: str) -> None:
     )
 
 
-@pytest.mark.parametrize("size", SIZES)
-def test_relun_forward_size(size: tuple[int, ...]) -> None:
-    module = ReLUn()
-    out = module(torch.randn(*size))
-    assert out.shape == size
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("shape", SHAPES)
+def test_relun_forward_shape(device: str, shape: tuple[int, ...]) -> None:
+    device = torch.device(device)
+    module = ReLUn().to(device=device)
+    out = module(torch.randn(*shape, device=device))
+    assert out.shape == shape
     assert out.dtype == torch.float
+    assert out.device == device
 
 
 #################################
@@ -57,9 +60,12 @@ def test_squared_relu_forward(device: str) -> None:
     )
 
 
-@pytest.mark.parametrize("size", SIZES)
-def test_squared_relu_forward_size(size: tuple[int, ...]) -> None:
-    module = SquaredReLU()
-    out = module(torch.randn(*size))
-    assert out.shape == size
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("shape", SHAPES)
+def test_squared_relu_forward_shape(device: str, shape: tuple[int, ...]) -> None:
+    device = torch.device(device)
+    module = SquaredReLU().to(device=device)
+    out = module(torch.randn(*shape, device=device))
+    assert out.shape == shape
     assert out.dtype == torch.float
+    assert out.device == device

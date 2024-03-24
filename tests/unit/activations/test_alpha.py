@@ -7,7 +7,7 @@ from coola.utils.tensor import get_available_devices
 from karbonn import ExpSin, Gaussian, Laplacian, MultiQuadratic, Quadratic, Sin
 
 SIZES = (1, 2, 3)
-
+SHAPES = [(2,), (2, 3), (2, 3, 4), (2, 3, 4, 5)]
 
 ############################
 #     Tests for ExpSin     #
@@ -28,7 +28,7 @@ def test_exp_sin_forward(device: str, batch_size: int, feature_size: int) -> Non
 
 
 @pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("shape", [(2,), (2, 3), (2, 3, 4)])
+@pytest.mark.parametrize("shape", SHAPES)
 def test_exp_sin_forward_shape(device: str, shape: tuple[int, ...]) -> None:
     device = torch.device(device)
     module = ExpSin().to(device=device)
@@ -122,7 +122,7 @@ def test_gaussian_forward(device: str, batch_size: int, feature_size: int) -> No
 
 
 @pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("shape", [(2,), (2, 3), (2, 3, 4)])
+@pytest.mark.parametrize("shape", SHAPES)
 def test_gaussian_forward_shape(device: str, shape: tuple[int, ...]) -> None:
     device = torch.device(device)
     module = Gaussian().to(device=device)
@@ -190,7 +190,7 @@ def test_laplacian_forward(device: str, batch_size: int, feature_size: int) -> N
 
 
 @pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("shape", [(2,), (2, 3), (2, 3, 4)])
+@pytest.mark.parametrize("shape", SHAPES)
 def test_laplacian_forward_shape(device: str, shape: tuple[int, ...]) -> None:
     device = torch.device(device)
     module = Laplacian().to(device=device)
@@ -258,7 +258,7 @@ def test_multi_quadratic_forward(device: str, batch_size: int, feature_size: int
 
 
 @pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("shape", [(2,), (2, 3), (2, 3, 4)])
+@pytest.mark.parametrize("shape", SHAPES)
 def test_multi_quadratic_forward_shape(device: str, shape: tuple[int, ...]) -> None:
     device = torch.device(device)
     module = MultiQuadratic().to(device=device)
@@ -326,7 +326,7 @@ def test_quadratic_forward(device: str, batch_size: int, feature_size: int) -> N
 
 
 @pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("shape", [(2,), (2, 3), (2, 3, 4)])
+@pytest.mark.parametrize("shape", SHAPES)
 def test_quadratic_forward_shape(device: str, shape: tuple[int, ...]) -> None:
     device = torch.device(device)
     module = Quadratic().to(device=device)
@@ -388,7 +388,7 @@ def test_sin_forward(device: str, batch_size: int, feature_size: int) -> None:
 
 
 @pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("shape", [(2,), (2, 3), (2, 3, 4)])
+@pytest.mark.parametrize("shape", SHAPES)
 def test_sin_forward_shape(device: str, shape: tuple[int, ...]) -> None:
     device = torch.device(device)
     module = Sin().to(device=device)
