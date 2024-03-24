@@ -3,14 +3,18 @@ r"""Root package."""
 from __future__ import annotations
 
 __all__ = [
+    "Asinh",
     "Clamp",
     "ExpSin",
+    "Expm1",
     "Gaussian",
     "Laplacian",
+    "Log1p",
     "MultiQuadratic",
     "Quadratic",
     "ReLUn",
     "Sin",
+    "Sinh",
     "Snake",
     "SquaredReLU",
     "freeze_module",
@@ -32,13 +36,17 @@ __all__ = [
 ]
 
 from karbonn.activations import (
+    Asinh,
+    Expm1,
     ExpSin,
     Gaussian,
     Laplacian,
+    Log1p,
     MultiQuadratic,
     Quadratic,
     ReLUn,
     Sin,
+    Sinh,
     Snake,
     SquaredReLU,
 )
