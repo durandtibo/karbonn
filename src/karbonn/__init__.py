@@ -5,10 +5,12 @@ from __future__ import annotations
 __all__ = [
     "Asinh",
     "Clamp",
+    "Exp",
     "ExpSin",
     "Expm1",
     "Gaussian",
     "Laplacian",
+    "Log",
     "Log1p",
     "MultiQuadratic",
     "Quadratic",
@@ -37,10 +39,12 @@ __all__ = [
 
 from karbonn.activations import (
     Asinh,
+    Exp,
     Expm1,
     ExpSin,
     Gaussian,
     Laplacian,
+    Log,
     Log1p,
     MultiQuadratic,
     Quadratic,

@@ -2,7 +2,7 @@ r"""Contain activation layers using mathematical functions."""
 
 from __future__ import annotations
 
-__all__ = ["Asinh", "Expm1", "Log1p", "Sinh"]
+__all__ = ["Asinh", "Exp", "Expm1", "Log", "Log1p", "Sinh"]
 
 import torch
 from torch import nn
@@ -33,6 +33,33 @@ class Asinh(nn.Module):
         return tensor.asinh()
 
 
+class Exp(nn.Module):
+    r"""Implement a ``torch.nn.Module`` to compute the exponential of the
+    input.
+
+    This module is equivalent to  ``exp(input)``
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn import Exp
+    >>> m = Exp()
+    >>> m
+    Exp()
+    >>> output = m(torch.tensor([[-1.0, 0.0, 1.0], [-2.0, 2.0, 4.0]]))
+    >>> output
+    tensor([[ 0.3679,  1.0000,  2.7183],
+            [ 0.1353,  7.3891, 54.5981]])
+
+    ```
+    """
+
+    def forward(self, tensor: torch.Tensor) -> torch.Tensor:
+        return tensor.exp()
+
+
 class Expm1(nn.Module):
     r"""Implement a ``torch.nn.Module`` to compute the exponential of the
     elements minus 1 of input.
@@ -58,6 +85,33 @@ class Expm1(nn.Module):
 
     def forward(self, tensor: torch.Tensor) -> torch.Tensor:
         return tensor.expm1()
+
+
+class Log(nn.Module):
+    r"""Implement a ``torch.nn.Module`` to compute the natural logarithm
+    of the input.
+
+    This module is equivalent to  ``log(input)``
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn import Log
+    >>> m = Log()
+    >>> m
+    Log()
+    >>> output = m(torch.tensor([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]))
+    >>> output
+    tensor([[0.0000, 0.6931, 1.0986],
+            [1.3863, 1.6094, 1.7918]])
+
+    ```
+    """
+
+    def forward(self, tensor: torch.Tensor) -> torch.Tensor:
+        return tensor.log()
 
 
 class Log1p(nn.Module):
