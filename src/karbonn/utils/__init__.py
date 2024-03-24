@@ -4,12 +4,15 @@ from __future__ import annotations
 
 __all__ = [
     "freeze_module",
+    "get_module_device",
+    "get_module_devices",
     "has_learnable_parameters",
     "has_parameters",
     "is_loss_decreasing",
     "is_loss_decreasing_with_adam",
     "is_loss_decreasing_with_sgd",
     "is_module_config",
+    "is_module_on_device",
     "module_mode",
     "num_learnable_parameters",
     "num_parameters",
@@ -17,6 +20,12 @@ __all__ = [
     "top_module_mode",
     "unfreeze_module",
 ]
+
+from karbonn.utils.device import (
+    get_module_device,
+    get_module_devices,
+    is_module_on_device,
+)
 from karbonn.utils.factory import is_module_config, setup_module
 from karbonn.utils.loss import (
     is_loss_decreasing,
