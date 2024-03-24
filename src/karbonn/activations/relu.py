@@ -30,7 +30,7 @@ class ReLUn(nn.Module):
     >>> m = ReLUn(max=5)
     >>> m
     ReLUn(max=5.0)
-    >>> output = m(torch.arange(8).view(2, 4))
+    >>> output = m(torch.arange(8, dtype=torch.float).view(2, 4))
     >>> output
     tensor([[0., 1., 2., 3.],
             [4., 5., 5., 5.]])
@@ -75,10 +75,10 @@ class SquaredReLU(nn.Module):
     >>> m = SquaredReLU()
     >>> m
     SquaredReLU()
-    >>> output = m(torch.arange(8).view(2, 4))
+    >>> output = m(torch.arange(8, dtype=torch.float).view(2, 4))
     >>> output
-    tensor([[ 0,  1,  4,  9],
-            [16, 25, 36, 49]])
+    tensor([[ 0.,  1.,  4.,  9.],
+            [16., 25., 36., 49.]])
 
     ```
     """

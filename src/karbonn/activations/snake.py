@@ -33,7 +33,7 @@ class Snake(nn.Module):
     >>> m = Snake()
     >>> m
     Snake(frequency=1.0)
-    >>> output = m(torch.arange(8).view(2, 4))
+    >>> output = m(torch.arange(8, dtype=torch.float).view(2, 4))
     >>> output
     tensor([[0.0000, 1.7081, 2.8268, 3.0199],
             [4.5728, 5.9195, 6.0781, 7.4316]])

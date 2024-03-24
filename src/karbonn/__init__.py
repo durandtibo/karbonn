@@ -4,7 +4,13 @@ from __future__ import annotations
 
 __all__ = [
     "Clamp",
+    "ExpSin",
+    "Gaussian",
+    "Laplacian",
+    "MultiQuadratic",
+    "Quadratic",
     "ReLUn",
+    "Sin",
     "Snake",
     "SquaredReLU",
     "freeze_module",
@@ -25,7 +31,17 @@ __all__ = [
     "unfreeze_module",
 ]
 
-from karbonn.activations import ReLUn, Snake, SquaredReLU
+from karbonn.activations import (
+    ExpSin,
+    Gaussian,
+    Laplacian,
+    MultiQuadratic,
+    Quadratic,
+    ReLUn,
+    Sin,
+    Snake,
+    SquaredReLU,
+)
 from karbonn.clamp import Clamp
 from karbonn.utils import (
     freeze_module,
