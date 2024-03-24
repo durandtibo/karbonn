@@ -15,6 +15,8 @@ __all__ = [
     "MultiQuadratic",
     "Quadratic",
     "ReLUn",
+    "SafeExp",
+    "SafeLog",
     "Sin",
     "Sinh",
     "Snake",
@@ -30,6 +32,15 @@ from karbonn.activations.alpha import (
     Quadratic,
     Sin,
 )
-from karbonn.activations.math import Asinh, Exp, Expm1, Log, Log1p, Sinh
+from karbonn.activations.math import (
+    Asinh,
+    Exp,
+    Expm1,
+    Log,
+    Log1p,
+    SafeExp,
+    SafeLog,
+    Sinh,
+)
 from karbonn.activations.relu import ReLUn, SquaredReLU
 from karbonn.activations.snake import Snake
