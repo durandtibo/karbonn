@@ -3,10 +3,87 @@ from __future__ import annotations
 import pytest
 import torch
 from coola.utils.tensor import get_available_devices
+from torch import nn
 
-from karbonn import ExpSin, Gaussian, Laplacian, MultiQuadratic, Quadratic, Sin
+from karbonn import (
+    ExpSin,
+    Gaussian,
+    Laplacian,
+    MultiQuadratic,
+    Quadratic,
+    Sin,
+    is_loss_decreasing_with_adam,
+)
 
 SIZES = (1, 2, 3)
+
+
+############################
+#     Tests for ExpSin     #
+############################
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("batch_size", SIZES)
+@pytest.mark.parametrize("feature_size", SIZES)
+def test_exp_sin_forward(device: str, batch_size: int, feature_size: int) -> None:
+    device = torch.device(device)
+    module = ExpSin(num_parameters=feature_size).to(device=device)
+    out = module(torch.randn(batch_size, feature_size, device=device, requires_grad=True))
+    out.mean().backward()
+    assert out.shape == (batch_size, feature_size)
+    assert out.dtype == torch.float
+    assert out.device == device
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("shape", [(2,), (2, 3), (2, 3, 4)])
+def test_exp_sin_forward_shape(device: str, shape: tuple[int, ...]) -> None:
+    device = torch.device(device)
+    module = ExpSin().to(device=device)
+    assert module(torch.zeros(*shape, dtype=torch.float, device=device)).equal(
+        torch.ones(*shape, dtype=torch.float, device=device)
+    )
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("num_parameters", [1, 4])
+def test_exp_sin_forward_num_parameters(device: str, num_parameters: int) -> None:
+    device = torch.device(device)
+    module = ExpSin(num_parameters).to(device=device)
+    assert module(torch.zeros(2, 4, dtype=torch.float, device=device)).equal(
+        torch.ones(2, 4, dtype=torch.float, device=device)
+    )
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+def test_exp_sin_forward_init_1(device: str) -> None:
+    device = torch.device(device)
+    module = ExpSin().to(device=device)
+    assert module(
+        torch.tensor([-2.0, -1.0, 0.0, 1.0, 2.0], dtype=torch.float, device=device)
+    ).allclose(
+        torch.tensor(
+            [0.40280712612352804, 0.43107595064559234, 1.0, 2.319776824715853, 2.4825777280150008],
+            dtype=torch.float,
+            device=device,
+        )
+    )
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+def test_exp_sin_forward_init_2(device: str) -> None:
+    device = torch.device(device)
+    module = ExpSin(init=2).to(device=device)
+    assert module(
+        torch.tensor([-2.0, -1.0, 0.0, 1.0, 2.0], dtype=torch.float, device=device)
+    ).allclose(
+        torch.tensor(
+            [2.1314499915144016, 0.40280712612352804, 1.0, 2.4825777280150008, 0.46916418587400077],
+            dtype=torch.float,
+            device=device,
+        )
+    )
 
 
 ##############################
@@ -103,142 +180,6 @@ def test_gaussian_forward_init_2(device: str) -> None:
     )
 
 
-############################
-#     Tests for ExpSin     #
-############################
-
-
-@pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("batch_size", SIZES)
-@pytest.mark.parametrize("feature_size", SIZES)
-def test_exp_sin_forward(device: str, batch_size: int, feature_size: int) -> None:
-    device = torch.device(device)
-    module = ExpSin(num_parameters=feature_size).to(device=device)
-    out = module(torch.randn(batch_size, feature_size, device=device, requires_grad=True))
-    out.mean().backward()
-    assert out.shape == (batch_size, feature_size)
-    assert out.dtype == torch.float
-    assert out.device == device
-
-
-@pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("shape", [(2,), (2, 3), (2, 3, 4)])
-def test_exp_sin_forward_shape(device: str, shape: tuple[int, ...]) -> None:
-    device = torch.device(device)
-    module = ExpSin().to(device=device)
-    assert module(torch.zeros(*shape, dtype=torch.float, device=device)).equal(
-        torch.ones(*shape, dtype=torch.float, device=device)
-    )
-
-
-@pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("num_parameters", [1, 4])
-def test_exp_sin_forward_num_parameters(device: str, num_parameters: int) -> None:
-    device = torch.device(device)
-    module = ExpSin(num_parameters).to(device=device)
-    assert module(torch.zeros(2, 4, dtype=torch.float, device=device)).equal(
-        torch.ones(2, 4, dtype=torch.float, device=device)
-    )
-
-
-@pytest.mark.parametrize("device", get_available_devices())
-def test_exp_sin_forward_init_1(device: str) -> None:
-    device = torch.device(device)
-    module = ExpSin().to(device=device)
-    assert module(
-        torch.tensor([-2.0, -1.0, 0.0, 1.0, 2.0], dtype=torch.float, device=device)
-    ).allclose(
-        torch.tensor(
-            [0.40280712612352804, 0.43107595064559234, 1.0, 2.319776824715853, 2.4825777280150008],
-            dtype=torch.float,
-            device=device,
-        )
-    )
-
-
-@pytest.mark.parametrize("device", get_available_devices())
-def test_exp_sin_forward_init_2(device: str) -> None:
-    device = torch.device(device)
-    module = ExpSin(init=2).to(device=device)
-    assert module(
-        torch.tensor([-2.0, -1.0, 0.0, 1.0, 2.0], dtype=torch.float, device=device)
-    ).allclose(
-        torch.tensor(
-            [2.1314499915144016, 0.40280712612352804, 1.0, 2.4825777280150008, 0.46916418587400077],
-            dtype=torch.float,
-            device=device,
-        )
-    )
-
-
-#########################
-#     Tests for Sin     #
-#########################
-
-
-@pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("batch_size", SIZES)
-@pytest.mark.parametrize("feature_size", SIZES)
-def test_sin_forward(device: str, batch_size: int, feature_size: int) -> None:
-    device = torch.device(device)
-    module = Sin(num_parameters=feature_size).to(device=device)
-    out = module(torch.randn(batch_size, feature_size, device=device, requires_grad=True))
-    out.mean().backward()
-    assert out.shape == (batch_size, feature_size)
-    assert out.dtype == torch.float
-    assert out.device == device
-
-
-@pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("shape", [(2,), (2, 3), (2, 3, 4)])
-def test_sin_forward_shape(device: str, shape: tuple[int, ...]) -> None:
-    device = torch.device(device)
-    module = Sin().to(device=device)
-    assert module(torch.zeros(*shape, dtype=torch.float, device=device)).equal(
-        torch.zeros(*shape, dtype=torch.float, device=device)
-    )
-
-
-@pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("num_parameters", [1, 4])
-def test_sin_forward_num_parameters(device: str, num_parameters: int) -> None:
-    device = torch.device(device)
-    module = Sin(num_parameters).to(device=device)
-    assert module(torch.zeros(2, 4, dtype=torch.float, device=device)).equal(
-        torch.zeros(2, 4, dtype=torch.float, device=device)
-    )
-
-
-@pytest.mark.parametrize("device", get_available_devices())
-def test_sin_forward_init_1(device: str) -> None:
-    device = torch.device(device)
-    module = Sin().to(device=device)
-    assert module(
-        torch.tensor([-2.0, -1.0, 0.0, 1.0, 2.0], dtype=torch.float, device=device)
-    ).allclose(
-        torch.tensor(
-            [-0.9092974268256817, -0.8414709848078965, 0.0, 0.8414709848078965, 0.9092974268256817],
-            dtype=torch.float,
-            device=device,
-        )
-    )
-
-
-@pytest.mark.parametrize("device", get_available_devices())
-def test_sin_forward_init_2(device: str) -> None:
-    device = torch.device(device)
-    module = Sin(init=2).to(device=device)
-    assert module(
-        torch.tensor([-2.0, -1.0, 0.0, 1.0, 2.0], dtype=torch.float, device=device)
-    ).allclose(
-        torch.tensor(
-            [0.7568024953079282, -0.9092974268256817, 0.0, 0.9092974268256817, -0.7568024953079282],
-            dtype=torch.float,
-            device=device,
-        )
-    )
-
-
 ###############################
 #     Tests for Laplacian     #
 ###############################
@@ -307,68 +248,6 @@ def test_laplacian_forward_init_2(device: str) -> None:
     )
 
 
-###############################
-#     Tests for Quadratic     #
-###############################
-
-
-@pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("batch_size", SIZES)
-@pytest.mark.parametrize("feature_size", SIZES)
-def test_quadratic_forward(device: str, batch_size: int, feature_size: int) -> None:
-    device = torch.device(device)
-    module = Quadratic(num_parameters=feature_size).to(device=device)
-    out = module(torch.randn(batch_size, feature_size, device=device, requires_grad=True))
-    out.mean().backward()
-    assert out.shape == (batch_size, feature_size)
-    assert out.dtype == torch.float
-    assert out.device == device
-
-
-@pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("shape", [(2,), (2, 3), (2, 3, 4)])
-def test_quadratic_forward_shape(device: str, shape: tuple[int, ...]) -> None:
-    device = torch.device(device)
-    module = Quadratic().to(device=device)
-    assert module(torch.zeros(*shape, dtype=torch.float, device=device)).equal(
-        torch.ones(*shape, dtype=torch.float, device=device)
-    )
-
-
-@pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("num_parameters", [1, 4])
-def test_quadratic_forward_num_parameters(device: str, num_parameters: int) -> None:
-    device = torch.device(device)
-    module = Quadratic(num_parameters).to(device=device)
-    assert module(torch.zeros(2, 4, dtype=torch.float, device=device)).equal(
-        torch.ones(2, 4, dtype=torch.float, device=device)
-    )
-
-
-@pytest.mark.parametrize("device", get_available_devices())
-def test_quadratic_forward_init_1(device: str) -> None:
-    device = torch.device(device)
-    module = Quadratic().to(device=device)
-    assert module(
-        torch.tensor([-2.0, -1.0, 0.0, 1.0, 2.0], dtype=torch.float, device=device)
-    ).allclose(torch.tensor([0.2, 0.5, 1.0, 0.5, 0.2], dtype=torch.float, device=device))
-
-
-@pytest.mark.parametrize("device", get_available_devices())
-def test_quadratic_forward_init_2(device: str) -> None:
-    device = torch.device(device)
-    module = Quadratic(init=2).to(device=device)
-    assert module(
-        torch.tensor([-2.0, -1.0, 0.0, 1.0, 2.0], dtype=torch.float, device=device)
-    ).allclose(
-        torch.tensor(
-            [0.058823529411764705, 0.2, 1.0, 0.2, 0.058823529411764705],
-            dtype=torch.float,
-            device=device,
-        )
-    )
-
-
 ####################################
 #     Tests for MultiQuadratic     #
 ####################################
@@ -431,6 +310,145 @@ def test_multi_quadratic_forward_init_2(device: str) -> None:
     ).allclose(
         torch.tensor(
             [0.24253562503633297, 0.4472135954999579, 1.0, 0.4472135954999579, 0.24253562503633297],
+            dtype=torch.float,
+            device=device,
+        )
+    )
+
+
+###############################
+#     Tests for Quadratic     #
+###############################
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("batch_size", SIZES)
+@pytest.mark.parametrize("feature_size", SIZES)
+def test_quadratic_forward(device: str, batch_size: int, feature_size: int) -> None:
+    device = torch.device(device)
+    module = Quadratic(num_parameters=feature_size).to(device=device)
+    out = module(torch.randn(batch_size, feature_size, device=device, requires_grad=True))
+    out.mean().backward()
+    assert out.shape == (batch_size, feature_size)
+    assert out.dtype == torch.float
+    assert out.device == device
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("shape", [(2,), (2, 3), (2, 3, 4)])
+def test_quadratic_forward_shape(device: str, shape: tuple[int, ...]) -> None:
+    device = torch.device(device)
+    module = Quadratic().to(device=device)
+    assert module(torch.zeros(*shape, dtype=torch.float, device=device)).equal(
+        torch.ones(*shape, dtype=torch.float, device=device)
+    )
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("num_parameters", [1, 4])
+def test_quadratic_forward_num_parameters(device: str, num_parameters: int) -> None:
+    device = torch.device(device)
+    module = Quadratic(num_parameters).to(device=device)
+    assert module(torch.zeros(2, 4, dtype=torch.float, device=device)).equal(
+        torch.ones(2, 4, dtype=torch.float, device=device)
+    )
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+def test_quadratic_forward_init_1(device: str) -> None:
+    device = torch.device(device)
+    module = Quadratic().to(device=device)
+    assert module(
+        torch.tensor([-2.0, -1.0, 0.0, 1.0, 2.0], dtype=torch.float, device=device)
+    ).allclose(torch.tensor([0.2, 0.5, 1.0, 0.5, 0.2], dtype=torch.float, device=device))
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+def test_quadratic_forward_init_2(device: str) -> None:
+    device = torch.device(device)
+    module = Quadratic(init=2).to(device=device)
+    assert module(
+        torch.tensor([-2.0, -1.0, 0.0, 1.0, 2.0], dtype=torch.float, device=device)
+    ).allclose(
+        torch.tensor(
+            [0.058823529411764705, 0.2, 1.0, 0.2, 0.058823529411764705],
+            dtype=torch.float,
+            device=device,
+        )
+    )
+
+
+def test_quadratic_is_loss_decreasing() -> None:
+    assert is_loss_decreasing_with_adam(
+        module=Quadratic(num_parameters=4),
+        criterion=nn.MSELoss(),
+        feature=torch.randn(8, 4),
+        target=torch.randn(8, 4),
+    )
+
+
+#########################
+#     Tests for Sin     #
+#########################
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("batch_size", SIZES)
+@pytest.mark.parametrize("feature_size", SIZES)
+def test_sin_forward(device: str, batch_size: int, feature_size: int) -> None:
+    device = torch.device(device)
+    module = Sin(num_parameters=feature_size).to(device=device)
+    out = module(torch.randn(batch_size, feature_size, device=device, requires_grad=True))
+    out.mean().backward()
+    assert out.shape == (batch_size, feature_size)
+    assert out.dtype == torch.float
+    assert out.device == device
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("shape", [(2,), (2, 3), (2, 3, 4)])
+def test_sin_forward_shape(device: str, shape: tuple[int, ...]) -> None:
+    device = torch.device(device)
+    module = Sin().to(device=device)
+    assert module(torch.zeros(*shape, dtype=torch.float, device=device)).equal(
+        torch.zeros(*shape, dtype=torch.float, device=device)
+    )
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("num_parameters", [1, 4])
+def test_sin_forward_num_parameters(device: str, num_parameters: int) -> None:
+    device = torch.device(device)
+    module = Sin(num_parameters).to(device=device)
+    assert module(torch.zeros(2, 4, dtype=torch.float, device=device)).equal(
+        torch.zeros(2, 4, dtype=torch.float, device=device)
+    )
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+def test_sin_forward_init_1(device: str) -> None:
+    device = torch.device(device)
+    module = Sin().to(device=device)
+    assert module(
+        torch.tensor([-2.0, -1.0, 0.0, 1.0, 2.0], dtype=torch.float, device=device)
+    ).allclose(
+        torch.tensor(
+            [-0.9092974268256817, -0.8414709848078965, 0.0, 0.8414709848078965, 0.9092974268256817],
+            dtype=torch.float,
+            device=device,
+        )
+    )
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+def test_sin_forward_init_2(device: str) -> None:
+    device = torch.device(device)
+    module = Sin(init=2).to(device=device)
+    assert module(
+        torch.tensor([-2.0, -1.0, 0.0, 1.0, 2.0], dtype=torch.float, device=device)
+    ).allclose(
+        torch.tensor(
+            [0.7568024953079282, -0.9092974268256817, 0.0, 0.9092974268256817, -0.7568024953079282],
             dtype=torch.float,
             device=device,
         )
