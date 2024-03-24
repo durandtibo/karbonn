@@ -8,7 +8,7 @@ import torch
 from torch import Tensor
 from torch.nn import BCELoss, BCEWithLogitsLoss, Module
 
-from karbonn.functional import basic_loss_reduction, check_basic_loss_reduction
+from karbonn.functional import check_basic_loss_reduction, reduce_loss
 
 
 class BaseBinaryFocalLoss(Module):
@@ -88,7 +88,7 @@ class BaseBinaryFocalLoss(Module):
             1 - target
         )  # alpha for positive samples, else 1-alpha
         focal_loss = alpha_t * (1 - pt) ** self._gamma * bce_loss
-        return basic_loss_reduction(focal_loss, self.reduction)
+        return reduce_loss(focal_loss, self.reduction)
 
 
 class BinaryFocalLoss(BaseBinaryFocalLoss):
