@@ -46,14 +46,6 @@ class ReLUn(nn.Module):
         return f"max={self._max}"
 
     def forward(self, tensor: torch.Tensor) -> torch.Tensor:
-        r"""Apply the element-wise ReLU-n function.
-
-        Args:
-            tensor: The input tensor.
-
-        Returns:
-            The output tensor, which as the same size as the input.
-        """
         return tensor.clamp(min=0.0, max=self._max)
 
 
