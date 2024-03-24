@@ -14,6 +14,10 @@ class Asinh(nn.Module):
     r"""Implement a ``torch.nn.Module`` to compute the inverse hyperbolic
     sine (arcsinh) of the elements.
 
+    Shape:
+        - Input: ``(*)``, where ``*`` means any number of dimensions.
+        - Output: ``(*)``, same shape as the input.
+
     Example usage:
 
     ```pycon
@@ -40,6 +44,10 @@ class Exp(nn.Module):
     input.
 
     This module is equivalent to  ``exp(input)``
+
+    Shape:
+        - Input: ``(*)``, where ``*`` means any number of dimensions.
+        - Output: ``(*)``, same shape as the input.
 
     Example usage:
 
@@ -68,6 +76,10 @@ class Expm1(nn.Module):
 
     This module is equivalent to  ``exp(input) - 1``
 
+    Shape:
+        - Input: ``(*)``, where ``*`` means any number of dimensions.
+        - Output: ``(*)``, same shape as the input.
+
     Example usage:
 
     ```pycon
@@ -95,6 +107,10 @@ class Log(nn.Module):
 
     This module is equivalent to  ``log(input)``
 
+    Shape:
+        - Input: ``(*)``, where ``*`` means any number of dimensions.
+        - Output: ``(*)``, same shape as the input.
+
     Example usage:
 
     ```pycon
@@ -121,6 +137,10 @@ class Log1p(nn.Module):
     of ``(1 + input)``.
 
     This module is equivalent to  ``log(1 + input)``
+
+    Shape:
+        - Input: ``(*)``, where ``*`` means any number of dimensions.
+        - Output: ``(*)``, same shape as the input.
 
     Example usage:
 
@@ -153,6 +173,10 @@ class SafeExp(nn.Module):
 
     Args:
         max: The maximum value before to compute the exponential.
+
+    Shape:
+        - Input: ``(*)``, where ``*`` means any number of dimensions.
+        - Output: ``(*)``, same shape as the input.
 
     Example usage:
 
@@ -193,6 +217,10 @@ class SafeLog(nn.Module):
     Args:
         min: The minimum value before to compute the logarithm natural.
 
+    Shape:
+        - Input: ``(*)``, where ``*`` means any number of dimensions.
+        - Output: ``(*)``, same shape as the input.
+
     Example usage:
 
     ```pycon
@@ -224,6 +252,10 @@ class SafeLog(nn.Module):
 class Sinh(nn.Module):
     r"""Implement a ``torch.nn.Module`` to compute the hyperbolic sine
     (sinh) of the elements.
+
+    Shape:
+        - Input: ``(*)``, where ``*`` means any number of dimensions.
+        - Output: ``(*)``, same shape as the input.
 
     Example usage:
 

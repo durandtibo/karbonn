@@ -17,6 +17,10 @@ class Clamp(torch.nn.Module):
         max: The upper-bound of the range to be clamped to.
             ``None`` means there is no maximum value.
 
+    Shape:
+        - Input: ``(*)``, where ``*`` means any number of dimensions.
+        - Output: ``(*)``, same shape as the input.
+
     Example usage:
 
     ```pycon
