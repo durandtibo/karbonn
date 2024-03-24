@@ -2,10 +2,12 @@ r"""Contain activation layers using mathematical functions."""
 
 from __future__ import annotations
 
-__all__ = ["Asinh", "Exp", "Expm1", "Log", "Log1p", "Sinh"]
+__all__ = ["Asinh", "Exp", "Expm1", "Log", "Log1p", "SafeExp", "SafeLog", "Sinh"]
 
 import torch
 from torch import nn
+
+from karbonn.functional import safe_exp, safe_log
 
 
 class Asinh(nn.Module):
@@ -139,6 +141,84 @@ class Log1p(nn.Module):
 
     def forward(self, tensor: torch.Tensor) -> torch.Tensor:
         return tensor.log1p()
+
+
+class SafeExp(nn.Module):
+    r"""Implement a ``torch.nn.Module`` to compute the exponential of the
+    elements.
+
+    The values that are higher than the specified minimum value are
+    set to this maximum value. Using a not too large positive value
+    leads to an output tensor without Inf.
+
+    Args:
+        max: The maximum value before to compute the exponential.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn import SafeExp
+    >>> m = SafeExp()
+    >>> m
+    SafeExp(max=20.0)
+    >>> output = m(torch.tensor([[0.01, 0.1, 1.0], [10.0, 100.0, 1000.0]]))
+    >>> output
+    tensor([[1.0101e+00, 1.1052e+00, 2.7183e+00],
+            [2.2026e+04, 4.8517e+08, 4.8517e+08]])
+
+    ```
+    """
+
+    def __init__(self, max: float = 20.0) -> None:  # noqa: A002
+        super().__init__()
+        self._max = float(max)
+
+    def extra_repr(self) -> str:
+        return f"max={self._max}"
+
+    def forward(self, tensor: torch.Tensor) -> torch.Tensor:
+        return safe_exp(tensor, self._max)
+
+
+class SafeLog(nn.Module):
+    r"""Implement a ``torch.nn.Module`` to compute the logarithm natural
+    of the elements.
+
+    The values that are lower than the specified minimum value are set
+    to this minimum value. Using a small positive value leads to an
+    output tensor without NaN or Inf.
+
+    Args:
+        min: The minimum value before to compute the logarithm natural.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn import SafeLog
+    >>> m = SafeLog()
+    >>> m
+    SafeLog(min=1e-08)
+    >>> output = m(torch.tensor([[1e-4, 1e-5, 1e-6], [1e-8, 1e-9, 1e-10]]))
+    >>> output
+    tensor([[ -9.2103, -11.5129, -13.8155],
+            [-18.4207, -18.4207, -18.4207]])
+
+    ```
+    """
+
+    def __init__(self, min: float = 1e-8) -> None:  # noqa: A002
+        super().__init__()
+        self._min = float(min)
+
+    def extra_repr(self) -> str:
+        return f"min={self._min}"
+
+    def forward(self, tensor: torch.Tensor) -> torch.Tensor:
+        return safe_log(tensor, self._min)
 
 
 class Sinh(nn.Module):
