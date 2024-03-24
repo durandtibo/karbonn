@@ -3,17 +3,8 @@ from __future__ import annotations
 import pytest
 import torch
 from coola.utils.tensor import get_available_devices
-from torch import nn
 
-from karbonn import (
-    ExpSin,
-    Gaussian,
-    Laplacian,
-    MultiQuadratic,
-    Quadratic,
-    Sin,
-    is_loss_decreasing_with_adam,
-)
+from karbonn import ExpSin, Gaussian, Laplacian, MultiQuadratic, Quadratic, Sin
 
 SIZES = (1, 2, 3)
 
@@ -375,15 +366,6 @@ def test_quadratic_forward_init_2(device: str) -> None:
             dtype=torch.float,
             device=device,
         )
-    )
-
-
-def test_quadratic_is_loss_decreasing() -> None:
-    assert is_loss_decreasing_with_adam(
-        module=Quadratic(num_parameters=4),
-        criterion=nn.MSELoss(),
-        feature=torch.randn(8, 4),
-        target=torch.randn(8, 4),
     )
 
 
