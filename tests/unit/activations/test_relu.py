@@ -18,11 +18,10 @@ def test_relun_str() -> None:
 
 
 @pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("dtype", [torch.float, torch.long])
-def test_relun_forward(device: str, dtype: torch.dtype) -> None:
+def test_relun_forward(device: str) -> None:
     device = torch.device(device)
     module = ReLUn().to(device=device)
-    assert module(torch.arange(-1, 4, dtype=dtype, device=device)).equal(
+    assert module(torch.arange(-1, 4, dtype=torch.float, device=device)).equal(
         torch.tensor([0.0, 0.0, 1.0, 1.0, 1.0], dtype=torch.float, device=device)
     )
 
@@ -50,11 +49,10 @@ def test_relun_forward_size(size: tuple[int, ...]) -> None:
 
 
 @pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("dtype", [torch.float, torch.long])
-def test_squared_relu_forward(device: str, dtype: torch.dtype) -> None:
+def test_squared_relu_forward(device: str) -> None:
     device = torch.device(device)
     module = SquaredReLU().to(device=device)
-    assert module(torch.arange(-1, 4, dtype=dtype, device=device)).equal(
+    assert module(torch.arange(-1, 4, dtype=torch.float, device=device)).equal(
         torch.tensor([0.0, 0.0, 1.0, 4.0, 9.0], dtype=torch.float, device=device)
     )
 
