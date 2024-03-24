@@ -34,6 +34,10 @@ class BaseAlphaActivation(Module):
         learnable: If ``True``, the parameters are learnt during the
             training, otherwise they are fixed.
 
+    Shape:
+        - Input: ``(*)``, where ``*`` means any number of dimensions.
+        - Output: ``(*)``, same shape as the input.
+
     Example usage:
 
     ```pycon
@@ -72,6 +76,18 @@ class ExpSin(BaseAlphaActivation):
         Ramasinghe S., Lucey S.
         ECCV 2022. (http://arxiv.org/pdf/2111.15135)
 
+    Args:
+        num_parameters: The number of learnable parameters. Although
+            it takes an integer as input, there is only two values are
+            legitimate: ``1``, or the number of channels at input.
+        init: The initial value of the learnable parameter(s).
+        learnable: If ``True``, the parameters are learnt during the
+            training, otherwise they are fixed.
+
+    Shape:
+        - Input: ``(*)``, where ``*`` means any number of dimensions.
+        - Output: ``(*)``, same shape as the input.
+
     Example usage:
 
     ```pycon
@@ -103,6 +119,18 @@ class Gaussian(BaseAlphaActivation):
         Beyond Periodicity: Towards a Unifying Framework for Activations in Coordinate-MLPs.
         Ramasinghe S., Lucey S.
         ECCV 2022. (http://arxiv.org/pdf/2111.15135)
+
+    Args:
+        num_parameters: The number of learnable parameters. Although
+            it takes an integer as input, there is only two values are
+            legitimate: ``1``, or the number of channels at input.
+        init: The initial value of the learnable parameter(s).
+        learnable: If ``True``, the parameters are learnt during the
+            training, otherwise they are fixed.
+
+    Shape:
+        - Input: ``(*)``, where ``*`` means any number of dimensions.
+        - Output: ``(*)``, same shape as the input.
 
     Example usage:
 
@@ -136,6 +164,18 @@ class Laplacian(BaseAlphaActivation):
         Ramasinghe S., Lucey S.
         ECCV 2022. (http://arxiv.org/pdf/2111.15135)
 
+    Args:
+        num_parameters: The number of learnable parameters. Although
+            it takes an integer as input, there is only two values are
+            legitimate: ``1``, or the number of channels at input.
+        init: The initial value of the learnable parameter(s).
+        learnable: If ``True``, the parameters are learnt during the
+            training, otherwise they are fixed.
+
+    Shape:
+        - Input: ``(*)``, where ``*`` means any number of dimensions.
+        - Output: ``(*)``, same shape as the input.
+
     Example usage:
 
     ```pycon
@@ -167,6 +207,18 @@ class MultiQuadratic(BaseAlphaActivation):
         Beyond Periodicity: Towards a Unifying Framework for Activations in Coordinate-MLPs.
         Ramasinghe S., Lucey S.
         ECCV 2022. (http://arxiv.org/pdf/2111.15135)
+
+    Args:
+        num_parameters: The number of learnable parameters. Although
+            it takes an integer as input, there is only two values are
+            legitimate: ``1``, or the number of channels at input.
+        init: The initial value of the learnable parameter(s).
+        learnable: If ``True``, the parameters are learnt during the
+            training, otherwise they are fixed.
+
+    Shape:
+        - Input: ``(*)``, where ``*`` means any number of dimensions.
+        - Output: ``(*)``, same shape as the input.
 
     Example usage:
 
@@ -200,6 +252,18 @@ class Quadratic(BaseAlphaActivation):
         Ramasinghe S., Lucey S.
         ECCV 2022. (http://arxiv.org/pdf/2111.15135)
 
+    Args:
+        num_parameters: The number of learnable parameters. Although
+            it takes an integer as input, there is only two values are
+            legitimate: ``1``, or the number of channels at input.
+        init: The initial value of the learnable parameter(s).
+        learnable: If ``True``, the parameters are learnt during the
+            training, otherwise they are fixed.
+
+    Shape:
+        - Input: ``(*)``, where ``*`` means any number of dimensions.
+        - Output: ``(*)``, same shape as the input.
+
     Example usage:
 
     ```pycon
@@ -225,6 +289,18 @@ class Sin(BaseAlphaActivation):
     r"""Implement the sine activation layer.
 
     Formula: ``sin(alpha * x)``
+
+    Args:
+        num_parameters: The number of learnable parameters. Although
+            it takes an integer as input, there is only two values are
+            legitimate: ``1``, or the number of channels at input.
+        init: The initial value of the learnable parameter(s).
+        learnable: If ``True``, the parameters are learnt during the
+            training, otherwise they are fixed.
+
+    Shape:
+        - Input: ``(*)``, where ``*`` means any number of dimensions.
+        - Output: ``(*)``, same shape as the input.
 
     Example usage:
 

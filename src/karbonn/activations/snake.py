@@ -24,6 +24,10 @@ class Snake(nn.Module):
     Args:
         frequency: The frequency.
 
+    Shape:
+        - Input: ``(*)``, where ``*`` means any number of dimensions.
+        - Output: ``(*)``, same shape as the input.
+
     Example usage:
 
     ```pycon

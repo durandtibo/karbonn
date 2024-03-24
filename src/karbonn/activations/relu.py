@@ -21,6 +21,10 @@ class ReLUn(nn.Module):
     Args:
         max: The maximum value a.k.a. ``n`` in the equation above.
 
+    Shape:
+        - Input: ``(*)``, where ``*`` means any number of dimensions.
+        - Output: ``(*)``, same shape as the input.
+
     Example usage:
 
     ```pycon
@@ -57,6 +61,10 @@ class SquaredReLU(nn.Module):
         Primer: Searching for Efficient Transformers for Language Modeling.
         So DR., Mańke W., Liu H., Dai Z., Shazeer N., Le QV.
         NeurIPS, 2021. (https://arxiv.org/pdf/2109.08668.pdf)
+
+    Shape:
+        - Input: ``(*)``, where ``*`` means any number of dimensions.
+        - Output: ``(*)``, same shape as the input.
 
     Example usage:
 
