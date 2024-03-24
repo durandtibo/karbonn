@@ -29,7 +29,9 @@ nav:
 #      - types.md
 #      - customization.md
   - Reference:
-      - refs/utils.md
+      - karbonn: refs/root.md
+      - karbonn.functional: refs/functional.md
+      - karbonn.utils: refs/utils.md
   - GitHub: https://github.com/durandtibo/karbonn
 
 repo_url: https://github.com/durandtibo/karbonn

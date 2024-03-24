@@ -40,12 +40,4 @@ class Clamp(torch.nn.Module):
         return f"min={self._min}, max={self._max}"
 
     def forward(self, tensor: torch.Tensor) -> torch.Tensor:
-        r"""Clamp all elements in input into the range ``[min, max]``.
-
-        Args:
-            tensor: The input tensor.
-
-        Returns:
-            The output tensor with the same shape as the input.
-        """
         return tensor.clamp(min=self._min, max=self._max)
