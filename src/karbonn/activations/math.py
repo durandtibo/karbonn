@@ -21,10 +21,10 @@ class Asinh(nn.Module):
     >>> m = Asinh()
     >>> m
     Asinh()
-    >>> output = m(torch.arange(8, dtype=torch.float).view(2, 4))
+    >>> output = m(torch.tensor([[-1.0, 0.0, 1.0], [-2.0, 2.0, 4.0]]))
     >>> output
-    tensor([[0.0000, 0.8814, 1.4436, 1.8184],
-            [2.0947, 2.3124, 2.4918, 2.6441]])
+    tensor([[-0.8814,  0.0000,  0.8814],
+            [-1.4436,  1.4436,  2.0947]])
 
     ```
     """
@@ -48,10 +48,10 @@ class Expm1(nn.Module):
     >>> m = Expm1()
     >>> m
     Expm1()
-    >>> output = m(torch.arange(8, dtype=torch.float).view(2, 4))
+    >>> output = m(torch.tensor([[-1.0, 0.0, 1.0], [-2.0, 2.0, 4.0]]))
     >>> output
-    tensor([[   0.0000,    1.7183,    6.3891,   19.0855],
-            [  53.5981,  147.4132,  402.4288, 1095.6332]])
+    tensor([[-0.6321,  0.0000,  1.7183],
+            [-0.8647,  6.3891, 53.5981]])
 
     ```
     """
@@ -75,10 +75,10 @@ class Log1p(nn.Module):
     >>> m = Log1p()
     >>> m
     Log1p()
-    >>> output = m(torch.arange(8, dtype=torch.float).view(2, 4))
+    >>> output = m(torch.tensor([[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]]))
     >>> output
-    tensor([[0.0000, 0.6931, 1.0986, 1.3863],
-            [1.6094, 1.7918, 1.9459, 2.0794]])
+    tensor([[0.0000, 0.6931, 1.0986],
+            [1.3863, 1.6094, 1.7918]])
 
     ```
     """
@@ -100,10 +100,10 @@ class Sinh(nn.Module):
     >>> m = Sinh()
     >>> m
     Sinh()
-    >>> output = m(torch.arange(8, dtype=torch.float).view(2, 4))
+    >>> output = m(torch.tensor([[-1.0, 0.0, 1.0], [-2.0, 2.0, 4.0]]))
     >>> output
-    tensor([[  0.0000,   1.1752,   3.6269,  10.0179],
-            [ 27.2899,  74.2032, 201.7132, 548.3161]])
+    tensor([[-1.1752,  0.0000,  1.1752],
+            [-3.6269,  3.6269, 27.2899]])
 
     ```
     """
