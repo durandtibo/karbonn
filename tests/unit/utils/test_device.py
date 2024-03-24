@@ -6,7 +6,6 @@ from torch import nn
 from karbonn.testing import cuda_available
 from karbonn.utils import get_module_device, get_module_devices, is_module_on_device
 
-
 #######################################
 #     Tests for get_module_device     #
 #######################################

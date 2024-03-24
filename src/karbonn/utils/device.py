@@ -1,3 +1,6 @@
+r"""Contain utility functions to manage the device(s) of a
+``torch.nn.Module``."""
+
 from __future__ import annotations
 
 __all__ = ["get_module_device", "get_module_devices", "is_module_on_device"]
