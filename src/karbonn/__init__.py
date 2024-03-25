@@ -4,6 +4,7 @@ from __future__ import annotations
 
 __all__ = [
     "Asinh",
+    "BinaryFocalLoss",
     "Clamp",
     "Exp",
     "ExpSin",
@@ -21,6 +22,7 @@ __all__ = [
     "Sinh",
     "Snake",
     "SquaredReLU",
+    "binary_focal_loss",
     "freeze_module",
     "get_module_device",
     "get_module_devices",
@@ -59,6 +61,7 @@ from karbonn.activations import (
     SquaredReLU,
 )
 from karbonn.clamp import Clamp
+from karbonn.loss import BinaryFocalLoss, binary_focal_loss
 from karbonn.utils import (
     freeze_module,
     get_module_device,
