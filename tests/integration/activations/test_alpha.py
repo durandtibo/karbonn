@@ -3,15 +3,8 @@ from __future__ import annotations
 import torch
 from torch import nn
 
-from karbonn import (
-    ExpSin,
-    Gaussian,
-    Laplacian,
-    MultiQuadratic,
-    Quadratic,
-    Sin,
-    is_loss_decreasing_with_adam,
-)
+from karbonn import ExpSin, Gaussian, Laplacian, MultiQuadratic, Quadratic, Sin
+from karbonn.utils import is_loss_decreasing_with_adam
 
 ############################
 #     Tests for ExpSin     #
