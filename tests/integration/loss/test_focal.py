@@ -4,7 +4,8 @@ import pytest
 import torch
 from torch import nn
 
-from karbonn import binary_focal_loss, is_loss_decreasing_with_adam
+from karbonn import binary_focal_loss
+from karbonn.utils import is_loss_decreasing_with_adam
 
 SIZES = (1, 2)
 TOLERANCE = 1e-6

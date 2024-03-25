@@ -13,8 +13,8 @@ if is_objectory_available():
 else:  # pragma: no cover
     OBJECT_TARGET = "_target_"
 
-from karbonn import is_module_config, setup_module
 from karbonn.testing import objectory_available
+from karbonn.utils import is_module_config, setup_module
 
 ######################################
 #     Tests for is_module_config     #

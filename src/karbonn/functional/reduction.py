@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["check_loss_reduction_strategy", "reduce_loss"]
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from torch import Tensor
@@ -38,7 +38,7 @@ def check_loss_reduction_strategy(reduction: str) -> None:
         raise ValueError(msg)
 
 
-def reduce_loss(tensor: Tensor, reduction: Literal["mean", "none", "sum"]) -> Tensor:
+def reduce_loss(tensor: Tensor, reduction: str) -> Tensor:
     r"""Return the reduced loss.
 
     This function is designed to be used with loss functions.

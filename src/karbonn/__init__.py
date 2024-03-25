@@ -23,22 +23,6 @@ __all__ = [
     "Snake",
     "SquaredReLU",
     "binary_focal_loss",
-    "freeze_module",
-    "get_module_device",
-    "get_module_devices",
-    "has_learnable_parameters",
-    "has_parameters",
-    "is_loss_decreasing",
-    "is_loss_decreasing_with_adam",
-    "is_loss_decreasing_with_sgd",
-    "is_module_config",
-    "is_module_on_device",
-    "module_mode",
-    "num_learnable_parameters",
-    "num_parameters",
-    "setup_module",
-    "top_module_mode",
-    "unfreeze_module",
 ]
 
 from karbonn.activations import (
@@ -62,21 +46,3 @@ from karbonn.activations import (
 )
 from karbonn.clamp import Clamp
 from karbonn.loss import BinaryFocalLoss, binary_focal_loss
-from karbonn.utils import (
-    freeze_module,
-    get_module_device,
-    get_module_devices,
-    has_learnable_parameters,
-    has_parameters,
-    is_loss_decreasing,
-    is_loss_decreasing_with_adam,
-    is_loss_decreasing_with_sgd,
-    is_module_config,
-    is_module_on_device,
-    module_mode,
-    num_learnable_parameters,
-    num_parameters,
-    setup_module,
-    top_module_mode,
-    unfreeze_module,
-)
