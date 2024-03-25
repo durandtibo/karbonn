@@ -40,7 +40,7 @@ def is_module_config(config: dict) -> bool:
     Example usage:
 
     ```pycon
-    >>> from karbonn import is_module_config
+    >>> from karbonn.utils import is_module_config
     >>> is_module_config({"_target_": "torch.nn.Identity"})
     True
 
@@ -62,7 +62,7 @@ def setup_module(module: Module | dict) -> Module:
     Example usage:
 
     ```pycon
-    >>> from karbonn import setup_module
+    >>> from karbonn.utils import setup_module
     >>> linear = setup_module(
     ...     {"_target_": "torch.nn.Linear", "in_features": 4, "out_features": 6}
     ... )
