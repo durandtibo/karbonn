@@ -64,19 +64,19 @@ def reduce_loss(tensor: Tensor, reduction: str) -> Tensor:
 
     >>> import torch
     >>> from karbonn.functional import reduce_loss
-    >>> tensor = torch.arange(6).view(2, 3)
+    >>> tensor = torch.tensor([[0., 1., 2.], [3., 4., 5.]])
     >>> reduce_loss(tensor, "none")
-    tensor([[0, 1, 2],
-            [3, 4, 5]])
+    tensor([[0., 1., 2.],
+            [3., 4., 5.]])
     >>> reduce_loss(tensor, "sum")
-    tensor(15)
+    tensor(15.)
     >>> reduce_loss(tensor, "mean")
     tensor(2.5000)
 
     ```
     """
     if reduction == "mean":
-        return tensor.float().mean()
+        return tensor.mean()
     if reduction == "sum":
         return tensor.sum()
     if reduction == "none":
