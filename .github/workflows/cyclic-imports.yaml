@@ -32,3 +32,9 @@ jobs:
       - name: check karbonn
         run: |
           poetry run python -c "import karbonn"
+      - name: check karbonn.functional
+        run: |
+          poetry run python -c "from karbonn import functional"
+      - name: check karbonn.utils
+        run: |
+          poetry run python -c "from karbonn import utils"

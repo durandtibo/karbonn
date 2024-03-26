@@ -16,6 +16,7 @@ __all__ = [
     "MultiQuadratic",
     "Quadratic",
     "ReLUn",
+    "ResidualBlock",
     "SafeExp",
     "SafeLog",
     "Sin",
@@ -46,3 +47,4 @@ from karbonn.activations import (
 )
 from karbonn.clamp import Clamp
 from karbonn.loss import BinaryFocalLoss, binary_focal_loss
+from karbonn.residual import ResidualBlock
