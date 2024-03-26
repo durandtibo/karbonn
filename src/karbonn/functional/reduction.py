@@ -76,7 +76,7 @@ def reduce_loss(tensor: Tensor, reduction: str) -> Tensor:
     ```
     """
     if reduction == "mean":
-        return tensor.float().mean()
+        return tensor.mean()
     if reduction == "sum":
         return tensor.sum()
     if reduction == "none":
