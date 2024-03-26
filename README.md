@@ -61,3 +61,55 @@
 </p>
 
 A library of PyTorch modules
+
+## Installation
+
+We highly recommend installing
+a [virtual environment](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/).
+`karbonn` can be installed from pip using the following command:
+
+```shell
+pip install karbonn
+```
+
+To make the package as slim as possible, only the minimal packages required to use `karbonn` are
+installed.
+To include all the dependencies, you can use the following command:
+
+```shell
+pip install karbonn[all]
+```
+
+Please check the [get started page](https://durandtibo.github.io/karbonn/get_started) to see how to
+install only some specific dependencies or other alternatives to install the library.
+The following is the corresponding `karbonn` versions and tested dependencies.
+
+| `karbonn` | `coola`      | `numpy`<sup>*</sup> | `objectory`<sup>*</sup> | `torch`       | `python`      |
+|-----------|--------------|---------------------|-------------------------|---------------|---------------|
+| `main`    | `>=0.5,<1.0` | `>=1.21,<1.27`      | `>=0.1,<1.0`            | `>=1.10,<2.2` | `>=3.9,<3.13` |
+
+<sup>*</sup> indicates an optional dependency
+
+## Contributing
+
+Please check the instructions in [CONTRIBUTING.md](.github/CONTRIBUTING.md).
+
+## Suggestions and Communication
+
+Everyone is welcome to contribute to the community.
+If you have any questions or suggestions, you can
+submit [Github Issues](https://github.com/durandtibo/karbonn/issues).
+We will reply to you as soon as possible. Thank you very much.
+
+## API stability
+
+:warning: While `karbonn` is in development stage, no API is guaranteed to be stable from one
+release to the next.
+In fact, it is very likely that the API will change multiple times before a stable 1.0.0 release.
+In practice, this means that upgrading `karbonn` to a new version will possibly break any code that
+was using the old version of `karbonn`.
+
+## License
+
+`karbonn` is licensed under BSD 3-Clause "New" or "Revised" license available in [LICENSE](LICENSE)
+file.
