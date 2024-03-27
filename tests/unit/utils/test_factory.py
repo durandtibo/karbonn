@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 from unittest.mock import patch
 
 import pytest
@@ -10,7 +11,6 @@ from torch import nn
 from karbonn.testing import objectory_available
 from karbonn.utils import create_sequential, is_module_config, setup_module
 from karbonn.utils.imports import is_objectory_available
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
