@@ -1,8 +1,9 @@
-r"""Contain the general robust loss a.k.a the Barron robust loss."""
+r"""Contain the general robust regression loss a.k.a the Barron robust
+loss."""
 
 from __future__ import annotations
 
-__all__ = ["general_robust_loss"]
+__all__ = ["general_robust_regression_loss"]
 
 import math
 from typing import TYPE_CHECKING
@@ -13,7 +14,7 @@ if TYPE_CHECKING:
     import torch
 
 
-def general_robust_loss(
+def general_robust_regression_loss(
     prediction: torch.Tensor,
     target: torch.Tensor,
     alpha: float = 2.0,
@@ -21,7 +22,8 @@ def general_robust_loss(
     max: float | None = None,  # noqa: A002
     reduction: str = "mean",
 ) -> torch.Tensor:
-    r"""Compute the general robust loss a.k.a. Barron robust loss.
+    r"""Compute the general robust regression loss a.k.a. Barron robust
+    loss.
 
     Based on the paper:
 
@@ -60,8 +62,10 @@ def general_robust_loss(
     ```pycon
 
     >>> import torch
-    >>> from karbonn.functional import general_robust_loss
-    >>> loss = general_robust_loss(torch.randn(2, 4, requires_grad=True), torch.randn(2, 4))
+    >>> from karbonn.functional import general_robust_regression_loss
+    >>> loss = general_robust_regression_loss(
+    ...     torch.randn(2, 4, requires_grad=True), torch.randn(2, 4)
+    ... )
     >>> loss
     tensor(..., grad_fn=<MeanBackward0>)
     >>> loss.backward()
