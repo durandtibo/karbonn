@@ -49,8 +49,8 @@ class ReLUn(nn.Module):
     def extra_repr(self) -> str:
         return f"max={self._max}"
 
-    def forward(self, tensor: torch.Tensor) -> torch.Tensor:
-        return tensor.clamp(min=0.0, max=self._max)
+    def forward(self, input: torch.Tensor) -> torch.Tensor:  # noqa: A002
+        return input.clamp(min=0.0, max=self._max)
 
 
 class SquaredReLU(nn.Module):
@@ -83,6 +83,6 @@ class SquaredReLU(nn.Module):
     ```
     """
 
-    def forward(self, tensor: torch.Tensor) -> torch.Tensor:
-        x = functional.relu(tensor)
+    def forward(self, input: torch.Tensor) -> torch.Tensor:  # noqa: A002
+        x = functional.relu(input)
         return x * x

@@ -52,6 +52,6 @@ class Snake(nn.Module):
     def extra_repr(self) -> str:
         return f"frequency={self._frequency}"
 
-    def forward(self, tensor: torch.Tensor) -> torch.Tensor:
+    def forward(self, input: torch.Tensor) -> torch.Tensor:  # noqa: A002
         two_freq = 2 * self._frequency
-        return tensor - tensor.mul(two_freq).cos().div(two_freq) + 1 / two_freq
+        return input - input.mul(two_freq).cos().div(two_freq) + 1 / two_freq
