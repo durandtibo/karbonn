@@ -6,6 +6,7 @@ __all__ = [
     "Asinh",
     "BinaryFocalLoss",
     "Clamp",
+    "ExU",
     "Exp",
     "ExpSin",
     "Expm1",
@@ -47,5 +48,6 @@ from karbonn.activations import (
     SquaredReLU,
 )
 from karbonn.clamp import Clamp
+from karbonn.exu import ExU
 from karbonn.loss import BinaryFocalLoss, GeneralRobustRegressionLoss, binary_focal_loss
 from karbonn.residual import ResidualBlock
