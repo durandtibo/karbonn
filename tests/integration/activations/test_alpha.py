@@ -7,10 +7,6 @@ from torch import nn
 from karbonn import ExpSin, Gaussian, Laplacian, MultiQuadratic, Quadratic
 from karbonn.utils import is_loss_decreasing_with_adam
 
-############################
-#     Tests for ExpSin     #
-############################
-
 
 @pytest.mark.parametrize(
     "activation",
