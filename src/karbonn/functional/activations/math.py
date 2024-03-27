@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     import torch
 
 
-def safe_exp(tensor: torch.Tensor, max: float = 20.0) -> torch.Tensor:  # noqa: A002
+def safe_exp(input: torch.Tensor, max: float = 20.0) -> torch.Tensor:  # noqa: A002
     r"""Compute safely the exponential of the elements.
 
     The values that are higher than the specified minimum value are
@@ -18,7 +18,7 @@ def safe_exp(tensor: torch.Tensor, max: float = 20.0) -> torch.Tensor:  # noqa: 
     leads to an output tensor without Inf.
 
     Args:
-        tensor: The input tensor.
+        input: The input tensor.
         max: The maximum value.
 
     Returns:
@@ -36,10 +36,10 @@ def safe_exp(tensor: torch.Tensor, max: float = 20.0) -> torch.Tensor:  # noqa: 
 
     ```
     """
-    return tensor.clamp(max=max).exp()
+    return input.clamp(max=max).exp()
 
 
-def safe_log(tensor: torch.Tensor, min: float = 1e-8) -> torch.Tensor:  # noqa: A002
+def safe_log(input: torch.Tensor, min: float = 1e-8) -> torch.Tensor:  # noqa: A002
     r"""Compute safely the logarithm natural logarithm of the elements.
 
     The values that are lower than the specified minimum value are set
@@ -47,7 +47,7 @@ def safe_log(tensor: torch.Tensor, min: float = 1e-8) -> torch.Tensor:  # noqa: 
     output tensor without NaN or Inf.
 
     Args:
-        tensor: The input tensor.
+        input: The input tensor.
         min: The minimum value.
 
     Returns:
@@ -64,4 +64,4 @@ def safe_log(tensor: torch.Tensor, min: float = 1e-8) -> torch.Tensor:  # noqa: 
 
     ```
     """
-    return tensor.clamp(min=min).log()
+    return input.clamp(min=min).log()

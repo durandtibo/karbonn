@@ -43,5 +43,5 @@ class Clamp(torch.nn.Module):
     def extra_repr(self) -> str:
         return f"min={self._min}, max={self._max}"
 
-    def forward(self, tensor: torch.Tensor) -> torch.Tensor:
-        return tensor.clamp(min=self._min, max=self._max)
+    def forward(self, input: torch.Tensor) -> torch.Tensor:  # noqa: A002
+        return input.clamp(min=self._min, max=self._max)
