@@ -3,7 +3,7 @@ from __future__ import annotations
 import torch
 from torch import nn
 
-from karbonn import ExpSin, Gaussian, Laplacian, MultiQuadratic, Quadratic, Sin
+from karbonn import ExpSin, Gaussian, Laplacian, MultiQuadratic, Quadratic
 from karbonn.utils import is_loss_decreasing_with_adam
 
 ############################
@@ -70,20 +70,6 @@ def test_multi_quadratic_is_loss_decreasing() -> None:
 def test_quadratic_is_loss_decreasing() -> None:
     assert is_loss_decreasing_with_adam(
         module=Quadratic(num_parameters=4),
-        criterion=nn.MSELoss(),
-        feature=torch.randn(8, 4),
-        target=torch.randn(8, 4),
-    )
-
-
-#########################
-#     Tests for Sin     #
-#########################
-
-
-def test_sin_is_loss_decreasing() -> None:
-    assert is_loss_decreasing_with_adam(
-        module=Sin(num_parameters=4),
         criterion=nn.MSELoss(),
         feature=torch.randn(8, 4),
         target=torch.randn(8, 4),

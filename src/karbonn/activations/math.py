@@ -2,7 +2,7 @@ r"""Contain activation layers using mathematical functions."""
 
 from __future__ import annotations
 
-__all__ = ["Asinh", "Exp", "Expm1", "Log", "Log1p", "SafeExp", "SafeLog", "Sinh"]
+__all__ = ["Asinh", "Exp", "Expm1", "Log", "Log1p", "SafeExp", "SafeLog", "Sin", "Sinh"]
 
 import torch
 from torch import nn
