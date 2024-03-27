@@ -1,4 +1,5 @@
-r"""Contain the general robust loss a.k.a the Barron robust loss."""
+r"""Contain the general robust regression loss a.k.a the Barron robust
+loss."""
 
 from __future__ import annotations
 
@@ -8,11 +9,15 @@ __all__ = ["GeneralRobustRegressionLoss"]
 import torch
 from torch import nn
 
-from karbonn.functional import check_loss_reduction_strategy, general_robust_loss
+from karbonn.functional import (
+    check_loss_reduction_strategy,
+    general_robust_regression_loss,
+)
 
 
 class GeneralRobustRegressionLoss(nn.Module):
-    r"""Implement the general robust loss a.k.a. Barron robust loss.
+    r"""Implement the general robust regression loss a.k.a. Barron robust
+    loss.
 
     Based on the paper:
 
@@ -92,7 +97,7 @@ class GeneralRobustRegressionLoss(nn.Module):
             The loss. The shape of the tensor depends on the reduction
                 strategy.
         """
-        return general_robust_loss(
+        return general_robust_regression_loss(
             prediction=prediction,
             target=target,
             alpha=self._alpha,

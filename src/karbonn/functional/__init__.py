@@ -6,7 +6,7 @@ __all__ = [
     "absolute_error",
     "absolute_relative_error",
     "check_loss_reduction_strategy",
-    "general_robust_loss",
+    "general_robust_regression_loss",
     "reduce_loss",
     "safe_exp",
     "safe_log",
@@ -19,5 +19,5 @@ from karbonn.functional.error import (
     absolute_relative_error,
     symmetric_absolute_relative_error,
 )
-from karbonn.functional.general_robust import general_robust_loss
+from karbonn.functional.loss import general_robust_regression_loss
 from karbonn.functional.reduction import check_loss_reduction_strategy, reduce_loss
