@@ -3,6 +3,7 @@ r"""Contain utility functions."""
 from __future__ import annotations
 
 __all__ = [
+    "create_sequential",
     "freeze_module",
     "get_module_device",
     "get_module_devices",
@@ -26,7 +27,7 @@ from karbonn.utils.device import (
     get_module_devices,
     is_module_on_device,
 )
-from karbonn.utils.factory import is_module_config, setup_module
+from karbonn.utils.factory import create_sequential, is_module_config, setup_module
 from karbonn.utils.loss import (
     is_loss_decreasing,
     is_loss_decreasing_with_adam,

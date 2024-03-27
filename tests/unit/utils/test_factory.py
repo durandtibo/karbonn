@@ -5,16 +5,20 @@ from unittest.mock import patch
 
 import pytest
 import torch
+from torch import nn
 
+from karbonn.testing import objectory_available
+from karbonn.utils import create_sequential, is_module_config, setup_module
 from karbonn.utils.imports import is_objectory_available
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 if is_objectory_available():
     from objectory import OBJECT_TARGET
 else:  # pragma: no cover
     OBJECT_TARGET = "_target_"
-
-from karbonn.testing import objectory_available
-from karbonn.utils import is_module_config, setup_module
 
 ######################################
 #     Tests for is_module_config     #
@@ -63,3 +67,30 @@ def test_setup_module_object_no_objectory() -> None:
         pytest.raises(RuntimeError, match="`objectory` package is required but not installed."),
     ):
         setup_module({OBJECT_TARGET: "torch.nn.ReLU"})
+
+
+#######################################
+#     Tests for create_sequential     #
+#######################################
+
+
+@objectory_available
+@pytest.mark.parametrize(
+    "modules",
+    [
+        [{OBJECT_TARGET: "torch.nn.Linear", "in_features": 4, "out_features": 6}, nn.ReLU()],
+        ({OBJECT_TARGET: "torch.nn.Linear", "in_features": 4, "out_features": 6}, nn.ReLU()),
+    ],
+)
+def test_create_sequential(modules: Sequence) -> None:
+    module = create_sequential(modules)
+    assert isinstance(module, nn.Sequential)
+    assert len(module) == 2
+    assert isinstance(module[0], nn.Linear)
+    assert isinstance(module[1], nn.ReLU)
+
+
+def test_create_sequential_empty() -> None:
+    module = create_sequential([])
+    assert isinstance(module, nn.Sequential)
+    assert len(module) == 0
