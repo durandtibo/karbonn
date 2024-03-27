@@ -26,7 +26,7 @@ def test_activation_is_loss_decreasing(activation: nn.Module) -> None:
     assert is_loss_decreasing_with_adam(
         module=nn.Sequential(nn.Linear(6, 6), activation),
         criterion=nn.MSELoss(),
-        feature=torch.randn(8, 6),
-        target=torch.randn(8, 6),
+        feature=torch.randn(16, 6),
+        target=torch.randn(16, 6),
         num_iterations=2,
     )
