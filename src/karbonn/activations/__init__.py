@@ -30,7 +30,6 @@ from karbonn.activations.alpha import (
     Laplacian,
     MultiQuadratic,
     Quadratic,
-    Sin,
 )
 from karbonn.activations.math import (
     Asinh,
@@ -40,6 +39,7 @@ from karbonn.activations.math import (
     Log1p,
     SafeExp,
     SafeLog,
+    Sin,
     Sinh,
 )
 from karbonn.activations.relu import ReLUn, SquaredReLU

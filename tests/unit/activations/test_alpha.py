@@ -4,7 +4,7 @@ import pytest
 import torch
 from coola.utils.tensor import get_available_devices
 
-from karbonn import ExpSin, Gaussian, Laplacian, MultiQuadratic, Quadratic, Sin
+from karbonn import ExpSin, Gaussian, Laplacian, MultiQuadratic, Quadratic
 
 SIZES = (1, 2, 3)
 SHAPES = [(2,), (2, 3), (2, 3, 4), (2, 3, 4, 5)]
@@ -363,74 +363,6 @@ def test_quadratic_forward_init_2(device: str) -> None:
     ).allclose(
         torch.tensor(
             [0.058823529411764705, 0.2, 1.0, 0.2, 0.058823529411764705],
-            dtype=torch.float,
-            device=device,
-        )
-    )
-
-
-#########################
-#     Tests for Sin     #
-#########################
-
-
-@pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("batch_size", SIZES)
-@pytest.mark.parametrize("feature_size", SIZES)
-def test_sin_forward(device: str, batch_size: int, feature_size: int) -> None:
-    device = torch.device(device)
-    module = Sin(num_parameters=feature_size).to(device=device)
-    out = module(torch.randn(batch_size, feature_size, device=device, requires_grad=True))
-    out.mean().backward()
-    assert out.shape == (batch_size, feature_size)
-    assert out.dtype == torch.float
-    assert out.device == device
-
-
-@pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("shape", SHAPES)
-def test_sin_forward_shape(device: str, shape: tuple[int, ...]) -> None:
-    device = torch.device(device)
-    module = Sin().to(device=device)
-    assert module(torch.zeros(*shape, dtype=torch.float, device=device)).equal(
-        torch.zeros(*shape, dtype=torch.float, device=device)
-    )
-
-
-@pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("num_parameters", [1, 4])
-def test_sin_forward_num_parameters(device: str, num_parameters: int) -> None:
-    device = torch.device(device)
-    module = Sin(num_parameters).to(device=device)
-    assert module(torch.zeros(2, 4, dtype=torch.float, device=device)).equal(
-        torch.zeros(2, 4, dtype=torch.float, device=device)
-    )
-
-
-@pytest.mark.parametrize("device", get_available_devices())
-def test_sin_forward_init_1(device: str) -> None:
-    device = torch.device(device)
-    module = Sin().to(device=device)
-    assert module(
-        torch.tensor([-2.0, -1.0, 0.0, 1.0, 2.0], dtype=torch.float, device=device)
-    ).allclose(
-        torch.tensor(
-            [-0.9092974268256817, -0.8414709848078965, 0.0, 0.8414709848078965, 0.9092974268256817],
-            dtype=torch.float,
-            device=device,
-        )
-    )
-
-
-@pytest.mark.parametrize("device", get_available_devices())
-def test_sin_forward_init_2(device: str) -> None:
-    device = torch.device(device)
-    module = Sin(init=2).to(device=device)
-    assert module(
-        torch.tensor([-2.0, -1.0, 0.0, 1.0, 2.0], dtype=torch.float, device=device)
-    ).allclose(
-        torch.tensor(
-            [0.7568024953079282, -0.9092974268256817, 0.0, 0.9092974268256817, -0.7568024953079282],
             dtype=torch.float,
             device=device,
         )

@@ -4,23 +4,22 @@ import pytest
 import torch
 from torch import nn
 
-from karbonn import ExpSin, Gaussian, Laplacian, MultiQuadratic, Quadratic
+from karbonn import Asinh, Exp, Expm1, Log, Log1p, SafeExp, SafeLog, Sin, Sinh
 from karbonn.utils import is_loss_decreasing_with_adam
 
 
 @pytest.mark.parametrize(
     "activation",
     [
-        ExpSin(),
-        ExpSin(num_parameters=6),
-        Gaussian(),
-        Gaussian(num_parameters=6),
-        Laplacian(),
-        Laplacian(num_parameters=6),
-        MultiQuadratic(),
-        MultiQuadratic(num_parameters=6),
-        Quadratic(),
-        Quadratic(num_parameters=6),
+        Asinh(),
+        nn.Sequential(nn.Tanh(), Exp()),
+        nn.Sequential(nn.Tanh(), Expm1()),
+        nn.Sequential(nn.Sigmoid(), Log()),
+        nn.Sequential(nn.Sigmoid(), Log1p()),
+        SafeExp(),
+        SafeLog(),
+        Sin(),
+        Sinh(),
     ],
 )
 def test_activation_is_loss_decreasing(activation: nn.Module) -> None:

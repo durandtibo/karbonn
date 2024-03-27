@@ -9,11 +9,9 @@ __all__ = [
     "Laplacian",
     "MultiQuadratic",
     "Quadratic",
-    "Sin",
 ]
 
 import torch
-from torch import Tensor
 from torch.nn import Module, Parameter
 
 
@@ -105,8 +103,8 @@ class ExpSin(BaseAlphaActivation):
     ```
     """
 
-    def forward(self, tensor: Tensor) -> Tensor:
-        return tensor.mul(self.alpha).sin().exp()
+    def forward(self, input: torch.Tensor) -> torch.Tensor:  # noqa: A002
+        return input.mul(self.alpha).sin().exp()
 
 
 class Gaussian(BaseAlphaActivation):
@@ -149,8 +147,8 @@ class Gaussian(BaseAlphaActivation):
     ```
     """
 
-    def forward(self, tensor: Tensor) -> Tensor:
-        return tensor.pow(2).mul(-0.5).div(self.alpha.pow(2)).exp()
+    def forward(self, input: torch.Tensor) -> torch.Tensor:  # noqa: A002
+        return input.pow(2).mul(-0.5).div(self.alpha.pow(2)).exp()
 
 
 class Laplacian(BaseAlphaActivation):
@@ -193,8 +191,8 @@ class Laplacian(BaseAlphaActivation):
     ```
     """
 
-    def forward(self, tensor: Tensor) -> Tensor:
-        return tensor.abs().mul(-1).div(self.alpha).exp()
+    def forward(self, input: torch.Tensor) -> torch.Tensor:  # noqa: A002
+        return input.abs().mul(-1).div(self.alpha).exp()
 
 
 class MultiQuadratic(BaseAlphaActivation):
@@ -237,8 +235,8 @@ class MultiQuadratic(BaseAlphaActivation):
     ```
     """
 
-    def forward(self, tensor: Tensor) -> Tensor:
-        return 1.0 / tensor.mul(self.alpha).pow(2).add(1).sqrt()
+    def forward(self, input: torch.Tensor) -> torch.Tensor:  # noqa: A002
+        return 1.0 / input.mul(self.alpha).pow(2).add(1).sqrt()
 
 
 class Quadratic(BaseAlphaActivation):
@@ -281,43 +279,5 @@ class Quadratic(BaseAlphaActivation):
     ```
     """
 
-    def forward(self, tensor: Tensor) -> Tensor:
-        return 1.0 / tensor.mul(self.alpha).pow(2).add(1)
-
-
-class Sin(BaseAlphaActivation):
-    r"""Implement the sine activation layer.
-
-    Formula: ``sin(alpha * x)``
-
-    Args:
-        num_parameters: The number of learnable parameters. Although
-            it takes an integer as input, there is only two values are
-            legitimate: ``1``, or the number of channels at input.
-        init: The initial value of the learnable parameter(s).
-        learnable: If ``True``, the parameters are learnt during the
-            training, otherwise they are fixed.
-
-    Shape:
-        - Input: ``(*)``, where ``*`` means any number of dimensions.
-        - Output: ``(*)``, same shape as the input.
-
-    Example usage:
-
-    ```pycon
-
-    >>> import torch
-    >>> from karbonn import Sin
-    >>> m = Sin()
-    >>> m
-    Sin(num_parameters=1, learnable=True)
-    >>> output = m(torch.arange(8, dtype=torch.float).view(2, 4))
-    >>> output
-    tensor([[ 0.0000,  0.8415,  0.9093,  0.1411],
-            [-0.7568, -0.9589, -0.2794,  0.6570]], grad_fn=<SinBackward0>)
-
-    ```
-    """
-
-    def forward(self, tensor: Tensor) -> Tensor:
-        return tensor.mul(self.alpha).sin()
+    def forward(self, input: torch.Tensor) -> torch.Tensor:  # noqa: A002
+        return 1.0 / input.mul(self.alpha).pow(2).add(1)

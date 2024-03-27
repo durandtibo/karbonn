@@ -2,7 +2,7 @@ r"""Contain activation layers using mathematical functions."""
 
 from __future__ import annotations
 
-__all__ = ["Asinh", "Exp", "Expm1", "Log", "Log1p", "SafeExp", "SafeLog", "Sinh"]
+__all__ = ["Asinh", "Exp", "Expm1", "Log", "Log1p", "SafeExp", "SafeLog", "Sin", "Sinh"]
 
 import torch
 from torch import nn
@@ -35,8 +35,8 @@ class Asinh(nn.Module):
     ```
     """
 
-    def forward(self, tensor: torch.Tensor) -> torch.Tensor:
-        return tensor.asinh()
+    def forward(self, input: torch.Tensor) -> torch.Tensor:  # noqa: A002
+        return input.asinh()
 
 
 class Exp(nn.Module):
@@ -66,8 +66,8 @@ class Exp(nn.Module):
     ```
     """
 
-    def forward(self, tensor: torch.Tensor) -> torch.Tensor:
-        return tensor.exp()
+    def forward(self, input: torch.Tensor) -> torch.Tensor:  # noqa: A002
+        return input.exp()
 
 
 class Expm1(nn.Module):
@@ -97,8 +97,8 @@ class Expm1(nn.Module):
     ```
     """
 
-    def forward(self, tensor: torch.Tensor) -> torch.Tensor:
-        return tensor.expm1()
+    def forward(self, input: torch.Tensor) -> torch.Tensor:  # noqa: A002
+        return input.expm1()
 
 
 class Log(nn.Module):
@@ -128,8 +128,8 @@ class Log(nn.Module):
     ```
     """
 
-    def forward(self, tensor: torch.Tensor) -> torch.Tensor:
-        return tensor.log()
+    def forward(self, input: torch.Tensor) -> torch.Tensor:  # noqa: A002
+        return input.log()
 
 
 class Log1p(nn.Module):
@@ -159,8 +159,8 @@ class Log1p(nn.Module):
     ```
     """
 
-    def forward(self, tensor: torch.Tensor) -> torch.Tensor:
-        return tensor.log1p()
+    def forward(self, input: torch.Tensor) -> torch.Tensor:  # noqa: A002
+        return input.log1p()
 
 
 class SafeExp(nn.Module):
@@ -202,8 +202,8 @@ class SafeExp(nn.Module):
     def extra_repr(self) -> str:
         return f"max={self._max}"
 
-    def forward(self, tensor: torch.Tensor) -> torch.Tensor:
-        return safe_exp(tensor, self._max)
+    def forward(self, input: torch.Tensor) -> torch.Tensor:  # noqa: A002
+        return safe_exp(input, self._max)
 
 
 class SafeLog(nn.Module):
@@ -245,8 +245,36 @@ class SafeLog(nn.Module):
     def extra_repr(self) -> str:
         return f"min={self._min}"
 
-    def forward(self, tensor: torch.Tensor) -> torch.Tensor:
-        return safe_log(tensor, self._min)
+    def forward(self, input: torch.Tensor) -> torch.Tensor:  # noqa: A002
+        return safe_log(input, self._min)
+
+
+class Sin(nn.Module):
+    r"""Implement the sine activation layer.
+
+    Shape:
+        - Input: ``(*)``, where ``*`` means any number of dimensions.
+        - Output: ``(*)``, same shape as the input.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn import Sin
+    >>> m = Sin()
+    >>> m
+    Sin()
+    >>> output = m(torch.arange(8, dtype=torch.float).view(2, 4))
+    >>> output
+    tensor([[ 0.0000,  0.8415,  0.9093,  0.1411],
+            [-0.7568, -0.9589, -0.2794,  0.6570]])
+
+    ```
+    """
+
+    def forward(self, input: torch.Tensor) -> torch.Tensor:  # noqa: A002
+        return input.sin()
 
 
 class Sinh(nn.Module):
@@ -274,5 +302,5 @@ class Sinh(nn.Module):
     ```
     """
 
-    def forward(self, tensor: torch.Tensor) -> torch.Tensor:
-        return tensor.sinh()
+    def forward(self, input: torch.Tensor) -> torch.Tensor:  # noqa: A002
+        return input.sinh()
