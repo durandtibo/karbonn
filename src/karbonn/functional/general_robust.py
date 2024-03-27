@@ -1,7 +1,4 @@
-r"""Contain the general robust loss a.k.a.
-
-Barron robust loss.
-"""
+r"""Contain the general robust loss a.k.a the Barron robust loss."""
 
 from __future__ import annotations
 
@@ -13,17 +10,17 @@ from typing import TYPE_CHECKING
 from karbonn.functional.reduction import reduce_loss
 
 if TYPE_CHECKING:
-    from torch import Tensor
+    import torch
 
 
 def general_robust_loss(
-    prediction: Tensor,
-    target: Tensor,
+    prediction: torch.Tensor,
+    target: torch.Tensor,
     alpha: float = 2.0,
     scale: float = 1.0,
     max: float | None = None,  # noqa: A002
     reduction: str = "mean",
-) -> Tensor:
+) -> torch.Tensor:
     r"""Compute the general robust loss a.k.a. Barron robust loss.
 
     Based on the paper:
@@ -31,6 +28,10 @@ def general_robust_loss(
         A General and Adaptive Robust Loss Function
         Jonathan T. Barron
         CVPR 2019 (https://arxiv.org/abs/1701.03077)
+
+    Note:
+        The "adaptative" part of the loss is not implemented in this
+            function.
 
     Args:
         prediction: The predictions.

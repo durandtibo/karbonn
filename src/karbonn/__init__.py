@@ -10,6 +10,7 @@ __all__ = [
     "ExpSin",
     "Expm1",
     "Gaussian",
+    "GeneralRobustRegressionLoss",
     "Laplacian",
     "Log",
     "Log1p",
@@ -46,5 +47,5 @@ from karbonn.activations import (
     SquaredReLU,
 )
 from karbonn.clamp import Clamp
-from karbonn.loss import BinaryFocalLoss, binary_focal_loss
+from karbonn.loss import BinaryFocalLoss, GeneralRobustRegressionLoss, binary_focal_loss
 from karbonn.residual import ResidualBlock
