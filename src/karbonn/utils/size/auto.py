@@ -19,7 +19,26 @@ if TYPE_CHECKING:
 
 class AutoSizeFinder(BaseSizeFinder):
     """Implement a size finder that automatically finds the size based
-    on the module type."""
+    on the module type.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.utils.size import AutoSizeFinder, SizeFinderConfig
+    >>> config = SizeFinderConfig(AutoSizeFinder())
+    >>> size_finder = AutoSizeFinder()
+    >>> module = torch.nn.Linear(4, 6)
+    >>> in_features = size_finder.find_in_features(module, config)
+    >>> in_features
+    [4]
+    >>> out_features = size_finder.find_out_features(module, config)
+    >>> out_features
+    [6]
+
+    ```
+    """
 
     registry: ClassVar[dict[type, BaseSizeFinder]] = {}
 
