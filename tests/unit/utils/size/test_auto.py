@@ -81,6 +81,15 @@ def test_auto_size_finder_has_size_finder_false() -> None:
     assert not AutoSizeFinder.has_size_finder(str)
 
 
+def test_auto_size_finder_find_size_finder() -> None:
+    assert AutoSizeFinder.find_size_finder(nn.Linear) == LinearSizeFinder()
+
+
+def test_auto_size_finder_find_size_finder_missing() -> None:
+    with pytest.raises(TypeError, match="Incorrect module type:"):
+        AutoSizeFinder.find_size_finder(str)
+
+
 # def test_auto_size_finder_registered_size_finders() -> None:
 #     assert len(SizeFinder.registry) >= 1
 #     assert isinstance(SizeFinder.registry["random"], RandomSizeFinder)
