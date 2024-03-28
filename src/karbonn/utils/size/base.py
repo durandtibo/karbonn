@@ -5,18 +5,19 @@ from __future__ import annotations
 __all__ = ["BaseSizeFinder", "SizeFinderConfig"]
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, NamedTuple
+from typing import Generic, NamedTuple, TypeVar
 
-if TYPE_CHECKING:
-    from torch import nn
+from torch import nn
+
+T = TypeVar("T", bound=nn.Module)
 
 
-class BaseSizeFinder(ABC):
+class BaseSizeFinder(ABC, Generic[T]):
     r"""Define the base class to find the input or output feature size
     of a module."""
 
     @abstractmethod
-    def find_in_features(self, module: nn.Module, config: SizeFinderConfig) -> list[int]:
+    def find_in_features(self, module: T, config: SizeFinderConfig) -> list[int]:
         r"""Find the input feature sizes of a given module.
 
         Args:
@@ -32,7 +33,7 @@ class BaseSizeFinder(ABC):
         """
 
     @abstractmethod
-    def find_out_features(self, module: nn.Module, config: SizeFinderConfig) -> list[int]:
+    def find_out_features(self, module: T, config: SizeFinderConfig) -> list[int]:
         r"""Find the output feature sizes of a given module.
 
         Args:

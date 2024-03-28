@@ -9,14 +9,14 @@ __all__ = ["LinearSizeFinder"]
 from typing import TYPE_CHECKING
 
 from karbonn.utils.size.base import BaseSizeFinder, SizeNotFoundError
+from torch import nn
 
 if TYPE_CHECKING:
-    from torch import nn
 
     from karbonn.utils.size.base import SizeFinderConfig
 
 
-class LinearSizeFinder(BaseSizeFinder):
+class LinearSizeFinder(BaseSizeFinder[nn.Module]):
     r"""Implement a size finder for ``torch.nn.Linear`` layer or similar
     layers.
 
