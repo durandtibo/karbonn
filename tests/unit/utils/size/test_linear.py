@@ -6,8 +6,18 @@ import pytest
 from torch import nn
 
 from karbonn import ExU
-from karbonn.utils.size import BilinearSizeFinder, LinearSizeFinder
+from karbonn.utils.size import (
+    AutoSizeFinder,
+    BilinearSizeFinder,
+    LinearSizeFinder,
+    SizeFinderConfig,
+)
 from karbonn.utils.size.base import SizeNotFoundError
+
+
+@pytest.fixture(scope="module")
+def config() -> SizeFinderConfig:
+    return SizeFinderConfig(size_finder=AutoSizeFinder())
 
 
 class ModuleSizes(NamedTuple):
@@ -58,27 +68,29 @@ def test_linear_size_finder_eq_false() -> None:
 
 
 @pytest.mark.parametrize("module", LINEAR_MODULES)
-def test_linear_size_finder_find_in_features(module: ModuleSizes) -> None:
-    assert LinearSizeFinder().find_in_features(module.module) == module.in_features
+def test_linear_size_finder_find_in_features(module: ModuleSizes, config: SizeFinderConfig) -> None:
+    assert LinearSizeFinder().find_in_features(module.module, config) == module.in_features
 
 
-def test_linear_size_finder_find_in_features_incorrect() -> None:
+def test_linear_size_finder_find_in_features_incorrect(config: SizeFinderConfig) -> None:
     size_finder = LinearSizeFinder()
     module = nn.Identity()
     with pytest.raises(SizeNotFoundError, match="module .* does not have attribute in_features"):
-        size_finder.find_in_features(module)
+        size_finder.find_in_features(module, config)
 
 
 @pytest.mark.parametrize("module", LINEAR_MODULES)
-def test_linear_size_finder_find_out_features(module: ModuleSizes) -> None:
-    assert LinearSizeFinder().find_out_features(module.module) == module.out_features
+def test_linear_size_finder_find_out_features(
+    module: ModuleSizes, config: SizeFinderConfig
+) -> None:
+    assert LinearSizeFinder().find_out_features(module.module, config) == module.out_features
 
 
-def test_linear_size_finder_find_out_features_incorrect() -> None:
+def test_linear_size_finder_find_out_features_incorrect(config: SizeFinderConfig) -> None:
     size_finder = LinearSizeFinder()
     module = nn.Identity()
     with pytest.raises(SizeNotFoundError, match="module .* does not have attribute out_features"):
-        size_finder.find_out_features(module)
+        size_finder.find_out_features(module, config)
 
 
 ########################################
@@ -103,24 +115,28 @@ def test_bilinear_size_finder_eq_false() -> None:
 
 
 @pytest.mark.parametrize("module", BILINEAR_MODULES)
-def test_bilinear_size_finder_find_in_features(module: ModuleSizes) -> None:
-    assert BilinearSizeFinder().find_in_features(module.module) == module.in_features
+def test_bilinear_size_finder_find_in_features(
+    module: ModuleSizes, config: SizeFinderConfig
+) -> None:
+    assert BilinearSizeFinder().find_in_features(module.module, config) == module.in_features
 
 
-def test_bilinear_size_finder_find_in_features_incorrect() -> None:
+def test_bilinear_size_finder_find_in_features_incorrect(config: SizeFinderConfig) -> None:
     size_finder = BilinearSizeFinder()
     module = nn.Identity()
     with pytest.raises(SizeNotFoundError, match="module .* does not have attribute in1_features"):
-        size_finder.find_in_features(module)
+        size_finder.find_in_features(module, config)
 
 
 @pytest.mark.parametrize("module", BILINEAR_MODULES)
-def test_bilinear_size_finder_find_out_features(module: ModuleSizes) -> None:
-    assert BilinearSizeFinder().find_out_features(module.module) == module.out_features
+def test_bilinear_size_finder_find_out_features(
+    module: ModuleSizes, config: SizeFinderConfig
+) -> None:
+    assert BilinearSizeFinder().find_out_features(module.module, config) == module.out_features
 
 
-def test_bilinear_size_finder_find_out_features_incorrect() -> None:
+def test_bilinear_size_finder_find_out_features_incorrect(config: SizeFinderConfig) -> None:
     size_finder = BilinearSizeFinder()
     module = nn.Identity()
     with pytest.raises(SizeNotFoundError, match="module .* does not have attribute out_features"):
-        size_finder.find_out_features(module)
+        size_finder.find_out_features(module, config)
