@@ -3,7 +3,7 @@ r"""Contain code to find the input and output size of some
 
 from __future__ import annotations
 
-__all__ = ["BaseSizeFinder", "LinearSizeFinder"]
+__all__ = ["BaseSizeFinder", "BilinearSizeFinder", "LinearSizeFinder"]
 
 from karbonn.utils.size.base import BaseSizeFinder
-from karbonn.utils.size.linear import LinearSizeFinder
+from karbonn.utils.size.linear import BilinearSizeFinder, LinearSizeFinder
