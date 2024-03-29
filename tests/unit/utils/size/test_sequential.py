@@ -5,7 +5,7 @@ from torch import nn
 
 from karbonn.utils.size import AutoSizeFinder, SequentialSizeFinder, SizeFinderConfig
 from karbonn.utils.size.base import SizeNotFoundError
-from tests.unit.utils.size.test_linear import ModuleSizes
+from tests.unit.utils.size.utils import ModuleSizes
 
 
 @pytest.fixture(scope="module")

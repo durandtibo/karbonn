@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import NamedTuple
-
 import pytest
 from torch import nn
 
@@ -13,17 +11,12 @@ from karbonn.utils.size import (
     SizeFinderConfig,
 )
 from karbonn.utils.size.base import SizeNotFoundError
+from tests.unit.utils.size.utils import ModuleSizes
 
 
 @pytest.fixture(scope="module")
 def config() -> SizeFinderConfig:
     return SizeFinderConfig(size_finder=AutoSizeFinder())
-
-
-class ModuleSizes(NamedTuple):
-    module: nn.Module
-    in_features: list[int]
-    out_features: list[int]
 
 
 LINEAR_MODULES = [
