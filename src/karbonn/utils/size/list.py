@@ -25,15 +25,13 @@ class ModuleListSizeFinder(BaseSizeFinder[nn.ModuleList]):
     >>> import torch
     >>> from karbonn.utils.size import ModuleListSizeFinder
     >>> size_finder = ModuleListSizeFinder()
-    >>> module = torch.nn.Sequential(
-    ...     torch.nn.Linear(4, 6), torch.nn.ReLU(), torch.nn.Linear(6, 8)
-    ... )
+    >>> module = nn.ModuleList([nn.Linear(4, 6), nn.ReLU(), nn.LSTM(input_size=4, hidden_size=6)])
     >>> in_features = size_finder.find_in_features(module)
     >>> in_features
     [4]
     >>> out_features = size_finder.find_out_features(module)
     >>> out_features
-    [8]
+    [6]
 
     ```
     """
