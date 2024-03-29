@@ -58,8 +58,11 @@ def test_sequential_size_finder_find_in_features(
 
 def test_sequential_size_finder_find_in_features_incorrect(config: SizeFinderConfig) -> None:
     size_finder = SequentialSizeFinder()
-    module = nn.Identity()
-    with pytest.raises(SizeNotFoundError, match="module .* does not have attribute in_features"):
+    module = nn.Sequential(nn.Identity(), nn.ReLU())
+    with pytest.raises(
+        SizeNotFoundError,
+        match="cannot find the input feature sizes because the child modules are not supported",
+    ):
         size_finder.find_in_features(module, config)
 
 
@@ -72,6 +75,9 @@ def test_sequential_size_finder_find_out_features(
 
 def test_sequential_size_finder_find_out_features_incorrect(config: SizeFinderConfig) -> None:
     size_finder = SequentialSizeFinder()
-    module = nn.Identity()
-    with pytest.raises(SizeNotFoundError, match="module .* does not have attribute out_features"):
+    module = nn.Sequential(nn.Identity(), nn.ReLU())
+    with pytest.raises(
+        SizeNotFoundError,
+        match="cannot find the output feature sizes because the child modules are not supported",
+    ):
         size_finder.find_out_features(module, config)

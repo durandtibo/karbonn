@@ -17,9 +17,10 @@ from tests.unit.utils.size.test_linear import (
     LINEAR_MODULES,
     ModuleSizes,
 )
+from tests.unit.utils.size.test_sequential import SEQUENTIAL_MODULES
 from tests.unit.utils.size.test_unknown import UNKNOWN_MODULES
 
-MODULES = LINEAR_MODULES + BILINEAR_MODULES
+MODULES = LINEAR_MODULES + BILINEAR_MODULES + SEQUENTIAL_MODULES
 
 
 @pytest.fixture(scope="module")

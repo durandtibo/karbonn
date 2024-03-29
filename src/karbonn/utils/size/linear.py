@@ -8,8 +8,9 @@ __all__ = ["LinearSizeFinder"]
 
 from typing import TYPE_CHECKING
 
-from karbonn.utils.size.base import BaseSizeFinder, SizeNotFoundError
 from torch import nn
+
+from karbonn.utils.size.base import BaseSizeFinder, SizeNotFoundError
 
 if TYPE_CHECKING:
 
