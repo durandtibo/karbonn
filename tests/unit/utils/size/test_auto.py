@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from unittest.mock import Mock, patch
 
 import pytest
@@ -12,13 +13,12 @@ from karbonn.utils.size import (
     SizeFinderConfig,
 )
 from karbonn.utils.size.base import SizeNotFoundError
-from tests.unit.utils.size.test_linear import (
-    BILINEAR_MODULES,
-    LINEAR_MODULES,
-    ModuleSizes,
-)
+from tests.unit.utils.size.test_linear import BILINEAR_MODULES, LINEAR_MODULES
 from tests.unit.utils.size.test_sequential import SEQUENTIAL_MODULES
 from tests.unit.utils.size.test_unknown import UNKNOWN_MODULES
+
+if TYPE_CHECKING:
+    from tests.unit.utils.size.utils import ModuleSizes
 
 MODULES = LINEAR_MODULES + BILINEAR_MODULES + SEQUENTIAL_MODULES
 
