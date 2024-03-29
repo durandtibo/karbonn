@@ -31,7 +31,7 @@ def get_size_finders() -> dict[type[nn.Module], BaseSizeFinder]:
 
     >>> from karbonn.utils.size import get_size_finders
     >>> get_size_finders()
-    {...}
+    {<class 'torch.nn.modules.module.Module'>: UnknownSizeFinder(), ...}
 
     ```
     """
@@ -77,7 +77,7 @@ def get_torch_size_finders() -> dict[type[nn.Module], BaseSizeFinder]:
 
     >>> from karbonn.utils.size import get_torch_size_finders
     >>> get_torch_size_finders()
-    {...}
+    {<class 'torch.nn.modules.module.Module'>: UnknownSizeFinder(), ...}
 
     ```
     """
@@ -85,6 +85,7 @@ def get_torch_size_finders() -> dict[type[nn.Module], BaseSizeFinder]:
     from karbonn.utils import size as size_finders
 
     return {
+        nn.Module: size_finders.UnknownSizeFinder(),
         nn.Linear: size_finders.LinearSizeFinder(),
         nn.Bilinear: size_finders.BilinearSizeFinder(),
     }
