@@ -12,6 +12,7 @@ __all__ = [
 from typing import TYPE_CHECKING
 
 from torch import nn
+
 from karbonn.utils.size import BatchNormSizeFinder
 
 if TYPE_CHECKING:
