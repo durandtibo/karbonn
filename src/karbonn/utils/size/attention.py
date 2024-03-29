@@ -30,7 +30,7 @@ class MultiheadAttentionSizeFinder(BaseSizeFinder[nn.Module]):
     >>> module = torch.nn.MultiheadAttention(embed_dim=4, num_heads=2)
     >>> in_features = size_finder.find_in_features(module)
     >>> in_features
-    [4]
+    [4, 4, 4]
     >>> out_features = size_finder.find_out_features(module)
     >>> out_features
     [4]
