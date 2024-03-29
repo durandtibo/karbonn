@@ -51,7 +51,7 @@ class MultiheadAttentionSizeFinder(BaseSizeFinder[nn.Module]):
         if not hasattr(module, "embed_dim"):
             msg = f"module {module} does not have attribute embed_dim"
             raise SizeNotFoundError(msg)
-        return [module.embed_dim]
+        return [module.embed_dim, module.kdim, module.vdim]
 
     def find_out_features(self, module: nn.Module) -> list[int]:
         if not hasattr(module, "embed_dim"):
