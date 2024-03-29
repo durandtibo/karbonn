@@ -23,7 +23,7 @@ class SequentialSizeFinder(BaseSizeFinder[nn.Sequential]):
     ```pycon
 
     >>> import torch
-    >>> from karbonn.utils.size import SequentialSizeFinder, AutoSizeFinder
+    >>> from karbonn.utils.size import SequentialSizeFinder
     >>> size_finder = SequentialSizeFinder()
     >>> module = torch.nn.Sequential(
     ...     torch.nn.Linear(4, 6), torch.nn.ReLU(), torch.nn.Linear(6, 8)
