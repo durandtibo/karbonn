@@ -20,8 +20,10 @@ __all__ = [
     "get_size_finders",
     "get_torch_size_finders",
     "register_size_finders",
+    "MultiheadAttentionSizeFinder",
 ]
 
+from karbonn.utils.size.attention import MultiheadAttentionSizeFinder
 from karbonn.utils.size.auto import AutoSizeFinder, register_size_finders
 from karbonn.utils.size.base import BaseSizeFinder
 from karbonn.utils.size.batchnorm import BatchNormSizeFinder
