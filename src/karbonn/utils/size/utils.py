@@ -98,4 +98,6 @@ def get_torch_size_finders() -> dict[type[nn.Module], BaseSizeFinder]:
         nn.Linear: size_finders.LinearSizeFinder(),
         nn.RNN: size_finders.RecurrentSizeFinder(),
         nn.Sequential: size_finders.SequentialSizeFinder(),
+        nn.Embedding: size_finders.EmbeddingSizeFinder(),
+        nn.EmbeddingBag: size_finders.EmbeddingSizeFinder(),
     }

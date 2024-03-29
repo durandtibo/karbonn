@@ -9,6 +9,7 @@ from torch import nn
 from karbonn.utils.size import AutoSizeFinder, BaseSizeFinder, LinearSizeFinder
 from karbonn.utils.size.base import SizeNotFoundError
 from tests.unit.utils.size.test_conv import CONVOLUTION_MODULES
+from tests.unit.utils.size.test_embedding import EMBEDDING_MODULES
 from tests.unit.utils.size.test_linear import BILINEAR_MODULES, LINEAR_MODULES
 from tests.unit.utils.size.test_recurrent import RECURRENT_MODULES
 from tests.unit.utils.size.test_sequential import SEQUENTIAL_MODULES
@@ -18,7 +19,12 @@ if TYPE_CHECKING:
     from tests.unit.utils.size.utils import ModuleSizes
 
 MODULES = (
-    LINEAR_MODULES + BILINEAR_MODULES + RECURRENT_MODULES + SEQUENTIAL_MODULES + CONVOLUTION_MODULES
+    LINEAR_MODULES
+    + BILINEAR_MODULES
+    + CONVOLUTION_MODULES
+    + EMBEDDING_MODULES
+    + RECURRENT_MODULES
+    + SEQUENTIAL_MODULES
 )
 
 
