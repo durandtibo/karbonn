@@ -1,5 +1,5 @@
-r"""Contain a size finder for ``torch.nn.Linear`` layer or similar
-layers."""
+r"""Contain a size finder for recurrent layers like ``torch.nn.RNN``,
+``torch.nn.GRU``, and ``torch.nn.LSTM``."""
 
 from __future__ import annotations
 

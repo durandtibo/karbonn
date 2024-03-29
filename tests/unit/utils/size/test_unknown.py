@@ -8,6 +8,8 @@ from karbonn.utils.size.base import SizeNotFoundError
 from tests.unit.utils.size.utils import ModuleSizes
 
 UNKNOWN_MODULES = [
+    ModuleSizes(module=nn.CELU(), in_features=[], out_features=[]),
+    ModuleSizes(module=nn.ELU(), in_features=[], out_features=[]),
     ModuleSizes(module=nn.Identity(), in_features=[], out_features=[]),
     ModuleSizes(module=nn.ReLU(), in_features=[], out_features=[]),
     ModuleSizes(module=nn.Sigmoid(), in_features=[], out_features=[]),

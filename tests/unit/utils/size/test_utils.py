@@ -7,6 +7,7 @@ from karbonn import ExU
 from karbonn.utils.size import (
     BilinearSizeFinder,
     ConvolutionSizeFinder,
+    EmbeddingSizeFinder,
     LinearSizeFinder,
     RecurrentSizeFinder,
     SequentialSizeFinder,
@@ -38,6 +39,8 @@ def test_get_size_finders() -> None:
             nn.Linear: LinearSizeFinder(),
             nn.RNN: RecurrentSizeFinder(),
             nn.Sequential: SequentialSizeFinder(),
+            nn.Embedding: EmbeddingSizeFinder(),
+            nn.EmbeddingBag: EmbeddingSizeFinder(),
             ExU: LinearSizeFinder(),
         },
     )
@@ -74,5 +77,7 @@ def test_get_torch_size_finders() -> None:
             nn.Linear: LinearSizeFinder(),
             nn.RNN: RecurrentSizeFinder(),
             nn.Sequential: SequentialSizeFinder(),
+            nn.Embedding: EmbeddingSizeFinder(),
+            nn.EmbeddingBag: EmbeddingSizeFinder(),
         },
     )

@@ -12,7 +12,7 @@ from karbonn.utils.size.base import BaseSizeFinder, SizeNotFoundError
 
 
 class ConvolutionSizeFinder(BaseSizeFinder[nn.Module]):
-    r"""Implement a size finder for recurrent layers like
+    r"""Implement a size finder for convolution layers like
     ``torch.nn.ConvNd`` and ``torch.nn.ConvTransposeNd``.
 
     This module size finder assumes the module has a single input and
