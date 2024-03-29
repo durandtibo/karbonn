@@ -4,20 +4,9 @@ import pytest
 from torch import nn
 
 from karbonn import ExU
-from karbonn.utils.size import (
-    AutoSizeFinder,
-    BilinearSizeFinder,
-    LinearSizeFinder,
-    SizeFinderConfig,
-)
+from karbonn.utils.size import BilinearSizeFinder, LinearSizeFinder
 from karbonn.utils.size.base import SizeNotFoundError
 from tests.unit.utils.size.utils import ModuleSizes
-
-
-@pytest.fixture(scope="module")
-def config() -> SizeFinderConfig:
-    return SizeFinderConfig(size_finder=AutoSizeFinder())
-
 
 LINEAR_MODULES = [
     ModuleSizes(module=nn.Linear(4, 6), in_features=[4], out_features=[6]),
@@ -61,29 +50,29 @@ def test_linear_size_finder_eq_false() -> None:
 
 
 @pytest.mark.parametrize("module", LINEAR_MODULES)
-def test_linear_size_finder_find_in_features(module: ModuleSizes, config: SizeFinderConfig) -> None:
-    assert LinearSizeFinder().find_in_features(module.module, config) == module.in_features
+def test_linear_size_finder_find_in_features(module: ModuleSizes) -> None:
+    assert LinearSizeFinder().find_in_features(module.module) == module.in_features
 
 
-def test_linear_size_finder_find_in_features_incorrect(config: SizeFinderConfig) -> None:
+def test_linear_size_finder_find_in_features_incorrect() -> None:
     size_finder = LinearSizeFinder()
     module = nn.Identity()
     with pytest.raises(SizeNotFoundError, match="module .* does not have attribute in_features"):
-        size_finder.find_in_features(module, config)
+        size_finder.find_in_features(module)
 
 
 @pytest.mark.parametrize("module", LINEAR_MODULES)
 def test_linear_size_finder_find_out_features(
-    module: ModuleSizes, config: SizeFinderConfig
+    module: ModuleSizes,
 ) -> None:
-    assert LinearSizeFinder().find_out_features(module.module, config) == module.out_features
+    assert LinearSizeFinder().find_out_features(module.module) == module.out_features
 
 
-def test_linear_size_finder_find_out_features_incorrect(config: SizeFinderConfig) -> None:
+def test_linear_size_finder_find_out_features_incorrect() -> None:
     size_finder = LinearSizeFinder()
     module = nn.Identity()
     with pytest.raises(SizeNotFoundError, match="module .* does not have attribute out_features"):
-        size_finder.find_out_features(module, config)
+        size_finder.find_out_features(module)
 
 
 ########################################
@@ -109,27 +98,27 @@ def test_bilinear_size_finder_eq_false() -> None:
 
 @pytest.mark.parametrize("module", BILINEAR_MODULES)
 def test_bilinear_size_finder_find_in_features(
-    module: ModuleSizes, config: SizeFinderConfig
+    module: ModuleSizes,
 ) -> None:
-    assert BilinearSizeFinder().find_in_features(module.module, config) == module.in_features
+    assert BilinearSizeFinder().find_in_features(module.module) == module.in_features
 
 
-def test_bilinear_size_finder_find_in_features_incorrect(config: SizeFinderConfig) -> None:
+def test_bilinear_size_finder_find_in_features_incorrect() -> None:
     size_finder = BilinearSizeFinder()
     module = nn.Identity()
     with pytest.raises(SizeNotFoundError, match="module .* does not have attribute in1_features"):
-        size_finder.find_in_features(module, config)
+        size_finder.find_in_features(module)
 
 
 @pytest.mark.parametrize("module", BILINEAR_MODULES)
 def test_bilinear_size_finder_find_out_features(
-    module: ModuleSizes, config: SizeFinderConfig
+    module: ModuleSizes,
 ) -> None:
-    assert BilinearSizeFinder().find_out_features(module.module, config) == module.out_features
+    assert BilinearSizeFinder().find_out_features(module.module) == module.out_features
 
 
-def test_bilinear_size_finder_find_out_features_incorrect(config: SizeFinderConfig) -> None:
+def test_bilinear_size_finder_find_out_features_incorrect() -> None:
     size_finder = BilinearSizeFinder()
     module = nn.Identity()
     with pytest.raises(SizeNotFoundError, match="module .* does not have attribute out_features"):
-        size_finder.find_out_features(module, config)
+        size_finder.find_out_features(module)

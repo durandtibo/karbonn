@@ -6,7 +6,6 @@ __all__ = ["find_in_features", "find_out_features"]
 
 from typing import TYPE_CHECKING
 
-from karbonn.utils.size import SizeFinderConfig
 from karbonn.utils.size.auto import AutoSizeFinder
 
 if TYPE_CHECKING:
@@ -41,8 +40,7 @@ def find_in_features(module: nn.Module) -> list[int]:
 
     ```
     """
-    config = SizeFinderConfig(_size_finder)
-    return _size_finder.find_in_features(module, config)
+    return _size_finder.find_in_features(module)
 
 
 def find_out_features(module: nn.Module) -> list[int]:
@@ -71,5 +69,4 @@ def find_out_features(module: nn.Module) -> list[int]:
 
     ```
     """
-    config = SizeFinderConfig(_size_finder)
-    return _size_finder.find_out_features(module, config)
+    return _size_finder.find_out_features(module)

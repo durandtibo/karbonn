@@ -2,10 +2,10 @@ r"""Define the base class to find the input and output feature sizes."""
 
 from __future__ import annotations
 
-__all__ = ["BaseSizeFinder", "SizeFinderConfig"]
+__all__ = ["BaseSizeFinder"]
 
 from abc import ABC, abstractmethod
-from typing import Generic, NamedTuple, TypeVar
+from typing import Generic, TypeVar
 
 from torch import nn
 
@@ -17,12 +17,11 @@ class BaseSizeFinder(ABC, Generic[T]):
     of a module."""
 
     @abstractmethod
-    def find_in_features(self, module: T, config: SizeFinderConfig) -> list[int]:
+    def find_in_features(self, module: T) -> list[int]:
         r"""Find the input feature sizes of a given module.
 
         Args:
             module: The module.
-            config: The configuration to find the feature sizes.
 
         Returns:
             The input feature sizes.
@@ -33,12 +32,11 @@ class BaseSizeFinder(ABC, Generic[T]):
         """
 
     @abstractmethod
-    def find_out_features(self, module: T, config: SizeFinderConfig) -> list[int]:
+    def find_out_features(self, module: T) -> list[int]:
         r"""Find the output feature sizes of a given module.
 
         Args:
             module: The module.
-            config: The configuration to find the feature sizes.
 
         Returns:
             The output feature sizes.
@@ -51,13 +49,3 @@ class BaseSizeFinder(ABC, Generic[T]):
 
 class SizeNotFoundError(Exception):
     r"""Raised if the size could not be found,."""
-
-
-class SizeFinderConfig(NamedTuple):
-    r"""Define the config to control the size finders.
-
-    Args:
-        size_finder: The size finder.
-    """
-
-    size_finder: BaseSizeFinder

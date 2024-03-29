@@ -6,12 +6,7 @@ from unittest.mock import Mock, patch
 import pytest
 from torch import nn
 
-from karbonn.utils.size import (
-    AutoSizeFinder,
-    BaseSizeFinder,
-    LinearSizeFinder,
-    SizeFinderConfig,
-)
+from karbonn.utils.size import AutoSizeFinder, BaseSizeFinder, LinearSizeFinder
 from karbonn.utils.size.base import SizeNotFoundError
 from tests.unit.utils.size.test_linear import BILINEAR_MODULES, LINEAR_MODULES
 from tests.unit.utils.size.test_recurrent import RECURRENT_MODULES
@@ -22,11 +17,6 @@ if TYPE_CHECKING:
     from tests.unit.utils.size.utils import ModuleSizes
 
 MODULES = LINEAR_MODULES + BILINEAR_MODULES + RECURRENT_MODULES + SEQUENTIAL_MODULES
-
-
-@pytest.fixture(scope="module")
-def config() -> SizeFinderConfig:
-    return SizeFinderConfig(size_finder=AutoSizeFinder())
 
 
 ####################################
@@ -43,31 +33,31 @@ def test_auto_size_finder_str() -> None:
 
 
 @pytest.mark.parametrize("module", MODULES)
-def test_auto_size_finder_find_in_features(module: ModuleSizes, config: SizeFinderConfig) -> None:
-    assert AutoSizeFinder().find_in_features(module.module, config) == module.in_features
+def test_auto_size_finder_find_in_features(module: ModuleSizes) -> None:
+    assert AutoSizeFinder().find_in_features(module.module) == module.in_features
 
 
 @pytest.mark.parametrize("module", UNKNOWN_MODULES)
 def test_auto_size_finder_find_in_features_incorrect(
-    module: ModuleSizes, config: SizeFinderConfig
+    module: ModuleSizes,
 ) -> None:
     size_finder = AutoSizeFinder()
     with pytest.raises(SizeNotFoundError, match="cannot find the input feature sizes of"):
-        size_finder.find_in_features(module.module, config)
+        size_finder.find_in_features(module.module)
 
 
 @pytest.mark.parametrize("module", MODULES)
-def test_auto_size_finder_find_out_features(module: ModuleSizes, config: SizeFinderConfig) -> None:
-    assert AutoSizeFinder().find_out_features(module.module, config) == module.out_features
+def test_auto_size_finder_find_out_features(module: ModuleSizes) -> None:
+    assert AutoSizeFinder().find_out_features(module.module) == module.out_features
 
 
 @pytest.mark.parametrize("module", UNKNOWN_MODULES)
 def test_auto_size_finder_find_out_features_incorrect(
-    module: ModuleSizes, config: SizeFinderConfig
+    module: ModuleSizes,
 ) -> None:
     size_finder = AutoSizeFinder()
     with pytest.raises(SizeNotFoundError, match="cannot find the output feature sizes of"):
-        size_finder.find_out_features(module.module, config)
+        size_finder.find_out_features(module.module)
 
 
 @patch.dict(AutoSizeFinder.registry, {}, clear=True)

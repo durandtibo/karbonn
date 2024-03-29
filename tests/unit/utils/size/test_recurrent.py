@@ -3,15 +3,9 @@ from __future__ import annotations
 import pytest
 from torch import nn
 
-from karbonn.utils.size import AutoSizeFinder, RecurrentSizeFinder, SizeFinderConfig
+from karbonn.utils.size import RecurrentSizeFinder
 from karbonn.utils.size.base import SizeNotFoundError
 from tests.unit.utils.size.utils import ModuleSizes
-
-
-@pytest.fixture(scope="module")
-def config() -> SizeFinderConfig:
-    return SizeFinderConfig(size_finder=AutoSizeFinder())
-
 
 RECURRENT_MODULES = [
     ModuleSizes(module=nn.RNN(input_size=4, hidden_size=6), in_features=[4], out_features=[6]),
@@ -46,27 +40,27 @@ def test_recurrent_size_finder_eq_false() -> None:
 
 @pytest.mark.parametrize("module", RECURRENT_MODULES)
 def test_recurrent_size_finder_find_in_features(
-    module: ModuleSizes, config: SizeFinderConfig
+    module: ModuleSizes,
 ) -> None:
-    assert RecurrentSizeFinder().find_in_features(module.module, config) == module.in_features
+    assert RecurrentSizeFinder().find_in_features(module.module) == module.in_features
 
 
-def test_recurrent_size_finder_find_in_features_incorrect(config: SizeFinderConfig) -> None:
+def test_recurrent_size_finder_find_in_features_incorrect() -> None:
     size_finder = RecurrentSizeFinder()
     module = nn.Identity()
     with pytest.raises(SizeNotFoundError, match="module .* does not have attribute input_size"):
-        size_finder.find_in_features(module, config)
+        size_finder.find_in_features(module)
 
 
 @pytest.mark.parametrize("module", RECURRENT_MODULES)
 def test_recurrent_size_finder_find_out_features(
-    module: ModuleSizes, config: SizeFinderConfig
+    module: ModuleSizes,
 ) -> None:
-    assert RecurrentSizeFinder().find_out_features(module.module, config) == module.out_features
+    assert RecurrentSizeFinder().find_out_features(module.module) == module.out_features
 
 
-def test_recurrent_size_finder_find_out_features_incorrect(config: SizeFinderConfig) -> None:
+def test_recurrent_size_finder_find_out_features_incorrect() -> None:
     size_finder = RecurrentSizeFinder()
     module = nn.Identity()
     with pytest.raises(SizeNotFoundError, match="module .* does not have attribute hidden_size"):
-        size_finder.find_out_features(module, config)
+        size_finder.find_out_features(module)
