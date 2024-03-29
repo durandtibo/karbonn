@@ -6,6 +6,7 @@ from __future__ import annotations
 __all__ = [
     "AutoSizeFinder",
     "BaseSizeFinder",
+    "BatchNormSizeFinder",
     "BilinearSizeFinder",
     "ConvolutionSizeFinder",
     "EmbeddingSizeFinder",
@@ -23,6 +24,7 @@ __all__ = [
 
 from karbonn.utils.size.auto import AutoSizeFinder, register_size_finders
 from karbonn.utils.size.base import BaseSizeFinder
+from karbonn.utils.size.batchnorm import BatchNormSizeFinder
 from karbonn.utils.size.conv import ConvolutionSizeFinder
 from karbonn.utils.size.embedding import EmbeddingSizeFinder
 from karbonn.utils.size.functional import find_in_features, find_out_features

@@ -13,6 +13,8 @@ from typing import TYPE_CHECKING
 
 from torch import nn
 
+from karbonn.utils.size import BatchNormSizeFinder
+
 if TYPE_CHECKING:
     from karbonn.utils.size import BaseSizeFinder
 
@@ -86,6 +88,9 @@ def get_torch_size_finders() -> dict[type[nn.Module], BaseSizeFinder]:
 
     return {
         nn.Module: size_finders.UnknownSizeFinder(),
+        nn.BatchNorm1d: BatchNormSizeFinder(),
+        nn.BatchNorm2d: BatchNormSizeFinder(),
+        nn.BatchNorm3d: BatchNormSizeFinder(),
         nn.Bilinear: size_finders.BilinearSizeFinder(),
         nn.Conv1d: size_finders.ConvolutionSizeFinder(),
         nn.Conv2d: size_finders.ConvolutionSizeFinder(),
@@ -93,11 +98,12 @@ def get_torch_size_finders() -> dict[type[nn.Module], BaseSizeFinder]:
         nn.ConvTranspose1d: size_finders.ConvolutionSizeFinder(),
         nn.ConvTranspose2d: size_finders.ConvolutionSizeFinder(),
         nn.ConvTranspose3d: size_finders.ConvolutionSizeFinder(),
+        nn.Embedding: size_finders.EmbeddingSizeFinder(),
+        nn.EmbeddingBag: size_finders.EmbeddingSizeFinder(),
         nn.GRU: size_finders.RecurrentSizeFinder(),
         nn.LSTM: size_finders.RecurrentSizeFinder(),
         nn.Linear: size_finders.LinearSizeFinder(),
         nn.RNN: size_finders.RecurrentSizeFinder(),
         nn.Sequential: size_finders.SequentialSizeFinder(),
-        nn.Embedding: size_finders.EmbeddingSizeFinder(),
-        nn.EmbeddingBag: size_finders.EmbeddingSizeFinder(),
+        nn.SyncBatchNorm: BatchNormSizeFinder(),
     }
