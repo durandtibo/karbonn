@@ -10,6 +10,7 @@ from karbonn.utils.size import (
     ConvolutionSizeFinder,
     EmbeddingSizeFinder,
     LinearSizeFinder,
+    MultiheadAttentionSizeFinder,
     RecurrentSizeFinder,
     SequentialSizeFinder,
     UnknownSizeFinder,
@@ -46,6 +47,7 @@ def test_get_size_finders() -> None:
             nn.RNN: RecurrentSizeFinder(),
             nn.Sequential: SequentialSizeFinder(),
             nn.SyncBatchNorm: BatchNormSizeFinder(),
+            nn.MultiheadAttention: MultiheadAttentionSizeFinder(),
             ExU: LinearSizeFinder(),
         },
     )
@@ -88,5 +90,6 @@ def test_get_torch_size_finders() -> None:
             nn.RNN: RecurrentSizeFinder(),
             nn.Sequential: SequentialSizeFinder(),
             nn.SyncBatchNorm: BatchNormSizeFinder(),
+            nn.MultiheadAttention: MultiheadAttentionSizeFinder(),
         },
     )
