@@ -86,10 +86,16 @@ def get_torch_size_finders() -> dict[type[nn.Module], BaseSizeFinder]:
 
     return {
         nn.Module: size_finders.UnknownSizeFinder(),
-        nn.Sequential: size_finders.SequentialSizeFinder(),
-        nn.Linear: size_finders.LinearSizeFinder(),
         nn.Bilinear: size_finders.BilinearSizeFinder(),
-        nn.RNN: size_finders.RecurrentSizeFinder(),
+        nn.Conv1d: size_finders.ConvolutionSizeFinder(),
+        nn.Conv2d: size_finders.ConvolutionSizeFinder(),
+        nn.Conv3d: size_finders.ConvolutionSizeFinder(),
+        nn.ConvTranspose1d: size_finders.ConvolutionSizeFinder(),
+        nn.ConvTranspose2d: size_finders.ConvolutionSizeFinder(),
+        nn.ConvTranspose3d: size_finders.ConvolutionSizeFinder(),
         nn.GRU: size_finders.RecurrentSizeFinder(),
         nn.LSTM: size_finders.RecurrentSizeFinder(),
+        nn.Linear: size_finders.LinearSizeFinder(),
+        nn.RNN: size_finders.RecurrentSizeFinder(),
+        nn.Sequential: size_finders.SequentialSizeFinder(),
     }
