@@ -14,8 +14,6 @@ from karbonn.utils.size.base import BaseSizeFinder
 if TYPE_CHECKING:
     from torch import nn
 
-    from karbonn.utils.size.base import SizeFinderConfig
-
 
 class AutoSizeFinder(BaseSizeFinder):
     """Implement a size finder that automatically finds the size based
@@ -26,14 +24,13 @@ class AutoSizeFinder(BaseSizeFinder):
     ```pycon
 
     >>> import torch
-    >>> from karbonn.utils.size import AutoSizeFinder, SizeFinderConfig
-    >>> config = SizeFinderConfig(AutoSizeFinder())
+    >>> from karbonn.utils.size import AutoSizeFinder
     >>> size_finder = AutoSizeFinder()
     >>> module = torch.nn.Linear(4, 6)
-    >>> in_features = size_finder.find_in_features(module, config)
+    >>> in_features = size_finder.find_in_features(module)
     >>> in_features
     [4]
-    >>> out_features = size_finder.find_out_features(module, config)
+    >>> out_features = size_finder.find_out_features(module)
     >>> out_features
     [6]
 
@@ -86,11 +83,11 @@ class AutoSizeFinder(BaseSizeFinder):
             raise RuntimeError(msg)
         cls.registry[module_type] = size_finder
 
-    def find_in_features(self, module: nn.Module, config: SizeFinderConfig) -> list[int]:
-        return self.find_size_finder(type(module)).find_in_features(module, config)
+    def find_in_features(self, module: nn.Module) -> list[int]:
+        return self.find_size_finder(type(module)).find_in_features(module)
 
-    def find_out_features(self, module: nn.Module, config: SizeFinderConfig) -> list[int]:
-        return self.find_size_finder(type(module)).find_out_features(module, config)
+    def find_out_features(self, module: nn.Module) -> list[int]:
+        return self.find_size_finder(type(module)).find_out_features(module)
 
     @classmethod
     def has_size_finder(cls, module_type: type) -> bool:

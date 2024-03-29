@@ -13,8 +13,6 @@ from karbonn.utils.size.base import BaseSizeFinder, SizeNotFoundError
 if TYPE_CHECKING:
     from torch import nn
 
-    from karbonn.utils.size.base import SizeFinderConfig
-
 
 class UnknownSizeFinder(BaseSizeFinder):
     r"""Implement a size finder for the modules where the input and
@@ -25,12 +23,11 @@ class UnknownSizeFinder(BaseSizeFinder):
     ```pycon
 
     >>> import torch
-    >>> from karbonn.utils.size import UnknownSizeFinder, AutoSizeFinder, SizeFinderConfig
-    >>> config = SizeFinderConfig(AutoSizeFinder())
+    >>> from karbonn.utils.size import UnknownSizeFinder
     >>> size_finder = UnknownSizeFinder()
     >>> module = torch.nn.ReLU()
-    >>> in_features = size_finder.find_in_features(module, config)  # doctest: +SKIP
-    >>> out_features = size_finder.find_out_features(module, config)  # doctest: +SKIP
+    >>> in_features = size_finder.find_in_features(module)  # doctest: +SKIP
+    >>> out_features = size_finder.find_out_features(module)  # doctest: +SKIP
 
     ```
     """
@@ -44,18 +41,10 @@ class UnknownSizeFinder(BaseSizeFinder):
     def __str__(self) -> str:
         return f"{self.__class__.__qualname__}()"
 
-    def find_in_features(
-        self,
-        module: nn.Module,
-        config: SizeFinderConfig,  # noqa: ARG002
-    ) -> NoReturn:
+    def find_in_features(self, module: nn.Module) -> NoReturn:
         msg = f"cannot find the input feature sizes of {module}"
         raise SizeNotFoundError(msg)
 
-    def find_out_features(
-        self,
-        module: nn.Module,
-        config: SizeFinderConfig,  # noqa: ARG002
-    ) -> NoReturn:
+    def find_out_features(self, module: nn.Module) -> NoReturn:
         msg = f"cannot find the output feature sizes of {module}"
         raise SizeNotFoundError(msg)

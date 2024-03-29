@@ -3,15 +3,9 @@ from __future__ import annotations
 import pytest
 from torch import nn
 
-from karbonn.utils.size import AutoSizeFinder, SizeFinderConfig, UnknownSizeFinder
+from karbonn.utils.size import UnknownSizeFinder
 from karbonn.utils.size.base import SizeNotFoundError
 from tests.unit.utils.size.utils import ModuleSizes
-
-
-@pytest.fixture(scope="module")
-def config() -> SizeFinderConfig:
-    return SizeFinderConfig(size_finder=AutoSizeFinder())
-
 
 UNKNOWN_MODULES = [
     ModuleSizes(module=nn.Identity(), in_features=[], out_features=[]),
@@ -44,17 +38,17 @@ def test_unknown_size_finder_eq_false() -> None:
 
 @pytest.mark.parametrize("module", UNKNOWN_MODULES)
 def test_unknown_size_finder_find_in_features(
-    module: ModuleSizes, config: SizeFinderConfig
+    module: ModuleSizes,
 ) -> None:
     size_finder = UnknownSizeFinder()
     with pytest.raises(SizeNotFoundError, match="cannot find the input feature sizes of"):
-        size_finder.find_in_features(module.module, config)
+        size_finder.find_in_features(module.module)
 
 
 @pytest.mark.parametrize("module", UNKNOWN_MODULES)
 def test_unknown_size_finder_find_out_features(
-    module: ModuleSizes, config: SizeFinderConfig
+    module: ModuleSizes,
 ) -> None:
     size_finder = UnknownSizeFinder()
     with pytest.raises(SizeNotFoundError, match="cannot find the output feature sizes of"):
-        size_finder.find_out_features(module.module, config)
+        size_finder.find_out_features(module.module)

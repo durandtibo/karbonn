@@ -10,7 +10,6 @@ __all__ = [
     "LinearSizeFinder",
     "RecurrentSizeFinder",
     "SequentialSizeFinder",
-    "SizeFinderConfig",
     "UnknownSizeFinder",
     "find_in_features",
     "find_out_features",
@@ -21,7 +20,7 @@ __all__ = [
 ]
 
 from karbonn.utils.size.auto import AutoSizeFinder, register_size_finders
-from karbonn.utils.size.base import BaseSizeFinder, SizeFinderConfig
+from karbonn.utils.size.base import BaseSizeFinder
 from karbonn.utils.size.functional import find_in_features, find_out_features
 from karbonn.utils.size.linear import BilinearSizeFinder, LinearSizeFinder
 from karbonn.utils.size.recurrent import RecurrentSizeFinder

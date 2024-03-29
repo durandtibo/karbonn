@@ -6,15 +6,9 @@ from __future__ import annotations
 __all__ = ["LinearSizeFinder"]
 
 
-from typing import TYPE_CHECKING
-
 from torch import nn
 
 from karbonn.utils.size.base import BaseSizeFinder, SizeNotFoundError
-
-if TYPE_CHECKING:
-
-    from karbonn.utils.size.base import SizeFinderConfig
 
 
 class LinearSizeFinder(BaseSizeFinder[nn.Module]):
@@ -31,14 +25,13 @@ class LinearSizeFinder(BaseSizeFinder[nn.Module]):
     ```pycon
 
     >>> import torch
-    >>> from karbonn.utils.size import LinearSizeFinder, AutoSizeFinder, SizeFinderConfig
-    >>> config = SizeFinderConfig(AutoSizeFinder())
+    >>> from karbonn.utils.size import LinearSizeFinder
     >>> size_finder = LinearSizeFinder()
     >>> module = torch.nn.Linear(4, 6)
-    >>> in_features = size_finder.find_in_features(module, config)
+    >>> in_features = size_finder.find_in_features(module)
     >>> in_features
     [4]
-    >>> out_features = size_finder.find_out_features(module, config)
+    >>> out_features = size_finder.find_out_features(module)
     >>> out_features
     [6]
 
@@ -54,21 +47,13 @@ class LinearSizeFinder(BaseSizeFinder[nn.Module]):
     def __str__(self) -> str:
         return f"{self.__class__.__qualname__}()"
 
-    def find_in_features(
-        self,
-        module: nn.Module,
-        config: SizeFinderConfig,  # noqa: ARG002
-    ) -> list[int]:
+    def find_in_features(self, module: nn.Module) -> list[int]:
         if not hasattr(module, "in_features"):
             msg = f"module {module} does not have attribute in_features"
             raise SizeNotFoundError(msg)
         return [module.in_features]
 
-    def find_out_features(
-        self,
-        module: nn.Module,
-        config: SizeFinderConfig,  # noqa: ARG002
-    ) -> list[int]:
+    def find_out_features(self, module: nn.Module) -> list[int]:
         if not hasattr(module, "out_features"):
             msg = f"module {module} does not have attribute out_features"
             raise SizeNotFoundError(msg)
@@ -89,14 +74,13 @@ class BilinearSizeFinder(BaseSizeFinder):
     ```pycon
 
     >>> import torch
-    >>> from karbonn.utils.size import BilinearSizeFinder, AutoSizeFinder, SizeFinderConfig
-    >>> config = SizeFinderConfig(AutoSizeFinder())
+    >>> from karbonn.utils.size import BilinearSizeFinder
     >>> size_finder = BilinearSizeFinder()
     >>> module = torch.nn.Bilinear(in1_features=4, in2_features=2, out_features=6)
-    >>> in_features = size_finder.find_in_features(module, config)
+    >>> in_features = size_finder.find_in_features(module)
     >>> in_features
     [4, 2]
-    >>> out_features = size_finder.find_out_features(module, config)
+    >>> out_features = size_finder.find_out_features(module)
     >>> out_features
     [6]
 
@@ -112,22 +96,14 @@ class BilinearSizeFinder(BaseSizeFinder):
     def __str__(self) -> str:
         return f"{self.__class__.__qualname__}()"
 
-    def find_in_features(
-        self,
-        module: nn.Module,
-        config: SizeFinderConfig,  # noqa: ARG002
-    ) -> list[int]:
+    def find_in_features(self, module: nn.Module) -> list[int]:
         for name in ["in1_features", "in2_features"]:
             if not hasattr(module, name):
                 msg = f"module {module} does not have attribute {name}"
                 raise SizeNotFoundError(msg)
         return [module.in1_features, module.in2_features]
 
-    def find_out_features(
-        self,
-        module: nn.Module,
-        config: SizeFinderConfig,  # noqa: ARG002
-    ) -> list[int]:
+    def find_out_features(self, module: nn.Module) -> list[int]:
         if not hasattr(module, "out_features"):
             msg = f"module {module} does not have attribute out_features"
             raise SizeNotFoundError(msg)
