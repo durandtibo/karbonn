@@ -5,6 +5,7 @@ from torch import nn
 
 from karbonn import ExU
 from karbonn.utils.size import (
+    BatchNormSizeFinder,
     BilinearSizeFinder,
     ConvolutionSizeFinder,
     EmbeddingSizeFinder,
@@ -14,7 +15,7 @@ from karbonn.utils.size import (
     UnknownSizeFinder,
     get_karbonn_size_finders,
     get_size_finders,
-    get_torch_size_finders, BatchNormSizeFinder,
+    get_torch_size_finders,
 )
 
 ######################################
