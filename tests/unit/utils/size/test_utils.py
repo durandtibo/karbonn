@@ -14,7 +14,7 @@ from karbonn.utils.size import (
     UnknownSizeFinder,
     get_karbonn_size_finders,
     get_size_finders,
-    get_torch_size_finders,
+    get_torch_size_finders, BatchNormSizeFinder,
 )
 
 ######################################
@@ -27,6 +27,9 @@ def test_get_size_finders() -> None:
         get_size_finders(),
         {
             nn.Module: UnknownSizeFinder(),
+            nn.BatchNorm1d: BatchNormSizeFinder(),
+            nn.BatchNorm2d: BatchNormSizeFinder(),
+            nn.BatchNorm3d: BatchNormSizeFinder(),
             nn.Bilinear: BilinearSizeFinder(),
             nn.Conv1d: ConvolutionSizeFinder(),
             nn.Conv2d: ConvolutionSizeFinder(),
@@ -34,13 +37,14 @@ def test_get_size_finders() -> None:
             nn.ConvTranspose1d: ConvolutionSizeFinder(),
             nn.ConvTranspose2d: ConvolutionSizeFinder(),
             nn.ConvTranspose3d: ConvolutionSizeFinder(),
+            nn.Embedding: EmbeddingSizeFinder(),
+            nn.EmbeddingBag: EmbeddingSizeFinder(),
             nn.GRU: RecurrentSizeFinder(),
             nn.LSTM: RecurrentSizeFinder(),
             nn.Linear: LinearSizeFinder(),
             nn.RNN: RecurrentSizeFinder(),
             nn.Sequential: SequentialSizeFinder(),
-            nn.Embedding: EmbeddingSizeFinder(),
-            nn.EmbeddingBag: EmbeddingSizeFinder(),
+            nn.SyncBatchNorm: BatchNormSizeFinder(),
             ExU: LinearSizeFinder(),
         },
     )
@@ -65,6 +69,9 @@ def test_get_torch_size_finders() -> None:
         get_torch_size_finders(),
         {
             nn.Module: UnknownSizeFinder(),
+            nn.BatchNorm1d: BatchNormSizeFinder(),
+            nn.BatchNorm2d: BatchNormSizeFinder(),
+            nn.BatchNorm3d: BatchNormSizeFinder(),
             nn.Bilinear: BilinearSizeFinder(),
             nn.Conv1d: ConvolutionSizeFinder(),
             nn.Conv2d: ConvolutionSizeFinder(),
@@ -72,12 +79,13 @@ def test_get_torch_size_finders() -> None:
             nn.ConvTranspose1d: ConvolutionSizeFinder(),
             nn.ConvTranspose2d: ConvolutionSizeFinder(),
             nn.ConvTranspose3d: ConvolutionSizeFinder(),
+            nn.Embedding: EmbeddingSizeFinder(),
+            nn.EmbeddingBag: EmbeddingSizeFinder(),
             nn.GRU: RecurrentSizeFinder(),
             nn.LSTM: RecurrentSizeFinder(),
             nn.Linear: LinearSizeFinder(),
             nn.RNN: RecurrentSizeFinder(),
             nn.Sequential: SequentialSizeFinder(),
-            nn.Embedding: EmbeddingSizeFinder(),
-            nn.EmbeddingBag: EmbeddingSizeFinder(),
+            nn.SyncBatchNorm: BatchNormSizeFinder(),
         },
     )
