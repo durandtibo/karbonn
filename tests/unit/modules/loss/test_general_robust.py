@@ -239,7 +239,7 @@ def test_general_robust_regression_loss_forward_mock(
     criterion = GeneralRobustRegressionLoss(
         alpha=alpha, scale=scale, max=max_value, reduction=reduction
     )
-    with patch("karbonn.loss.general_robust.general_robust_regression_loss") as loss_mock:
+    with patch("karbonn.modules.loss.general_robust.general_robust_regression_loss") as loss_mock:
         criterion(prediction=torch.tensor([1.0]), target=torch.tensor([1.0]))
         loss_mock.assert_called_once_with(
             prediction=torch.tensor([1.0]),
