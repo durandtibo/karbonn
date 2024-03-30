@@ -23,7 +23,7 @@ __all__ = [
     "SquaredReLU",
 ]
 
-from karbonn.activations.alpha import (
+from karbonn.modules.activations.alpha import (
     BaseAlphaActivation,
     ExpSin,
     Gaussian,
@@ -31,7 +31,7 @@ from karbonn.activations.alpha import (
     MultiQuadratic,
     Quadratic,
 )
-from karbonn.activations.math import (
+from karbonn.modules.activations.math import (
     Asinh,
     Exp,
     Expm1,
@@ -42,5 +42,5 @@ from karbonn.activations.math import (
     Sin,
     Sinh,
 )
-from karbonn.activations.relu import ReLUn, SquaredReLU
-from karbonn.activations.snake import Snake
+from karbonn.modules.activations.relu import ReLUn, SquaredReLU
+from karbonn.modules.activations.snake import Snake
