@@ -13,8 +13,6 @@ from typing import TYPE_CHECKING
 
 from torch import nn
 
-from karbonn.utils.size import BatchNormSizeFinder
-
 if TYPE_CHECKING:
     from karbonn.utils.size import BaseSizeFinder
 
@@ -84,32 +82,33 @@ def get_torch_size_finders() -> dict[type[nn.Module], BaseSizeFinder]:
     ```
     """
     # Local import to avoid cyclic dependencies
-    from karbonn.utils import size as size_finders
+    from karbonn.utils import size
 
     return {
-        nn.Module: size_finders.UnknownSizeFinder(),
-        nn.BatchNorm1d: BatchNormSizeFinder(),
-        nn.BatchNorm2d: BatchNormSizeFinder(),
-        nn.BatchNorm3d: BatchNormSizeFinder(),
-        nn.Bilinear: size_finders.BilinearSizeFinder(),
-        nn.Conv1d: size_finders.ConvolutionSizeFinder(),
-        nn.Conv2d: size_finders.ConvolutionSizeFinder(),
-        nn.Conv3d: size_finders.ConvolutionSizeFinder(),
-        nn.ConvTranspose1d: size_finders.ConvolutionSizeFinder(),
-        nn.ConvTranspose2d: size_finders.ConvolutionSizeFinder(),
-        nn.ConvTranspose3d: size_finders.ConvolutionSizeFinder(),
-        nn.Embedding: size_finders.EmbeddingSizeFinder(),
-        nn.EmbeddingBag: size_finders.EmbeddingSizeFinder(),
-        nn.GRU: size_finders.RecurrentSizeFinder(),
-        nn.LSTM: size_finders.RecurrentSizeFinder(),
-        nn.Linear: size_finders.LinearSizeFinder(),
-        nn.ModuleList: size_finders.ModuleListSizeFinder(),
-        nn.MultiheadAttention: size_finders.MultiheadAttentionSizeFinder(),
-        nn.RNN: size_finders.RecurrentSizeFinder(),
-        nn.Sequential: size_finders.SequentialSizeFinder(),
-        nn.SyncBatchNorm: BatchNormSizeFinder(),
-        nn.TransformerDecoder: size_finders.TransformerSizeFinder(),
-        nn.TransformerDecoderLayer: size_finders.TransformerLayerSizeFinder(),
-        nn.TransformerEncoder: size_finders.TransformerSizeFinder(),
-        nn.TransformerEncoderLayer: size_finders.TransformerLayerSizeFinder(),
+        nn.Module: size.UnknownSizeFinder(),
+        nn.BatchNorm1d: size.BatchNormSizeFinder(),
+        nn.BatchNorm2d: size.BatchNormSizeFinder(),
+        nn.BatchNorm3d: size.BatchNormSizeFinder(),
+        nn.Bilinear: size.BilinearSizeFinder(),
+        nn.Conv1d: size.ConvolutionSizeFinder(),
+        nn.Conv2d: size.ConvolutionSizeFinder(),
+        nn.Conv3d: size.ConvolutionSizeFinder(),
+        nn.ConvTranspose1d: size.ConvolutionSizeFinder(),
+        nn.ConvTranspose2d: size.ConvolutionSizeFinder(),
+        nn.ConvTranspose3d: size.ConvolutionSizeFinder(),
+        nn.Embedding: size.EmbeddingSizeFinder(),
+        nn.EmbeddingBag: size.EmbeddingSizeFinder(),
+        nn.GRU: size.RecurrentSizeFinder(),
+        nn.GroupNorm: size.GroupNormSizeFinder(),
+        nn.LSTM: size.RecurrentSizeFinder(),
+        nn.Linear: size.LinearSizeFinder(),
+        nn.ModuleList: size.ModuleListSizeFinder(),
+        nn.MultiheadAttention: size.MultiheadAttentionSizeFinder(),
+        nn.RNN: size.RecurrentSizeFinder(),
+        nn.Sequential: size.SequentialSizeFinder(),
+        nn.SyncBatchNorm: size.BatchNormSizeFinder(),
+        nn.TransformerDecoder: size.TransformerSizeFinder(),
+        nn.TransformerDecoderLayer: size.TransformerLayerSizeFinder(),
+        nn.TransformerEncoder: size.TransformerSizeFinder(),
+        nn.TransformerEncoderLayer: size.TransformerLayerSizeFinder(),
     }
