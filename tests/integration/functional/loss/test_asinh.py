@@ -13,10 +13,10 @@ from karbonn.utils import is_loss_decreasing_with_sgd
 
 def test_asinh_mse_loss_is_loss_decreasing() -> None:
     assert is_loss_decreasing_with_sgd(
-        module=nn.Linear(4, 2),
+        module=nn.Linear(8, 8),
         criterion=asinh_mse_loss,
-        feature=torch.rand(4, 4),
-        target=torch.rand(4, 2),
+        feature=torch.rand(16, 8),
+        target=torch.rand(16, 8),
     )
 
 
@@ -27,8 +27,8 @@ def test_asinh_mse_loss_is_loss_decreasing() -> None:
 
 def test_asinh_smooth_l1_loss_is_loss_decreasing() -> None:
     assert is_loss_decreasing_with_sgd(
-        module=nn.Linear(4, 2),
+        module=nn.Linear(8, 8),
         criterion=asinh_smooth_l1_loss,
-        feature=torch.rand(4, 4),
-        target=torch.rand(4, 2),
+        feature=torch.rand(16, 8),
+        target=torch.rand(16, 8),
     )

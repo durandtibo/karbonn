@@ -12,6 +12,7 @@ __all__ = [
     "log_cosh_loss",
     "msle_loss",
     "reduce_loss",
+    "relative_loss",
     "safe_exp",
     "safe_log",
     "symmetric_absolute_relative_error",
@@ -29,5 +30,6 @@ from karbonn.functional.loss import (
     general_robust_regression_loss,
     log_cosh_loss,
     msle_loss,
+    relative_loss,
 )
 from karbonn.functional.reduction import check_loss_reduction_strategy, reduce_loss
