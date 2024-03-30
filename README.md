@@ -86,7 +86,7 @@ The following is the corresponding `karbonn` versions and tested dependencies.
 
 | `karbonn` | `coola`      | `numpy`<sup>*</sup> | `objectory`<sup>*</sup> | `torch`       | `python`      |
 |-----------|--------------|---------------------|-------------------------|---------------|---------------|
-| `main`    | `>=0.5,<1.0` | `>=1.21,<1.27`      | `>=0.1,<1.0`            | `>=1.10,<2.2` | `>=3.9,<3.13` |
+| `main`    | `>=0.5,<1.0` | `>=1.21,<2.0`       | `>=0.1,<1.0`            | `>=1.10,<3.0` | `>=3.9,<3.13` |
 
 <sup>*</sup> indicates an optional dependency
 
