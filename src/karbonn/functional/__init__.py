@@ -5,6 +5,7 @@ from __future__ import annotations
 __all__ = [
     "absolute_error",
     "absolute_relative_error",
+    "asinh_mse_loss",
     "check_loss_reduction_strategy",
     "general_robust_regression_loss",
     "reduce_loss",
@@ -19,5 +20,5 @@ from karbonn.functional.error import (
     absolute_relative_error,
     symmetric_absolute_relative_error,
 )
-from karbonn.functional.loss import general_robust_regression_loss
+from karbonn.functional.loss import asinh_mse_loss, general_robust_regression_loss
 from karbonn.functional.reduction import check_loss_reduction_strategy, reduce_loss
