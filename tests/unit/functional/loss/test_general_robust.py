@@ -9,9 +9,9 @@ from karbonn.functional import general_robust_regression_loss
 SIZES = (1, 2, 3)
 
 
-#########################################
+####################################################
 #     Tests for general_robust_regression_loss     #
-#########################################
+####################################################
 
 
 @pytest.mark.parametrize("device", get_available_devices())
