@@ -11,9 +11,12 @@ __all__ = [
     "ConvolutionSizeFinder",
     "EmbeddingSizeFinder",
     "LinearSizeFinder",
+    "MultiheadAttentionSizeFinder",
     "ModuleListSizeFinder",
     "RecurrentSizeFinder",
     "SequentialSizeFinder",
+    "TransformerLayerSizeFinder",
+    "TransformerSizeFinder",
     "UnknownSizeFinder",
     "find_in_features",
     "find_out_features",
@@ -21,7 +24,6 @@ __all__ = [
     "get_size_finders",
     "get_torch_size_finders",
     "register_size_finders",
-    "MultiheadAttentionSizeFinder",
 ]
 
 from karbonn.utils.size.attention import MultiheadAttentionSizeFinder
@@ -35,6 +37,10 @@ from karbonn.utils.size.linear import BilinearSizeFinder, LinearSizeFinder
 from karbonn.utils.size.list import ModuleListSizeFinder
 from karbonn.utils.size.recurrent import RecurrentSizeFinder
 from karbonn.utils.size.sequential import SequentialSizeFinder
+from karbonn.utils.size.transformer import (
+    TransformerLayerSizeFinder,
+    TransformerSizeFinder,
+)
 from karbonn.utils.size.unknown import UnknownSizeFinder
 from karbonn.utils.size.utils import (
     get_karbonn_size_finders,

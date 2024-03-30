@@ -104,8 +104,12 @@ def get_torch_size_finders() -> dict[type[nn.Module], BaseSizeFinder]:
         nn.LSTM: size_finders.RecurrentSizeFinder(),
         nn.Linear: size_finders.LinearSizeFinder(),
         nn.ModuleList: size_finders.ModuleListSizeFinder(),
+        nn.MultiheadAttention: size_finders.MultiheadAttentionSizeFinder(),
         nn.RNN: size_finders.RecurrentSizeFinder(),
         nn.Sequential: size_finders.SequentialSizeFinder(),
         nn.SyncBatchNorm: BatchNormSizeFinder(),
-        nn.MultiheadAttention: size_finders.MultiheadAttentionSizeFinder(),
+        nn.TransformerDecoder: size_finders.TransformerSizeFinder(),
+        nn.TransformerDecoderLayer: size_finders.TransformerLayerSizeFinder(),
+        nn.TransformerEncoder: size_finders.TransformerSizeFinder(),
+        nn.TransformerEncoderLayer: size_finders.TransformerLayerSizeFinder(),
     }
