@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "karbonn"
-version = "0.0.1a1"
+version = "0.0.1a2"
 description = "A library of PyTorch modules"
 readme = "README.md"
 authors = ["Thibaut Durand <durand.tibo+gh@gmail.com>"]

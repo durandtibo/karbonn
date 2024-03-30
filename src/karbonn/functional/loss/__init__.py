@@ -8,8 +8,10 @@ __all__ = [
     "general_robust_regression_loss",
     "log_cosh_loss",
     "msle_loss",
+    "relative_loss",
 ]
 
 from karbonn.functional.loss.asinh import asinh_mse_loss, asinh_smooth_l1_loss
 from karbonn.functional.loss.general_robust import general_robust_regression_loss
 from karbonn.functional.loss.log import log_cosh_loss, msle_loss
+from karbonn.functional.loss.relative import relative_loss

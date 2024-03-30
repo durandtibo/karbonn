@@ -6,9 +6,6 @@ from torch import nn
 from karbonn.functional import general_robust_regression_loss
 from karbonn.utils import is_loss_decreasing_with_sgd
 
-SIZES = (1, 2, 3)
-
-
 ####################################################
 #     Tests for general_robust_regression_loss     #
 ####################################################
