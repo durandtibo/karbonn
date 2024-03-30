@@ -30,13 +30,13 @@ class TransformerLayerSizeFinder(BaseSizeFinder[nn.Module]):
     >>> import torch
     >>> from karbonn.utils.size import TransformerLayerSizeFinder
     >>> size_finder = TransformerLayerSizeFinder()
-    >>> module = torch.nn.BatchNorm1d(num_features=6)
+    >>> module = torch.nn.TransformerEncoderLayer(d_model=4, nhead=1)
     >>> in_features = size_finder.find_in_features(module)
     >>> in_features
-    [6]
+    [4]
     >>> out_features = size_finder.find_out_features(module)
     >>> out_features
-    [6]
+    [4]
 
     ```
     """
@@ -78,13 +78,16 @@ class TransformerSizeFinder(BaseSizeFinder[nn.Module]):
     >>> import torch
     >>> from karbonn.utils.size import TransformerSizeFinder
     >>> size_finder = TransformerSizeFinder()
-    >>> module = torch.nn.BatchNorm1d(num_features=6)
+    >>> module = torch.nn.TransformerEncoder(
+    ...     torch.nn.TransformerEncoderLayer(d_model=4, nhead=1),
+    ...     num_layers=1,
+    ... )
     >>> in_features = size_finder.find_in_features(module)
     >>> in_features
-    [6]
+    [4]
     >>> out_features = size_finder.find_out_features(module)
     >>> out_features
-    [6]
+    [4]
 
     ```
     """
