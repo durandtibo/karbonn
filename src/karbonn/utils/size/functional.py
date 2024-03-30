@@ -37,6 +37,10 @@ def find_in_features(module: nn.Module) -> list[int]:
     >>> in_features = find_in_features(module)
     >>> in_features
     [4]
+    >>> module = torch.nn.Bilinear(in1_features=4, in2_features=6, out_features=8)
+    >>> in_features = find_in_features(module)
+    >>> in_features
+    [4, 6]
 
     ```
     """
@@ -66,6 +70,10 @@ def find_out_features(module: nn.Module) -> list[int]:
     >>> out_features = find_out_features(module)
     >>> out_features
     [6]
+    >>> module = torch.nn.Bilinear(in1_features=4, in2_features=6, out_features=8)
+    >>> out_features = find_out_features(module)
+    >>> out_features
+    [8]
 
     ```
     """

@@ -9,10 +9,19 @@ from tests.unit.utils.size.utils import ModuleSizes
 
 MULTIHEAD_ATTENTION_MODULES = [
     ModuleSizes(
-        module=nn.MultiheadAttention(embed_dim=4, num_heads=1), in_features=[4], out_features=[4]
+        module=nn.MultiheadAttention(embed_dim=4, num_heads=1),
+        in_features=[4, 4, 4],
+        out_features=[4],
     ),
     ModuleSizes(
-        module=nn.MultiheadAttention(embed_dim=8, num_heads=2), in_features=[8], out_features=[8]
+        module=nn.MultiheadAttention(embed_dim=8, num_heads=2),
+        in_features=[8, 8, 8],
+        out_features=[8],
+    ),
+    ModuleSizes(
+        module=nn.MultiheadAttention(embed_dim=4, num_heads=1, kdim=2, vdim=3),
+        in_features=[4, 2, 3],
+        out_features=[4],
     ),
 ]
 
