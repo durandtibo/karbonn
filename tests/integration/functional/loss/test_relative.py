@@ -47,4 +47,5 @@ def test_relative_loss_loss_decreasing(
         criterion=my_loss,
         feature=torch.randn(16, 8),
         target=torch.randn(16, 8),
+        num_iterations=10,
     )
