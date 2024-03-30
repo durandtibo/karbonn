@@ -13,8 +13,8 @@ from karbonn.utils import is_loss_decreasing_with_sgd
 
 def test_general_robust_regression_loss_decreasing() -> None:
     assert is_loss_decreasing_with_sgd(
-        module=nn.Linear(4, 2),
+        module=nn.Linear(8, 8),
         criterion=general_robust_regression_loss,
-        feature=torch.rand(4, 4),
-        target=torch.rand(4, 2),
+        feature=torch.rand(16, 8),
+        target=torch.rand(16, 8),
     )

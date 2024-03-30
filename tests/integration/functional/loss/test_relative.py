@@ -43,8 +43,8 @@ def test_relative_loss_loss_decreasing(
         )
 
     assert is_loss_decreasing_with_sgd(
-        module=nn.Linear(4, 2),
+        module=nn.Linear(8, 8),
         criterion=my_loss,
-        feature=torch.randn(4, 4),
-        target=torch.randn(4, 2),
+        feature=torch.randn(16, 8),
+        target=torch.randn(16, 8),
     )
