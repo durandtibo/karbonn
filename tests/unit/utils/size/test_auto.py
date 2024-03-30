@@ -12,6 +12,7 @@ from tests.unit.utils.size.test_attention import MULTIHEAD_ATTENTION_MODULES
 from tests.unit.utils.size.test_conv import CONVOLUTION_MODULES
 from tests.unit.utils.size.test_embedding import EMBEDDING_MODULES
 from tests.unit.utils.size.test_linear import BILINEAR_MODULES, LINEAR_MODULES
+from tests.unit.utils.size.test_list import MODULE_LIST_MODULES
 from tests.unit.utils.size.test_recurrent import RECURRENT_MODULES
 from tests.unit.utils.size.test_sequential import SEQUENTIAL_MODULES
 from tests.unit.utils.size.test_transformer import (
@@ -28,6 +29,7 @@ MODULES = (
     + BILINEAR_MODULES
     + CONVOLUTION_MODULES
     + EMBEDDING_MODULES
+    + MODULE_LIST_MODULES
     + MULTIHEAD_ATTENTION_MODULES
     + RECURRENT_MODULES
     + SEQUENTIAL_MODULES

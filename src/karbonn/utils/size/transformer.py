@@ -54,13 +54,13 @@ class TransformerLayerSizeFinder(BaseSizeFinder[nn.Module]):
         if not hasattr(module, "self_attn"):
             msg = f"module {module} does not have attribute self_attn"
             raise SizeNotFoundError(msg)
-        return find_in_features(module.self_attn)
+        return [find_in_features(module.self_attn)[0]]
 
     def find_out_features(self, module: nn.Module) -> list[int]:
         if not hasattr(module, "self_attn"):
             msg = f"module {module} does not have attribute self_attn"
             raise SizeNotFoundError(msg)
-        return find_out_features(module.self_attn)
+        return [find_out_features(module.self_attn)[0]]
 
 
 class TransformerSizeFinder(BaseSizeFinder[nn.Module]):
