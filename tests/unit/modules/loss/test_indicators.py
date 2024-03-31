@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import pytest
 import torch
-from coola import objects_are_equal
+from coola import objects_are_allclose, objects_are_equal
 from coola.utils.tensor import get_available_devices
 
 from karbonn.modules.loss import (
     ArithmeticalMeanIndicator,
     ClassicalRelativeIndicator,
+    GeometricMeanIndicator,
     ReversedRelativeIndicator,
 )
 
@@ -52,6 +53,29 @@ def test_classical_relative_indicator_forward(device: str) -> None:
             torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]], device=device),
         ),
         torch.tensor([[2.0, 1.0, 0.0], [3.0, 5.0, 1.0]], device=device),
+    )
+
+
+################################################
+#     Tests for GeometricRelativeIndicator     #
+################################################
+
+
+def test_geometric_mean_indicator_str() -> None:
+    assert str(GeometricMeanIndicator()).startswith("GeometricMeanIndicator(")
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+def test_geometric_mean_indicator_forward(device: str) -> None:
+    device = torch.device(device)
+    indicator = GeometricMeanIndicator()
+    assert objects_are_allclose(
+        indicator(
+            torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], device=device),
+            torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]], device=device),
+        ),
+        torch.tensor([[1e-8, 1.0, 1e-8], [3.0, 2.23606797749979, 1.0]], device=device),
+        atol=1e-5,
     )
 
 

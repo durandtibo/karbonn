@@ -5,6 +5,7 @@ from __future__ import annotations
 __all__ = [
     "arithmetical_mean_indicator",
     "classical_relative_indicator",
+    "geometric_mean_indicator",
     "relative_loss",
     "reversed_relative_indicator",
 ]
@@ -99,6 +100,19 @@ def classical_relative_indicator(
         The indicator values.
     """
     return target.abs()
+
+
+def geometric_mean_indicator(prediction: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+    r"""Return the geometric mean change.
+
+    Args:
+        prediction: The predictions.
+        target: The target values.
+
+    Returns:
+        The indicator values.
+    """
+    return target.abs().mul(prediction.abs()).sqrt()
 
 
 def reversed_relative_indicator(
