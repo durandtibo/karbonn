@@ -10,7 +10,7 @@ import torch
 from torch import nn
 
 from karbonn.functional import check_loss_reduction_strategy, relative_loss
-from karbonn.modules.loss.relative.indicators import ClassicalRelativeIndicator
+from karbonn.modules.loss.indicators import ClassicalRelativeIndicator
 from karbonn.utils import setup_module
 
 if TYPE_CHECKING:

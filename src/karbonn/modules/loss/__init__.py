@@ -17,12 +17,14 @@ __all__ = [
 
 from karbonn.modules.loss.focal import BinaryFocalLoss, binary_focal_loss
 from karbonn.modules.loss.general_robust import GeneralRobustRegressionLoss
-from karbonn.modules.loss.relative import (
+from karbonn.modules.loss.indicators import (
     ArithmeticalMeanIndicator,
     BaseRelativeIndicator,
     ClassicalRelativeIndicator,
+    ReversedRelativeIndicator,
+)
+from karbonn.modules.loss.relative import (
     RelativeLoss,
     RelativeMSELoss,
     RelativeSmoothL1Loss,
-    ReversedRelativeIndicator,
 )
