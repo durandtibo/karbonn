@@ -20,6 +20,7 @@ __all__ = [
     "Log",
     "Log1p",
     "MultiQuadratic",
+    "MulticlassFlatten",
     "MultiplicationFusion",
     "Quadratic",
     "ReLUn",
@@ -81,4 +82,4 @@ from karbonn.modules.loss import (
     binary_focal_loss,
 )
 from karbonn.modules.residual import ResidualBlock
-from karbonn.modules.shape import Squeeze
+from karbonn.modules.shape import MulticlassFlatten, Squeeze

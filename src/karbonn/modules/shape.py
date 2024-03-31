@@ -2,10 +2,49 @@ r"""Contain ``torch.nn.Module``s to change tensor's shape."""
 
 from __future__ import annotations
 
-__all__ = ["Squeeze"]
+__all__ = ["MulticlassFlatten", "Squeeze"]
+
+from typing import Any
 
 import torch
 from torch import nn
+
+from karbonn.utils import setup_module
+
+
+class MulticlassFlatten(nn.Module):
+    r"""Implements a wrapper to flat the multiclass inputs of a
+    ``torch.nn.Module``.
+
+    The input prediction tensor shape is ``(d1, d2, ..., dn, C)``
+    and is reshaped to ``(d1 * d2 * ... * dn, C)``.
+    The input target tensor shape is ``(d1, d2, ..., dn)``
+    and is reshaped to ``(d1 * d2 * ... * dn,)``.
+
+    Example usage:
+
+    ```pycon
+    >>> import torch
+    >>> from karbonn import MulticlassFlatten
+    >>> m = MulticlassFlatten(torch.nn.CrossEntropyLoss())
+    >>> m
+    MulticlassFlatten(
+      (module): CrossEntropyLoss()
+    )
+    >>> out = m(torch.ones(6, 2, 4, requires_grad=True), torch.zeros(6, 2, dtype=torch.long))
+    >>> out
+    tensor(1.3863, grad_fn=<NllLossBackward0>)
+
+    ```
+    """
+
+    def __init__(self, module: nn.Module | dict) -> None:
+        super().__init__()
+        self.module = setup_module(module)
+
+    def forward(self, prediction: torch.Tensor, target: torch.Tensor) -> Any:
+        target = torch.flatten(target)
+        return self.module(prediction.view(target.numel(), prediction.shape[-1]), target)
 
 
 class Squeeze(nn.Module):
