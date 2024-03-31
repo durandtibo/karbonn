@@ -11,6 +11,7 @@ __all__ = [
     "GeometricMeanIndicator",
     "MaximumMeanIndicator",
     "MinimumMeanIndicator",
+    "MomentMeanIndicator",
     "RelativeLoss",
     "RelativeMSELoss",
     "RelativeSmoothL1Loss",
@@ -27,6 +28,7 @@ from karbonn.modules.loss.indicators import (
     GeometricMeanIndicator,
     MaximumMeanIndicator,
     MinimumMeanIndicator,
+    MomentMeanIndicator,
     ReversedRelativeIndicator,
 )
 from karbonn.modules.loss.relative import (

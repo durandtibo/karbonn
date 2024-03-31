@@ -9,6 +9,7 @@ __all__ = [
     "GeometricMeanIndicator",
     "MaximumMeanIndicator",
     "MinimumMeanIndicator",
+    "MomentMeanIndicator",
     "ReversedRelativeIndicator",
 ]
 
@@ -22,6 +23,7 @@ from karbonn.functional.loss.relative import (
     geometric_mean_indicator,
     maximum_mean_indicator,
     minimum_mean_indicator,
+    moment_mean_indicator,
     reversed_relative_indicator,
 )
 
@@ -209,6 +211,42 @@ class MinimumMeanIndicator(BaseRelativeIndicator):
 
     def forward(self, prediction: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
         return minimum_mean_indicator(prediction, target)
+
+
+class MomentMeanIndicator(BaseRelativeIndicator):
+    r"""Implement the moment mean change of order k indicator function.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.modules.loss import MomentMeanIndicator
+    >>> prediction = torch.randn(3, 5, requires_grad=True)
+    >>> target = torch.randn(3, 5)
+    >>> indicator = MomentMeanIndicator()
+    >>> indicator
+    MomentMeanIndicator(k=1)
+    >>> values = indicator(
+    ...     prediction=torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], requires_grad=True),
+    ...     target=torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]]),
+    ... )
+    >>> values
+    tensor([[1.0000, 1.0000, 0.5000],
+            [3.0000, 3.0000, 1.0000]], grad_fn=<PowBackward0>)
+
+    ```
+    """
+
+    def __init__(self, k: int = 1) -> None:
+        super().__init__()
+        self._k = k
+
+    def extra_repr(self) -> str:
+        return f"k={self._k}"
+
+    def forward(self, prediction: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        return moment_mean_indicator(prediction, target, k=self._k)
 
 
 class ReversedRelativeIndicator(BaseRelativeIndicator):

@@ -11,6 +11,7 @@ from karbonn.modules.loss import (
     GeometricMeanIndicator,
     MaximumMeanIndicator,
     MinimumMeanIndicator,
+    MomentMeanIndicator,
     ReversedRelativeIndicator,
 )
 
@@ -121,6 +122,60 @@ def test_minimum_mean_indicator_forward(device: str) -> None:
             torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]], device=device),
         ),
         torch.tensor([[0.0, 1.0, 0.0], [3.0, 1.0, 1.0]], device=device),
+    )
+
+
+#########################################
+#     Tests for MomentMeanIndicator     #
+#########################################
+
+
+def test_moment_mean_indicator_str() -> None:
+    assert str(MomentMeanIndicator()).startswith("MomentMeanIndicator(")
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+def test_moment_mean_indicator_forward_oder_1(device: str) -> None:
+    device = torch.device(device)
+    indicator = MomentMeanIndicator()
+    assert objects_are_allclose(
+        indicator(
+            torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], device=device),
+            torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]], device=device),
+        ),
+        torch.tensor([[1.0, 1.0, 0.5], [3.0, 3.0, 1.0]], device=device),
+    )
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+def test_moment_mean_indicator_forward_oder_2(device: str) -> None:
+    device = torch.device(device)
+    indicator = MomentMeanIndicator(k=2)
+    assert objects_are_allclose(
+        indicator(
+            torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], device=device),
+            torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]], device=device),
+        ),
+        torch.tensor(
+            [[1.4142135623730951, 1.0, 0.7071067811865476], [3.0, 3.605551275463989, 1.0]],
+            device=device,
+        ),
+    )
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+def test_moment_mean_indicator_forward_oder_3(device: str) -> None:
+    device = torch.device(device)
+    indicator = MomentMeanIndicator(k=3)
+    assert objects_are_allclose(
+        indicator(
+            torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], device=device),
+            torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]], device=device),
+        ),
+        torch.tensor(
+            [[1.5874010519681994, 1.0, 0.7937005259840998], [3.0, 3.9790572078963917, 1.0]],
+            device=device,
+        ),
     )
 
 
