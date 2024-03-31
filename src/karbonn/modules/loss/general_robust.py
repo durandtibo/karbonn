@@ -56,7 +56,7 @@ class GeneralRobustRegressionLoss(nn.Module):
     >>> from karbonn import GeneralRobustRegressionLoss
     >>> criterion = GeneralRobustRegressionLoss()
     >>> criterion
-    GeneralRobustRegressionLoss(alpha=2.0, scale=1.0, max=None)
+    GeneralRobustRegressionLoss(alpha=2.0, scale=1.0, max=None, reduction=mean)
     >>> input = torch.randn(3, 2, requires_grad=True)
     >>> target = torch.rand(3, 2, requires_grad=False)
     >>> loss = criterion(input, target)
@@ -86,19 +86,12 @@ class GeneralRobustRegressionLoss(nn.Module):
         self.reduction = reduction
 
     def extra_repr(self) -> str:
-        return f"alpha={self._alpha}, scale={self._scale}, max={self._max}"
+        return (
+            f"alpha={self._alpha}, scale={self._scale}, max={self._max}, "
+            f"reduction={self.reduction}"
+        )
 
     def forward(self, prediction: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
-        r"""Compute the loss values and reduces them.
-
-        Args:
-            prediction: The predictions.
-            target: The target values.
-
-        Returns:
-            The loss. The shape of the tensor depends on the reduction
-                strategy.
-        """
         return general_robust_regression_loss(
             prediction=prediction,
             target=target,

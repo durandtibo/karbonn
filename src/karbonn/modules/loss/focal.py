@@ -48,7 +48,7 @@ class BinaryFocalLoss(nn.Module):
     >>> criterion = BinaryFocalLoss(nn.BCEWithLogitsLoss(reduction="none"))
     >>> criterion
     BinaryFocalLoss(
-      alpha=0.5, gamma=2.0
+      alpha=0.5, gamma=2.0, reduction=mean
       (loss): BCEWithLogitsLoss()
     )
     >>> input = torch.randn(3, 2, requires_grad=True)
@@ -87,7 +87,7 @@ class BinaryFocalLoss(nn.Module):
         self.reduction = reduction
 
     def extra_repr(self) -> str:
-        return f"alpha={self._alpha}, gamma={self._gamma}"
+        return f"alpha={self._alpha}, gamma={self._gamma}, reduction={self.reduction}"
 
     def forward(self, prediction: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
         r"""Compute the binary Focal Loss.
@@ -144,13 +144,13 @@ def binary_focal_loss(
     >>> criterion = binary_focal_loss()
     >>> criterion
     BinaryFocalLoss(
-      alpha=0.5, gamma=2.0
+      alpha=0.5, gamma=2.0, reduction=mean
       (loss): BCELoss()
     )
     >>> criterion = binary_focal_loss(logits=True)
     >>> criterion
     BinaryFocalLoss(
-      alpha=0.5, gamma=2.0
+      alpha=0.5, gamma=2.0, reduction=mean
       (loss): BCEWithLogitsLoss()
     )
 
