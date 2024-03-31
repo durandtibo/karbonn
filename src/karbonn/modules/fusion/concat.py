@@ -23,8 +23,8 @@ class ConcatFusion(nn.Module):
     >>> module = ConcatFusion()
     >>> module
     ConcatFusion(dim=-1)
-    >>> x1 = torch.tensor([[2, 3, 4], [5, 6, 7]], dtype=torch.float, requires_grad=True)
-    >>> x2 = torch.tensor([[12, 13, 14], [15, 16, 17]], dtype=torch.float, requires_grad=True)
+    >>> x1 = torch.tensor([[2.0, 3.0, 4.0], [5.0, 6.0, 7.0]], requires_grad=True)
+    >>> x2 = torch.tensor([[12.0, 13.0, 14.0], [15.0, 16.0, 17.0]], requires_grad=True)
     >>> out = module(x1, x2)
     >>> out
     tensor([[ 2.,  3.,  4., 12., 13., 14.],
