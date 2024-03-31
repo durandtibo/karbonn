@@ -6,17 +6,16 @@ __all__ = [
     "arithmetical_mean_indicator",
     "classical_relative_indicator",
     "geometric_mean_indicator",
+    "maximum_mean_indicator",
+    "minimum_mean_indicator",
     "relative_loss",
     "reversed_relative_indicator",
 ]
 
 
-from typing import TYPE_CHECKING
+import torch
 
 from karbonn.functional.reduction import reduce_loss
-
-if TYPE_CHECKING:
-    import torch
 
 
 def relative_loss(
@@ -113,6 +112,32 @@ def geometric_mean_indicator(prediction: torch.Tensor, target: torch.Tensor) -> 
         The indicator values.
     """
     return target.abs().mul(prediction.abs()).sqrt()
+
+
+def maximum_mean_indicator(prediction: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+    r"""Return the maximum mean change.
+
+    Args:
+        prediction: The predictions.
+        target: The target values.
+
+    Returns:
+        The indicator values.
+    """
+    return torch.maximum(target.abs(), prediction.abs())
+
+
+def minimum_mean_indicator(prediction: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+    r"""Return the minimum mean change.
+
+    Args:
+        prediction: The predictions.
+        target: The target values.
+
+    Returns:
+        The indicator values.
+    """
+    return torch.minimum(target.abs(), prediction.abs())
 
 
 def reversed_relative_indicator(

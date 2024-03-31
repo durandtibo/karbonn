@@ -30,6 +30,7 @@ def test_relative_loss_reduction_mean(device: str) -> None:
     target = torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], device=device)
     criterion = RelativeLoss(criterion=nn.MSELoss(reduction="none"), eps=1e-5)
     loss = criterion(prediction=prediction, target=target)
+    loss.backward()
     assert objects_are_equal(loss, torch.tensor(66671.5, device=device))
 
 
@@ -41,6 +42,7 @@ def test_relative_loss_reduction_sum(device: str) -> None:
     target = torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], device=device)
     criterion = RelativeLoss(criterion=nn.MSELoss(reduction="none"), reduction="sum", eps=1e-5)
     loss = criterion(prediction=prediction, target=target)
+    loss.backward()
     assert objects_are_equal(loss, torch.tensor(400029.0, device=device))
 
 
@@ -136,6 +138,7 @@ def test_relative_mse_loss_reduction_mean(device: str) -> None:
     target = torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], device=device)
     criterion = RelativeMSELoss(eps=1e-5)
     loss = criterion(prediction=prediction, target=target)
+    loss.backward()
     assert objects_are_equal(loss, torch.tensor(66671.5, device=device))
 
 
@@ -147,6 +150,7 @@ def test_relative_mse_loss_reduction_sum(device: str) -> None:
     target = torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], device=device)
     criterion = RelativeMSELoss(reduction="sum", eps=1e-5)
     loss = criterion(prediction=prediction, target=target)
+    loss.backward()
     assert objects_are_equal(loss, torch.tensor(400029.0, device=device))
 
 
@@ -222,6 +226,7 @@ def test_relative_smooth_l1_loss_reduction_mean(device: str) -> None:
     target = torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], device=device)
     criterion = RelativeSmoothL1Loss(eps=1e-5)
     loss = criterion(prediction=prediction, target=target)
+    loss.backward()
     assert objects_are_allclose(loss, torch.tensor(25000.970703125, device=device), rtol=1e-5)
 
 
@@ -233,6 +238,7 @@ def test_relative_smooth_l1_loss_reduction_sum(device: str) -> None:
     target = torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], device=device)
     criterion = RelativeSmoothL1Loss(reduction="sum", eps=1e-5)
     loss = criterion(prediction=prediction, target=target)
+    loss.backward()
     assert objects_are_equal(loss, torch.tensor(150005.828125, device=device))
 
 
