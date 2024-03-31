@@ -6,6 +6,7 @@ __all__ = [
     "Asinh",
     "AsinhMSELoss",
     "AsinhSmoothL1Loss",
+    "AverageFusion",
     "BinaryFocalLoss",
     "Clamp",
     "ConcatFusion",
@@ -19,6 +20,7 @@ __all__ = [
     "Log",
     "Log1p",
     "MultiQuadratic",
+    "MultiplicationFusion",
     "Quadratic",
     "ReLUn",
     "RelativeLoss",
@@ -32,6 +34,7 @@ __all__ = [
     "Snake",
     "SquaredReLU",
     "Squeeze",
+    "SumFusion",
     "ToFloat",
     "ToLong",
     "TransformedLoss",
@@ -60,7 +63,12 @@ from karbonn.modules.activations import (
 from karbonn.modules.clamp import Clamp
 from karbonn.modules.dtype import ToFloat, ToLong
 from karbonn.modules.exu import ExU
-from karbonn.modules.fusion import ConcatFusion
+from karbonn.modules.fusion import (
+    AverageFusion,
+    ConcatFusion,
+    MultiplicationFusion,
+    SumFusion,
+)
 from karbonn.modules.loss import (
     AsinhMSELoss,
     AsinhSmoothL1Loss,
