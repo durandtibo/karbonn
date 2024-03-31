@@ -36,7 +36,7 @@ class AsinhMSELoss(nn.Module):
     >>> from karbonn import AsinhMSELoss
     >>> criterion = AsinhMSELoss()
     >>> criterion
-    AsinhMSELoss()
+    AsinhMSELoss(reduction=mean)
     >>> loss = criterion(torch.randn(2, 4, requires_grad=True), torch.randn(2, 4))
     >>> loss
     tensor(..., grad_fn=<MseLossBackward0>)
@@ -83,7 +83,7 @@ class AsinhSmoothL1Loss(nn.Module):
     >>> from karbonn import AsinhSmoothL1Loss
     >>> criterion = AsinhSmoothL1Loss()
     >>> criterion
-    AsinhSmoothL1Loss()
+    AsinhSmoothL1Loss(reduction=mean, beta=1.0)
     >>> loss = criterion(torch.randn(2, 4, requires_grad=True), torch.randn(2, 4))
     >>> loss
     tensor(..., grad_fn=<SmoothL1LossBackward0>)
