@@ -4,6 +4,8 @@ from __future__ import annotations
 
 __all__ = [
     "ArithmeticalMeanIndicator",
+    "AsinhMSELoss",
+    "AsinhSmoothL1Loss",
     "BaseRelativeIndicator",
     "BinaryFocalLoss",
     "ClassicalRelativeIndicator",
@@ -20,6 +22,7 @@ __all__ = [
     "binary_focal_loss",
 ]
 
+from karbonn.modules.loss.asinh import AsinhMSELoss, AsinhSmoothL1Loss
 from karbonn.modules.loss.focal import BinaryFocalLoss, binary_focal_loss
 from karbonn.modules.loss.general_robust import GeneralRobustRegressionLoss
 from karbonn.modules.loss.indicators import (

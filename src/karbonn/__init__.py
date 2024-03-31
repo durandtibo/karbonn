@@ -4,6 +4,8 @@ from __future__ import annotations
 
 __all__ = [
     "Asinh",
+    "AsinhMSELoss",
+    "AsinhSmoothL1Loss",
     "BinaryFocalLoss",
     "Clamp",
     "ExU",
@@ -34,6 +36,8 @@ __all__ = [
 
 from karbonn.modules import (
     Asinh,
+    AsinhMSELoss,
+    AsinhSmoothL1Loss,
     BinaryFocalLoss,
     Clamp,
     Exp,
