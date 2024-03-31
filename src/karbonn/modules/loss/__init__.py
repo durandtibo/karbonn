@@ -16,6 +16,7 @@ __all__ = [
     "RelativeMSELoss",
     "RelativeSmoothL1Loss",
     "ReversedRelativeIndicator",
+    "TransformedLoss",
     "binary_focal_loss",
 ]
 
@@ -36,3 +37,4 @@ from karbonn.modules.loss.relative import (
     RelativeMSELoss,
     RelativeSmoothL1Loss,
 )
+from karbonn.modules.loss.transform import TransformedLoss

@@ -21,7 +21,7 @@ def absolute_error(prediction: Tensor, target: Tensor) -> Tensor:
             data type as ``prediction``.
 
     Returns:
-         The absolute error tensor, which has the same shape and data
+        The absolute error tensor, which has the same shape and data
             type as the inputs.
 
     Example usage:

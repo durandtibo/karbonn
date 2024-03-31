@@ -54,6 +54,8 @@
 
 ### ::: karbonn.RelativeSmoothL1Loss
 
+### ::: karbonn.TransformedLoss
+
 ### Relative loss indicators
 
 #### ::: karbonn.modules.loss.BaseRelativeIndicator
