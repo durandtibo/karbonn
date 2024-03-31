@@ -80,7 +80,13 @@
 
 ## Fusion
 
+### ::: karbonn.AverageFusion
+
 ### ::: karbonn.ConcatFusion
+
+### ::: karbonn.MultiplicationFusion
+
+### ::: karbonn.SumFusion
 
 ## Blocks
 
