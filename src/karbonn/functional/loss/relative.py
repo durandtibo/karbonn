@@ -8,6 +8,7 @@ __all__ = [
     "geometric_mean_indicator",
     "maximum_mean_indicator",
     "minimum_mean_indicator",
+    "moment_mean_indicator",
     "relative_loss",
     "reversed_relative_indicator",
 ]
@@ -138,6 +139,22 @@ def minimum_mean_indicator(prediction: torch.Tensor, target: torch.Tensor) -> to
         The indicator values.
     """
     return torch.minimum(target.abs(), prediction.abs())
+
+
+def moment_mean_indicator(
+    prediction: torch.Tensor, target: torch.Tensor, k: int = 1
+) -> torch.Tensor:
+    r"""Return the moment mean change of order k.
+
+    Args:
+        prediction: The predictions.
+        target: The target values.
+        k:  The order.
+
+    Returns:
+        The indicator values.
+    """
+    return target.abs().pow(k).add(prediction.abs().pow(k)).mul(0.5).pow(1 / k)
 
 
 def reversed_relative_indicator(

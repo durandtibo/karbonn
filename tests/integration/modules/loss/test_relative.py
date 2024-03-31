@@ -12,6 +12,7 @@ from karbonn.modules.loss import (
     GeometricMeanIndicator,
     MaximumMeanIndicator,
     MinimumMeanIndicator,
+    MomentMeanIndicator,
     ReversedRelativeIndicator,
 )
 from karbonn.utils import is_loss_decreasing_with_sgd
@@ -27,6 +28,9 @@ INDICATORS = [
     GeometricMeanIndicator(),
     MaximumMeanIndicator(),
     MinimumMeanIndicator(),
+    MomentMeanIndicator(),
+    MomentMeanIndicator(k=2),
+    MomentMeanIndicator(k=3),
     ReversedRelativeIndicator(),
 ]
 REDUCTIONS = ["mean", "sum"]

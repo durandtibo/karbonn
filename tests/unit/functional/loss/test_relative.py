@@ -12,6 +12,7 @@ from karbonn.functional.loss.relative import (
     geometric_mean_indicator,
     maximum_mean_indicator,
     minimum_mean_indicator,
+    moment_mean_indicator,
     reversed_relative_indicator,
 )
 
@@ -217,6 +218,55 @@ def test_minimum_mean_indicator(device: str) -> None:
             torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]], device=device),
         ),
         torch.tensor([[0.0, 1.0, 0.0], [3.0, 1.0, 1.0]], device=device),
+    )
+
+
+###########################################
+#     Tests for moment_mean_indicator     #
+###########################################
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+def test_moment_mean_indicator_order_1(device: str) -> None:
+    device = torch.device(device)
+    assert objects_are_equal(
+        moment_mean_indicator(
+            torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], device=device),
+            torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]], device=device),
+        ),
+        torch.tensor([[1.0, 1.0, 0.5], [3.0, 3.0, 1.0]], device=device),
+    )
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+def test_moment_mean_indicator_order_2(device: str) -> None:
+    device = torch.device(device)
+    assert objects_are_allclose(
+        moment_mean_indicator(
+            torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], device=device),
+            torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]], device=device),
+            k=2,
+        ),
+        torch.tensor(
+            [[1.4142135623730951, 1.0, 0.7071067811865476], [3.0, 3.605551275463989, 1.0]],
+            device=device,
+        ),
+    )
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+def test_moment_mean_indicator_order_3(device: str) -> None:
+    device = torch.device(device)
+    assert objects_are_allclose(
+        moment_mean_indicator(
+            torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], device=device),
+            torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]], device=device),
+            k=3,
+        ),
+        torch.tensor(
+            [[1.5874010519681994, 1.0, 0.7937005259840998], [3.0, 3.9790572078963917, 1.0]],
+            device=device,
+        ),
     )
 
 
