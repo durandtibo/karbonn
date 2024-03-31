@@ -81,5 +81,5 @@ def reduce_loss(tensor: Tensor, reduction: str) -> Tensor:
         return tensor.sum()
     if reduction == "none":
         return tensor
-    msg = f"Incorrect reduction: {reduction}. The valid reductions are {VALID_REDUCTIONS}."
+    msg = f"Incorrect reduction: {reduction}. The valid reductions are {VALID_REDUCTIONS}"
     raise ValueError(msg)

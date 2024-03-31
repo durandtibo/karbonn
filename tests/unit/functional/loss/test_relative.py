@@ -111,9 +111,6 @@ def test_relative_loss_indicator_classical_relative(device: str) -> None:
         reduction="none",
         indicator="classical_relative",
     )
-    # [[2.0, 1.0, 0.0], [3.0, 5.0, 1.0]]
-    # [[4.0, 0.0, 1.0], [36.0, 16.0, 0.0]]
-    # [[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]]
     assert objects_are_equal(
         loss, torch.tensor([[4e8, 0.0, 1.0], [12.0, 16.0, 0.0]], device=device)
     )
