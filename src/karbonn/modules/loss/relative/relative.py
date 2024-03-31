@@ -10,10 +10,11 @@ import torch
 from torch import nn
 
 from karbonn.functional import check_loss_reduction_strategy, relative_loss
+from karbonn.modules.loss.relative.indicators import ClassicalRelativeIndicator
 from karbonn.utils import setup_module
 
 if TYPE_CHECKING:
-    from karbonn.functional.loss.relative import IndicatorType
+    from karbonn.modules.loss import BaseRelativeIndicator
 
 
 class RelativeLoss(nn.Module):
@@ -25,7 +26,8 @@ class RelativeLoss(nn.Module):
             should not have reduction to be compatible with the shapes
             of the prediction and targets.
         indicator: The name of the indicator function to use or its
-            implementation.
+            implementation. If ``None``, ``ClassicalRelativeIndicator``
+            is instantiated.
         reduction: The reduction strategy. The valid values are
             ``'mean'``, ``'none'``,  and ``'sum'``.
             ``'none'``: no reduction will be applied, ``'mean'``: the
@@ -40,7 +42,17 @@ class RelativeLoss(nn.Module):
 
     >>> import torch
     >>> from karbonn import RelativeLoss
-    >>> criterion = RelativeLoss(torch.nn.MSELoss(reduction="none"))
+    >>> from karbonn.modules.loss import ClassicalRelativeIndicator
+    >>> criterion = RelativeLoss(
+    ...     criterion=torch.nn.MSELoss(reduction="none"),
+    ...     indicator=ClassicalRelativeIndicator(),
+    ... )
+    >>> criterion
+    RelativeLoss(
+      eps=1e-08
+      (criterion): MSELoss()
+      (indicator): ClassicalRelativeIndicator()
+    )
     >>> prediction = torch.randn(3, 5, requires_grad=True)
     >>> target = torch.randn(3, 5)
     >>> loss = criterion(prediction, target)
@@ -54,17 +66,20 @@ class RelativeLoss(nn.Module):
     def __init__(
         self,
         criterion: nn.Module | dict,
-        indicator: IndicatorType | str = "classical_relative",
+        indicator: BaseRelativeIndicator | dict | None = None,
         reduction: str = "mean",
         eps: float = 1e-8,
     ) -> None:
         super().__init__()
         self.criterion = setup_module(criterion)
-        self.indicator = indicator
+        self.indicator = setup_module(indicator or ClassicalRelativeIndicator())
 
         check_loss_reduction_strategy(reduction)
         self.reduction = reduction
         self._eps = eps
+
+    def extra_repr(self) -> str:
+        return f"eps={self._eps}"
 
     def forward(self, prediction: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
         loss = self.criterion(prediction, target)
@@ -83,7 +98,8 @@ class RelativeMSELoss(RelativeLoss):
 
     Args:
         indicator: The name of the indicator function to use or its
-            implementation.
+            implementation. If ``None``, ``ClassicalRelativeIndicator``
+            is instantiated.
         reduction: The reduction strategy. The valid values are
             ``'mean'``, ``'none'``,  and ``'sum'``.
             ``'none'``: no reduction will be applied, ``'mean'``: the
@@ -98,7 +114,14 @@ class RelativeMSELoss(RelativeLoss):
 
     >>> import torch
     >>> from karbonn import RelativeMSELoss
-    >>> criterion = RelativeMSELoss()
+    >>> from karbonn.modules.loss import ClassicalRelativeIndicator
+    >>> criterion = RelativeMSELoss(indicator=ClassicalRelativeIndicator())
+    >>> criterion
+    RelativeMSELoss(
+      eps=1e-08
+      (criterion): MSELoss()
+      (indicator): ClassicalRelativeIndicator()
+    )
     >>> prediction = torch.randn(3, 5, requires_grad=True)
     >>> target = torch.randn(3, 5)
     >>> loss = criterion(prediction, target)
@@ -111,7 +134,7 @@ class RelativeMSELoss(RelativeLoss):
 
     def __init__(
         self,
-        indicator: IndicatorType | str = "classical_relative",
+        indicator: BaseRelativeIndicator | dict | None = None,
         reduction: str = "mean",
         eps: float = 1e-8,
     ) -> None:
@@ -128,7 +151,8 @@ class RelativeSmoothL1Loss(RelativeLoss):
 
     Args:
         indicator: The name of the indicator function to use or its
-            implementation.
+            implementation. If ``None``, ``ClassicalRelativeIndicator``
+            is instantiated.
         reduction: The reduction strategy. The valid values are
             ``'mean'``, ``'none'``,  and ``'sum'``.
             ``'none'``: no reduction will be applied, ``'mean'``: the
@@ -143,7 +167,14 @@ class RelativeSmoothL1Loss(RelativeLoss):
 
     >>> import torch
     >>> from karbonn import RelativeSmoothL1Loss
-    >>> criterion = RelativeSmoothL1Loss()
+    >>> from karbonn.modules.loss import ClassicalRelativeIndicator
+    >>> criterion = RelativeSmoothL1Loss(indicator=ClassicalRelativeIndicator())
+    >>> criterion
+    RelativeSmoothL1Loss(
+      eps=1e-08
+      (criterion): SmoothL1Loss()
+      (indicator): ClassicalRelativeIndicator()
+    )
     >>> prediction = torch.randn(3, 5, requires_grad=True)
     >>> target = torch.randn(3, 5)
     >>> loss = criterion(prediction, target)
@@ -156,7 +187,7 @@ class RelativeSmoothL1Loss(RelativeLoss):
 
     def __init__(
         self,
-        indicator: IndicatorType | str = "classical_relative",
+        indicator: BaseRelativeIndicator | dict | None = None,
         reduction: str = "mean",
         eps: float = 1e-8,
     ) -> None:
