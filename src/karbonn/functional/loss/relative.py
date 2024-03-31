@@ -82,6 +82,21 @@ def arithmetical_mean_indicator(prediction: torch.Tensor, target: torch.Tensor) 
 
     Returns:
         The indicator values.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.functional.loss import arithmetical_mean_indicator
+    >>> prediction = torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], requires_grad=True)
+    >>> target = torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]])
+    >>> indicator = arithmetical_mean_indicator(prediction, target)
+    >>> indicator
+    tensor([[1.0000, 1.0000, 0.5000],
+            [3.0000, 3.0000, 1.0000]], grad_fn=<MulBackward0>)
+
+    ```
     """
     return target.abs().add(prediction.abs()).mul(0.5)
 
@@ -98,6 +113,19 @@ def classical_relative_indicator(
 
     Returns:
         The indicator values.
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.functional.loss import classical_relative_indicator
+    >>> prediction = torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], requires_grad=True)
+    >>> target = torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]])
+    >>> indicator = classical_relative_indicator(prediction, target)
+    >>> indicator
+    tensor([[2., 1., 0.],
+            [3., 5., 1.]])
+
+    ```
     """
     return target.abs()
 
@@ -111,6 +139,19 @@ def geometric_mean_indicator(prediction: torch.Tensor, target: torch.Tensor) -> 
 
     Returns:
         The indicator values.
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.functional.loss import geometric_mean_indicator
+    >>> prediction = torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], requires_grad=True)
+    >>> target = torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]])
+    >>> indicator = geometric_mean_indicator(prediction, target)
+    >>> indicator
+    tensor([[0.0000, 1.0000, 0.0000],
+            [3.0000, 2.2361, 1.0000]], grad_fn=<SqrtBackward0>)
+
+    ```
     """
     return target.abs().mul(prediction.abs()).sqrt()
 
@@ -124,6 +165,19 @@ def maximum_mean_indicator(prediction: torch.Tensor, target: torch.Tensor) -> to
 
     Returns:
         The indicator values.
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.functional.loss import maximum_mean_indicator
+    >>> prediction = torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], requires_grad=True)
+    >>> target = torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]])
+    >>> indicator = maximum_mean_indicator(prediction, target)
+    >>> indicator
+    tensor([[2., 1., 1.],
+            [3., 5., 1.]], grad_fn=<MaximumBackward0>)
+
+    ```
     """
     return torch.maximum(target.abs(), prediction.abs())
 
@@ -137,6 +191,19 @@ def minimum_mean_indicator(prediction: torch.Tensor, target: torch.Tensor) -> to
 
     Returns:
         The indicator values.
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.functional.loss import minimum_mean_indicator
+    >>> prediction = torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], requires_grad=True)
+    >>> target = torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]])
+    >>> indicator = minimum_mean_indicator(prediction, target)
+    >>> indicator
+    tensor([[0., 1., 0.],
+            [3., 1., 1.]], grad_fn=<MinimumBackward0>)
+
+    ```
     """
     return torch.minimum(target.abs(), prediction.abs())
 
@@ -153,6 +220,19 @@ def moment_mean_indicator(
 
     Returns:
         The indicator values.
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.functional.loss import moment_mean_indicator
+    >>> prediction = torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], requires_grad=True)
+    >>> target = torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]])
+    >>> indicator = moment_mean_indicator(prediction, target)
+    >>> indicator
+    tensor([[1.0000, 1.0000, 0.5000],
+            [3.0000, 3.0000, 1.0000]], grad_fn=<PowBackward0>)
+
+    ```
     """
     return target.abs().pow(k).add(prediction.abs().pow(k)).mul(0.5).pow(1 / k)
 
@@ -169,5 +249,18 @@ def reversed_relative_indicator(
 
     Returns:
         The indicator values.
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.functional.loss import reversed_relative_indicator
+    >>> prediction = torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], requires_grad=True)
+    >>> target = torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]])
+    >>> indicator = reversed_relative_indicator(prediction, target)
+    >>> indicator
+    tensor([[0., 1., 1.],
+            [3., 1., 1.]], grad_fn=<AbsBackward0>)
+
+    ```
     """
     return prediction.abs()
