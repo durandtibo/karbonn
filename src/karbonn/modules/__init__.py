@@ -30,6 +30,8 @@ __all__ = [
     "Sinh",
     "Snake",
     "SquaredReLU",
+    "ToFloat",
+    "ToLong",
     "TransformedLoss",
     "binary_focal_loss",
 ]
@@ -54,6 +56,7 @@ from karbonn.modules.activations import (
     SquaredReLU,
 )
 from karbonn.modules.clamp import Clamp
+from karbonn.modules.dtype import ToFloat, ToLong
 from karbonn.modules.exu import ExU
 from karbonn.modules.loss import (
     AsinhMSELoss,
