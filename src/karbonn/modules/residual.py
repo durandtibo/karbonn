@@ -36,7 +36,8 @@ class ResidualBlock(nn.Module):
       )
       (skip): Identity()
     )
-    >>> m(torch.rand(6, 4))
+    >>> out = m(torch.rand(6, 4))
+    >>> out
     tensor([[...]], grad_fn=<AddBackward0>)
 
     ```

@@ -27,8 +27,8 @@ class Asinh(nn.Module):
     >>> m = Asinh()
     >>> m
     Asinh()
-    >>> output = m(torch.tensor([[-1.0, 0.0, 1.0], [-2.0, 2.0, 4.0]]))
-    >>> output
+    >>> out = m(torch.tensor([[-1.0, 0.0, 1.0], [-2.0, 2.0, 4.0]]))
+    >>> out
     tensor([[-0.8814,  0.0000,  0.8814],
             [-1.4436,  1.4436,  2.0947]])
 
@@ -58,8 +58,8 @@ class Exp(nn.Module):
     >>> m = Exp()
     >>> m
     Exp()
-    >>> output = m(torch.tensor([[-1.0, 0.0, 1.0], [-2.0, 2.0, 4.0]]))
-    >>> output
+    >>> out = m(torch.tensor([[-1.0, 0.0, 1.0], [-2.0, 2.0, 4.0]]))
+    >>> out
     tensor([[ 0.3679,  1.0000,  2.7183],
             [ 0.1353,  7.3891, 54.5981]])
 
@@ -89,8 +89,8 @@ class Expm1(nn.Module):
     >>> m = Expm1()
     >>> m
     Expm1()
-    >>> output = m(torch.tensor([[-1.0, 0.0, 1.0], [-2.0, 2.0, 4.0]]))
-    >>> output
+    >>> out = m(torch.tensor([[-1.0, 0.0, 1.0], [-2.0, 2.0, 4.0]]))
+    >>> out
     tensor([[-0.6321,  0.0000,  1.7183],
             [-0.8647,  6.3891, 53.5981]])
 
@@ -120,8 +120,8 @@ class Log(nn.Module):
     >>> m = Log()
     >>> m
     Log()
-    >>> output = m(torch.tensor([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]))
-    >>> output
+    >>> out = m(torch.tensor([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]))
+    >>> out
     tensor([[0.0000, 0.6931, 1.0986],
             [1.3863, 1.6094, 1.7918]])
 
@@ -151,8 +151,8 @@ class Log1p(nn.Module):
     >>> m = Log1p()
     >>> m
     Log1p()
-    >>> output = m(torch.tensor([[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]]))
-    >>> output
+    >>> out = m(torch.tensor([[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]]))
+    >>> out
     tensor([[0.0000, 0.6931, 1.0986],
             [1.3863, 1.6094, 1.7918]])
 
@@ -187,8 +187,8 @@ class SafeExp(nn.Module):
     >>> m = SafeExp()
     >>> m
     SafeExp(max=20.0)
-    >>> output = m(torch.tensor([[0.01, 0.1, 1.0], [10.0, 100.0, 1000.0]]))
-    >>> output
+    >>> out = m(torch.tensor([[0.01, 0.1, 1.0], [10.0, 100.0, 1000.0]]))
+    >>> out
     tensor([[1.0101e+00, 1.1052e+00, 2.7183e+00],
             [2.2026e+04, 4.8517e+08, 4.8517e+08]])
 
@@ -230,8 +230,8 @@ class SafeLog(nn.Module):
     >>> m = SafeLog()
     >>> m
     SafeLog(min=1e-08)
-    >>> output = m(torch.tensor([[1e-4, 1e-5, 1e-6], [1e-8, 1e-9, 1e-10]]))
-    >>> output
+    >>> out = m(torch.tensor([[1e-4, 1e-5, 1e-6], [1e-8, 1e-9, 1e-10]]))
+    >>> out
     tensor([[ -9.2103, -11.5129, -13.8155],
             [-18.4207, -18.4207, -18.4207]])
 
@@ -265,8 +265,8 @@ class Sin(nn.Module):
     >>> m = Sin()
     >>> m
     Sin()
-    >>> output = m(torch.arange(8, dtype=torch.float).view(2, 4))
-    >>> output
+    >>> out = m(torch.arange(8, dtype=torch.float).view(2, 4))
+    >>> out
     tensor([[ 0.0000,  0.8415,  0.9093,  0.1411],
             [-0.7568, -0.9589, -0.2794,  0.6570]])
 
@@ -294,8 +294,8 @@ class Sinh(nn.Module):
     >>> m = Sinh()
     >>> m
     Sinh()
-    >>> output = m(torch.tensor([[-1.0, 0.0, 1.0], [-2.0, 2.0, 4.0]]))
-    >>> output
+    >>> out = m(torch.tensor([[-1.0, 0.0, 1.0], [-2.0, 2.0, 4.0]]))
+    >>> out
     tensor([[-1.1752,  0.0000,  1.1752],
             [-3.6269,  3.6269, 27.2899]])
 

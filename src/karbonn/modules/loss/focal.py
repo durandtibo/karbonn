@@ -46,10 +46,17 @@ class BinaryFocalLoss(nn.Module):
     >>> import torch
     >>> from karbonn import BinaryFocalLoss
     >>> criterion = BinaryFocalLoss(nn.BCEWithLogitsLoss(reduction="none"))
+    >>> criterion
+    BinaryFocalLoss(
+      alpha=0.5, gamma=2.0
+      (loss): BCEWithLogitsLoss()
+    )
     >>> input = torch.randn(3, 2, requires_grad=True)
-    >>> target = torch.rand(3, 2, requires_grad=False)
-    >>> output = criterion(input, target)
-    >>> output.backward()
+    >>> target = torch.rand(3, 2)
+    >>> loss = criterion(input, target)
+    >>> loss
+    tensor(..., grad_fn=<MeanBackward0>)
+    >>> loss.backward()
 
     ```
     """

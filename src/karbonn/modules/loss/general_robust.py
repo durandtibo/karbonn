@@ -59,8 +59,10 @@ class GeneralRobustRegressionLoss(nn.Module):
     GeneralRobustRegressionLoss(alpha=2.0, scale=1.0, max=None)
     >>> input = torch.randn(3, 2, requires_grad=True)
     >>> target = torch.rand(3, 2, requires_grad=False)
-    >>> output = criterion(input, target)
-    >>> output.backward()
+    >>> loss = criterion(input, target)
+    >>> loss
+    tensor(..., grad_fn=<MeanBackward0>)
+    >>> loss.backward()
 
     ```
     """
