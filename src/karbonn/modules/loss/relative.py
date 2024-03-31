@@ -49,7 +49,7 @@ class RelativeLoss(nn.Module):
     ... )
     >>> criterion
     RelativeLoss(
-      eps=1e-08
+      eps=1e-08, reduction=mean
       (criterion): MSELoss()
       (indicator): ClassicalRelativeIndicator()
     )
@@ -79,7 +79,7 @@ class RelativeLoss(nn.Module):
         self._eps = eps
 
     def extra_repr(self) -> str:
-        return f"eps={self._eps}"
+        return f"eps={self._eps}, reduction={self.reduction}"
 
     def forward(self, prediction: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
         loss = self.criterion(prediction, target)
@@ -117,7 +117,7 @@ class RelativeMSELoss(RelativeLoss):
     >>> criterion = RelativeMSELoss(indicator=ClassicalRelativeIndicator())
     >>> criterion
     RelativeMSELoss(
-      eps=1e-08
+      eps=1e-08, reduction=mean
       (criterion): MSELoss()
       (indicator): ClassicalRelativeIndicator()
     )
@@ -170,7 +170,7 @@ class RelativeSmoothL1Loss(RelativeLoss):
     >>> criterion = RelativeSmoothL1Loss(indicator=ClassicalRelativeIndicator())
     >>> criterion
     RelativeSmoothL1Loss(
-      eps=1e-08
+      eps=1e-08, reduction=mean
       (criterion): SmoothL1Loss()
       (indicator): ClassicalRelativeIndicator()
     )
