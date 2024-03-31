@@ -84,6 +84,8 @@
 
 ## Data types and shapes
 
+### ::: karbonn.Squeeze
+
 ### ::: karbonn.ToFloat
 
 ### ::: karbonn.ToLong
