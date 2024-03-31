@@ -30,6 +30,7 @@ __all__ = [
     "Sinh",
     "Snake",
     "SquaredReLU",
+    "Squeeze",
     "ToFloat",
     "ToLong",
     "TransformedLoss",
@@ -70,3 +71,4 @@ from karbonn.modules.loss import (
     binary_focal_loss,
 )
 from karbonn.modules.residual import ResidualBlock
+from karbonn.modules.shape import Squeeze
