@@ -29,7 +29,8 @@ class Clamp(torch.nn.Module):
     >>> m = Clamp(min=-1, max=2)
     >>> m
     Clamp(min=-1, max=2)
-    >>> m(torch.tensor([[-2.0, -1.0, 0.0], [1.0, 2.0, 3.0]]))
+    >>> out = m(torch.tensor([[-2.0, -1.0, 0.0], [1.0, 2.0, 3.0]]))
+    >>> out
     tensor([[-1., -1.,  0.], [ 1.,  2.,  2.]])
 
     ```

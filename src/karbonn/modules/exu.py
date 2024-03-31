@@ -44,7 +44,8 @@ class ExU(nn.Module):
     >>> m = ExU(4, 6)
     >>> m
     ExU(in_features=4, out_features=6, bias=True)
-    >>> m(torch.rand(6, 4))
+    >>> out = m(torch.rand(6, 4))
+    >>> out
     tensor([[...]], grad_fn=<MmBackward0>)
 
     ```

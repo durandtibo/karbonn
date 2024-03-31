@@ -24,7 +24,8 @@ class ToFloat(nn.Module):
     >>> m = ToFloat()
     >>> m
     ToFloat()
-    >>> m(torch.tensor([[2, -1, 0], [1, 2, 3]]))
+    >>> out = m(torch.tensor([[2, -1, 0], [1, 2, 3]]))
+    >>> out
     tensor([[ 2., -1.,  0.],
             [ 1.,  2.,  3.]])
 
@@ -51,7 +52,8 @@ class ToLong(nn.Module):
     >>> m = ToLong()
     >>> m
     ToLong()
-    >>> m(torch.tensor([[2.0, -1.0, 0.0], [1.0, 2.0, 3.0]]))
+    >>> out = m(torch.tensor([[2.0, -1.0, 0.0], [1.0, 2.0, 3.0]]))
+    >>> out
     tensor([[ 2, -1,  0],
             [ 1,  2,  3]])
 
