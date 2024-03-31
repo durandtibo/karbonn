@@ -81,3 +81,9 @@
 ## Blocks
 
 ### ::: karbonn.ResidualBlock
+
+## Data types and shapes
+
+### ::: karbonn.ToFloat
+
+### ::: karbonn.ToLong
