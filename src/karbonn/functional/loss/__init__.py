@@ -8,6 +8,7 @@ __all__ = [
     "asinh_smooth_l1_loss",
     "classical_relative_indicator",
     "general_robust_regression_loss",
+    "geometric_mean_indicator",
     "log_cosh_loss",
     "msle_loss",
     "relative_loss",
@@ -20,6 +21,7 @@ from karbonn.functional.loss.log import log_cosh_loss, msle_loss
 from karbonn.functional.loss.relative import (
     arithmetical_mean_indicator,
     classical_relative_indicator,
+    geometric_mean_indicator,
     relative_loss,
     reversed_relative_indicator,
 )

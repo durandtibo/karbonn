@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import pytest
 import torch
-from coola import objects_are_equal
+from coola import objects_are_allclose, objects_are_equal
 from coola.utils.tensor import get_available_devices
 
 from karbonn.functional import relative_loss
 from karbonn.functional.loss.relative import (
     arithmetical_mean_indicator,
     classical_relative_indicator,
+    geometric_mean_indicator,
     reversed_relative_indicator,
 )
 
@@ -140,7 +141,7 @@ def test_arithmetical_mean_indicator(device: str) -> None:
     assert objects_are_equal(
         arithmetical_mean_indicator(
             torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], device=device),
-            torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]], device=device, requires_grad=True),
+            torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]], device=device),
         ),
         torch.tensor([[1.0, 1.0, 0.5], [3.0, 3.0, 1.0]], device=device),
     )
@@ -157,9 +158,27 @@ def test_classical_relative_indicator(device: str) -> None:
     assert objects_are_equal(
         classical_relative_indicator(
             torch.ones(2, 3, device=device),
-            torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]], device=device, requires_grad=True),
+            torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]], device=device),
         ),
         torch.tensor([[2.0, 1.0, 0.0], [3.0, 5.0, 1.0]], device=device),
+    )
+
+
+##############################################
+#     Tests for geometric_mean_indicator     #
+##############################################
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+def test_geometric_mean_indicator(device: str) -> None:
+    device = torch.device(device)
+    assert objects_are_allclose(
+        geometric_mean_indicator(
+            torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], device=device),
+            torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]], device=device),
+        ),
+        torch.tensor([[1e-8, 1.0, 1e-8], [3.0, 2.23606797749979, 1.0]], device=device),
+        atol=1e-5,
     )
 
 
@@ -174,7 +193,7 @@ def test_reversed_relative_indicator(device: str) -> None:
     assert objects_are_equal(
         reversed_relative_indicator(
             torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]], device=device),
-            torch.ones(2, 3, device=device, requires_grad=True),
+            torch.ones(2, 3, device=device),
         ),
         torch.tensor([[2.0, 1.0, 0.0], [3.0, 5.0, 1.0]], device=device),
     )

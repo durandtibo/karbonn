@@ -8,6 +8,7 @@ __all__ = [
     "BinaryFocalLoss",
     "ClassicalRelativeIndicator",
     "GeneralRobustRegressionLoss",
+    "GeometricMeanIndicator",
     "RelativeLoss",
     "RelativeMSELoss",
     "RelativeSmoothL1Loss",
@@ -21,6 +22,7 @@ from karbonn.modules.loss.indicators import (
     ArithmeticalMeanIndicator,
     BaseRelativeIndicator,
     ClassicalRelativeIndicator,
+    GeometricMeanIndicator,
     ReversedRelativeIndicator,
 )
 from karbonn.modules.loss.relative import (

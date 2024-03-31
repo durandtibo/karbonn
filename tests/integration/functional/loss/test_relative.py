@@ -12,6 +12,7 @@ from karbonn.functional import relative_loss
 from karbonn.functional.loss import (
     arithmetical_mean_indicator,
     classical_relative_indicator,
+    geometric_mean_indicator,
     reversed_relative_indicator,
 )
 from karbonn.utils import is_loss_decreasing_with_sgd
@@ -28,6 +29,7 @@ LOSSES = [
 INDICATORS = [
     arithmetical_mean_indicator,
     classical_relative_indicator,
+    geometric_mean_indicator,
     reversed_relative_indicator,
 ]
 REDUCTIONS = ["mean", "sum"]

@@ -6,6 +6,7 @@ __all__ = [
     "BaseRelativeIndicator",
     "ArithmeticalMeanIndicator",
     "ClassicalRelativeIndicator",
+    "GeometricMeanIndicator",
     "ReversedRelativeIndicator",
 ]
 
@@ -16,6 +17,7 @@ from torch import nn
 from karbonn.functional.loss.relative import (
     arithmetical_mean_indicator,
     classical_relative_indicator,
+    geometric_mean_indicator,
     reversed_relative_indicator,
 )
 
@@ -25,6 +27,27 @@ class BaseRelativeIndicator(nn.Module):
 
     The indicators are designed based on
     https://en.wikipedia.org/wiki/Relative_change#Indicators_of_relative_change.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.modules.loss import ClassicalRelativeIndicator
+    >>> prediction = torch.randn(3, 5, requires_grad=True)
+    >>> target = torch.randn(3, 5)
+    >>> indicator = ClassicalRelativeIndicator()
+    >>> indicator
+    ClassicalRelativeIndicator()
+    >>> values = indicator(
+    ...     prediction=torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], requires_grad=True),
+    ...     target=torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]]),
+    ... )
+    >>> values
+    tensor([[2., 1., 0.],
+            [3., 5., 1.]])
+
+    ```
     """
 
     def forward(self, prediction: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
@@ -54,12 +77,12 @@ class ArithmeticalMeanIndicator(BaseRelativeIndicator):
     >>> indicator
     ArithmeticalMeanIndicator()
     >>> values = indicator(
-    ...     prediction=torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]]),
+    ...     prediction=torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], requires_grad=True),
     ...     target=torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]]),
     ... )
     >>> values
     tensor([[1.0000, 1.0000, 0.5000],
-            [3.0000, 3.0000, 1.0000]])
+            [3.0000, 3.0000, 1.0000]], grad_fn=<MulBackward0>)
 
     ```
     """
@@ -83,7 +106,7 @@ class ClassicalRelativeIndicator(BaseRelativeIndicator):
     >>> indicator
     ClassicalRelativeIndicator()
     >>> values = indicator(
-    ...     prediction=torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]]),
+    ...     prediction=torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], requires_grad=True),
     ...     target=torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]]),
     ... )
     >>> values
@@ -95,6 +118,35 @@ class ClassicalRelativeIndicator(BaseRelativeIndicator):
 
     def forward(self, prediction: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
         return classical_relative_indicator(prediction, target)
+
+
+class GeometricMeanIndicator(BaseRelativeIndicator):
+    r"""Implement the geometric mean indicator function.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.modules.loss import GeometricMeanIndicator
+    >>> prediction = torch.randn(3, 5, requires_grad=True)
+    >>> target = torch.randn(3, 5)
+    >>> indicator = GeometricMeanIndicator()
+    >>> indicator
+    GeometricMeanIndicator()
+    >>> values = indicator(
+    ...     prediction=torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], requires_grad=True),
+    ...     target=torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]]),
+    ... )
+    >>> values
+    tensor([[0.0000, 1.0000, 0.0000],
+            [3.0000, 2.2361, 1.0000]], grad_fn=<SqrtBackward0>)
+
+    ```
+    """
+
+    def forward(self, prediction: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        return geometric_mean_indicator(prediction, target)
 
 
 class ReversedRelativeIndicator(BaseRelativeIndicator):
@@ -112,12 +164,12 @@ class ReversedRelativeIndicator(BaseRelativeIndicator):
     >>> indicator
     ReversedRelativeIndicator()
     >>> values = indicator(
-    ...     prediction=torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]]),
+    ...     prediction=torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], requires_grad=True),
     ...     target=torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]]),
     ... )
     >>> values
     tensor([[0., 1., 1.],
-            [3., 1., 1.]])
+            [3., 1., 1.]], grad_fn=<AbsBackward0>)
 
     ```
     """
