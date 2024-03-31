@@ -26,9 +26,9 @@ def relative_loss(
     loss: torch.Tensor,
     prediction: torch.Tensor,
     target: torch.Tensor,
+    indicator: IndicatorType | str = "classical_relative",
     reduction: str = "mean",
     eps: float = 1e-8,
-    indicator: IndicatorType | str = "classical_relative",
 ) -> torch.Tensor:
     r"""Compute the relative loss.
 
@@ -40,6 +40,8 @@ def relative_loss(
             the target.
         prediction: The predictions.
         target: The target values.
+        indicator: The name of the indicator function to use or its
+            implementation.
         reduction: The reduction strategy. The valid values are
             ``'mean'``, ``'none'``,  and ``'sum'``.
             ``'none'``: no reduction will be applied, ``'mean'``: the
@@ -47,8 +49,6 @@ def relative_loss(
             input, ``'sum'``: the output will be summed.
         eps: An arbitrary small strictly positive number to avoid
             undefined results when the indicator is zero.
-        indicator: The name of the indicator function to use or its
-            implementation.
 
     Returns:
         The computed relative loss.
