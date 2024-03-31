@@ -18,6 +18,9 @@ __all__ = [
     "MultiQuadratic",
     "Quadratic",
     "ReLUn",
+    "RelativeLoss",
+    "RelativeMSELoss",
+    "RelativeSmoothL1Loss",
     "ResidualBlock",
     "SafeExp",
     "SafeLog",
@@ -52,6 +55,9 @@ from karbonn.modules.exu import ExU
 from karbonn.modules.loss import (
     BinaryFocalLoss,
     GeneralRobustRegressionLoss,
+    RelativeLoss,
+    RelativeMSELoss,
+    RelativeSmoothL1Loss,
     binary_focal_loss,
 )
 from karbonn.modules.residual import ResidualBlock

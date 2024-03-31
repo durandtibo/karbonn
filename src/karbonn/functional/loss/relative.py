@@ -72,6 +72,7 @@ def relative_loss(
     ... )
     >>> loss
     tensor(..., grad_fn=<MeanBackward0>)
+    >>> loss.backward()
 
     ```
     """
