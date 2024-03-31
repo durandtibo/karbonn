@@ -9,37 +9,48 @@ from torch import nn
 from torch.nn.functional import l1_loss, mse_loss, smooth_l1_loss
 
 from karbonn.functional import relative_loss
-from karbonn.functional.loss.relative import RelativeIndicatorRegistry
+from karbonn.functional.loss import (
+    arithmetical_mean_indicator,
+    classical_relative_indicator,
+    reversed_relative_indicator,
+)
 from karbonn.utils import is_loss_decreasing_with_sgd
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+
+
+LOSSES = [
+    partial(mse_loss, reduction="none"),
+    partial(smooth_l1_loss, reduction="none"),
+    partial(l1_loss, reduction="none"),
+]
+INDICATORS = [
+    arithmetical_mean_indicator,
+    classical_relative_indicator,
+    reversed_relative_indicator,
+]
+REDUCTIONS = ["mean", "sum"]
+
 
 ###################################
 #     Tests for relative_loss     #
 ###################################
 
 
-@pytest.mark.parametrize(
-    "base_loss",
-    [
-        partial(mse_loss, reduction="none"),
-        partial(smooth_l1_loss, reduction="none"),
-        partial(l1_loss, reduction="none"),
-    ],
-)
-@pytest.mark.parametrize("reduction", ["mean", "sum"])
-@pytest.mark.parametrize("indicator", RelativeIndicatorRegistry.available_indicators())
+@pytest.mark.parametrize("base_loss", LOSSES)
+@pytest.mark.parametrize("indicator", INDICATORS)
+@pytest.mark.parametrize("reduction", REDUCTIONS)
 def test_relative_loss_loss_decreasing(
-    base_loss: Callable[[torch.Tensor, torch.Tensor], torch.Tensor], reduction: str, indicator: str
+    base_loss: Callable[[torch.Tensor, torch.Tensor], torch.Tensor],
+    indicator: Callable[[torch.Tensor, torch.Tensor], torch.Tensor],
+    reduction: str,
 ) -> None:
     def my_loss(prediction: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
         return relative_loss(
             loss=base_loss(prediction, target),
-            prediction=prediction,
-            target=target,
+            indicator=indicator(prediction, target),
             reduction=reduction,
-            indicator=indicator,
         )
 
     assert is_loss_decreasing_with_sgd(

@@ -83,13 +83,12 @@ class RelativeLoss(nn.Module):
 
     def forward(self, prediction: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
         loss = self.criterion(prediction, target)
+        indicator = self.indicator(prediction, target)
         return relative_loss(
             loss=loss,
-            prediction=prediction,
-            target=target,
+            indicator=indicator,
             reduction=self.reduction,
             eps=self._eps,
-            indicator=self.indicator,
         )
 
 
