@@ -6,6 +6,8 @@ from coola.utils.tensor import get_available_devices
 
 from karbonn.functional import asinh_mse_loss, asinh_smooth_l1_loss
 
+SHAPES = [(2,), (2, 3), (2, 3, 4)]
+
 ####################################
 #     Tests for asinh_mse_loss     #
 ####################################
@@ -63,7 +65,7 @@ def test_asinh_mse_loss_reduction_incorrect() -> None:
 
 
 @pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("shape", [(2,), (2, 3), (2, 3, 4)])
+@pytest.mark.parametrize("shape", SHAPES)
 def test_asinh_mse_loss_shape(device: str, shape: tuple[int, ...]) -> None:
     device = torch.device(device)
     assert asinh_mse_loss(
@@ -128,7 +130,7 @@ def test_asinh_smooth_l1_loss_reduction_incorrect() -> None:
 
 
 @pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("shape", [(2,), (2, 3), (2, 3, 4)])
+@pytest.mark.parametrize("shape", SHAPES)
 def test_asinh_smooth_l1_loss_shape(device: str, shape: tuple[int, ...]) -> None:
     device = torch.device(device)
     assert asinh_smooth_l1_loss(

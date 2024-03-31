@@ -28,6 +28,7 @@ __all__ = [
     "Sinh",
     "Snake",
     "SquaredReLU",
+    "TransformedLoss",
     "binary_focal_loss",
 ]
 
@@ -58,6 +59,7 @@ from karbonn.modules.loss import (
     RelativeLoss,
     RelativeMSELoss,
     RelativeSmoothL1Loss,
+    TransformedLoss,
     binary_focal_loss,
 )
 from karbonn.modules.residual import ResidualBlock

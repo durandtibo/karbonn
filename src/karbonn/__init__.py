@@ -28,6 +28,7 @@ __all__ = [
     "Sinh",
     "Snake",
     "SquaredReLU",
+    "TransformedLoss",
     "binary_focal_loss",
 ]
 
@@ -57,5 +58,6 @@ from karbonn.modules import (
     Sinh,
     Snake,
     SquaredReLU,
+    TransformedLoss,
     binary_focal_loss,
 )
