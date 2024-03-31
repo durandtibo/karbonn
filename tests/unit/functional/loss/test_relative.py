@@ -10,6 +10,8 @@ from karbonn.functional.loss.relative import (
     arithmetical_mean_indicator,
     classical_relative_indicator,
     geometric_mean_indicator,
+    maximum_mean_indicator,
+    minimum_mean_indicator,
     reversed_relative_indicator,
 )
 
@@ -29,6 +31,7 @@ def test_relative_loss_reduction_mean(device: str) -> None:
         indicator=classical_relative_indicator(prediction, target),
         eps=1e-5,
     )
+    loss.backward()
     assert objects_are_equal(loss, torch.tensor(66671.5, device=device))
 
 
@@ -44,6 +47,7 @@ def test_relative_loss_reduction_sum(device: str) -> None:
         reduction="sum",
         eps=1e-5,
     )
+    loss.backward()
     assert objects_are_equal(loss, torch.tensor(400029.0, device=device))
 
 
@@ -179,6 +183,40 @@ def test_geometric_mean_indicator(device: str) -> None:
         ),
         torch.tensor([[1e-8, 1.0, 1e-8], [3.0, 2.23606797749979, 1.0]], device=device),
         atol=1e-5,
+    )
+
+
+############################################
+#     Tests for maximum_mean_indicator     #
+############################################
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+def test_maximum_mean_indicator(device: str) -> None:
+    device = torch.device(device)
+    assert objects_are_equal(
+        maximum_mean_indicator(
+            torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], device=device),
+            torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]], device=device),
+        ),
+        torch.tensor([[2.0, 1.0, 1.0], [3.0, 5.0, 1.0]], device=device),
+    )
+
+
+############################################
+#     Tests for minimum_mean_indicator     #
+############################################
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+def test_minimum_mean_indicator(device: str) -> None:
+    device = torch.device(device)
+    assert objects_are_equal(
+        minimum_mean_indicator(
+            torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], device=device),
+            torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]], device=device),
+        ),
+        torch.tensor([[0.0, 1.0, 0.0], [3.0, 1.0, 1.0]], device=device),
     )
 
 

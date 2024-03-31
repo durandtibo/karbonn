@@ -10,6 +10,8 @@ __all__ = [
     "general_robust_regression_loss",
     "geometric_mean_indicator",
     "log_cosh_loss",
+    "maximum_mean_indicator",
+    "minimum_mean_indicator",
     "msle_loss",
     "relative_loss",
     "reversed_relative_indicator",
@@ -22,6 +24,8 @@ from karbonn.functional.loss.relative import (
     arithmetical_mean_indicator,
     classical_relative_indicator,
     geometric_mean_indicator,
+    maximum_mean_indicator,
+    minimum_mean_indicator,
     relative_loss,
     reversed_relative_indicator,
 )

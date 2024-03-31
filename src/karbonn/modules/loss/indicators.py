@@ -7,6 +7,8 @@ __all__ = [
     "ArithmeticalMeanIndicator",
     "ClassicalRelativeIndicator",
     "GeometricMeanIndicator",
+    "MaximumMeanIndicator",
+    "MinimumMeanIndicator",
     "ReversedRelativeIndicator",
 ]
 
@@ -18,6 +20,8 @@ from karbonn.functional.loss.relative import (
     arithmetical_mean_indicator,
     classical_relative_indicator,
     geometric_mean_indicator,
+    maximum_mean_indicator,
+    minimum_mean_indicator,
     reversed_relative_indicator,
 )
 
@@ -147,6 +151,64 @@ class GeometricMeanIndicator(BaseRelativeIndicator):
 
     def forward(self, prediction: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
         return geometric_mean_indicator(prediction, target)
+
+
+class MaximumMeanIndicator(BaseRelativeIndicator):
+    r"""Implement the maximum mean change indicator function.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.modules.loss import MaximumMeanIndicator
+    >>> prediction = torch.randn(3, 5, requires_grad=True)
+    >>> target = torch.randn(3, 5)
+    >>> indicator = MaximumMeanIndicator()
+    >>> indicator
+    MaximumMeanIndicator()
+    >>> values = indicator(
+    ...     prediction=torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], requires_grad=True),
+    ...     target=torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]]),
+    ... )
+    >>> values
+    tensor([[2., 1., 1.],
+            [3., 5., 1.]], grad_fn=<MaximumBackward0>)
+
+    ```
+    """
+
+    def forward(self, prediction: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        return maximum_mean_indicator(prediction, target)
+
+
+class MinimumMeanIndicator(BaseRelativeIndicator):
+    r"""Implement the minimum mean change indicator function.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.modules.loss import MinimumMeanIndicator
+    >>> prediction = torch.randn(3, 5, requires_grad=True)
+    >>> target = torch.randn(3, 5)
+    >>> indicator = MinimumMeanIndicator()
+    >>> indicator
+    MinimumMeanIndicator()
+    >>> values = indicator(
+    ...     prediction=torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]], requires_grad=True),
+    ...     target=torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]]),
+    ... )
+    >>> values
+    tensor([[0., 1., 0.],
+            [3., 1., 1.]], grad_fn=<MinimumBackward0>)
+
+    ```
+    """
+
+    def forward(self, prediction: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        return minimum_mean_indicator(prediction, target)
 
 
 class ReversedRelativeIndicator(BaseRelativeIndicator):
