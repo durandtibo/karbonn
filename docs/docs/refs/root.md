@@ -42,6 +42,10 @@
 
 ## Loss functions
 
+### ::: karbonn.AsinhMSELoss
+
+### ::: karbonn.AsinhSmoothL1Loss
+
 ### ::: karbonn.BinaryFocalLoss
 
 ### ::: karbonn.binary_focal_loss
