@@ -8,6 +8,7 @@ __all__ = [
     "AsinhSmoothL1Loss",
     "BinaryFocalLoss",
     "Clamp",
+    "ConcatFusion",
     "ExU",
     "Exp",
     "ExpSin",
@@ -59,6 +60,7 @@ from karbonn.modules.activations import (
 from karbonn.modules.clamp import Clamp
 from karbonn.modules.dtype import ToFloat, ToLong
 from karbonn.modules.exu import ExU
+from karbonn.modules.fusion import ConcatFusion
 from karbonn.modules.loss import (
     AsinhMSELoss,
     AsinhSmoothL1Loss,

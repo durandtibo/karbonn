@@ -78,6 +78,10 @@
 
 #### ::: karbonn.modules.loss.ReversedRelativeIndicator
 
+## Fusion
+
+### ::: karbonn.ConcatFusion
+
 ## Blocks
 
 ### ::: karbonn.ResidualBlock
