@@ -95,7 +95,7 @@ class ParameterSummary:
             name=name,
             mean=parameter.mean().item(),
             median=parameter.median().item(),
-            std=parameter.std(dim=None).item(),
+            std=parameter.std().item(),
             min=parameter.min().item(),
             max=parameter.max().item(),
             shape=tuple(parameter.shape),
