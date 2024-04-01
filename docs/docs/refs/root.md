@@ -94,6 +94,8 @@
 
 ## Data types and shapes
 
+### ::: karbonn.MulticlassFlatten
+
 ### ::: karbonn.Squeeze
 
 ### ::: karbonn.ToFloat
