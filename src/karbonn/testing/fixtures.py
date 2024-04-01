@@ -12,7 +12,7 @@ __all__ = [
 import pytest
 import torch
 
-from karbonn.utils.imports import is_objectory_available
+from karbonn.utils.imports import is_objectory_available, is_tabulate_available
 
 cuda_available = pytest.mark.skipif(
     not torch.cuda.is_available(), reason="Requires a device with CUDA"
@@ -25,3 +25,4 @@ distributed_available = pytest.mark.skipif(
 )
 
 objectory_available = pytest.mark.skipif(not is_objectory_available(), reason="Require objectory")
+tabulate_available = pytest.mark.skipif(not is_tabulate_available(), reason="Require tabulate")
