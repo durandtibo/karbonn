@@ -8,16 +8,23 @@ __all__ = [
     "PARAMETER_NOT_INITIALIZED",
     "ParameterSummary",
     "get_parameter_summaries",
+    "tabulate_parameter_summary",
 ]
 
 import logging
-from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from dataclasses import asdict, dataclass
+from typing import TYPE_CHECKING, Any
 
+from coola.nested import convert_to_dict_of_lists
 from torch.nn import Module, Parameter, UninitializedParameter
+
+from karbonn.utils.imports import check_tabulate, is_tabulate_available
 
 if TYPE_CHECKING:
     import torch
+
+if is_tabulate_available():
+    from tabulate import tabulate
 
 logger = logging.getLogger(__name__)
 
@@ -129,3 +136,34 @@ def get_parameter_summaries(module: Module) -> list[ParameterSummary]:
         ParameterSummary.from_parameter(name, parameter)
         for name, parameter in module.named_parameters()
     ]
+
+
+def tabulate_parameter_summary(
+    module: Module, tablefmt: str = "fancy_outline", floatfmt: str = ".6f", **kwargs: Any
+) -> str:
+    r"""Return a string summary of the model parameters.
+
+    Args:
+        module: The module to analyze.
+        tablefmt: The table format.
+        floatfmt: The float format.
+        kwargs: Variable keyword arguments to pass to ``tabulate``.
+
+    Raises:
+        RuntimeError: if ``tabulate`` package is not available.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.utils.summary import tabulate_parameter_summary
+    >>> tabulate_parameter_summary(torch.nn.Linear(4, 6))
+
+    ```
+    """
+    check_tabulate()
+    summaries = convert_to_dict_of_lists(
+        [asdict(summary) for summary in get_parameter_summaries(module)]
+    )
+    return tabulate(summaries, headers="keys", tablefmt=tablefmt, floatfmt=floatfmt, **kwargs)

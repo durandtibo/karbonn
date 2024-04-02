@@ -5,11 +5,13 @@ import torch
 from coola.utils.tensor import get_available_devices
 from torch import nn
 
+from karbonn.testing import tabulate_available
 from karbonn.utils.summary import (
     NO_PARAMETER,
     PARAMETER_NOT_INITIALIZED,
     ParameterSummary,
     get_parameter_summaries,
+    tabulate_parameter_summary,
 )
 
 ######################################
@@ -143,3 +145,18 @@ def test_get_parameter_summaries_lazy_linear() -> None:
             device=torch.device("cpu"),
         ),
     ]
+
+
+############################################
+#     Tests for show_parameter_summary     #
+############################################
+
+
+@tabulate_available
+@pytest.mark.parametrize("device", get_available_devices())
+def test_show_parameter_summary_linear(device: str) -> None:
+    device = torch.device(device)
+    summary = tabulate_parameter_summary(
+        nn.Linear(4, 6).to(device=device), tablefmt="fancy_outline"
+    )
+    assert isinstance(summary, str)
