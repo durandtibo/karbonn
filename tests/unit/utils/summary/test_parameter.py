@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import warnings
+
 import pytest
 import torch
 from coola.utils.tensor import get_available_devices
@@ -121,30 +123,32 @@ def test_get_parameter_summaries_linear() -> None:
 
 
 def test_get_parameter_summaries_lazy_linear() -> None:
-    assert get_parameter_summaries(nn.LazyLinear(6)) == [
-        ParameterSummary(
-            name="weight",
-            mean=PARAMETER_NOT_INITIALIZED,
-            median=PARAMETER_NOT_INITIALIZED,
-            std=PARAMETER_NOT_INITIALIZED,
-            min=PARAMETER_NOT_INITIALIZED,
-            max=PARAMETER_NOT_INITIALIZED,
-            learnable=True,
-            shape=PARAMETER_NOT_INITIALIZED,
-            device=torch.device("cpu"),
-        ),
-        ParameterSummary(
-            name="bias",
-            mean=PARAMETER_NOT_INITIALIZED,
-            median=PARAMETER_NOT_INITIALIZED,
-            std=PARAMETER_NOT_INITIALIZED,
-            min=PARAMETER_NOT_INITIALIZED,
-            max=PARAMETER_NOT_INITIALIZED,
-            learnable=True,
-            shape=PARAMETER_NOT_INITIALIZED,
-            device=torch.device("cpu"),
-        ),
-    ]
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore', category=UserWarning)
+        assert get_parameter_summaries(nn.LazyLinear(6)) == [
+            ParameterSummary(
+                name="weight",
+                mean=PARAMETER_NOT_INITIALIZED,
+                median=PARAMETER_NOT_INITIALIZED,
+                std=PARAMETER_NOT_INITIALIZED,
+                min=PARAMETER_NOT_INITIALIZED,
+                max=PARAMETER_NOT_INITIALIZED,
+                learnable=True,
+                shape=PARAMETER_NOT_INITIALIZED,
+                device=torch.device("cpu"),
+            ),
+            ParameterSummary(
+                name="bias",
+                mean=PARAMETER_NOT_INITIALIZED,
+                median=PARAMETER_NOT_INITIALIZED,
+                std=PARAMETER_NOT_INITIALIZED,
+                min=PARAMETER_NOT_INITIALIZED,
+                max=PARAMETER_NOT_INITIALIZED,
+                learnable=True,
+                shape=PARAMETER_NOT_INITIALIZED,
+                device=torch.device("cpu"),
+            ),
+        ]
 
 
 ############################################
