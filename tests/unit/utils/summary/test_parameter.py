@@ -163,6 +163,7 @@ def test_tabulate_parameter_summary_linear(device: str) -> None:
     assert isinstance(summary, str)
 
 
+@tabulate_available
 def test_tabulate_parameter_summary_linear_one() -> None:
     linear = nn.Linear(4, 6)
     nn.init.ones_(linear.weight)
