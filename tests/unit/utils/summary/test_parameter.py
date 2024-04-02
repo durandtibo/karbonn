@@ -154,9 +154,25 @@ def test_get_parameter_summaries_lazy_linear() -> None:
 
 @tabulate_available
 @pytest.mark.parametrize("device", get_available_devices())
-def test_show_parameter_summary_linear(device: str) -> None:
+def test_tabulate_parameter_summary_linear(device: str) -> None:
     device = torch.device(device)
     summary = tabulate_parameter_summary(
-        nn.Linear(4, 6).to(device=device), tablefmt="fancy_outline"
+        nn.Sequential(nn.Linear(4, 6), nn.ReLU(), nn.BatchNorm1d(num_features=6)).to(device=device),
+        tablefmt="fancy_outline",
     )
     assert isinstance(summary, str)
+
+
+def test_tabulate_parameter_summary_linear_one() -> None:
+    linear = nn.Linear(4, 6)
+    nn.init.ones_(linear.weight)
+    nn.init.zeros_(linear.bias)
+    summary = tabulate_parameter_summary(linear)
+    assert summary == (
+        "╒════════╤══════════╤══════════╤══════════╤══════════╤══════════╤═════════╤═════════════╤══════════╕\n"
+        "│ name   │     mean │   median │      std │      min │      max │ shape   │ learnable   │ device   │\n"
+        "╞════════╪══════════╪══════════╪══════════╪══════════╪══════════╪═════════╪═════════════╪══════════╡\n"
+        "│ weight │ 1.000000 │ 1.000000 │ 0.000000 │ 1.000000 │ 1.000000 │ (6, 4)  │ True        │ cpu      │\n"
+        "│ bias   │ 0.000000 │ 0.000000 │ 0.000000 │ 0.000000 │ 0.000000 │ (6,)    │ True        │ cpu      │\n"
+        "╘════════╧══════════╧══════════╧══════════╧══════════╧══════════╧═════════╧═════════════╧══════════╛"
+    )

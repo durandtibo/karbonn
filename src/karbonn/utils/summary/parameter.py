@@ -158,7 +158,14 @@ def tabulate_parameter_summary(
 
     >>> import torch
     >>> from karbonn.utils.summary import tabulate_parameter_summary
-    >>> tabulate_parameter_summary(torch.nn.Linear(4, 6))
+    >>> summary = tabulate_parameter_summary(torch.nn.Linear(4, 6))
+    >>> summary
+    ╒════════╤═══════════╤═══════════╤══════════╤═══════════╤══════════╤═════════╤═════════════╤══════════╕
+    │ name   │      mean │    median │      std │       min │      max │ shape   │ learnable   │ device   │
+    ╞════════╪═══════════╪═══════════╪══════════╪═══════════╪══════════╪═════════╪═════════════╪══════════╡
+    │ weight │       ... │       ... │      ... │       ... │      ... │ (6, 4)  │ True        │ cpu      │
+    │ bias   │       ... │       ... │      ... │       ... │      ... │ (6,)    │ True        │ cpu      │
+    ╘════════╧═══════════╧═══════════╧══════════╧═══════════╧══════════╧═════════╧═════════════╧══════════╛
 
     ```
     """
