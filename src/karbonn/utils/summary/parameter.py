@@ -23,7 +23,7 @@ from karbonn.utils.imports import check_tabulate, is_tabulate_available
 if TYPE_CHECKING:
     import torch
 
-if is_tabulate_available():
+if is_tabulate_available():  # pragma: no cover
     from tabulate import tabulate
 
 logger = logging.getLogger(__name__)
