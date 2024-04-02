@@ -124,7 +124,7 @@ def test_get_parameter_summaries_linear() -> None:
 
 def test_get_parameter_summaries_lazy_linear() -> None:
     with warnings.catch_warnings():
-        warnings.simplefilter('ignore', category=UserWarning)
+        warnings.simplefilter("ignore", category=UserWarning)
         assert get_parameter_summaries(nn.LazyLinear(6)) == [
             ParameterSummary(
                 name="weight",
