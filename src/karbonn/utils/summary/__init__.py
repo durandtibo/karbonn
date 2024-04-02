@@ -8,6 +8,7 @@ __all__ = [
     "PARAMETER_NOT_INITIALIZED",
     "ParameterSummary",
     "get_parameter_summaries",
+    "tabulate_parameter_summary",
 ]
 
 from karbonn.utils.summary.parameter import (
@@ -15,4 +16,5 @@ from karbonn.utils.summary.parameter import (
     PARAMETER_NOT_INITIALIZED,
     ParameterSummary,
     get_parameter_summaries,
+    tabulate_parameter_summary,
 )

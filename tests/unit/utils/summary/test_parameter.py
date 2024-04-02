@@ -1,15 +1,19 @@
 from __future__ import annotations
 
+import warnings
+
 import pytest
 import torch
 from coola.utils.tensor import get_available_devices
 from torch import nn
 
+from karbonn.testing import tabulate_available
 from karbonn.utils.summary import (
     NO_PARAMETER,
     PARAMETER_NOT_INITIALIZED,
     ParameterSummary,
     get_parameter_summaries,
+    tabulate_parameter_summary,
 )
 
 ######################################
@@ -119,27 +123,61 @@ def test_get_parameter_summaries_linear() -> None:
 
 
 def test_get_parameter_summaries_lazy_linear() -> None:
-    assert get_parameter_summaries(nn.LazyLinear(6)) == [
-        ParameterSummary(
-            name="weight",
-            mean=PARAMETER_NOT_INITIALIZED,
-            median=PARAMETER_NOT_INITIALIZED,
-            std=PARAMETER_NOT_INITIALIZED,
-            min=PARAMETER_NOT_INITIALIZED,
-            max=PARAMETER_NOT_INITIALIZED,
-            learnable=True,
-            shape=PARAMETER_NOT_INITIALIZED,
-            device=torch.device("cpu"),
-        ),
-        ParameterSummary(
-            name="bias",
-            mean=PARAMETER_NOT_INITIALIZED,
-            median=PARAMETER_NOT_INITIALIZED,
-            std=PARAMETER_NOT_INITIALIZED,
-            min=PARAMETER_NOT_INITIALIZED,
-            max=PARAMETER_NOT_INITIALIZED,
-            learnable=True,
-            shape=PARAMETER_NOT_INITIALIZED,
-            device=torch.device("cpu"),
-        ),
-    ]
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=UserWarning)
+        assert get_parameter_summaries(nn.LazyLinear(6)) == [
+            ParameterSummary(
+                name="weight",
+                mean=PARAMETER_NOT_INITIALIZED,
+                median=PARAMETER_NOT_INITIALIZED,
+                std=PARAMETER_NOT_INITIALIZED,
+                min=PARAMETER_NOT_INITIALIZED,
+                max=PARAMETER_NOT_INITIALIZED,
+                learnable=True,
+                shape=PARAMETER_NOT_INITIALIZED,
+                device=torch.device("cpu"),
+            ),
+            ParameterSummary(
+                name="bias",
+                mean=PARAMETER_NOT_INITIALIZED,
+                median=PARAMETER_NOT_INITIALIZED,
+                std=PARAMETER_NOT_INITIALIZED,
+                min=PARAMETER_NOT_INITIALIZED,
+                max=PARAMETER_NOT_INITIALIZED,
+                learnable=True,
+                shape=PARAMETER_NOT_INITIALIZED,
+                device=torch.device("cpu"),
+            ),
+        ]
+
+
+############################################
+#     Tests for show_parameter_summary     #
+############################################
+
+
+@tabulate_available
+@pytest.mark.parametrize("device", get_available_devices())
+def test_tabulate_parameter_summary_linear(device: str) -> None:
+    device = torch.device(device)
+    summary = tabulate_parameter_summary(
+        nn.Sequential(nn.Linear(4, 6), nn.ReLU(), nn.BatchNorm1d(num_features=6)).to(device=device),
+        tablefmt="fancy_outline",
+    )
+    assert isinstance(summary, str)
+
+
+@tabulate_available
+def test_tabulate_parameter_summary_linear_one() -> None:
+    linear = nn.Linear(4, 6)
+    nn.init.ones_(linear.weight)
+    nn.init.zeros_(linear.bias)
+    summary = tabulate_parameter_summary(linear)
+    assert summary == (
+        "╒════════╤══════════╤══════════╤══════════╤══════════╤══════════╤═════════╤═════════════╤══════════╕\n"
+        "│ name   │     mean │   median │      std │      min │      max │ shape   │ learnable   │ device   │\n"
+        "╞════════╪══════════╪══════════╪══════════╪══════════╪══════════╪═════════╪═════════════╪══════════╡\n"
+        "│ weight │ 1.000000 │ 1.000000 │ 0.000000 │ 1.000000 │ 1.000000 │ (6, 4)  │ True        │ cpu      │\n"
+        "│ bias   │ 0.000000 │ 0.000000 │ 0.000000 │ 0.000000 │ 0.000000 │ (6,)    │ True        │ cpu      │\n"
+        "╘════════╧══════════╧══════════╧══════════╧══════════╧══════════╧═════════╧═════════════╧══════════╛"
+    )
