@@ -4,6 +4,7 @@ parameters."""
 from __future__ import annotations
 
 __all__ = [
+    "ModuleSummary",
     "NO_PARAMETER",
     "PARAMETER_NOT_INITIALIZED",
     "ParameterSummary",
@@ -11,6 +12,7 @@ __all__ = [
     "tabulate_parameter_summary",
 ]
 
+from karbonn.utils.summary.module import ModuleSummary
 from karbonn.utils.summary.parameter import (
     NO_PARAMETER,
     PARAMETER_NOT_INITIALIZED,
