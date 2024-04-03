@@ -2,7 +2,7 @@ r"""Contain functionalities to analyze a ``torch.nn.Module``."""
 
 from __future__ import annotations
 
-__all__ = ["parse_batch_shape"]
+__all__ = ["parse_batch_dtype", "parse_batch_shape"]
 
 from collections.abc import Mapping, Sequence
 from typing import Any, overload
@@ -12,6 +12,62 @@ import torch
 PARAMETER_NUM_UNITS = (" ", "K", "M", "B", "T")
 UNKNOWN_SIZE = "?"
 UNKNOWN_DTYPE = "?"
+
+
+@overload
+def parse_batch_dtype(batch: torch.Tensor) -> torch.dtype | None: ...  # pragma: no cover
+
+
+@overload
+def parse_batch_dtype(
+    batch: Sequence[torch.Tensor],
+) -> tuple[torch.dtype | None, ...]: ...  # pragma: no cover
+
+
+@overload
+def parse_batch_dtype(
+    batch: Mapping[str, torch.Tensor]
+) -> dict[str, torch.dtype | None]: ...  # pragma: no cover
+
+
+def parse_batch_dtype(
+    batch: Any,
+) -> tuple[torch.dtype | None, ...] | dict[str, torch.dtype | None] | torch.dtype | None:
+    r"""Parse the data type of the tensors in the batch.
+
+    The current implementation only parses the data type of a tensor,
+    list of tensors, and dictionary of tensors.
+
+    Args:
+        batch: The batch to parse.
+
+    Returns:
+        The data types in the batch or ``None`` if it cannot parse the input.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.utils.summary.module import parse_batch_dtype
+    >>> parse_batch_dtype(torch.ones(2, 3))
+    torch.float32
+    >>> parse_batch_dtype([torch.ones(2, 3), torch.zeros(2, dtype=torch.long)])
+    (torch.float32, torch.int64)
+    >>> parse_batch_dtype(
+    ...     {"input1": torch.ones(2, 3), "input2": torch.zeros(2, dtype=torch.long)}
+    ... )
+    {'input1': torch.float32, 'input2': torch.int64}
+
+    ```
+    """
+    if torch.is_tensor(batch):
+        return batch.dtype
+    if isinstance(batch, Sequence):
+        return tuple(parse_batch_dtype(item) for item in batch)
+    if isinstance(batch, Mapping):
+        return {key: parse_batch_dtype(value) for key, value in batch.items()}
+    return None
 
 
 @overload
