@@ -2,16 +2,155 @@ r"""Contain functionalities to analyze a ``torch.nn.Module``."""
 
 from __future__ import annotations
 
-__all__ = ["parse_batch_dtype", "parse_batch_shape"]
+__all__ = ["ModuleSummary", "parse_batch_dtype", "parse_batch_shape"]
 
 from collections.abc import Mapping, Sequence
-from typing import Any, overload
+from typing import TYPE_CHECKING, Any, overload
 
 import torch
+from torch import nn
+
+from karbonn.utils.params import num_learnable_parameters, num_parameters
+
+if TYPE_CHECKING:
+    from torch.utils.hooks import RemovableHandle
 
 PARAMETER_NUM_UNITS = (" ", "K", "M", "B", "T")
 UNKNOWN_SIZE = "?"
 UNKNOWN_DTYPE = "?"
+
+
+class ModuleSummary:
+    r"""Summary class for a single layer in a ``torch.nn.Module``.
+
+    It collects the following information:
+
+    - Type of the layer (e.g. Linear, BatchNorm1d, ...)
+    - Input shape
+    - Output shape
+    - Input data type
+    - Output data type
+    - Number of parameters
+    - Number of learnable parameters
+
+    The input and output shapes are only known after the example input
+    array was passed through the model.
+
+    Args:
+        module: A module to summarize.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.utils.summary import ModuleSummary
+    >>> model = torch.nn.Conv2d(3, 8, 3)
+    >>> summary = ModuleSummary(model)
+    >>> summary.num_parameters
+    224
+    >>> summary.num_learnable_parameters
+    224
+    >>> summary.layer_type
+    'Conv2d'
+    >>> output = model(torch.rand(1, 3, 5, 5))
+    >>> summary.in_size
+    torch.Size([1, 3, 5, 5])
+    >>> summary.out_size
+    torch.Size([1, 8, 3, 3])
+    >>> summary.in_dtype
+    torch.float32
+    >>> summary.out_dtype
+    torch.float32
+
+    ```
+    """
+
+    def __init__(self, module: nn.Module) -> None:
+        super().__init__()
+        self._module = module
+        self._hook_handle = self._register_hook()
+        self._in_size = None
+        self._out_size = None
+        self._in_dtype = None
+        self._out_dtype = None
+
+    def __del__(self) -> None:
+        self.detach_hook()
+
+    def _register_hook(self) -> RemovableHandle:
+        r"""Register a hook on the module that computes the input and
+        output size(s) on the first forward pass.
+
+        If the hook is called, it will remove itself from the module,
+        meaning that recursive models will only record their input and
+        output shapes once.
+
+        Return:
+            A handle for the installed hook.
+        """
+
+        def hook(module: nn.Module, inp: Any, out: Any) -> None:  # noqa: ARG001
+            if len(inp) == 1:
+                inp = inp[0]
+            self._in_size = parse_batch_shape(inp)
+            self._out_size = parse_batch_shape(out)
+            self._in_dtype = parse_batch_dtype(inp)
+            self._out_dtype = parse_batch_dtype(out)
+            self._hook_handle.remove()
+
+        return self._module.register_forward_hook(hook)
+
+    def detach_hook(self) -> None:
+        r"""Remove the forward hook if it was not already removed in the
+        forward pass.
+
+        Will be called after the summary is created.
+        """
+        self._hook_handle.remove()
+
+    @property
+    def in_dtype(
+        self,
+    ) -> tuple[torch.dtype | None, ...] | dict[str, torch.dtype | None] | torch.dtype | None:
+        r"""Return the input tensors data type."""
+        return self._in_dtype
+
+    @property
+    def out_dtype(
+        self,
+    ) -> tuple[torch.dtype | None, ...] | dict[str, torch.dtype | None] | torch.dtype | None:
+        r"""Return the output tensors data type."""
+        return self._out_dtype
+
+    @property
+    def in_size(
+        self,
+    ) -> tuple[torch.Size | None, ...] | dict[str, torch.Size | None] | torch.Size | None:
+        r"""Return the input tensors shapes."""
+        return self._in_size
+
+    @property
+    def out_size(
+        self,
+    ) -> tuple[torch.Size | None, ...] | dict[str, torch.Size | None] | torch.Size | None:
+        r"""Return the output tensors shapes."""
+        return self._out_size
+
+    @property
+    def layer_type(self) -> str:
+        r"""Return the class name of the module."""
+        return str(self._module.__class__.__qualname__)
+
+    @property
+    def num_parameters(self) -> int:
+        r"""Return the number of parameters in this module."""
+        return num_parameters(self._module)
+
+    @property
+    def num_learnable_parameters(self) -> int:
+        r"""Return the number of learnable parameters in this module."""
+        return num_learnable_parameters(self._module)
 
 
 @overload
