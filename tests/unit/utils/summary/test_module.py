@@ -33,6 +33,18 @@ class MyModule(nn.Module):
         return self.fc(self.embedding(tensor))
 
 
+class MyModuleDict(nn.Module):
+
+    def __init__(self, in_features: int = 4, out_features: int = 6) -> None:
+        super().__init__()
+        self.linear = nn.Linear(in_features, out_features)
+        self.criterion = nn.MSELoss()
+
+    def forward(self, batch: dict[str, torch.Tensor]) -> dict[str, torch.Tensor]:
+        prediction = self.linear(batch["input"])
+        return {"loss": self.criterion(prediction, batch["target"]), "prediction": prediction}
+
+
 ###################################
 #     Tests for ModuleSummary     #
 ###################################
@@ -115,6 +127,39 @@ def test_module_summary_gru(
     assert summary.out_size == ((seq_len, batch_size, hidden_size), (1, batch_size, hidden_size))
     assert summary.in_dtype == torch.float32
     assert summary.out_dtype == (torch.float32, torch.float32)
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("batch_size", SIZES)
+@pytest.mark.parametrize("input_size", SIZES)
+@pytest.mark.parametrize("output_size", SIZES)
+def test_module_summary_module_dict(
+    device: str, batch_size: int, input_size: int, output_size: int
+) -> None:
+    device = torch.device(device)
+    module = MyModuleDict(in_features=input_size, out_features=output_size).to(device=device)
+    summary = ModuleSummary(module)
+    assert summary.num_parameters == input_size * output_size + output_size
+    assert summary.num_learnable_parameters == input_size * output_size + output_size
+    assert summary.layer_type == "MyModuleDict"
+
+    # Run the forward to capture the input and output sizes.
+    module(
+        {
+            "input": torch.rand(batch_size, input_size, device=device),
+            "target": torch.rand(batch_size, output_size, device=device),
+        }
+    )
+    assert summary.in_size == {
+        "input": torch.Size([batch_size, input_size]),
+        "target": torch.Size([batch_size, output_size]),
+    }
+    assert summary.out_size == {
+        "loss": torch.Size([]),
+        "prediction": torch.Size([batch_size, output_size]),
+    }
+    assert summary.in_dtype == {"input": torch.float32, "target": torch.float32}
+    assert summary.out_dtype == {"loss": torch.float32, "prediction": torch.float32}
 
 
 @pytest.mark.parametrize("device", get_available_devices())
