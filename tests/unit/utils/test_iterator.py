@@ -55,4 +55,5 @@ def test_get_named_modules_depth_2_sequential(nested_module: nn.Module) -> None:
         ("2.0", nested_module[2][0]),
         ("2.1", nested_module[2][1]),
         ("2.2", nested_module[2][2]),
+        ("2.3", nested_module[2][3]),
     ]
