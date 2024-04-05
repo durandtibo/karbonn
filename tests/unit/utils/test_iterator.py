@@ -7,7 +7,14 @@ from karbonn.utils.iterator import get_named_modules
 @pytest.fixture()
 def nested_module() -> nn.Module:
     return nn.Sequential(
-        nn.Linear(4, 6), nn.ReLU(), nn.Sequential(nn.Linear(6, 6), nn.Dropout(0.1), nn.Linear(6, 3))
+        nn.Linear(4, 6),
+        nn.ReLU(),
+        nn.Sequential(
+            nn.Linear(6, 6),
+            nn.Dropout(0.1),
+            nn.Sequential(nn.Linear(6, 6), nn.PReLU()),
+            nn.Linear(6, 3),
+        ),
     )
 
 
@@ -16,7 +23,7 @@ def nested_module() -> nn.Module:
 #######################################
 
 
-@pytest.mark.parametrize("depth", [0, 1, 2, 3])
+@pytest.mark.parametrize("depth", [-1, 0, 1, 2, 3])
 def test_get_named_modules_depth_linear(depth: int) -> None:
     linear = nn.Linear(4, 6)
     named_modules = list(get_named_modules(linear, depth=depth))
