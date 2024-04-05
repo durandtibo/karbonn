@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Any, overload
 import torch
 from torch import nn
 
+from karbonn.utils.iterator import get_named_modules
 from karbonn.utils.params import num_learnable_parameters, num_parameters
 
 if TYPE_CHECKING:
@@ -20,9 +21,21 @@ UNKNOWN_SIZE = "?"
 UNKNOWN_DTYPE = "?"
 
 
-def summary(module: nn.Module, input_data: Any = None) -> dict[str, ModuleSummary]:
-    summary = {name: ModuleSummary(m) for name, m in self.named_modules}
-    model_forward_dummy_input(model)
+def summary(module: nn.Module, input_data: Any = None, depth: int = 0) -> dict[str, ModuleSummary]:
+    r"""Return the per module summary.
+
+    Args:
+        module: The module to summarize.
+        input_data: Optional input data to feed to the module.
+            It is necessary to give input data to compute the
+            shapes and data types of each module.
+        depth: The maximum depth of the module to summarize.
+
+    Returns:
+        The summary of each module.
+    """
+    summary = {name: ModuleSummary(layer) for name, layer in get_named_modules(module, depth=depth)}
+    # model_forward_dummy_input(model)
     for layer in summary.values():
         layer.detach_hook()
     return summary
