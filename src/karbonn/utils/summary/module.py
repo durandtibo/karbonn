@@ -8,6 +8,7 @@ from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING, Any, overload
 
 import torch
+from coola.utils import repr_indent, repr_mapping, str_indent, str_mapping
 from torch import nn
 
 from karbonn.utils.params import num_learnable_parameters, num_parameters
@@ -62,6 +63,14 @@ class ModuleSummary:
     torch.float32
     >>> summary.get_out_dtype()
     torch.float32
+    >>> summary
+    ModuleSummary(
+      (module): Conv2d(3, 8, kernel_size=(3, 3), stride=(1, 1))
+      (in_size): torch.Size([1, 3, 5, 5])
+      (out_size): torch.Size([1, 8, 3, 3])
+      (in_dtype): torch.float32
+      (out_dtype): torch.float32
+    )
 
     ```
     """
@@ -77,6 +86,34 @@ class ModuleSummary:
 
     def __del__(self) -> None:
         self.detach_hook()
+
+    def __repr__(self) -> str:
+        args = repr_indent(
+            repr_mapping(
+                {
+                    "module": self._module,
+                    "in_size": self._in_size,
+                    "out_size": self._out_size,
+                    "in_dtype": self._in_dtype,
+                    "out_dtype": self._out_dtype,
+                }
+            )
+        )
+        return f"{self.__class__.__qualname__}(\n  {args}\n)"
+
+    def __str__(self) -> str:
+        args = str_indent(
+            str_mapping(
+                {
+                    "module": self._module,
+                    "in_size": self._in_size,
+                    "out_size": self._out_size,
+                    "in_dtype": self._in_dtype,
+                    "out_dtype": self._out_dtype,
+                }
+            )
+        )
+        return f"{self.__class__.__qualname__}(\n  {args}\n)"
 
     def _register_hook(self) -> RemovableHandle:
         r"""Register a hook on the module that computes the input and
