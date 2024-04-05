@@ -2,7 +2,7 @@ r"""Contain functionalities to analyze a ``torch.nn.Module``."""
 
 from __future__ import annotations
 
-__all__ = ["ModuleSummary", "parse_batch_dtype", "parse_batch_shape"]
+__all__ = ["ModuleSummary", "parse_batch_dtype", "parse_batch_shape", "module_summary"]
 
 from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING, Any, overload
@@ -19,26 +19,6 @@ if TYPE_CHECKING:
 PARAMETER_NUM_UNITS = (" ", "K", "M", "B", "T")
 UNKNOWN_SIZE = "?"
 UNKNOWN_DTYPE = "?"
-
-
-def summary(module: nn.Module, input_data: Any = None, depth: int = 0) -> dict[str, ModuleSummary]:
-    r"""Return the per module summary.
-
-    Args:
-        module: The module to summarize.
-        input_data: Optional input data to feed to the module.
-            It is necessary to give input data to compute the
-            shapes and data types of each module.
-        depth: The maximum depth of the module to summarize.
-
-    Returns:
-        The summary of each module.
-    """
-    summary = {name: ModuleSummary(layer) for name, layer in get_named_modules(module, depth=depth)}
-    # model_forward_dummy_input(model)
-    for layer in summary.values():
-        layer.detach_hook()
-    return summary
 
 
 class ModuleSummary:
@@ -66,8 +46,7 @@ class ModuleSummary:
 
     >>> import torch
     >>> from karbonn.utils.summary import ModuleSummary
-    >>> model = torch.nn.Conv2d(3, 8, 3)
-    >>> summary = ModuleSummary(model)
+    >>> summary = ModuleSummary(torch.nn.Conv2d(3, 8, 3))
     >>> summary.get_num_parameters()
     224
     >>> summary.get_num_learnable_parameters()
@@ -303,3 +282,41 @@ def parse_batch_shape(
     if isinstance(batch, Mapping):
         return {key: parse_batch_shape(value) for key, value in batch.items()}
     return None
+
+
+def module_summary(
+    module: nn.Module, depth: int = 0, input_args: Any = None, input_kwargs: Any = None
+) -> dict[str, ModuleSummary]:
+    r"""Return the per module summary.
+
+    Args:
+        module: The module to summarize.
+        depth: The maximum depth of the module to summarize.
+        input_args: Positional arguments that are passed to the module
+            to  compute the shapes and data types of the inputs and
+            outputs of each module.
+        input_kwargs: Keyword arguments that are passed to the module
+            to  compute the shapes and data types of the inputs and
+            outputs of each module.
+
+    Returns:
+        The summary of each module.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.utils.summary import module_summary
+    >>> summary = module_summary(torch.nn.Linear(4, 6))
+    >>> summary
+    224
+
+    ```
+    """
+    summary = {name: ModuleSummary(layer) for name, layer in get_named_modules(module, depth=depth)}
+    if input_args is not None or input_kwargs is not None:
+        module(*input_args, **input_kwargs)
+    for layer in summary.values():
+        layer.detach_hook()
+    return summary
