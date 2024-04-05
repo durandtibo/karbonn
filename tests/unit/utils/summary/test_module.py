@@ -60,16 +60,16 @@ def test_module_summary_linear(
     device = torch.device(device)
     module = nn.Linear(input_size, output_size).to(device=device)
     summary = ModuleSummary(module)
-    assert summary.num_parameters == input_size * output_size + output_size
-    assert summary.num_learnable_parameters == input_size * output_size + output_size
-    assert summary.layer_type == "Linear"
+    assert summary.get_num_parameters() == input_size * output_size + output_size
+    assert summary.get_num_learnable_parameters() == input_size * output_size + output_size
+    assert summary.get_layer_type() == "Linear"
 
     # Run the forward to capture the input and output sizes.
     module(torch.rand(batch_size, input_size, device=device))
-    assert summary.in_size == torch.Size([batch_size, input_size])
-    assert summary.out_size == torch.Size([batch_size, output_size])
-    assert summary.in_dtype == torch.float32
-    assert summary.out_dtype == torch.float32
+    assert summary.get_in_size() == torch.Size([batch_size, input_size])
+    assert summary.get_out_size() == torch.Size([batch_size, output_size])
+    assert summary.get_in_dtype() == torch.float32
+    assert summary.get_out_dtype() == torch.float32
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -77,16 +77,16 @@ def test_module_summary_bilinear(device: str) -> None:
     device = torch.device(device)
     module = nn.Bilinear(in1_features=3, in2_features=4, out_features=7).to(device=device)
     summary = ModuleSummary(module)
-    assert summary.num_parameters == 91
-    assert summary.num_learnable_parameters == 91
-    assert summary.layer_type == "Bilinear"
+    assert summary.get_num_parameters() == 91
+    assert summary.get_num_learnable_parameters() == 91
+    assert summary.get_layer_type() == "Bilinear"
 
     # Run the forward to capture the input and output sizes.
     module(torch.rand(2, 3, device=device), torch.rand(2, 4, device=device))
-    assert summary.in_size == ((2, 3), (2, 4))
-    assert summary.out_size == (2, 7)
-    assert summary.in_dtype == (torch.float32, torch.float32)
-    assert summary.out_dtype == torch.float32
+    assert summary.get_in_size() == ((2, 3), (2, 4))
+    assert summary.get_out_size() == (2, 7)
+    assert summary.get_in_dtype() == (torch.float32, torch.float32)
+    assert summary.get_out_dtype() == torch.float32
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -96,13 +96,13 @@ def test_module_summary_linear_no_forward(device: str, input_size: int, output_s
     device = torch.device(device)
     module = nn.Linear(input_size, output_size).to(device=device)
     summary = ModuleSummary(module)
-    assert summary.num_parameters == input_size * output_size + output_size
-    assert summary.num_learnable_parameters == input_size * output_size + output_size
-    assert summary.layer_type == "Linear"
-    assert summary.in_size is None
-    assert summary.out_size is None
-    assert summary.in_dtype is None
-    assert summary.out_dtype is None
+    assert summary.get_num_parameters() == input_size * output_size + output_size
+    assert summary.get_num_learnable_parameters() == input_size * output_size + output_size
+    assert summary.get_layer_type() == "Linear"
+    assert summary.get_in_size() is None
+    assert summary.get_out_size() is None
+    assert summary.get_in_dtype() is None
+    assert summary.get_out_dtype() is None
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -117,16 +117,19 @@ def test_module_summary_gru(
     module = nn.GRU(input_size, hidden_size).to(device=device)
     summary = ModuleSummary(module)
     num_parameters = 3 * ((input_size + 1) * hidden_size + (hidden_size + 1) * hidden_size)
-    assert summary.num_parameters == num_parameters
-    assert summary.num_learnable_parameters == num_parameters
-    assert summary.layer_type == "GRU"
+    assert summary.get_num_parameters() == num_parameters
+    assert summary.get_num_learnable_parameters() == num_parameters
+    assert summary.get_layer_type() == "GRU"
 
     # Run the forward to capture the input and output sizes.
     module(torch.rand(seq_len, batch_size, input_size, device=device))
-    assert summary.in_size == (seq_len, batch_size, input_size)
-    assert summary.out_size == ((seq_len, batch_size, hidden_size), (1, batch_size, hidden_size))
-    assert summary.in_dtype == torch.float32
-    assert summary.out_dtype == (torch.float32, torch.float32)
+    assert summary.get_in_size() == (seq_len, batch_size, input_size)
+    assert summary.get_out_size() == (
+        (seq_len, batch_size, hidden_size),
+        (1, batch_size, hidden_size),
+    )
+    assert summary.get_in_dtype() == torch.float32
+    assert summary.get_out_dtype() == (torch.float32, torch.float32)
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -139,9 +142,9 @@ def test_module_summary_module_dict(
     device = torch.device(device)
     module = MyModuleDict(in_features=input_size, out_features=output_size).to(device=device)
     summary = ModuleSummary(module)
-    assert summary.num_parameters == input_size * output_size + output_size
-    assert summary.num_learnable_parameters == input_size * output_size + output_size
-    assert summary.layer_type == "MyModuleDict"
+    assert summary.get_num_parameters() == input_size * output_size + output_size
+    assert summary.get_num_learnable_parameters() == input_size * output_size + output_size
+    assert summary.get_layer_type() == "MyModuleDict"
 
     # Run the forward to capture the input and output sizes.
     module(
@@ -150,16 +153,16 @@ def test_module_summary_module_dict(
             "target": torch.rand(batch_size, output_size, device=device),
         }
     )
-    assert summary.in_size == {
+    assert summary.get_in_size() == {
         "input": torch.Size([batch_size, input_size]),
         "target": torch.Size([batch_size, output_size]),
     }
-    assert summary.out_size == {
+    assert summary.get_out_size() == {
         "loss": torch.Size([]),
         "prediction": torch.Size([batch_size, output_size]),
     }
-    assert summary.in_dtype == {"input": torch.float32, "target": torch.float32}
-    assert summary.out_dtype == {"loss": torch.float32, "prediction": torch.float32}
+    assert summary.get_in_dtype() == {"input": torch.float32, "target": torch.float32}
+    assert summary.get_out_dtype() == {"loss": torch.float32, "prediction": torch.float32}
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -168,16 +171,16 @@ def test_module_summary_custom_module(device: str, batch_size: int) -> None:
     device = torch.device(device)
     module = MyModule().to(device=device)
     summary = ModuleSummary(module)
-    assert summary.num_parameters == 116
-    assert summary.num_learnable_parameters == 36
-    assert summary.layer_type == "MyModule"
+    assert summary.get_num_parameters() == 116
+    assert summary.get_num_learnable_parameters() == 36
+    assert summary.get_layer_type() == "MyModule"
 
     # Run the forward to capture the input and output sizes.
     module(torch.ones(batch_size, dtype=torch.long, device=device))
-    assert summary.in_size == (batch_size,)
-    assert summary.out_size == (batch_size, 4)
-    assert summary.in_dtype == torch.int64
-    assert summary.out_dtype == torch.float32
+    assert summary.get_in_size() == (batch_size,)
+    assert summary.get_out_size() == (batch_size, 4)
+    assert summary.get_in_dtype() == torch.int64
+    assert summary.get_out_dtype() == torch.float32
 
 
 def test_module_summary_detach() -> None:

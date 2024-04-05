@@ -47,20 +47,20 @@ class ModuleSummary:
     >>> from karbonn.utils.summary import ModuleSummary
     >>> model = torch.nn.Conv2d(3, 8, 3)
     >>> summary = ModuleSummary(model)
-    >>> summary.num_parameters
+    >>> summary.get_num_parameters()
     224
-    >>> summary.num_learnable_parameters
+    >>> summary.get_num_learnable_parameters()
     224
-    >>> summary.layer_type
+    >>> summary.get_layer_type()
     'Conv2d'
     >>> output = model(torch.rand(1, 3, 5, 5))
-    >>> summary.in_size
+    >>> summary.get_in_size()
     torch.Size([1, 3, 5, 5])
-    >>> summary.out_size
+    >>> summary.get_out_size()
     torch.Size([1, 8, 3, 3])
-    >>> summary.in_dtype
+    >>> summary.get_in_dtype()
     torch.float32
-    >>> summary.out_dtype
+    >>> summary.get_out_dtype()
     torch.float32
 
     ```
@@ -109,47 +109,68 @@ class ModuleSummary:
         """
         self._hook_handle.remove()
 
-    @property
-    def in_dtype(
+    def get_in_dtype(
         self,
     ) -> tuple[torch.dtype | None, ...] | dict[str, torch.dtype | None] | torch.dtype | None:
-        r"""Return the input tensors data type."""
+        r"""Return the input tensors data type.
+
+        Returns:
+            The input tensors data type.
+        """
         return self._in_dtype
 
-    @property
-    def out_dtype(
+    def get_out_dtype(
         self,
     ) -> tuple[torch.dtype | None, ...] | dict[str, torch.dtype | None] | torch.dtype | None:
-        r"""Return the output tensors data type."""
+        r"""Return the output tensors data type.
+
+        Returns:
+            The output tensors data type.
+        """
         return self._out_dtype
 
-    @property
-    def in_size(
+    def get_in_size(
         self,
     ) -> tuple[torch.Size | None, ...] | dict[str, torch.Size | None] | torch.Size | None:
-        r"""Return the input tensors shapes."""
+        r"""Return the input tensors shapes.
+
+        Returns:
+            The input tensors shapes.
+        """
         return self._in_size
 
-    @property
-    def out_size(
+    def get_out_size(
         self,
     ) -> tuple[torch.Size | None, ...] | dict[str, torch.Size | None] | torch.Size | None:
-        r"""Return the output tensors shapes."""
+        r"""Return the output tensors shapes.
+
+        Returns:
+            The output tensors shapes.
+        """
         return self._out_size
 
-    @property
-    def layer_type(self) -> str:
-        r"""Return the class name of the module."""
+    def get_layer_type(self) -> str:
+        r"""Return the class name of the module.
+
+        Returns:
+            The class name of the module.
+        """
         return str(self._module.__class__.__qualname__)
 
-    @property
-    def num_parameters(self) -> int:
-        r"""Return the number of parameters in this module."""
+    def get_num_parameters(self) -> int:
+        r"""Return the number of parameters in this module.
+
+        Returns:
+            The number of parameters.
+        """
         return num_parameters(self._module)
 
-    @property
-    def num_learnable_parameters(self) -> int:
-        r"""Return the number of learnable parameters in this module."""
+    def get_num_learnable_parameters(self) -> int:
+        r"""Return the number of learnable parameters in this module.
+
+        Returns:
+            The number of learnable parameters.
+        """
         return num_learnable_parameters(self._module)
 
 
