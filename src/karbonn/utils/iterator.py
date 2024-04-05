@@ -1,3 +1,5 @@
+r"""Contain iterators on ``torch.nn.Module``."""
+
 from __future__ import annotations
 
 __all__ = ["get_named_modules"]
