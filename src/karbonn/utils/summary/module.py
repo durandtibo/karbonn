@@ -20,6 +20,14 @@ UNKNOWN_SIZE = "?"
 UNKNOWN_DTYPE = "?"
 
 
+def summary(module: nn.Module, input_data: Any = None) -> dict[str, ModuleSummary]:
+    summary = {name: ModuleSummary(m) for name, m in self.named_modules}
+    model_forward_dummy_input(model)
+    for layer in summary.values():
+        layer.detach_hook()
+    return summary
+
+
 class ModuleSummary:
     r"""Summary class for a single layer in a ``torch.nn.Module``.
 
