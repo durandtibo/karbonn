@@ -50,6 +50,30 @@ class MyModuleDict(nn.Module):
 ###################################
 
 
+def test_module_summary_repr() -> None:
+    summary = ModuleSummary(nn.Linear(4, 6))
+    assert repr(summary).startswith("ModuleSummary(")
+
+
+def test_module_summary_repr_forward() -> None:
+    module = nn.Linear(4, 6)
+    module(torch.rand(2, 4))
+    summary = ModuleSummary(module)
+    assert repr(summary).startswith("ModuleSummary(")
+
+
+def test_module_summary_str() -> None:
+    summary = ModuleSummary(nn.Linear(4, 6))
+    assert str(summary).startswith("ModuleSummary(")
+
+
+def test_module_summary_str_forward() -> None:
+    module = nn.Linear(4, 6)
+    module(torch.rand(2, 4))
+    summary = ModuleSummary(module)
+    assert str(summary).startswith("ModuleSummary(")
+
+
 @pytest.mark.parametrize("device", get_available_devices())
 @pytest.mark.parametrize("batch_size", SIZES)
 @pytest.mark.parametrize("input_size", SIZES)
