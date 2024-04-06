@@ -101,3 +101,7 @@
 ### ::: karbonn.ToFloat
 
 ### ::: karbonn.ToLong
+
+## Scalar
+
+### ::: karbonn.CosSinScalarEncoder

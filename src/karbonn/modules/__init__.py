@@ -40,6 +40,7 @@ __all__ = [
     "ToLong",
     "TransformedLoss",
     "binary_focal_loss",
+    "CosSinScalarEncoder",
 ]
 
 from karbonn.modules.activations import (
@@ -82,4 +83,5 @@ from karbonn.modules.loss import (
     binary_focal_loss,
 )
 from karbonn.modules.residual import ResidualBlock
+from karbonn.modules.scalar import CosSinScalarEncoder
 from karbonn.modules.shape import MulticlassFlatten, Squeeze
