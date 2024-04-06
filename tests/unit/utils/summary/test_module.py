@@ -11,10 +11,14 @@ from torch import nn
 from karbonn.utils import freeze_module
 from karbonn.utils.summary.module import (
     ModuleSummary,
+    get_in_dtype,
+    get_in_size,
     get_layer_names,
     get_layer_types,
     get_num_learnable_parameters,
     get_num_parameters,
+    get_out_dtype,
+    get_out_size,
     module_summary,
     multiline_format,
     parse_batch_dtype,
@@ -537,3 +541,91 @@ def test_get_num_learnable_parameters(summary: dict[str, ModuleSummary]) -> None
 
 def test_get_num_learnable_parameters_empty() -> None:
     assert get_num_learnable_parameters({}) == []
+
+
+##################################
+#     Tests for get_in_dtype     #
+##################################
+
+
+def test_get_in_dtype(summary: dict[str, ModuleSummary]) -> None:
+    assert get_in_dtype(summary) == [
+        torch.float,
+        torch.float,
+        torch.float,
+        torch.float,
+        torch.float,
+        torch.float,
+        torch.float,
+        torch.float,
+    ]
+
+
+def test_get_in_dtype_empty() -> None:
+    assert get_in_dtype({}) == []
+
+
+###################################
+#     Tests for get_out_dtype     #
+###################################
+
+
+def test_get_out_dtype(summary: dict[str, ModuleSummary]) -> None:
+    assert get_out_dtype(summary) == [
+        torch.float,
+        torch.float,
+        torch.float,
+        torch.float,
+        torch.float,
+        torch.float,
+        torch.float,
+        torch.float,
+    ]
+
+
+def test_get_out_dtype_empty() -> None:
+    assert get_out_dtype({}) == []
+
+
+#################################
+#     Tests for get_in_size     #
+#################################
+
+
+def test_get_in_size(summary: dict[str, ModuleSummary]) -> None:
+    assert get_in_size(summary) == [
+        torch.Size([2, 4]),
+        torch.Size([2, 4]),
+        torch.Size([2, 6]),
+        torch.Size([2, 6]),
+        torch.Size([2, 6]),
+        torch.Size([2, 6]),
+        torch.Size([2, 6]),
+        torch.Size([2, 6]),
+    ]
+
+
+def test_get_in_size_empty() -> None:
+    assert get_in_size({}) == []
+
+
+##################################
+#     Tests for get_out_size     #
+##################################
+
+
+def test_get_out_size(summary: dict[str, ModuleSummary]) -> None:
+    assert get_out_size(summary) == [
+        torch.Size([2, 3]),
+        torch.Size([2, 6]),
+        torch.Size([2, 6]),
+        torch.Size([2, 3]),
+        torch.Size([2, 6]),
+        torch.Size([2, 6]),
+        torch.Size([2, 6]),
+        torch.Size([2, 3]),
+    ]
+
+
+def test_get_out_size_empty() -> None:
+    assert get_out_size({}) == []

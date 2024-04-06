@@ -4,13 +4,17 @@ from __future__ import annotations
 
 __all__ = [
     "ModuleSummary",
+    "get_in_dtype",
+    "get_in_size",
+    "get_layer_names",
+    "get_layer_types",
+    "get_num_learnable_parameters",
+    "get_num_parameters",
+    "get_out_dtype",
+    "get_out_size",
     "module_summary",
     "parse_batch_dtype",
     "parse_batch_shape",
-    "get_layer_types",
-    "get_layer_names",
-    "get_num_parameters",
-    "get_num_learnable_parameters",
 ]
 
 from collections.abc import Mapping, Sequence
@@ -502,3 +506,60 @@ def get_num_learnable_parameters(summary: dict[str, ModuleSummary]) -> list[int]
         The number of learnable parameters.
     """
     return [layer.get_num_learnable_parameters() for layer in summary.values()]
+
+
+def get_in_dtype(
+    summary: dict[str, ModuleSummary]
+) -> list[torch.dtype | Sequence[torch.dtype] | Mapping[str, torch.dtype]]:
+    r"""Return the input tensors data type for each layer in the summary.
+
+    Args:
+        summary: The summary of each layer.
+
+    Returns:
+        The input tensors data types.
+    """
+    return [layer.get_in_dtype() for layer in summary.values()]
+
+
+def get_out_dtype(
+    summary: dict[str, ModuleSummary]
+) -> list[torch.dtype | Sequence[torch.dtype] | Mapping[str, torch.dtype]]:
+    r"""Return the output tensors data type for each layer in the
+    summary.
+
+    Args:
+        summary: The summary of each layer.
+
+    Returns:
+        The output tensors data types.
+    """
+    return [layer.get_out_dtype() for layer in summary.values()]
+
+
+def get_in_size(
+    summary: dict[str, ModuleSummary]
+) -> list[torch.Size | Sequence[torch.Size] | Mapping[str, torch.Size]]:
+    r"""Return the input tensors shapes for each layer in the summary.
+
+    Args:
+        summary: The summary of each layer.
+
+    Returns:
+        The input tensors shapes.
+    """
+    return [layer.get_in_size() for layer in summary.values()]
+
+
+def get_out_size(
+    summary: dict[str, ModuleSummary]
+) -> list[torch.Size | Sequence[torch.Size] | Mapping[str, torch.Size]]:
+    r"""Return the output tensors shapes for each layer in the summary.
+
+    Args:
+        summary: The summary of each layer.
+
+    Returns:
+        The output tensors shapess.
+    """
+    return [layer.get_out_size() for layer in summary.values()]
