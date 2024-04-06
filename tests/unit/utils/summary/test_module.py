@@ -8,6 +8,7 @@ import torch
 from coola.utils.tensor import get_available_devices
 from torch import nn
 
+from karbonn.testing import tabulate_available
 from karbonn.utils import freeze_module
 from karbonn.utils.summary.module import (
     ModuleSummary,
@@ -19,10 +20,12 @@ from karbonn.utils.summary.module import (
     get_num_parameters,
     get_out_dtype,
     get_out_size,
+    merge_size_dtype,
     module_summary,
     multiline_format,
     parse_batch_dtype,
     parse_batch_shape,
+    tabulate_module_summary,
 )
 
 if TYPE_CHECKING:
@@ -450,6 +453,99 @@ def test_module_summary_depth_2_sequential(nested_module: nn.Module) -> None:
     assert summary["2.3"].module == nested_module[2][3]
 
 
+#############################################
+#     Tests for tabulate_module_summary     #
+#############################################
+
+
+@tabulate_available
+@pytest.mark.parametrize("depth", [-1, 0, 1, 2, 3])
+def test_tabulate_module_summary_linear(depth: int) -> None:
+    out = tabulate_module_summary(module_summary(nn.Linear(4, 6), depth=depth))
+    assert out == (
+        "╒════╤════════╤════════╤══════════════════╤═══════════════════╤════════════════════╕\n"
+        "│    │ name   │ type   │ params (learn)   │ in size (dtype)   │ out size (dtype)   │\n"
+        "╞════╪════════╪════════╪══════════════════╪═══════════════════╪════════════════════╡\n"
+        "│  0 │ [root] │ Linear │ 30 (30)          │ ? (?)             │ ? (?)              │\n"
+        "╘════╧════════╧════════╧══════════════════╧═══════════════════╧════════════════════╛"
+    )
+
+
+@tabulate_available
+@pytest.mark.parametrize("depth", [-1, 0, 1, 2, 3])
+def test_tabulate_module_summary_linear_forward(depth: int) -> None:
+    out = tabulate_module_summary(
+        module_summary(nn.Linear(4, 6), depth=depth, input_args=[torch.randn(2, 4)])
+    )
+    assert out == (
+        "╒════╤════════╤════════╤══════════════════╤════════════════════════╤════════════════════════╕\n"
+        "│    │ name   │ type   │ params (learn)   │ in size (dtype)        │ out size (dtype)       │\n"
+        "╞════╪════════╪════════╪══════════════════╪════════════════════════╪════════════════════════╡\n"
+        "│  0 │ [root] │ Linear │ 30 (30)          │ [2, 4] (torch.float32) │ [2, 6] (torch.float32) │\n"
+        "╘════╧════════╧════════╧══════════════════╧════════════════════════╧════════════════════════╛"
+    )
+
+
+@tabulate_available
+def test_tabulate_module_summary_nested_depth_0(nested_module: nn.Module) -> None:
+    out = tabulate_module_summary(module_summary(nested_module, input_args=[torch.randn(2, 4)]))
+    assert out == (
+        "╒════╤════════╤════════════╤══════════════════╤════════════════════════╤════════════════════════╕\n"
+        "│    │ name   │ type       │ params (learn)   │ in size (dtype)        │ out size (dtype)       │\n"
+        "╞════╪════════╪════════════╪══════════════════╪════════════════════════╪════════════════════════╡\n"
+        "│  0 │ [root] │ Sequential │ 136 (136)        │ [2, 4] (torch.float32) │ [2, 3] (torch.float32) │\n"
+        "╘════╧════════╧════════════╧══════════════════╧════════════════════════╧════════════════════════╛"
+    )
+
+
+@tabulate_available
+def test_tabulate_module_summary_nested_depth_1(nested_module: nn.Module) -> None:
+    out = tabulate_module_summary(
+        module_summary(nested_module, depth=1, input_args=[torch.randn(2, 4)])
+    )
+    assert out == (
+        "╒════╤════════╤════════════╤══════════════════╤════════════════════════╤════════════════════════╕\n"
+        "│    │ name   │ type       │ params (learn)   │ in size (dtype)        │ out size (dtype)       │\n"
+        "╞════╪════════╪════════════╪══════════════════╪════════════════════════╪════════════════════════╡\n"
+        "│  0 │ [root] │ Sequential │ 136 (136)        │ [2, 4] (torch.float32) │ [2, 3] (torch.float32) │\n"
+        "├────┼────────┼────────────┼──────────────────┼────────────────────────┼────────────────────────┤\n"
+        "│  1 │ 0      │ Linear     │ 30 (30)          │ [2, 4] (torch.float32) │ [2, 6] (torch.float32) │\n"
+        "├────┼────────┼────────────┼──────────────────┼────────────────────────┼────────────────────────┤\n"
+        "│  2 │ 1      │ ReLU       │ 0 (0)            │ [2, 6] (torch.float32) │ [2, 6] (torch.float32) │\n"
+        "├────┼────────┼────────────┼──────────────────┼────────────────────────┼────────────────────────┤\n"
+        "│  3 │ 2      │ Sequential │ 106 (106)        │ [2, 6] (torch.float32) │ [2, 3] (torch.float32) │\n"
+        "╘════╧════════╧════════════╧══════════════════╧════════════════════════╧════════════════════════╛"
+    )
+
+
+@tabulate_available
+def test_tabulate_module_summary_nested_depth_2(nested_module: nn.Module) -> None:
+    out = tabulate_module_summary(
+        module_summary(nested_module, depth=2, input_args=[torch.randn(2, 4)])
+    )
+    assert out == (
+        "╒════╤════════╤════════════╤══════════════════╤════════════════════════╤════════════════════════╕\n"
+        "│    │ name   │ type       │ params (learn)   │ in size (dtype)        │ out size (dtype)       │\n"
+        "╞════╪════════╪════════════╪══════════════════╪════════════════════════╪════════════════════════╡\n"
+        "│  0 │ [root] │ Sequential │ 136 (136)        │ [2, 4] (torch.float32) │ [2, 3] (torch.float32) │\n"
+        "├────┼────────┼────────────┼──────────────────┼────────────────────────┼────────────────────────┤\n"
+        "│  1 │ 0      │ Linear     │ 30 (30)          │ [2, 4] (torch.float32) │ [2, 6] (torch.float32) │\n"
+        "├────┼────────┼────────────┼──────────────────┼────────────────────────┼────────────────────────┤\n"
+        "│  2 │ 1      │ ReLU       │ 0 (0)            │ [2, 6] (torch.float32) │ [2, 6] (torch.float32) │\n"
+        "├────┼────────┼────────────┼──────────────────┼────────────────────────┼────────────────────────┤\n"
+        "│  3 │ 2      │ Sequential │ 106 (106)        │ [2, 6] (torch.float32) │ [2, 3] (torch.float32) │\n"
+        "├────┼────────┼────────────┼──────────────────┼────────────────────────┼────────────────────────┤\n"
+        "│  4 │ 2.0    │ Linear     │ 42 (42)          │ [2, 6] (torch.float32) │ [2, 6] (torch.float32) │\n"
+        "├────┼────────┼────────────┼──────────────────┼────────────────────────┼────────────────────────┤\n"
+        "│  5 │ 2.1    │ Dropout    │ 0 (0)            │ [2, 6] (torch.float32) │ [2, 6] (torch.float32) │\n"
+        "├────┼────────┼────────────┼──────────────────┼────────────────────────┼────────────────────────┤\n"
+        "│  6 │ 2.2    │ Sequential │ 43 (43)          │ [2, 6] (torch.float32) │ [2, 6] (torch.float32) │\n"
+        "├────┼────────┼────────────┼──────────────────┼────────────────────────┼────────────────────────┤\n"
+        "│  7 │ 2.3    │ Linear     │ 21 (21)          │ [2, 6] (torch.float32) │ [2, 3] (torch.float32) │\n"
+        "╘════╧════════╧════════════╧══════════════════╧════════════════════════╧════════════════════════╛"
+    )
+
+
 ######################################
 #     Tests for multiline_format     #
 ######################################
@@ -477,8 +573,8 @@ def test_multiline_format_empty() -> None:
 def test_multiline_format_list(data: Sequence) -> None:
     assert multiline_format(data) == [
         "torch.float32",
-        "torch.float32\ntorch.int32",
-        "input1: torch.float32\ninput2: torch.int64",
+        "(0): torch.float32\n(1): torch.int32",
+        "(input1): torch.float32\n(input2): torch.int64",
     ]
 
 
@@ -629,3 +725,31 @@ def test_get_out_size(summary: dict[str, ModuleSummary]) -> None:
 
 def test_get_out_size_empty() -> None:
     assert get_out_size({}) == []
+
+
+######################################
+#     Tests for merge_size_dtype     #
+######################################
+
+
+def test_merge_size_dtype() -> None:
+    output = merge_size_dtype(
+        sizes=[
+            torch.Size([2, 3]),
+            [torch.Size([2, 4]), torch.Size([2, 5]), torch.Size([2, 6, 3])],
+            {"input1": torch.Size([2, 4]), "input2": torch.Size([2, 3, 4])},
+            None,
+        ],
+        dtypes=[
+            torch.float32,
+            [torch.float32, torch.long, torch.float],
+            {"input1": torch.long, "input2": torch.float32},
+            None,
+        ],
+    )
+    assert output == [
+        "[2, 3] (torch.float32)",
+        "(0): [2, 4] (torch.float32)\n(1): [2, 5] (torch.int64)\n(2): [2, 6, 3] (torch.float32)",
+        "(input1): [2, 4] (torch.int64)\n(input2): [2, 3, 4] (torch.float32)",
+        "? (?)",
+    ]

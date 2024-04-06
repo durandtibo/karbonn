@@ -15,6 +15,7 @@ __all__ = [
     "module_summary",
     "parse_batch_dtype",
     "parse_batch_shape",
+    "tabulate_module_summary",
 ]
 
 from collections.abc import Mapping, Sequence
@@ -24,8 +25,12 @@ import torch
 from coola.utils import repr_indent, repr_mapping, str_indent, str_mapping
 from torch import nn
 
+from karbonn.utils.imports import check_tabulate, is_tabulate_available
 from karbonn.utils.iterator import get_named_modules
 from karbonn.utils.params import num_learnable_parameters, num_parameters
+
+if is_tabulate_available():  # pragma: no cover
+    from tabulate import tabulate
 
 if TYPE_CHECKING:
     from torch.utils.hooks import RemovableHandle
@@ -439,6 +444,63 @@ def module_summary(
     return summary
 
 
+def tabulate_module_summary(summary: dict[str, ModuleSummary], tablefmt: str = "fancy_grid") -> str:
+    r"""Return a string containing a tabular representation of the
+    summary.
+
+    This function uses ``tabulate`` to generate the table.
+
+    Args:
+        summary: The summary of each layer.
+        tablefmt: The table format. You can find the valid formats at
+            https://pypi.org/project/tabulate/.
+
+    Returns:
+        A string containing a tabular representation of the summary.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.utils.summary import module_summary, tabulate_module_summary
+    >>> module = torch.nn.Sequential(torch.nn.Linear(4, 6), torch.nn.ReLU(), torch.nn.Linear(6, 3))
+    >>> summary = module_summary(module, depth=1, input_args=[torch.randn(2, 4)])
+    >>> print(tabulate_module_summary(summary))
+    ╒════╤════════╤════════════╤══════════════════╤════════════════════════╤════════════════════════╕
+    │    │ name   │ type       │ params (learn)   │ in size (dtype)        │ out size (dtype)       │
+    ╞════╪════════╪════════════╪══════════════════╪════════════════════════╪════════════════════════╡
+    │  0 │ [root] │ Sequential │ 51 (51)          │ [2, 4] (torch.float32) │ [2, 3] (torch.float32) │
+    ├────┼────────┼────────────┼──────────────────┼────────────────────────┼────────────────────────┤
+    │  1 │ 0      │ Linear     │ 30 (30)          │ [2, 4] (torch.float32) │ [2, 6] (torch.float32) │
+    ├────┼────────┼────────────┼──────────────────┼────────────────────────┼────────────────────────┤
+    │  2 │ 1      │ ReLU       │ 0 (0)            │ [2, 6] (torch.float32) │ [2, 6] (torch.float32) │
+    ├────┼────────┼────────────┼──────────────────┼────────────────────────┼────────────────────────┤
+    │  3 │ 2      │ Linear     │ 21 (21)          │ [2, 6] (torch.float32) │ [2, 3] (torch.float32) │
+    ╘════╧════════╧════════════╧══════════════════╧════════════════════════╧════════════════════════╛
+
+    ```
+    """
+    check_tabulate()
+    tab = {
+        "name": get_layer_names(summary),
+        "type": get_layer_types(summary),
+        "params (learn)": [
+            f"{params:,} ({lparams:,})"
+            for params, lparams in zip(
+                get_num_parameters(summary), get_num_learnable_parameters(summary)
+            )
+        ],
+        "in size (dtype)": merge_size_dtype(
+            sizes=get_in_size(summary), dtypes=get_in_dtype(summary)
+        ),
+        "out size (dtype)": merge_size_dtype(
+            sizes=get_out_size(summary), dtypes=get_out_dtype(summary)
+        ),
+    }
+    return tabulate(tab, headers="keys", tablefmt=tablefmt, showindex="always")
+
+
 def multiline_format(rows: Sequence[str | Sequence[str] | Mapping[str, str]]) -> list[str]:
     r"""Return a sequence of formatted rows.
 
@@ -453,9 +515,9 @@ def multiline_format(rows: Sequence[str | Sequence[str] | Mapping[str, str]]) ->
         if isinstance(row, str):
             formatted_rows.append(row)
         elif isinstance(row, Sequence):
-            formatted_rows.append("\n".join([str(r) for r in row]))
+            formatted_rows.append("\n".join([f"({i}): {r}" for i, r in enumerate(row)]))
         elif isinstance(row, Mapping):
-            formatted_rows.append("\n".join([f"{key}: {value}" for key, value in row.items()]))
+            formatted_rows.append("\n".join([f"({key}): {value}" for key, value in row.items()]))
     return formatted_rows
 
 
@@ -563,3 +625,60 @@ def get_out_size(
         The output tensors shapess.
     """
     return [layer.get_out_size() for layer in summary.values()]
+
+
+def merge_size_dtype(
+    sizes: list[torch.Size | Sequence[torch.Size] | Mapping[str, torch.Size]],
+    dtypes: list[torch.dtype | Sequence[torch.dtype] | Mapping[str, torch.dtype]],
+) -> list[str]:
+    r"""Return joined string representations of the sizes and data types.
+
+    Args:
+        sizes: The sizes to join. It must have the same structure
+            as ``dtypes``.
+        dtypes: The data types to join. It must have the same
+            structure as ``sizes``.
+
+    Returns:
+        The joined string representations.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.utils.summary.module import merge_size_dtype
+    >>> out = merge_size_dtype(
+    ...     sizes=[
+    ...         torch.Size([2, 3]),
+    ...         [torch.Size([2, 4]), torch.Size([2, 5]), torch.Size([2, 6, 3])],
+    ...         {"input1": torch.Size([2, 4]), "input2": torch.Size([2, 3, 4])},
+    ...     ],
+    ...     dtypes=[
+    ...         torch.float32,
+    ...         [torch.float32, torch.long, torch.float],
+    ...         {"input1": torch.long, "input2": torch.float32},
+    ...     ],
+    ... )
+    >>> out
+    ['[2, 3] (torch.float32)',
+     '(0): [2, 4] (torch.float32)\n(1): [2, 5] (torch.int64)\n(2): [2, 6, 3] (torch.float32)',
+     '(input1): [2, 4] (torch.int64)\n(input2): [2, 3, 4] (torch.float32)']
+
+    ```
+    """
+
+    def to_str(size: torch.Size, dtype: torch.dtype) -> str:
+        return f"{list(size)} ({dtype})"
+
+    output = []
+    for size, dtype in zip(sizes, dtypes):
+        if isinstance(dtype, torch.dtype):
+            output.append(to_str(size, dtype))
+        elif isinstance(dtype, Sequence):
+            output.append([to_str(s, d) for s, d in zip(size, dtype)])
+        elif isinstance(dtype, Mapping):
+            output.append({k: to_str(s, dtype[k]) for k, s in size.items()})
+        else:
+            output.append("? (?)")
+    return multiline_format(output)
