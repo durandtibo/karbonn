@@ -11,6 +11,7 @@ from torch import nn
 from karbonn.utils import freeze_module
 from karbonn.utils.summary.module import (
     ModuleSummary,
+    module_summary,
     parse_batch_dtype,
     parse_batch_shape,
 )
@@ -45,29 +46,43 @@ class MyModuleDict(nn.Module):
         return {"loss": self.criterion(prediction, batch["target"]), "prediction": prediction}
 
 
+@pytest.fixture()
+def nested_module() -> nn.Module:
+    return nn.Sequential(
+        nn.Linear(4, 6),
+        nn.ReLU(),
+        nn.Sequential(
+            nn.Linear(6, 6),
+            nn.Dropout(0.1),
+            nn.Sequential(nn.Linear(6, 6), nn.PReLU()),
+            nn.Linear(6, 3),
+        ),
+    )
+
+
 ###################################
 #     Tests for ModuleSummary     #
 ###################################
 
 
-def test_module_summary_repr() -> None:
+def test_module_summary_class_repr() -> None:
     summary = ModuleSummary(nn.Linear(4, 6))
     assert repr(summary).startswith("ModuleSummary(")
 
 
-def test_module_summary_repr_forward() -> None:
+def test_module_summary_class_repr_forward() -> None:
     module = nn.Linear(4, 6)
     module(torch.rand(2, 4))
     summary = ModuleSummary(module)
     assert repr(summary).startswith("ModuleSummary(")
 
 
-def test_module_summary_str() -> None:
+def test_module_summary_class_str() -> None:
     summary = ModuleSummary(nn.Linear(4, 6))
     assert str(summary).startswith("ModuleSummary(")
 
 
-def test_module_summary_str_forward() -> None:
+def test_module_summary_class_str_forward() -> None:
     module = nn.Linear(4, 6)
     module(torch.rand(2, 4))
     summary = ModuleSummary(module)
@@ -78,7 +93,7 @@ def test_module_summary_str_forward() -> None:
 @pytest.mark.parametrize("batch_size", SIZES)
 @pytest.mark.parametrize("input_size", SIZES)
 @pytest.mark.parametrize("output_size", SIZES)
-def test_module_summary_linear(
+def test_module_summary_class_linear(
     device: str, batch_size: int, input_size: int, output_size: int
 ) -> None:
     device = torch.device(device)
@@ -97,7 +112,7 @@ def test_module_summary_linear(
 
 
 @pytest.mark.parametrize("device", get_available_devices())
-def test_module_summary_bilinear(device: str) -> None:
+def test_module_summary_class_bilinear(device: str) -> None:
     device = torch.device(device)
     module = nn.Bilinear(in1_features=3, in2_features=4, out_features=7).to(device=device)
     summary = ModuleSummary(module)
@@ -116,7 +131,9 @@ def test_module_summary_bilinear(device: str) -> None:
 @pytest.mark.parametrize("device", get_available_devices())
 @pytest.mark.parametrize("input_size", SIZES)
 @pytest.mark.parametrize("output_size", SIZES)
-def test_module_summary_linear_no_forward(device: str, input_size: int, output_size: int) -> None:
+def test_module_summary_class_linear_no_forward(
+    device: str, input_size: int, output_size: int
+) -> None:
     device = torch.device(device)
     module = nn.Linear(input_size, output_size).to(device=device)
     summary = ModuleSummary(module)
@@ -134,7 +151,7 @@ def test_module_summary_linear_no_forward(device: str, input_size: int, output_s
 @pytest.mark.parametrize("seq_len", SIZES)
 @pytest.mark.parametrize("input_size", SIZES)
 @pytest.mark.parametrize("hidden_size", SIZES)
-def test_module_summary_gru(
+def test_module_summary_class_gru(
     device: str, batch_size: int, seq_len: int, input_size: int, hidden_size: int
 ) -> None:
     device = torch.device(device)
@@ -160,7 +177,7 @@ def test_module_summary_gru(
 @pytest.mark.parametrize("batch_size", SIZES)
 @pytest.mark.parametrize("input_size", SIZES)
 @pytest.mark.parametrize("output_size", SIZES)
-def test_module_summary_module_dict(
+def test_module_summary_class_module_dict(
     device: str, batch_size: int, input_size: int, output_size: int
 ) -> None:
     device = torch.device(device)
@@ -191,7 +208,7 @@ def test_module_summary_module_dict(
 
 @pytest.mark.parametrize("device", get_available_devices())
 @pytest.mark.parametrize("batch_size", SIZES)
-def test_module_summary_custom_module(device: str, batch_size: int) -> None:
+def test_module_summary_class_custom_module(device: str, batch_size: int) -> None:
     device = torch.device(device)
     module = MyModule().to(device=device)
     summary = ModuleSummary(module)
@@ -207,7 +224,7 @@ def test_module_summary_custom_module(device: str, batch_size: int) -> None:
     assert summary.get_out_dtype() == torch.float32
 
 
-def test_module_summary_detach() -> None:
+def test_module_summary_class_detach() -> None:
     module = nn.Linear(4, 6)
     summary = ModuleSummary(module)
     assert summary._hook_handle.id in module._forward_hooks
@@ -346,3 +363,74 @@ def test_parse_batch_shape_nested() -> None:
         torch.Size([2, 3]),
         (torch.Size([2]), torch.Size([2, 3])),
     )
+
+
+####################################
+#     Tests for module_summary     #
+####################################
+
+
+@pytest.mark.parametrize("depth", [-1, 0, 1, 2, 3])
+def test_module_summary_linear(depth: int) -> None:
+    linear = nn.Linear(4, 6)
+    summary = module_summary(linear, depth=depth)
+    assert len(summary) == 1
+    assert isinstance(summary["[root]"], ModuleSummary)
+    assert summary["[root]"].module == linear
+
+
+def test_module_summary_linear_input_args() -> None:
+    linear = nn.Linear(4, 6)
+    summary = module_summary(linear, input_args=[torch.randn(2, 4)])
+    assert len(summary) == 1
+    assert isinstance(summary["[root]"], ModuleSummary)
+    assert summary["[root]"].module == linear
+
+
+def test_module_summary_linear_input_kwargs() -> None:
+    linear = nn.Linear(4, 6)
+    summary = module_summary(linear, input_kwargs={"input": torch.randn(2, 4)})
+    assert len(summary) == 1
+    assert isinstance(summary["[root]"], ModuleSummary)
+    assert summary["[root]"].module == linear
+
+
+def test_module_summary_depth_0_sequential(nested_module: nn.Module) -> None:
+    summary = module_summary(nested_module)
+    assert len(summary) == 1
+    assert isinstance(summary["[root]"], ModuleSummary)
+    assert summary["[root]"].module == nested_module
+
+
+def test_module_summary_depth_1_sequential(nested_module: nn.Module) -> None:
+    summary = module_summary(nested_module, depth=1)
+    assert len(summary) == 4
+    assert isinstance(summary["[root]"], ModuleSummary)
+    assert summary["[root]"].module == nested_module
+    assert isinstance(summary["0"], ModuleSummary)
+    assert summary["0"].module == nested_module[0]
+    assert isinstance(summary["1"], ModuleSummary)
+    assert summary["1"].module == nested_module[1]
+    assert isinstance(summary["2"], ModuleSummary)
+    assert summary["2"].module == nested_module[2]
+
+
+def test_module_summary_depth_2_sequential(nested_module: nn.Module) -> None:
+    summary = module_summary(nested_module, depth=2)
+    assert len(summary) == 8
+    assert isinstance(summary["[root]"], ModuleSummary)
+    assert summary["[root]"].module == nested_module
+    assert isinstance(summary["0"], ModuleSummary)
+    assert summary["0"].module == nested_module[0]
+    assert isinstance(summary["1"], ModuleSummary)
+    assert summary["1"].module == nested_module[1]
+    assert isinstance(summary["2"], ModuleSummary)
+    assert summary["2"].module == nested_module[2]
+    assert isinstance(summary["2.0"], ModuleSummary)
+    assert summary["2.0"].module == nested_module[2][0]
+    assert isinstance(summary["2.1"], ModuleSummary)
+    assert summary["2.1"].module == nested_module[2][1]
+    assert isinstance(summary["2.2"], ModuleSummary)
+    assert summary["2.2"].module == nested_module[2][2]
+    assert isinstance(summary["2.3"], ModuleSummary)
+    assert summary["2.3"].module == nested_module[2][3]

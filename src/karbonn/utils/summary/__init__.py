@@ -10,9 +10,10 @@ __all__ = [
     "ParameterSummary",
     "get_parameter_summaries",
     "tabulate_parameter_summary",
+    "module_summary",
 ]
 
-from karbonn.utils.summary.module import ModuleSummary
+from karbonn.utils.summary.module import ModuleSummary, module_summary
 from karbonn.utils.summary.parameter import (
     NO_PARAMETER,
     PARAMETER_NOT_INITIALIZED,
