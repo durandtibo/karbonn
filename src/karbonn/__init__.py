@@ -40,6 +40,7 @@ __all__ = [
     "ToLong",
     "TransformedLoss",
     "binary_focal_loss",
+    "CosSinScalarEncoder",
 ]
 
 from karbonn.modules import (
@@ -50,6 +51,7 @@ from karbonn.modules import (
     BinaryFocalLoss,
     Clamp,
     ConcatFusion,
+    CosSinScalarEncoder,
     Exp,
     Expm1,
     ExpSin,
