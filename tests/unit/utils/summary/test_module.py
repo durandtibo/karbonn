@@ -568,6 +568,14 @@ def test_multiline_format_empty() -> None:
             ["torch.float32", "torch.int32"],
             {"input1": "torch.float32", "input2": "torch.int64"},
         ),
+        (
+            None,
+            "torch.float32",
+            None,
+            ["torch.float32", "torch.int32"],
+            {"input1": "torch.float32", "input2": "torch.int64"},
+            None,
+        ),
     ],
 )
 def test_multiline_format_list(data: Sequence) -> None:
