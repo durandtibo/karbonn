@@ -159,7 +159,7 @@ jobs:
 
       - name: Install NumPy
         run: |
-          poetry run pip install numpy==${{ matrix.numpy-version }}
+          poetry run pip install --upgrade numpy==${{ matrix.numpy-version }} torch
 
       - name: Show installed packages
         run: |
