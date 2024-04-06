@@ -2,7 +2,12 @@ r"""Contain functionalities to analyze a ``torch.nn.Module``."""
 
 from __future__ import annotations
 
-__all__ = ["ModuleSummary", "parse_batch_dtype", "parse_batch_shape", "module_summary"]
+__all__ = [
+    "ModuleSummary",
+    "module_summary",
+    "parse_batch_dtype",
+    "parse_batch_shape",
+]
 
 from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING, Any, overload
@@ -47,14 +52,15 @@ class ModuleSummary:
 
     >>> import torch
     >>> from karbonn.utils.summary import ModuleSummary
-    >>> summary = ModuleSummary(torch.nn.Conv2d(3, 8, 3))
+    >>> module = torch.nn.Conv2d(3, 8, 3)
+    >>> summary = ModuleSummary(module)
     >>> summary.get_num_parameters()
     224
     >>> summary.get_num_learnable_parameters()
     224
     >>> summary.get_layer_type()
     'Conv2d'
-    >>> output = model(torch.rand(1, 3, 5, 5))
+    >>> output = module(torch.rand(1, 3, 5, 5))
     >>> summary.get_in_size()
     torch.Size([1, 3, 5, 5])
     >>> summary.get_out_size()
@@ -77,7 +83,7 @@ class ModuleSummary:
 
     def __init__(self, module: nn.Module) -> None:
         super().__init__()
-        self._module = module
+        self.module = module
         self._hook_handle = self._register_hook()
         self._in_size = None
         self._out_size = None
@@ -91,7 +97,7 @@ class ModuleSummary:
         args = repr_indent(
             repr_mapping(
                 {
-                    "module": self._module,
+                    "module": self.module,
                     "in_size": self._in_size,
                     "out_size": self._out_size,
                     "in_dtype": self._in_dtype,
@@ -105,7 +111,7 @@ class ModuleSummary:
         args = str_indent(
             str_mapping(
                 {
-                    "module": self._module,
+                    "module": self.module,
                     "in_size": self._in_size,
                     "out_size": self._out_size,
                     "in_dtype": self._in_dtype,
@@ -136,7 +142,7 @@ class ModuleSummary:
             self._out_dtype = parse_batch_dtype(out)
             self._hook_handle.remove()
 
-        return self._module.register_forward_hook(hook)
+        return self.module.register_forward_hook(hook)
 
     def detach_hook(self) -> None:
         r"""Remove the forward hook if it was not already removed in the
@@ -192,7 +198,7 @@ class ModuleSummary:
         Returns:
             The class name of the module.
         """
-        return str(self._module.__class__.__qualname__)
+        return str(self.module.__class__.__qualname__)
 
     def get_num_parameters(self) -> int:
         r"""Return the number of parameters in this module.
@@ -200,7 +206,7 @@ class ModuleSummary:
         Returns:
             The number of parameters.
         """
-        return num_parameters(self._module)
+        return num_parameters(self.module)
 
     def get_num_learnable_parameters(self) -> int:
         r"""Return the number of learnable parameters in this module.
@@ -208,7 +214,7 @@ class ModuleSummary:
         Returns:
             The number of learnable parameters.
         """
-        return num_learnable_parameters(self._module)
+        return num_learnable_parameters(self.module)
 
 
 @overload
@@ -345,15 +351,81 @@ def module_summary(
 
     >>> import torch
     >>> from karbonn.utils.summary import module_summary
-    >>> summary = module_summary(torch.nn.Linear(4, 6))
+    >>> module = torch.nn.Sequential(torch.nn.Linear(4, 6), torch.nn.ReLU(), torch.nn.Linear(6, 3))
+    >>> summary = module_summary(module, depth=1)
     >>> summary
-    224
+    {'[root]': ModuleSummary(
+      (module): Sequential(
+          (0): Linear(in_features=4, out_features=6, bias=True)
+          (1): ReLU()
+          (2): Linear(in_features=6, out_features=3, bias=True)
+        )
+      (in_size): None
+      (out_size): None
+      (in_dtype): None
+      (out_dtype): None
+    ),
+    '0': ModuleSummary(
+      (module): Linear(in_features=4, out_features=6, bias=True)
+      (in_size): None
+      (out_size): None
+      (in_dtype): None
+      (out_dtype): None
+    ),
+    '1': ModuleSummary(
+      (module): ReLU()
+      (in_size): None
+      (out_size): None
+      (in_dtype): None
+      (out_dtype): None
+    ),
+    '2': ModuleSummary(
+      (module): Linear(in_features=6, out_features=3, bias=True)
+      (in_size): None
+      (out_size): None
+      (in_dtype): None
+      (out_dtype): None
+    )}
+    >>> summary = module_summary(module, depth=1, input_args=[torch.randn(2, 4)])
+    >>> summary
+    {'[root]': ModuleSummary(
+      (module): Sequential(
+          (0): Linear(in_features=4, out_features=6, bias=True)
+          (1): ReLU()
+          (2): Linear(in_features=6, out_features=3, bias=True)
+        )
+      (in_size): torch.Size([2, 4])
+      (out_size): torch.Size([2, 3])
+      (in_dtype): torch.float32
+      (out_dtype): torch.float32
+    ),
+    '0': ModuleSummary(
+      (module): Linear(in_features=4, out_features=6, bias=True)
+      (in_size): torch.Size([2, 4])
+      (out_size): torch.Size([2, 6])
+      (in_dtype): torch.float32
+      (out_dtype): torch.float32
+    ),
+    '1': ModuleSummary(
+      (module): ReLU()
+      (in_size): torch.Size([2, 6])
+      (out_size): torch.Size([2, 6])
+      (in_dtype): torch.float32
+      (out_dtype): torch.float32
+    ),
+    '2': ModuleSummary(
+      (module): Linear(in_features=6, out_features=3, bias=True)
+      (in_size): torch.Size([2, 6])
+      (out_size): torch.Size([2, 3])
+      (in_dtype): torch.float32
+      (out_dtype): torch.float32
+    )}
 
     ```
     """
     summary = {name: ModuleSummary(layer) for name, layer in get_named_modules(module, depth=depth)}
     if input_args is not None or input_kwargs is not None:
-        module(*input_args, **input_kwargs)
+        module(*(input_args or []), **(input_kwargs or {}))
     for layer in summary.values():
         layer.detach_hook()
     return summary
