@@ -7,6 +7,10 @@ __all__ = [
     "module_summary",
     "parse_batch_dtype",
     "parse_batch_shape",
+    "get_layer_types",
+    "get_layer_names",
+    "get_num_parameters",
+    "get_num_learnable_parameters",
 ]
 
 from collections.abc import Mapping, Sequence
@@ -429,3 +433,72 @@ def module_summary(
     for layer in summary.values():
         layer.detach_hook()
     return summary
+
+
+def multiline_format(rows: Sequence[str | Sequence[str] | Mapping[str, str]]) -> list[str]:
+    r"""Return a sequence of formatted rows.
+
+    Args:
+        rows: The raw rows.
+
+    Returns:
+        The formatted rows.
+    """
+    formatted_rows = []
+    for row in rows:
+        if isinstance(row, str):
+            formatted_rows.append(row)
+        elif isinstance(row, Sequence):
+            formatted_rows.append("\n".join([str(r) for r in row]))
+        elif isinstance(row, Mapping):
+            formatted_rows.append("\n".join([f"{key}: {value}" for key, value in row.items()]))
+    return formatted_rows
+
+
+def get_layer_names(summary: dict[str, ModuleSummary]) -> list[str]:
+    r"""Get the name of each layer in the summary.
+
+    Args:
+        summary: The summary of each layer.
+
+    Returns:
+        The layer names.
+    """
+    return list(summary.keys())
+
+
+def get_layer_types(summary: dict[str, ModuleSummary]) -> list[str]:
+    r"""Get the class name of each layer in the summary.
+
+    Args:
+        summary: The summary of each layer.
+
+    Returns:
+        The class names.
+    """
+    return [layer.get_layer_type() for layer in summary.values()]
+
+
+def get_num_parameters(summary: dict[str, ModuleSummary]) -> list[int]:
+    r"""Return the number of parameters for each layer in the summary.
+
+    Args:
+        summary: The summary of each layer.
+
+    Returns:
+        The number of parameters.
+    """
+    return [layer.get_num_parameters() for layer in summary.values()]
+
+
+def get_num_learnable_parameters(summary: dict[str, ModuleSummary]) -> list[int]:
+    r"""Return the number of learnable parameters for each layer in the
+    summary.
+
+    Args:
+        summary: The summary of each layer.
+
+    Returns:
+        The number of learnable parameters.
+    """
+    return [layer.get_num_learnable_parameters() for layer in summary.values()]

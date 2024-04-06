@@ -11,7 +11,12 @@ from torch import nn
 from karbonn.utils import freeze_module
 from karbonn.utils.summary.module import (
     ModuleSummary,
+    get_layer_names,
+    get_layer_types,
+    get_num_learnable_parameters,
+    get_num_parameters,
     module_summary,
+    multiline_format,
     parse_batch_dtype,
     parse_batch_shape,
 )
@@ -46,7 +51,7 @@ class MyModuleDict(nn.Module):
         return {"loss": self.criterion(prediction, batch["target"]), "prediction": prediction}
 
 
-@pytest.fixture()
+@pytest.fixture(scope="module")
 def nested_module() -> nn.Module:
     return nn.Sequential(
         nn.Linear(4, 6),
@@ -58,6 +63,11 @@ def nested_module() -> nn.Module:
             nn.Linear(6, 3),
         ),
     )
+
+
+@pytest.fixture(scope="module")
+def summary(nested_module: nn.Module) -> dict[str, ModuleSummary]:
+    return module_summary(nested_module, depth=2, input_args=[torch.randn(2, 4)])
 
 
 ###################################
@@ -434,3 +444,96 @@ def test_module_summary_depth_2_sequential(nested_module: nn.Module) -> None:
     assert summary["2.2"].module == nested_module[2][2]
     assert isinstance(summary["2.3"], ModuleSummary)
     assert summary["2.3"].module == nested_module[2][3]
+
+
+######################################
+#     Tests for multiline_format     #
+######################################
+
+
+def test_multiline_format_empty() -> None:
+    assert multiline_format([]) == []
+
+
+@pytest.mark.parametrize(
+    "data",
+    [
+        [
+            "torch.float32",
+            ["torch.float32", "torch.int32"],
+            {"input1": "torch.float32", "input2": "torch.int64"},
+        ],
+        (
+            "torch.float32",
+            ["torch.float32", "torch.int32"],
+            {"input1": "torch.float32", "input2": "torch.int64"},
+        ),
+    ],
+)
+def test_multiline_format_list(data: Sequence) -> None:
+    assert multiline_format(data) == [
+        "torch.float32",
+        "torch.float32\ntorch.int32",
+        "input1: torch.float32\ninput2: torch.int64",
+    ]
+
+
+#####################################
+#     Tests for get_layer_names     #
+#####################################
+
+
+def test_get_layer_names(summary: dict[str, ModuleSummary]) -> None:
+    assert get_layer_names(summary) == ["[root]", "0", "1", "2", "2.0", "2.1", "2.2", "2.3"]
+
+
+def test_get_layer_names_empty() -> None:
+    assert get_layer_names({}) == []
+
+
+#####################################
+#     Tests for get_layer_types     #
+#####################################
+
+
+def test_get_layer_types(summary: dict[str, ModuleSummary]) -> None:
+    assert get_layer_types(summary) == [
+        "Sequential",
+        "Linear",
+        "ReLU",
+        "Sequential",
+        "Linear",
+        "Dropout",
+        "Sequential",
+        "Linear",
+    ]
+
+
+def test_get_layer_types_empty() -> None:
+    assert get_layer_types({}) == []
+
+
+########################################
+#     Tests for get_num_parameters     #
+########################################
+
+
+def test_get_num_parameters(summary: dict[str, ModuleSummary]) -> None:
+    assert get_num_parameters(summary) == [136, 30, 0, 106, 42, 0, 43, 21]
+
+
+def test_get_num_parameters_empty() -> None:
+    assert get_num_parameters({}) == []
+
+
+##################################################
+#     Tests for get_num_learnable_parameters     #
+##################################################
+
+
+def test_get_num_learnable_parameters(summary: dict[str, ModuleSummary]) -> None:
+    assert get_num_learnable_parameters(summary) == [136, 30, 0, 106, 42, 0, 43, 21]
+
+
+def test_get_num_learnable_parameters_empty() -> None:
+    assert get_num_learnable_parameters({}) == []
