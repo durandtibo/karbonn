@@ -27,6 +27,12 @@ class AsinhScalarEncoder(Module):
         learnable: If ``True`` the scales are learnable,
             otherwise they are frozen.
 
+    Shape:
+        - Input: ``(*, 1)``, where ``*`` means any number of
+            dimensions.
+        - Output: ``(*, feature_size)``,  where ``*`` has the same
+            shape as the input.
+
     Example usage:
 
     ```pycon
