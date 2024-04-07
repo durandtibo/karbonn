@@ -1,4 +1,4 @@
-r"""Contain module to encode scalar values with cosine and sine
+r"""Contain modules to encode scalar values with cosine and sine
 representations."""
 
 from __future__ import annotations

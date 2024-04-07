@@ -40,12 +40,14 @@ __all__ = [
     "ToLong",
     "TransformedLoss",
     "binary_focal_loss",
+    "AsinhScalarEncoder",
     "CosSinScalarEncoder",
 ]
 
 from karbonn.modules import (
     Asinh,
     AsinhMSELoss,
+    AsinhScalarEncoder,
     AsinhSmoothL1Loss,
     AverageFusion,
     BinaryFocalLoss,
