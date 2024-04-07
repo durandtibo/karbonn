@@ -15,6 +15,7 @@ __all__ = [
     "is_loss_decreasing_with_sgd",
     "is_module_config",
     "is_module_on_device",
+    "load_state_dict_to_module",
     "module_mode",
     "num_learnable_parameters",
     "num_parameters",
@@ -43,4 +44,4 @@ from karbonn.utils.params import (
     num_parameters,
     unfreeze_module,
 )
-from karbonn.utils.state_dict import find_module_state_dict
+from karbonn.utils.state_dict import find_module_state_dict, load_state_dict_to_module

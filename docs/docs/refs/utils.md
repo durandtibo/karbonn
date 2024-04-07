@@ -32,6 +32,12 @@
 
 ### ::: karbonn.utils.setup_module
 
+## State dict
+
+### ::: karbonn.utils.find_module_state_dict
+
+### ::: karbonn.utils.load_state_dict_to_module
+
 ## Loss
 
 ### ::: karbonn.utils.is_loss_decreasing
