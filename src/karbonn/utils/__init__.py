@@ -4,6 +4,7 @@ from __future__ import annotations
 
 __all__ = [
     "create_sequential",
+    "find_module_state_dict",
     "freeze_module",
     "get_module_device",
     "get_module_devices",
@@ -42,3 +43,4 @@ from karbonn.utils.params import (
     num_parameters,
     unfreeze_module,
 )
+from karbonn.utils.state_dict import find_module_state_dict
