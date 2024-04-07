@@ -104,4 +104,6 @@
 
 ## Scalar
 
+### ::: karbonn.AsinhScalarEncoder
+
 ### ::: karbonn.CosSinScalarEncoder
