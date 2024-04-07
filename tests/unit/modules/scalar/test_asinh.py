@@ -49,6 +49,12 @@ def test_asinh_scalar_encoder_input_size() -> None:
     )
 
 
+def test_asinh_scalar_encoder_output_size() -> None:
+    assert (
+        AsinhScalarEncoder.create_rand_scale(dim=5, min_scale=0.1, max_scale=10.0).output_size == 5
+    )
+
+
 @pytest.mark.parametrize("device", get_available_devices())
 @pytest.mark.parametrize("batch_size", SIZES)
 @pytest.mark.parametrize("mode", [True, False])

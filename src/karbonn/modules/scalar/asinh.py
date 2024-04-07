@@ -31,18 +31,16 @@ class AsinhScalarEncoder(Module):
 
     ```pycon
     >>> import torch
-    >>> from karbonn import CosSinScalarEncoder
-    >>> m = AsinhScalarEncoder(
-    ...     frequency=torch.tensor([1.0, 2.0, 4.0]), phase_shift=torch.tensor([1.0, 3.0, -2.0])
-    ... )
+    >>> from karbonn import AsinhScalarEncoder
+    >>> m = AsinhScalarEncoder(scale=torch.tensor([1.0, 2.0, 4.0]))
     >>> m
     AsinhScalarEncoder(dim=3, learnable=False)
     >>> out = m(torch.tensor([[0.0], [1.0], [2.0], [3.0]]))
     >>> out
-    tensor([[ 0.8415, -0.9900, -0.4161],
-            [ 0.9093,  0.2837, -0.4161],
-            [ 0.1411,  0.7539,  0.9602],
-            [-0.7568, -0.9111, -0.8391]])
+    tensor([[0.0000, 0.0000, 0.0000],
+            [0.8814, 1.4436, 2.0947],
+            [1.4436, 2.0947, 2.7765],
+            [1.8184, 2.4918, 3.1798]])
 
     ```
     """
