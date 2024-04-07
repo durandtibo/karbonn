@@ -3,7 +3,7 @@ representations."""
 
 from __future__ import annotations
 
-__all__ = ["CosSinScalarEncoder"]
+__all__ = ["AsinhCosSinScalarEncoder", "CosSinScalarEncoder"]
 
 import math
 from typing import TYPE_CHECKING
@@ -381,4 +381,45 @@ class CosSinScalarEncoder(nn.Module):
             min_frequency=1 / max_abs_value,
             max_frequency=1 / min_abs_value,
             learnable=learnable,
+        )
+
+
+class AsinhCosSinScalarEncoder(CosSinScalarEncoder):
+    r"""Extension of ``CosSinScalarEncoder`` with an additional feature
+    built using the inverse hyperbolic sine (arcsinh).
+
+    Example usage:
+
+    ```pycon
+    >>> import torch
+    >>> from karbonn import AsinhCosSinScalarEncoder
+    >>> m = AsinhCosSinScalarEncoder(
+    ...     frequency=torch.tensor([1.0, 2.0, 4.0]), phase_shift=torch.tensor([1.0, 3.0, -2.0])
+    ... )
+    >>> m
+    AsinhCosSinScalarEncoder(dim=3, learnable=False)
+    >>> out = m(torch.tensor([[0.0], [1.0], [2.0], [3.0]]))
+    >>> out
+    tensor([[ 0.8415, -0.9900, -0.4161,  0.0000],
+            [ 0.9093,  0.2837, -0.4161,  0.8814],
+            [ 0.1411,  0.7539,  0.9602,  1.4436],
+            [-0.7568, -0.9111, -0.8391,  1.8184]])
+
+    ```
+    """
+
+    @property
+    def output_size(self) -> int:
+        r"""Return the output feature size."""
+        return self.frequency.shape[0] + 1
+
+    def forward(self, scalar: torch.Tensor) -> torch.Tensor:
+        features = self.frequency * scalar + self.phase_shift
+        return torch.cat(
+            (
+                features[..., : self._half_size].sin(),
+                features[..., self._half_size :].cos(),
+                scalar.asinh(),
+            ),
+            dim=-1,
         )
