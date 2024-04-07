@@ -92,6 +92,17 @@ class AsinhScalarEncoder(Module):
         Returns:
             An instantiated ``AsinhScalarEncoder`` where the scales are
                 uniformly initialized in a scale range.
+
+        Example usage:
+
+        ```pycon
+        >>> import torch
+        >>> from karbonn import AsinhScalarEncoder
+        >>> m = AsinhScalarEncoder.create_rand_scale(dim=5, min_scale=1, max_scale=10)
+        >>> m
+        AsinhScalarEncoder(dim=5, learnable=False)
+
+        ```
         """
         if dim < 1:
             msg = f"dim has to be greater or equal to 1 (received: {dim})"
@@ -129,9 +140,19 @@ class AsinhScalarEncoder(Module):
                 otherwise they are frozen.
 
         Returns:
-        -------
             An instantiated ``AsinhScalarEncoder`` where the scales are
                 evenly spaced.
+
+        Example usage:
+
+        ```pycon
+        >>> import torch
+        >>> from karbonn import AsinhScalarEncoder
+        >>> m = AsinhScalarEncoder.create_linspace_scale(dim=5, min_scale=1, max_scale=10)
+        >>> m
+        AsinhScalarEncoder(dim=5, learnable=False)
+
+        ```
         """
         if dim < 1:
             msg = f"dim has to be greater or equal to 1 (received: {dim})"
@@ -171,6 +192,17 @@ class AsinhScalarEncoder(Module):
         Returns:
             An instantiated ``AsinhScalarEncoder`` where the scales are
                 evenly spaced in the log space.
+
+        Example usage:
+
+        ```pycon
+        >>> import torch
+        >>> from karbonn import AsinhScalarEncoder
+        >>> m = AsinhScalarEncoder.create_logspace_scale(dim=5, min_scale=1, max_scale=10)
+        >>> m
+        AsinhScalarEncoder(dim=5, learnable=False)
+
+        ```
         """
         if dim < 1:
             msg = f"dim has to be greater or equal to 1 (received: {dim})"
