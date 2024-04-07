@@ -7,7 +7,7 @@ import pytest
 import torch
 from coola.utils.tensor import get_available_devices
 
-from karbonn import CosSinScalarEncoder
+from karbonn import AsinhCosSinScalarEncoder, CosSinScalarEncoder
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
@@ -273,6 +273,136 @@ def test_cos_sin_scalar_encoder_forward_frequency_phase_shift() -> None:
                     0.5403023058681398,
                     -0.4161468365471424,
                     -0.9899924966004454,
+                ],
+            ],
+            dtype=torch.float,
+        ),
+    )
+
+
+##############################################
+#     Tests for AsinhCosSinScalarEncoder     #
+##############################################
+
+ASINH_COSSIN_MODULE_CONSTRUCTORS: tuple[Callable, ...] = (
+    AsinhCosSinScalarEncoder.create_rand_frequency,
+    AsinhCosSinScalarEncoder.create_linspace_frequency,
+    AsinhCosSinScalarEncoder.create_logspace_frequency,
+)
+
+
+def test_asinh_cos_sin_scalar_encoder_input_size() -> None:
+    assert (
+        AsinhCosSinScalarEncoder.create_rand_frequency(
+            num_frequencies=3, min_frequency=0.1, max_frequency=10.0
+        ).input_size
+        == 1
+    )
+
+
+def test_asinh_cos_sin_scalar_encoder_output_size() -> None:
+    assert (
+        AsinhCosSinScalarEncoder.create_rand_frequency(
+            num_frequencies=3, min_frequency=0.1, max_frequency=10.0
+        ).output_size
+        == 7
+    )
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("batch_size", SIZES)
+@pytest.mark.parametrize("mode", [True, False])
+@pytest.mark.parametrize("module_init", ASINH_COSSIN_MODULE_CONSTRUCTORS)
+def test_asinh_cos_sin_scalar_encoder_forward_2d(
+    device: str, batch_size: int, mode: bool, module_init: Callable
+) -> None:
+    device = torch.device(device)
+    module = module_init(num_frequencies=5, min_frequency=0.1, max_frequency=10.0).to(device=device)
+    module.train(mode)
+    out = module(torch.rand(batch_size, 1, device=device))
+    assert out.shape == (batch_size, 11)
+    assert out.device == device
+    assert out.dtype == torch.float
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("batch_size", SIZES)
+@pytest.mark.parametrize("seq_len", SIZES)
+@pytest.mark.parametrize("mode", [True, False])
+@pytest.mark.parametrize("module_init", ASINH_COSSIN_MODULE_CONSTRUCTORS)
+def test_asinh_cos_sin_scalar_encoder_forward_3d_batch_first(
+    device: str, batch_size: int, seq_len: int, mode: bool, module_init: Callable
+) -> None:
+    device = torch.device(device)
+    module = module_init(num_frequencies=5, min_frequency=0.1, max_frequency=10.0).to(device=device)
+    module.train(mode)
+    out = module(torch.rand(batch_size, seq_len, 1, device=device))
+    assert out.shape == (batch_size, seq_len, 11)
+    assert out.device == device
+    assert out.dtype == torch.float
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("batch_size", SIZES)
+@pytest.mark.parametrize("seq_len", SIZES)
+@pytest.mark.parametrize("mode", [True, False])
+@pytest.mark.parametrize("module_init", ASINH_COSSIN_MODULE_CONSTRUCTORS)
+def test_asinh_cos_sin_scalar_encoder_forward_3d_seq_first(
+    device: str, batch_size: int, seq_len: int, mode: bool, module_init: Callable
+) -> None:
+    device = torch.device(device)
+    module = module_init(num_frequencies=5, min_frequency=0.1, max_frequency=10.0).to(device=device)
+    module.train(mode)
+    out = module(torch.rand(seq_len, batch_size, 1, device=device))
+    assert out.shape == (seq_len, batch_size, 11)
+    assert out.device == device
+    assert out.dtype == torch.float
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("batch_size", SIZES)
+@pytest.mark.parametrize("learnable", [True, False])
+@pytest.mark.parametrize("module_init", ASINH_COSSIN_MODULE_CONSTRUCTORS)
+def test_asinh_cos_sin_scalar_encoder_backward(
+    device: str, batch_size: int, learnable: bool, module_init: Callable
+) -> None:
+    device = torch.device(device)
+    module = module_init(
+        num_frequencies=5, min_frequency=0.1, max_frequency=10.0, learnable=learnable
+    ).to(device=device)
+    out = module(torch.rand(batch_size, 1, device=device, requires_grad=True))
+    out.mean().backward()
+    assert out.shape == (batch_size, 11)
+    assert out.device == device
+    assert out.dtype == torch.float
+
+
+def test_asinh_cos_sin_scalar_encoder_forward_frequency_phase_shift() -> None:
+    module = AsinhCosSinScalarEncoder(
+        frequency=torch.tensor([1.0, 2.0, 3.0, 1.0, 2.0, 3.0], dtype=torch.float),
+        phase_shift=torch.zeros(6),
+    )
+    assert module(torch.tensor([[-1], [0], [1]], dtype=torch.float)).allclose(
+        torch.tensor(
+            [
+                [
+                    -0.8414709848078965,
+                    -0.9092974268256817,
+                    -0.1411200080598672,
+                    0.5403023058681398,
+                    -0.4161468365471424,
+                    -0.9899924966004454,
+                    -0.881373587019543,
+                ],
+                [0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 0.0],
+                [
+                    0.8414709848078965,
+                    0.9092974268256817,
+                    0.1411200080598672,
+                    0.5403023058681398,
+                    -0.4161468365471424,
+                    -0.9899924966004454,
+                    0.881373587019543,
                 ],
             ],
             dtype=torch.float,
