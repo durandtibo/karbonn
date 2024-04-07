@@ -6,7 +6,6 @@ from __future__ import annotations
 __all__ = ["find_module_state_dict"]
 
 
-
 def find_module_state_dict(state_dict: dict | list | tuple | set, module_keys: set) -> dict:
     r"""Try to find automatically the part of the state dict related to a
     module.
