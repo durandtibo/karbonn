@@ -208,13 +208,13 @@ files = [
 
 [[package]]
 name = "coola"
-version = "0.6.1"
+version = "0.7.0"
 description = "A library to check if two complex/nested objects are equal or not"
 optional = false
 python-versions = "<3.13,>=3.9"
 files = [
-    {file = "coola-0.6.1-py3-none-any.whl", hash = "sha256:fd9e50d227ffee22f915167f9bb1db5db7f39f29835a27e47b4bdd2c76b0f359"},
-    {file = "coola-0.6.1.tar.gz", hash = "sha256:44938d93354205713c0dc9c0a154a953416c1256c9dcf3cdff95a702f0ac6ceb"},
+    {file = "coola-0.7.0-py3-none-any.whl", hash = "sha256:63705899c02a3db02aee849f44003ae8298f27d49eb174108afded81ea9cb972"},
+    {file = "coola-0.7.0.tar.gz", hash = "sha256:a7cf7baac088cd2ebfbf0b72929543dc4bb6c1a5f5c7a2207f677aba1260d618"},
 ]
 
 [package.extras]
@@ -1660,7 +1660,7 @@ optree = ["optree (>=0.9.1)"]
 name = "tornado"
 version = "6.4.1"
 description = "Tornado is a Python web framework and asynchronous networking library, originally developed at FriendFeed."
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "tornado-6.4.1-cp38-abi3-macosx_10_9_universal2.whl", hash = "sha256:163b0aafc8e23d8cdc3c9dfb24c5368af84a81e3364745ccb4427669bf84aec8"},
