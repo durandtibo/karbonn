@@ -3,8 +3,11 @@ r"""Implement some utility functions to manage optional dependencies."""
 from __future__ import annotations
 
 __all__ = [
+    "check_ignite",
     "check_objectory",
     "check_tabulate",
+    "ignite_available",
+    "is_ignite_available",
     "is_objectory_available",
     "is_tabulate_available",
     "objectory_available",
@@ -18,6 +21,80 @@ from coola.utils.imports import decorator_package_available
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+
+
+##################
+#     ignite     #
+##################
+
+
+def is_ignite_available() -> bool:
+    r"""Indicate if the ``ignite`` package is installed or not.
+
+    Returns:
+        ``True`` if ``ignite`` is available otherwise ``False``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from karbonn.utils.imports import is_ignite_available
+    >>> is_ignite_available()
+
+    ```
+    """
+    return find_spec("ignite") is not None
+
+
+def check_ignite() -> None:
+    r"""Check if the ``ignite`` package is installed.
+
+    Raises:
+        RuntimeError: if the ``ignite`` package is not installed.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from karbonn.utils.imports import check_ignite
+    >>> check_ignite()
+
+    ```
+    """
+    if not is_ignite_available():
+        msg = (
+            "`ignite` package is required but not installed. "
+            "You can install `ignite` package with the command:\n\n"
+            "pip install pytorch-ignite\n"
+        )
+        raise RuntimeError(msg)
+
+
+def ignite_available(fn: Callable[..., Any]) -> Callable[..., Any]:
+    r"""Implement a decorator to execute a function only if ``ignite``
+    package is installed.
+
+    Args:
+        fn: Specifies the function to execute.
+
+    Returns:
+        A wrapper around ``fn`` if ``ignite`` package is installed,
+            otherwise ``None``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from karbonn.utils.imports import ignite_available
+    >>> @ignite_available
+    ... def my_function(n: int = 0) -> int:
+    ...     return 42 + n
+    ...
+    >>> my_function()
+
+    ```
+    """
+    return decorator_package_available(fn, is_ignite_available)
 
 
 #####################
@@ -34,6 +111,7 @@ def is_objectory_available() -> bool:
     Example usage:
 
     ```pycon
+
     >>> from karbonn.utils.imports import is_objectory_available
     >>> is_objectory_available()
 
@@ -51,6 +129,7 @@ def check_objectory() -> None:
     Example usage:
 
     ```pycon
+
     >>> from karbonn.utils.imports import check_objectory
     >>> check_objectory()
 
@@ -79,6 +158,7 @@ def objectory_available(fn: Callable[..., Any]) -> Callable[..., Any]:
     Example usage:
 
     ```pycon
+
     >>> from karbonn.utils.imports import objectory_available
     >>> @objectory_available
     ... def my_function(n: int = 0) -> int:
@@ -105,6 +185,7 @@ def is_tabulate_available() -> bool:
     Example usage:
 
     ```pycon
+
     >>> from karbonn.utils.imports import is_tabulate_available
     >>> is_tabulate_available()
 
@@ -122,6 +203,7 @@ def check_tabulate() -> None:
     Example usage:
 
     ```pycon
+
     >>> from karbonn.utils.imports import check_tabulate
     >>> check_tabulate()
 
@@ -150,6 +232,7 @@ def tabulate_available(fn: Callable[..., Any]) -> Callable[..., Any]:
     Example usage:
 
     ```pycon
+
     >>> from karbonn.utils.imports import tabulate_available
     >>> @tabulate_available
     ... def my_function(n: int = 0) -> int:

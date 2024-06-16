@@ -5,8 +5,11 @@ from unittest.mock import patch
 import pytest
 
 from karbonn.utils.imports import (
+    check_ignite,
     check_objectory,
     check_tabulate,
+    ignite_available,
+    is_ignite_available,
     is_objectory_available,
     is_tabulate_available,
     objectory_available,
@@ -16,6 +19,60 @@ from karbonn.utils.imports import (
 
 def my_function(n: int = 0) -> int:
     return 42 + n
+
+
+##################
+#     ignite     #
+##################
+
+
+def test_check_ignite_with_package() -> None:
+    with patch("karbonn.utils.imports.is_ignite_available", lambda: True):
+        check_ignite()
+
+
+def test_check_ignite_without_package() -> None:
+    with (
+        patch("karbonn.utils.imports.is_ignite_available", lambda: False),
+        pytest.raises(RuntimeError, match="`ignite` package is required but not installed."),
+    ):
+        check_ignite()
+
+
+def test_is_ignite_available() -> None:
+    assert isinstance(is_ignite_available(), bool)
+
+
+def test_ignite_available_with_package() -> None:
+    with patch("karbonn.utils.imports.is_ignite_available", lambda: True):
+        fn = ignite_available(my_function)
+        assert fn(2) == 44
+
+
+def test_ignite_available_without_package() -> None:
+    with patch("karbonn.utils.imports.is_ignite_available", lambda: False):
+        fn = ignite_available(my_function)
+        assert fn(2) is None
+
+
+def test_ignite_available_decorator_with_package() -> None:
+    with patch("karbonn.utils.imports.is_ignite_available", lambda: True):
+
+        @ignite_available
+        def fn(n: int = 0) -> int:
+            return 42 + n
+
+        assert fn(2) == 44
+
+
+def test_ignite_available_decorator_without_package() -> None:
+    with patch("karbonn.utils.imports.is_ignite_available", lambda: False):
+
+        @ignite_available
+        def fn(n: int = 0) -> int:
+            return 42 + n
+
+        assert fn(2) is None
 
 
 #####################
