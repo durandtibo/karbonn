@@ -1893,9 +1893,9 @@ doc = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linke
 test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more-itertools", "pytest (>=6,!=8.1.*)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-ignore-flaky", "pytest-mypy", "pytest-ruff (>=0.2.1)"]
 
 [extras]
-all = ["numpy", "objectory", "tabulate"]
+all = ["numpy", "objectory", "pytorch-ignite", "pytorch-ignite", "tabulate"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "ad3251046a7e0ddd0bdee147f3a6fbd79afb1fac915ce7db54a9abbfa7d50cc0"
+content-hash = "91eea967b0dc5d02e3b48e22065b2e5952269ba037c758c330cafb2d70597ee4"

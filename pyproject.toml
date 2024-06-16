@@ -48,7 +48,7 @@ pytorch-ignite = [
 ]
 
 [tool.poetry.extras]
-all = ["numpy", "objectory", "tabulate"]
+all = ["numpy", "objectory", "pytorch-ignite", "tabulate"]
 
 [tool.poetry.group.docs]
 optional = true
