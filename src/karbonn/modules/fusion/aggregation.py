@@ -81,7 +81,7 @@ class SumFusion(nn.Module):
 
         output = inputs[0]
         for x in inputs[1:]:
-            output += x
+            output = output.add(x)
 
         if self._normalized:
             output = output.div(len(inputs))

@@ -61,9 +61,7 @@ def get_module_devices(module: nn.Module) -> tuple[torch.device, ...]:
 
     ```
     """
-    devices = set()
-    devices.update(param.device for param in module.parameters())
-    return tuple(devices)
+    return tuple({param.device for param in module.parameters()})
 
 
 def is_module_on_device(module: nn.Module, device: torch.device) -> bool:
