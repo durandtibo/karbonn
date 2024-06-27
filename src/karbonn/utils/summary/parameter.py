@@ -13,6 +13,7 @@ __all__ = [
 
 import logging
 from dataclasses import asdict, dataclass
+from itertools import starmap
 from typing import TYPE_CHECKING, Any
 
 from coola.nested import convert_to_dict_of_lists
@@ -132,10 +133,7 @@ def get_parameter_summaries(module: Module) -> list[ParameterSummary]:
 
     ```
     """
-    return [
-        ParameterSummary.from_parameter(name, parameter)
-        for name, parameter in module.named_parameters()
-    ]
+    return list(starmap(ParameterSummary.from_parameter, module.named_parameters()))
 
 
 def tabulate_parameter_summary(

@@ -4,9 +4,9 @@ parameters."""
 from __future__ import annotations
 
 __all__ = [
-    "ModuleSummary",
     "NO_PARAMETER",
     "PARAMETER_NOT_INITIALIZED",
+    "ModuleSummary",
     "ParameterSummary",
     "get_parameter_summaries",
     "module_summary",

@@ -3,8 +3,8 @@ r"""Contain relative indicator functions."""
 from __future__ import annotations
 
 __all__ = [
-    "BaseRelativeIndicator",
     "ArithmeticalMeanIndicator",
+    "BaseRelativeIndicator",
     "ClassicalRelativeIndicator",
     "GeometricMeanIndicator",
     "MaximumMeanIndicator",

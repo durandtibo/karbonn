@@ -62,8 +62,7 @@ def get_module_devices(module: nn.Module) -> tuple[torch.device, ...]:
     ```
     """
     devices = set()
-    for param in module.parameters():
-        devices.add(param.device)
+    devices.update(param.device for param in module.parameters())
     return tuple(devices)
 
 
