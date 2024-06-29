@@ -36,6 +36,11 @@ INDICATORS = [
 REDUCTIONS = ["mean", "sum"]
 
 
+@pytest.fixture()
+def module() -> nn.Module:
+    return nn.Sequential(nn.Linear(8, 8), nn.ReLU(), nn.Linear(8, 8))
+
+
 ##################################
 #     Tests for RelativeLoss     #
 ##################################
@@ -45,10 +50,13 @@ REDUCTIONS = ["mean", "sum"]
 @pytest.mark.parametrize("indicator", INDICATORS)
 @pytest.mark.parametrize("reduction", REDUCTIONS)
 def test_relative_loss_loss_decreasing(
-    criterion: nn.Module, reduction: str, indicator: BaseRelativeIndicator
+    module: nn.Module,
+    criterion: nn.Module,
+    reduction: str,
+    indicator: BaseRelativeIndicator,
 ) -> None:
     assert is_loss_decreasing_with_sgd(
-        module=nn.Linear(8, 8),
+        module=module,
         criterion=RelativeLoss(criterion=criterion, reduction=reduction, indicator=indicator),
         feature=torch.randn(16, 8).clamp(-1.0, 1.0),
         target=torch.rand(16, 8).add(1.0),
@@ -64,10 +72,10 @@ def test_relative_loss_loss_decreasing(
 @pytest.mark.parametrize("indicator", INDICATORS)
 @pytest.mark.parametrize("reduction", REDUCTIONS)
 def test_relative_mse_loss_loss_decreasing(
-    reduction: str, indicator: BaseRelativeIndicator
+    module: nn.Module, reduction: str, indicator: BaseRelativeIndicator
 ) -> None:
     assert is_loss_decreasing_with_sgd(
-        module=nn.Linear(8, 8),
+        module=module,
         criterion=RelativeMSELoss(reduction=reduction, indicator=indicator),
         feature=torch.randn(16, 8).clamp(-1.0, 1.0),
         target=torch.rand(16, 8).add(1.0),
@@ -83,10 +91,10 @@ def test_relative_mse_loss_loss_decreasing(
 @pytest.mark.parametrize("indicator", INDICATORS)
 @pytest.mark.parametrize("reduction", REDUCTIONS)
 def test_relative_smooth_l1_loss_loss_decreasing(
-    reduction: str, indicator: BaseRelativeIndicator
+    module: nn.Module, reduction: str, indicator: BaseRelativeIndicator
 ) -> None:
     assert is_loss_decreasing_with_sgd(
-        module=nn.Linear(8, 8),
+        module=module,
         criterion=RelativeSmoothL1Loss(reduction=reduction, indicator=indicator),
         feature=torch.randn(16, 8).clamp(-1.0, 1.0),
         target=torch.rand(16, 8).add(1.0),
