@@ -50,8 +50,8 @@ def test_relative_loss_loss_decreasing(
     assert is_loss_decreasing_with_sgd(
         module=nn.Linear(8, 8),
         criterion=RelativeLoss(criterion=criterion, reduction=reduction, indicator=indicator),
-        feature=torch.randn(16, 8),
-        target=torch.randn(16, 8),
+        feature=torch.randn(16, 8).clamp(-1.0, 1.0),
+        target=torch.rand(16, 8).add(1.0),
         num_iterations=10,
     )
 
@@ -69,8 +69,8 @@ def test_relative_mse_loss_loss_decreasing(
     assert is_loss_decreasing_with_sgd(
         module=nn.Linear(8, 8),
         criterion=RelativeMSELoss(reduction=reduction, indicator=indicator),
-        feature=torch.randn(16, 8),
-        target=torch.randn(16, 8),
+        feature=torch.randn(16, 8).clamp(-1.0, 1.0),
+        target=torch.rand(16, 8).add(1.0),
         num_iterations=10,
     )
 
@@ -88,7 +88,7 @@ def test_relative_smooth_l1_loss_loss_decreasing(
     assert is_loss_decreasing_with_sgd(
         module=nn.Linear(8, 8),
         criterion=RelativeSmoothL1Loss(reduction=reduction, indicator=indicator),
-        feature=torch.randn(16, 8),
-        target=torch.randn(16, 8),
+        feature=torch.randn(16, 8).clamp(-1.0, 1.0),
+        target=torch.rand(16, 8).add(1.0),
         num_iterations=10,
     )
