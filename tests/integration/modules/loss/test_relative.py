@@ -38,7 +38,7 @@ REDUCTIONS = ["mean", "sum"]
 
 @pytest.fixture()
 def module() -> nn.Module:
-    return nn.Sequential(nn.Linear(8, 8), nn.ReLU(), nn.Linear(8, 8))
+    return nn.Sequential(nn.Linear(8, 16), nn.ReLU(), nn.Linear(16, 8))
 
 
 ##################################
@@ -57,9 +57,11 @@ def test_relative_loss_loss_decreasing(
 ) -> None:
     assert is_loss_decreasing_with_sgd(
         module=module,
-        criterion=RelativeLoss(criterion=criterion, reduction=reduction, indicator=indicator),
+        criterion=RelativeLoss(
+            criterion=criterion, reduction=reduction, indicator=indicator, eps=1e-5
+        ),
         feature=torch.randn(16, 8).clamp(-1.0, 1.0),
-        target=torch.rand(16, 8).add(1.0),
+        target=torch.rand(16, 8),
         num_iterations=10,
     )
 
@@ -78,7 +80,7 @@ def test_relative_mse_loss_loss_decreasing(
         module=module,
         criterion=RelativeMSELoss(reduction=reduction, indicator=indicator),
         feature=torch.randn(16, 8).clamp(-1.0, 1.0),
-        target=torch.rand(16, 8).add(1.0),
+        target=torch.rand(16, 8),
         num_iterations=10,
     )
 
@@ -97,6 +99,6 @@ def test_relative_smooth_l1_loss_loss_decreasing(
         module=module,
         criterion=RelativeSmoothL1Loss(reduction=reduction, indicator=indicator),
         feature=torch.randn(16, 8).clamp(-1.0, 1.0),
-        target=torch.rand(16, 8).add(1.0),
+        target=torch.rand(16, 8),
         num_iterations=10,
     )
