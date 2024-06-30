@@ -43,6 +43,11 @@ INDICATORS = [
 REDUCTIONS = ["mean", "sum"]
 
 
+@pytest.fixture()
+def module() -> nn.Module:
+    return nn.Sequential(nn.Linear(8, 16), nn.ReLU(), nn.Linear(16, 8))
+
+
 ###################################
 #     Tests for relative_loss     #
 ###################################
@@ -52,6 +57,7 @@ REDUCTIONS = ["mean", "sum"]
 @pytest.mark.parametrize("indicator", INDICATORS)
 @pytest.mark.parametrize("reduction", REDUCTIONS)
 def test_relative_loss_loss_decreasing(
+    module: nn.Module,
     base_loss: Callable[[torch.Tensor, torch.Tensor], torch.Tensor],
     indicator: Callable[[torch.Tensor, torch.Tensor], torch.Tensor],
     reduction: str,
@@ -64,9 +70,9 @@ def test_relative_loss_loss_decreasing(
         )
 
     assert is_loss_decreasing_with_sgd(
-        module=nn.Linear(8, 8),
+        module=module,
         criterion=my_loss,
-        feature=torch.randn(16, 8),
-        target=torch.randn(16, 8),
+        feature=torch.randn(16, 8).clamp(-1.0, 1.0),
+        target=torch.rand(16, 8),
         num_iterations=10,
     )
