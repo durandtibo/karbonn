@@ -30,7 +30,9 @@ nav:
 #      - customization.md
   - Reference:
       - karbonn: refs/root.md
+      - karbonn.distributed: refs/distributed.md
       - karbonn.functional: refs/functional.md
+      - karbonn.modules: refs/functional.md
       - karbonn.utils: refs/utils.md
   - GitHub: https://github.com/durandtibo/karbonn
 
