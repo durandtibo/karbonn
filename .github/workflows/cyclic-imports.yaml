@@ -32,12 +32,18 @@ jobs:
       - name: check karbonn
         run: |
           poetry run python -c "import karbonn"
+      - name: check karbonn.distributed
+        run: |
+          poetry run python -c "from karbonn import distributed"
       - name: check karbonn.functional
         run: |
           poetry run python -c "from karbonn import functional"
       - name: check karbonn.modules
         run: |
           poetry run python -c "from karbonn import modules"
+      - name: check karbonn.testing
+        run: |
+          poetry run python -c "from karbonn import testing"
       - name: check karbonn.utils
         run: |
           poetry run python -c "from karbonn import utils"
