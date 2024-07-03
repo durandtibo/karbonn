@@ -138,9 +138,14 @@ jobs:
           poetry run make config-poetry
           poetry run make install
 
-      - name: Install PyTorch
+      - name: Install torch
         run: |
           poetry run pip install torch==${{ matrix.torch-version }}
+
+      - name: Install numpy
+        if: matrix.torch-version == '2.2.2'
+        run: |
+          poetry run pip install numpy
 
       - name: Show installed packages
         run: |
