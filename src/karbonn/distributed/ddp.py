@@ -24,11 +24,11 @@ SUM = "SUM"
 
 
 @overload
-def sync_reduce(variable: Tensor, op: str) -> Tensor: ...
+def sync_reduce(variable: Tensor, op: str) -> Tensor: ...  # pragma: no cover
 
 
 @overload
-def sync_reduce(variable: float, op: str) -> float: ...
+def sync_reduce(variable: float, op: str) -> float: ...  # pragma: no cover
 
 
 def sync_reduce(variable: Tensor | float, op: str) -> Tensor | float:
