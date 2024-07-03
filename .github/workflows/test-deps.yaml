@@ -142,10 +142,12 @@ jobs:
         run: |
           poetry run pip install torch==${{ matrix.torch-version }}
 
+      # The following step is needed for torch 2.2.2 because an experimental module in
+      # torch.distributed requires numpy
       - name: Install numpy
         if: matrix.torch-version == '2.2.2'
         run: |
-          poetry run pip install numpy
+          poetry run pip install numpy==1.26.4
 
       - name: Show installed packages
         run: |
