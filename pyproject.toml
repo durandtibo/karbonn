@@ -42,6 +42,7 @@ torch = [
     { version = ">=1.12,<3.0" }
 ]
 
+
 # Optional dependencies
 numpy = [
     # numpy 2.0 is supported starting torch 2.3.0 but there is no binaries for mac intel
