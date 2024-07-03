@@ -8,8 +8,8 @@ __all__ = ["sync_reduce", "AVG", "BAND", "BOR", "MAX", "MIN", "PRODUCT", "SUM"]
 from typing import overload
 
 import torch
+from ignite.distributed import all_reduce, get_world_size
 from torch import Tensor
-from torch.distributed import all_reduce, get_world_size
 
 from karbonn.distributed.utils import is_distributed
 
