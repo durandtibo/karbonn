@@ -5,6 +5,8 @@ from __future__ import annotations
 __all__ = [
     "cuda_available",
     "distributed_available",
+    "gloo_available",
+    "nccl_available",
     "objectory_available",
     "tabulate_available",
     "two_gpus_available",
@@ -23,6 +25,14 @@ two_gpus_available = pytest.mark.skipif(
 )
 distributed_available = pytest.mark.skipif(
     not torch.distributed.is_available(), reason="Requires PyTorch distributed"
+)
+gloo_available = pytest.mark.skipif(
+    not torch.distributed.is_gloo_available(),
+    reason="Requires PyTorch distributed and GLOO backend",
+)
+nccl_available = pytest.mark.skipif(
+    not torch.distributed.is_nccl_available(),
+    reason="Requires PyTorch distributed and NCCL backend",
 )
 
 objectory_available = pytest.mark.skipif(not is_objectory_available(), reason="Require objectory")
