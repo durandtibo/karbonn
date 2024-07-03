@@ -104,7 +104,7 @@ def create_sequential(modules: Sequence[nn.Module | dict]) -> nn.Sequential:
     ...     [
     ...         {"_target_": "torch.nn.Linear", "in_features": 4, "out_features": 6},
     ...         {"_target_": "torch.nn.ReLU"},
-    ...         {"_target_": "torch.nn.Linear", "in_features": 6, "out_features": 6}
+    ...         {"_target_": "torch.nn.Linear", "in_features": 6, "out_features": 6},
     ...     ]
     ... )
     >>> seq
