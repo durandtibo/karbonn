@@ -129,7 +129,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ '3.12', '3.11', '3.10', '3.9' ]
-        coola-version: [ 0.7.1, 0.6.2 ]
+        coola-version: [ 0.7.2, 0.6.2 ]
 
     steps:
       - name: Checkout
@@ -143,6 +143,35 @@ jobs:
       - name: Install package
         run: |
           pip install karbonn coola==${{ matrix.coola-version }}
+
+      - name: Run some checks
+        run: |
+          python tests/package_checks.py
+
+
+  pytorch-ignite:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        pytorch-ignite-version: [ 0.5.0.post2, 0.4.13 ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: |
+          pip install karbonn pytorch-ignite==${{ matrix.pytorch-ignite-version }}
 
       - name: Run some checks
         run: |

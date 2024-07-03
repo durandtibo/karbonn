@@ -64,7 +64,7 @@ def reduce_loss(tensor: Tensor, reduction: str) -> Tensor:
 
     >>> import torch
     >>> from karbonn.functional import reduce_loss
-    >>> tensor = torch.tensor([[0., 1., 2.], [3., 4., 5.]])
+    >>> tensor = torch.tensor([[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]])
     >>> reduce_loss(tensor, "none")
     tensor([[0., 1., 2.],
             [3., 4., 5.]])

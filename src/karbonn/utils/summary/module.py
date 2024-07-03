@@ -367,7 +367,9 @@ def module_summary(
 
     >>> import torch
     >>> from karbonn.utils.summary import module_summary
-    >>> module = torch.nn.Sequential(torch.nn.Linear(4, 6), torch.nn.ReLU(), torch.nn.Linear(6, 3))
+    >>> module = torch.nn.Sequential(
+    ...     torch.nn.Linear(4, 6), torch.nn.ReLU(), torch.nn.Linear(6, 3)
+    ... )
     >>> summary = module_summary(module, depth=1)
     >>> summary
     {'[root]': ModuleSummary(
@@ -467,7 +469,9 @@ def tabulate_module_summary(summary: dict[str, ModuleSummary], tablefmt: str = "
 
     >>> import torch
     >>> from karbonn.utils.summary import module_summary, tabulate_module_summary
-    >>> module = torch.nn.Sequential(torch.nn.Linear(4, 6), torch.nn.ReLU(), torch.nn.Linear(6, 3))
+    >>> module = torch.nn.Sequential(
+    ...     torch.nn.Linear(4, 6), torch.nn.ReLU(), torch.nn.Linear(6, 3)
+    ... )
     >>> summary = module_summary(module, depth=1, input_args=[torch.randn(2, 4)])
     >>> print(tabulate_module_summary(summary))
     ╒════╤════════╤════════════╤══════════════════╤════════════════════════╤════════════════════════╕
