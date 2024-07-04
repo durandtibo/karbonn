@@ -13,7 +13,7 @@ from torch import Tensor
 from karbonn.distributed.utils import is_distributed
 from karbonn.utils.imports import check_ignite, is_ignite_available
 
-if is_ignite_available():
+if is_ignite_available():  # pragma: no cover
     from ignite import distributed as idist
 
 # The supported reduction operators
