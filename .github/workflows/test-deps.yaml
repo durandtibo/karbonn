@@ -51,52 +51,6 @@ jobs:
           poetry run make integration-test
 
 
-  pytorch-ignite:
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
-    strategy:
-      max-parallel: 8
-      fail-fast: false
-      matrix:
-        os: [ ubuntu-latest ]
-        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
-        pytorch-ignite-version: [ 0.5.0.post2, 0.4.13 ]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-
-      - name: Install packages
-        run: |
-          poetry run make config-poetry
-          poetry run make install
-
-      - name: Install pytorch-ignite
-        run: |
-          poetry run pip install pytorch-ignite==${{ matrix.pytorch-ignite-version }}
-
-      - name: Show installed packages
-        run: |
-          poetry run poetry show
-          poetry run poetry show --tree
-
-      - name: Run unit tests
-        run: |
-          poetry run make unit-test-cov
-
-      - name: Run integration tests
-        run: |
-          poetry run make integration-test
-
-
   torch:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
@@ -257,6 +211,52 @@ jobs:
       - name: Install NumPy
         run: |
           poetry run pip install objectory==${{ matrix.objectory-version }}
+
+      - name: Show installed packages
+        run: |
+          poetry run poetry show
+          poetry run poetry show --tree
+
+      - name: Run unit tests
+        run: |
+          poetry run make unit-test-cov
+
+      - name: Run integration tests
+        run: |
+          poetry run make integration-test
+
+
+  pytorch-ignite:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        pytorch-ignite-version: [ 0.5.0.post2, 0.4.13 ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
+      - name: Install packages
+        run: |
+          poetry run make config-poetry
+          poetry run make install
+
+      - name: Install pytorch-ignite
+        run: |
+          poetry run pip install pytorch-ignite==${{ matrix.pytorch-ignite-version }}
 
       - name: Show installed packages
         run: |
