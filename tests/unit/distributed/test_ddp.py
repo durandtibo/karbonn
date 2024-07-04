@@ -14,6 +14,10 @@ from karbonn.testing import ignite_available
 #################################
 
 
+def test_sync_reduce_non_distributed() -> None:
+    assert ddp.sync_reduce(35, ddp.SUM) == 35
+
+
 @ignite_available
 @pytest.mark.parametrize("is_distributed", [True, False])
 def test_sync_reduce_sum_number(is_distributed: bool) -> None:
