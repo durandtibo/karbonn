@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable
+from typing import Callable
 from unittest.mock import Mock
 
 import pytest
@@ -14,11 +14,13 @@ from karbonn.testing import (
     nccl_available,
     two_gpus_available,
 )
+from karbonn.utils.imports import is_ignite_available
 
-if TYPE_CHECKING:
+if is_ignite_available():
     from ignite import distributed as idist
 else:  # pragma: no cover
     idist = Mock()
+
 
 #################################
 #     Tests for sync_reduce     #
@@ -174,7 +176,7 @@ def check_sync_reduce_float(local_rank: int) -> None:
 @distributed_available
 @gloo_available
 @ignite_available
-def test_sync_reduce_gloo(parallel_gloo_2: idist.Parallel, func: Callable) -> None:
+def test_sync_reduce_gloo(parallel_gloo_2: idist.Parallel, func: Callable[[int], None]) -> None:
     parallel_gloo_2.run(func)
 
 
