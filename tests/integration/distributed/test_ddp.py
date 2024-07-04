@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Callable
+from unittest.mock import Mock
 
 import pytest
 import torch
-from ignite import distributed as dist
 
 from karbonn.distributed import ddp
 from karbonn.testing import (
@@ -16,7 +16,9 @@ from karbonn.testing import (
 )
 
 if TYPE_CHECKING:
-    from ignite.distributed import Parallel
+    from ignite import distributed as idist
+else:  # pragma: no cover
+    idist = Mock()
 
 #################################
 #     Tests for sync_reduce     #
@@ -29,8 +31,8 @@ def check_sync_reduce_tensor_int(local_rank: int) -> None:
     Args:
         local_rank: The local rank.
     """
-    assert dist.get_world_size() == 2  # This test is valid only for 2 processes.
-    device = dist.device()
+    assert idist.get_world_size() == 2  # This test is valid only for 2 processes.
+    device = idist.device()
 
     x_tensor = (
         torch.tensor([0, 1], device=device)
@@ -47,7 +49,7 @@ def check_sync_reduce_tensor_int(local_rank: int) -> None:
     )  # product
     assert ddp.sync_reduce(x_tensor, op=ddp.SUM).equal(torch.tensor([2, 3], device=device))  # sum
 
-    if dist.backend() != "nccl":  # bitwise AND and OR are not supported by NCCL
+    if idist.backend() != "nccl":  # bitwise AND and OR are not supported by NCCL
         assert ddp.sync_reduce(x_tensor, op=ddp.BAND).equal(
             torch.tensor([0, 0], device=device)
         )  # bitwise AND
@@ -68,8 +70,8 @@ def check_sync_reduce_tensor_float(local_rank: int) -> None:
     Args:
         local_rank: The local rank.
     """
-    assert dist.get_world_size() == 2  # This test is valid only for 2 processes.
-    device = dist.device()
+    assert idist.get_world_size() == 2  # This test is valid only for 2 processes.
+    device = idist.device()
 
     x_tensor = (
         torch.tensor([0.0, 1.0], device=device)
@@ -110,7 +112,7 @@ def check_sync_reduce_int(local_rank: int) -> None:
     Args:
         local_rank: The local rank.
     """
-    assert dist.get_world_size() == 2  # This test is valid only for 2 processes.
+    assert idist.get_world_size() == 2  # This test is valid only for 2 processes.
 
     x_int = 2 if local_rank == 0 else 5
     assert ddp.sync_reduce(x_int, op=ddp.AVG) == 3.5  # average
@@ -119,7 +121,7 @@ def check_sync_reduce_int(local_rank: int) -> None:
     assert ddp.sync_reduce(x_int, op=ddp.PRODUCT) == 10  # product
     assert ddp.sync_reduce(x_int, op=ddp.SUM) == 7  # sum
 
-    if dist.backend() != "nccl":  # bitwise AND and OR are not supported by NCCL
+    if idist.backend() != "nccl":  # bitwise AND and OR are not supported by NCCL
         assert ddp.sync_reduce(x_int, op=ddp.BAND) == 0  # bitwise AND
         assert ddp.sync_reduce(x_int, op=ddp.BOR) == 7  # bitwise OR
 
@@ -139,7 +141,7 @@ def check_sync_reduce_float(local_rank: int) -> None:
     Args:
         local_rank: The local rank.
     """
-    assert dist.get_world_size() == 2  # This test is valid only for 2 processes.
+    assert idist.get_world_size() == 2  # This test is valid only for 2 processes.
 
     x_float = 1.0 if local_rank == 0 else 3.5
     assert ddp.sync_reduce(x_float, op=ddp.AVG) == 2.25  # average
@@ -172,7 +174,7 @@ def check_sync_reduce_float(local_rank: int) -> None:
 @distributed_available
 @gloo_available
 @ignite_available
-def test_sync_reduce_gloo(parallel_gloo_2: Parallel, func: Callable) -> None:
+def test_sync_reduce_gloo(parallel_gloo_2: idist.Parallel, func: Callable) -> None:
     parallel_gloo_2.run(func)
 
 
@@ -189,5 +191,5 @@ def test_sync_reduce_gloo(parallel_gloo_2: Parallel, func: Callable) -> None:
 @distributed_available
 @nccl_available
 @ignite_available
-def test_sync_reduce_nccl(parallel_nccl_2: Parallel, func: Callable[[int], None]) -> None:
+def test_sync_reduce_nccl(parallel_nccl_2: idist.Parallel, func: Callable[[int], None]) -> None:
     parallel_nccl_2.run(func)
