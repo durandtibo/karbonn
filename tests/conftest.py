@@ -4,14 +4,20 @@ import datetime
 from typing import TYPE_CHECKING
 
 import pytest
-from ignite.distributed import Parallel
+
+from karbonn.utils.imports import check_ignite, is_ignite_available
 
 if TYPE_CHECKING:
     from collections.abc import Generator
 
 
+if is_ignite_available():
+    from ignite.distributed import Parallel
+
+
 @pytest.fixture(scope="session")
 def parallel_gloo_2() -> Generator[Parallel, None, None]:
+    check_ignite()
     with Parallel(
         backend="gloo",
         nproc_per_node=2,
@@ -25,6 +31,7 @@ def parallel_gloo_2() -> Generator[Parallel, None, None]:
 
 @pytest.fixture(scope="session")
 def parallel_nccl_2() -> Generator[Parallel, None, None]:
+    check_ignite()
     with Parallel(
         backend="nccl",
         nproc_per_node=2,

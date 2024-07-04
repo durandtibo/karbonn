@@ -10,6 +10,7 @@ from karbonn.distributed import ddp
 from karbonn.testing import (
     distributed_available,
     gloo_available,
+    ignite_available,
     nccl_available,
     two_gpus_available,
 )
@@ -20,6 +21,7 @@ if TYPE_CHECKING:
 #################################
 #     Tests for sync_reduce     #
 #################################
+
 
 def check_sync_reduce_tensor_int(local_rank: int) -> None:
     r"""Check ``sync_reduce`` for an integer tensor input.
@@ -169,6 +171,7 @@ def check_sync_reduce_float(local_rank: int) -> None:
 )
 @distributed_available
 @gloo_available
+@ignite_available
 def test_sync_reduce_gloo(parallel_gloo_2: Parallel, func: Callable) -> None:
     parallel_gloo_2.run(func)
 
@@ -185,5 +188,6 @@ def test_sync_reduce_gloo(parallel_gloo_2: Parallel, func: Callable) -> None:
 @two_gpus_available
 @distributed_available
 @nccl_available
+@ignite_available
 def test_sync_reduce_nccl(parallel_nccl_2: Parallel, func: Callable[[int], None]) -> None:
     parallel_nccl_2.run(func)
