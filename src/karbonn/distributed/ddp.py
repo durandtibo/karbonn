@@ -8,10 +8,13 @@ __all__ = ["sync_reduce", "AVG", "BAND", "BOR", "MAX", "MIN", "PRODUCT", "SUM"]
 from typing import overload
 
 import torch
-from ignite.distributed import all_reduce, get_world_size
 from torch import Tensor
 
 from karbonn.distributed.utils import is_distributed
+from karbonn.utils.imports import check_ignite, is_ignite_available
+
+if is_ignite_available():  # pragma: no cover
+    from ignite import distributed as idist
 
 # The supported reduction operators
 AVG = "AVG"
@@ -68,6 +71,7 @@ def sync_reduce(variable: Tensor | float, op: str) -> Tensor | float:
     ```
     """
     if is_distributed():
+        check_ignite()
         divide_by_world_size = False
         if op == AVG:
             # Average is not a supported operation by PyTorch distributed.
@@ -76,7 +80,7 @@ def sync_reduce(variable: Tensor | float, op: str) -> Tensor | float:
         if torch.is_tensor(variable):
             # Create a copy to not change the values of the input tensor.
             variable = variable.clone()
-        variable = all_reduce(variable, op=op)
+        variable = idist.all_reduce(variable, op=op)
         if divide_by_world_size:
-            variable = variable / get_world_size()
+            variable = variable / idist.get_world_size()
     return variable

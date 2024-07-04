@@ -1345,7 +1345,7 @@ six = ">=1.5"
 name = "pytorch-ignite"
 version = "0.5.0.post2"
 description = "A lightweight library to help with training neural networks in PyTorch."
-optional = false
+optional = true
 python-versions = "*"
 files = [
     {file = "pytorch-ignite-0.5.0.post2.tar.gz", hash = "sha256:052510ec92fa3e4b3a0ba2296b09b3465ad12eadf657ba58e0760dbde0f3200d"},
@@ -1962,9 +1962,9 @@ doc = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linke
 test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more-itertools", "pytest (>=6,!=8.1.*)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-ignore-flaky", "pytest-mypy", "pytest-ruff (>=0.2.1)"]
 
 [extras]
-all = ["numpy", "numpy", "objectory", "tabulate"]
+all = ["numpy", "numpy", "objectory", "pytorch-ignite", "pytorch-ignite", "tabulate"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "c63335c230a73814a0fefe41102cf9ca3df4649aa5ef13c5d902e25ff44695fd"
+content-hash = "9d88698e0048b2ce56924b3e2c8237d66c1af82a663a4bf270f0c03f6fa2db61"
