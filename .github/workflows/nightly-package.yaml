@@ -120,6 +120,11 @@ jobs:
           python tests/package_checks.py
 
 
+  ########################
+  #     Dependencies     #
+  ########################
+
+
   coola:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
@@ -129,7 +134,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ '3.12', '3.11', '3.10', '3.9' ]
-        coola-version: [ 0.7.2, 0.6.2 ]
+        coola-version: [ 0.7.4, 0.6.2, 0.6.0 ]
 
     steps:
       - name: Checkout
@@ -149,35 +154,6 @@ jobs:
           python tests/package_checks.py
 
 
-  pytorch-ignite:
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
-    strategy:
-      max-parallel: 8
-      fail-fast: false
-      matrix:
-        os: [ ubuntu-latest ]
-        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
-        pytorch-ignite-version: [ 0.5.0.post2, 0.4.13 ]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install package
-        run: |
-          pip install karbonn pytorch-ignite==${{ matrix.pytorch-ignite-version }}
-
-      - name: Run some checks
-        run: |
-          python tests/package_checks.py
-
-
   torch:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
@@ -187,7 +163,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ '3.12', '3.11', '3.10', '3.9' ]
-        torch-version: [ 2.3.1, 2.2.2, 2.1.2, 2.0.1, 1.13.1, 1.12.1 ]
+        torch-version: [ 2.4.0, 2.3.1, 2.2.2, 2.1.2, 2.0.1, 1.13.1, 1.12.1 ]
         exclude:
           # python 3.11
           - torch-version: 1.12.1
@@ -234,7 +210,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ '3.12', '3.11', '3.10', '3.9' ]
-        numpy-version: [ 2.0.0, 1.26.4, 1.25.2, 1.24.3, 1.23.5, 1.22.4 ]
+        numpy-version: [ 2.0.1, 1.26.4, 1.25.2, 1.24.3, 1.23.5, 1.22.4 ]
         exclude:
           # python 3.11
           - numpy-version: 1.22.4
@@ -276,7 +252,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ '3.12', '3.11', '3.10', '3.9' ]
-        objectory-version: [ 0.1.2 ]
+        objectory-version: [ 0.1.2, 0.1.0 ]
 
     steps:
       - name: Checkout
@@ -290,6 +266,35 @@ jobs:
       - name: Install package
         run: |
           pip install karbonn objectory==${{ matrix.objectory-version }}
+
+      - name: Run some checks
+        run: |
+          python tests/package_checks.py
+
+
+  pytorch-ignite:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        pytorch-ignite-version: [ 0.5.0.post2, 0.4.13 ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: |
+          pip install karbonn pytorch-ignite==${{ matrix.pytorch-ignite-version }}
 
       - name: Run some checks
         run: |
