@@ -145,7 +145,6 @@ lint.select = [
     "LOG", # logging
     "N", # naming
     "NPY", # NumPy-specific rules
-    "PD", # pandas-vet
     "PERF", # Perflint
     "PGH", # pygrep-hooks
     "PIE", # flake8-pie
@@ -208,7 +207,6 @@ lint.fixable = [
     "LOG", # logging
     "N", # naming
     "NPY", # NumPy-specific rules
-    "PD", # pandas-vet
     "PERF", # Perflint
     "PGH", # pygrep-hooks
     "PIE", # flake8-pie
