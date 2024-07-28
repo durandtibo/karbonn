@@ -17,7 +17,7 @@ __all__ = [
     "multiline_format",
     "parse_batch_dtype",
     "parse_batch_shape",
-    "tabulate_module_summary",
+    "str_module_summary",
 ]
 
 from collections.abc import Mapping, Sequence
@@ -28,12 +28,9 @@ import torch
 from coola.utils import repr_indent, repr_mapping, str_indent, str_mapping
 from torch import nn
 
-from karbonn.utils.imports import check_tabulate, is_tabulate_available
+from karbonn.utils.format import str_table
 from karbonn.utils.iterator import get_named_modules
 from karbonn.utils.params import num_learnable_parameters, num_parameters
-
-if is_tabulate_available():  # pragma: no cover
-    from tabulate import tabulate
 
 if TYPE_CHECKING:
     from torch.utils.hooks import RemovableHandle
@@ -449,11 +446,12 @@ def module_summary(
     return summary
 
 
-def tabulate_module_summary(summary: dict[str, ModuleSummary], tablefmt: str = "fancy_grid") -> str:
+def str_module_summary(summary: dict[str, ModuleSummary], tablefmt: str = "fancy_grid") -> str:
     r"""Return a string containing a tabular representation of the
     summary.
 
-    This function uses ``tabulate`` to generate the table.
+    This function uses ``tabulate`` to generate the table if it is
+    available.
 
     Args:
         summary: The summary of each layer.
@@ -468,12 +466,12 @@ def tabulate_module_summary(summary: dict[str, ModuleSummary], tablefmt: str = "
     ```pycon
 
     >>> import torch
-    >>> from karbonn.utils.summary import module_summary, tabulate_module_summary
+    >>> from karbonn.utils.summary import module_summary, str_module_summary
     >>> module = torch.nn.Sequential(
     ...     torch.nn.Linear(4, 6), torch.nn.ReLU(), torch.nn.Linear(6, 3)
     ... )
     >>> summary = module_summary(module, depth=1, input_args=[torch.randn(2, 4)])
-    >>> print(tabulate_module_summary(summary))
+    >>> print(str_module_summary(summary))
     ╒════╤════════╤════════════╤══════════════════╤════════════════════════╤════════════════════════╕
     │    │ name   │ type       │ params (learn)   │ in size (dtype)        │ out size (dtype)       │
     ╞════╪════════╪════════════╪══════════════════╪════════════════════════╪════════════════════════╡
@@ -488,7 +486,6 @@ def tabulate_module_summary(summary: dict[str, ModuleSummary], tablefmt: str = "
 
     ```
     """
-    check_tabulate()
     tab = {
         "name": get_layer_names(summary),
         "type": get_layer_types(summary),
@@ -505,7 +502,7 @@ def tabulate_module_summary(summary: dict[str, ModuleSummary], tablefmt: str = "
             sizes=get_out_size(summary), dtypes=get_out_dtype(summary)
         ),
     }
-    return tabulate(tab, headers="keys", tablefmt=tablefmt, showindex="always")
+    return str_table(tab, headers="keys", tablefmt=tablefmt, showindex="always")
 
 
 def multiline_format(rows: Sequence[str | Sequence[str] | Mapping[str, str]]) -> list[str]:
