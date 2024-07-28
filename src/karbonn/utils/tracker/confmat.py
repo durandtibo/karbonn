@@ -13,11 +13,8 @@ import torch
 from torch import Tensor
 
 from karbonn.distributed.ddp import SUM, sync_reduce_
-from karbonn.utils.imports import is_tabulate_available
+from karbonn.utils.format import str_table
 from karbonn.utils.tracker.exception import EmptyTrackerError
-
-if is_tabulate_available():
-    from tabulate import tabulate
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
@@ -811,15 +808,15 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         return self._matrix[1, 1].item()
 
     def accuracy(self) -> float:
-        r"""Computes the accuracy.
+        r"""Compute the accuracy.
 
         Returns:
         -------
-            float: The accuracy.
+            The accuracy.
 
         Raises:
         ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
@@ -839,15 +836,15 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         return float(self.true_positive + self.true_negative) / float(self._num_predictions)
 
     def balanced_accuracy(self) -> float:
-        r"""Computes the balanced accuracy.
+        r"""Compute the balanced accuracy.
 
         Returns:
         -------
-            float: The balanced accuracy.
+            The balanced accuracy.
 
         Raises:
         ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
@@ -870,7 +867,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         return (self.true_negative_rate() + self.true_positive_rate()) / 2
 
     def f_beta_score(self, beta: int | float = 1.0) -> float:
-        r"""Computes the F-beta score.
+        r"""Compute the F-beta score.
 
         Args:
         ----
@@ -879,11 +876,11 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         Returns:
         -------
-            float: the F-beta score.
+            the F-beta score.
 
         Raises:
         ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
@@ -913,15 +910,15 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         )
 
     def false_negative_rate(self) -> float:
-        r"""Computes the false negative rate i.e. the miss rate.
+        r"""Compute the false negative rate i.e. the miss rate.
 
         Returns:
         -------
-            float: The false negative rate.
+            The false negative rate.
 
         Raises:
         ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
@@ -946,16 +943,16 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         return float(self.false_negative) / float(self.positive)
 
     def false_positive_rate(self) -> float:
-        r"""Computes the false positive rate i.e. the probability of
-        false alarm.
+        r"""Compute the false positive rate i.e. the probability of false
+        alarm.
 
         Returns:
         -------
-            float: The false positive rate.
+            The false positive rate.
 
         Raises:
         ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
@@ -980,15 +977,15 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         return float(self.false_positive) / float(self.negative)
 
     def jaccard_index(self) -> float:
-        r"""Computes the Jaccard index.
+        r"""Compute the Jaccard index.
 
         Returns:
         -------
-            float: The Jaccard index.
+            The Jaccard index.
 
         Raises:
         ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
@@ -1015,15 +1012,15 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         )
 
     def precision(self) -> float:
-        r"""Computes the precision.
+        r"""Compute the precision.
 
         Returns:
         -------
-            float: The precision.
+            The precision.
 
         Raises:
         ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
@@ -1048,16 +1045,16 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         return float(self.true_positive) / float(self.predictive_positive)
 
     def recall(self) -> float:
-        r"""Computes the recall i.e. the probability of positive
+        r"""Compute the recall i.e. the probability of positive
         detection.
 
         Returns:
         -------
-            float: The recall.
+            The recall.
 
         Raises:
         ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
@@ -1079,15 +1076,15 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         return float(self.true_positive) / float(self.positive)
 
     def true_negative_rate(self) -> float:
-        r"""Computes the true negative rate.
+        r"""Compute the true negative rate.
 
         Returns:
         -------
-            float: The true negative rate.
+            The true negative rate.
 
         Raises:
         ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
@@ -1112,15 +1109,15 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         return float(self.true_negative) / float(self.negative)
 
     def true_positive_rate(self) -> float:
-        r"""Computes the true positive rate.
+        r"""Compute the true positive rate.
 
         Returns:
         -------
-            float: The true positive rate.
+            The true positive rate.
 
         Raises:
         ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
@@ -1148,7 +1145,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         prefix: str = "",
         suffix: str = "",
     ) -> dict[str, float]:
-        r"""Computes all the metrics.
+        r"""Compute all the metrics.
 
         Args:
         ----
@@ -1161,11 +1158,11 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         Returns:
         -------
-            dict: All the metrics.
+            All the metrics.
 
         Raises:
         ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
@@ -1743,15 +1740,15 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         return self.matrix.diag()
 
     def accuracy(self) -> float:
-        r"""Computes the accuracy.
+        r"""Compute the accuracy.
 
         Returns:
         -------
-            float: The accuracy.
+            The accuracy.
 
         Raises:
         ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
@@ -1771,15 +1768,15 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         return float(self.true_positive.sum().item()) / float(self._num_predictions)
 
     def balanced_accuracy(self) -> float:
-        r"""Computes the balanced accuracy.
+        r"""Compute the balanced accuracy.
 
         Returns:
         -------
-            float: The balanced accuracy.
+            The balanced accuracy.
 
         Raises:
         ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
@@ -1802,7 +1799,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         return self.recall().mean().item()
 
     def f_beta_score(self, beta: int | float = 1.0) -> Tensor:
-        r"""Computes the F-beta score for each class.
+        r"""Compute the F-beta score for each class.
 
         Args:
         ----
@@ -1816,7 +1813,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         Raises:
         ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
@@ -1846,7 +1843,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         )
 
     def macro_f_beta_score(self, beta: int | float = 1.0) -> float:
-        r"""Computes the macro (a.k.a. unweighted mean) F-beta score.
+        r"""Compute the macro (a.k.a. unweighted mean) F-beta score.
 
         Args:
         ----
@@ -1855,11 +1852,11 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         Returns:
         -------
-            float: The macro F-beta score.
+            The macro F-beta score.
 
         Raises:
         ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
@@ -1878,7 +1875,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         return self.f_beta_score(beta).mean().item()
 
     def micro_f_beta_score(self, beta: float = 1.0) -> float:
-        r"""Computes the micro F-beta score.
+        r"""Compute the micro F-beta score.
 
         Args:
         ----
@@ -1887,11 +1884,11 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         Returns:
         -------
-            float: The micro F-beta score.
+            The micro F-beta score.
 
         Raises:
         ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
@@ -1924,7 +1921,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         ).item()
 
     def weighted_f_beta_score(self, beta: float = 1.0) -> float:
-        r"""Computes the weighted mean F-beta score.
+        r"""Compute the weighted mean F-beta score.
 
         Args:
         ----
@@ -1933,11 +1930,11 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         Returns:
         -------
-            float: The weighted mean F-beta score.
+            The weighted mean F-beta score.
 
         Raises:
         ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
@@ -1956,7 +1953,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         return self.f_beta_score(beta).mul(self.support).sum().item() / float(self._num_predictions)
 
     def precision(self) -> Tensor:
-        r"""Computes the precision for each class.
+        r"""Compute the precision for each class.
 
         Returns:
         -------
@@ -1965,7 +1962,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         Raises:
         ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
@@ -1987,15 +1984,15 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         return self.true_positive.float().div(self.matrix.sum(dim=0).clamp(min=1e-8))
 
     def macro_precision(self) -> float:
-        r"""Computes the macro (a.k.a. unweighted mean) precision.
+        r"""Compute the macro (a.k.a. unweighted mean) precision.
 
         Returns:
         -------
-            float: The macro precision.
+            The macro precision.
 
         Raises:
         ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
@@ -2012,15 +2009,15 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         return self.precision().mean().item()
 
     def micro_precision(self) -> float:
-        r"""Computes the micro precision.
+        r"""Compute the micro precision.
 
         Returns:
         -------
-            float: The micro precision.
+            The micro precision.
 
         Raises:
         ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
@@ -2047,16 +2044,15 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         )
 
     def weighted_precision(self) -> float:
-        r"""Computes the weighted mean (a.k.a. unweighted mean)
-        precision.
+        r"""Compute the weighted mean (a.k.a. unweighted mean) precision.
 
         Returns:
         -------
-            float: The weighted mean precision.
+            The weighted mean precision.
 
         Raises:
         ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
@@ -2073,7 +2069,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         return self.precision().mul(self.support).sum().item() / float(self._num_predictions)
 
     def recall(self) -> Tensor:
-        r"""Computes the recall for each class.
+        r"""Compute the recall for each class.
 
         Returns:
         -------
@@ -2082,7 +2078,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         Raises:
         ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
@@ -2102,15 +2098,13 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         return self.true_positive.float().div(self.support.clamp(min=1e-8))
 
     def macro_recall(self) -> float:
-        r"""Computes the macro (a.k.a. unweighted mean) recall.
+        r"""Compute the macro (a.k.a. unweighted mean) recall.
 
         Returns:
-        -------
-            float: The macro recall.
+            The macro recall.
 
         Raises:
-        ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
@@ -2127,27 +2121,29 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         return self.recall().mean().item()
 
     def micro_recall(self) -> float:
-        r"""Computes the micro recall.
+        r"""Compute the micro recall.
 
         Returns:
         -------
-            float: The micro recall.
+            The micro recall.
 
         Raises:
         ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
-        .. code-block:: pycon
+        ```pycon
 
-            >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-            >>> confmat = MulticlassConfusionMatrix.from_predictions(
-            ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
-            ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
-            ... )
-            >>> confmat.micro_recall()
-            0.5
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
+        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
+        ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
+        ... )
+        >>> confmat.micro_recall()
+        0.5
+
+        ```
         """
         if self.num_predictions == 0:
             msg = "It is not possible to compute the micro recall because the confusion matrix is empty"
@@ -2159,27 +2155,27 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         )
 
     def weighted_recall(self) -> float:
-        r"""Computes the weighted mean (a.k.a. unweighted mean) recall.
+        r"""Compute the weighted mean (a.k.a. unweighted mean) recall.
 
         Returns:
-        -------
-            float: The weighted mean recall.
+            The weighted mean recall.
 
         Raises:
-        ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
-        .. code-block:: pycon
+        ```pycon
 
-            >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-            >>> confmat = MulticlassConfusionMatrix.from_predictions(
-            ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
-            ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
-            ... )
-            >>> confmat.weighted_precision()
-            0.833333...
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
+        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
+        ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
+        ... )
+        >>> confmat.weighted_precision()
+        0.833333...
+
+        ```
         """
         return self.recall().mul(self.support).sum().item() / float(self._num_predictions)
 
@@ -2189,24 +2185,18 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         prefix: str = "",
         suffix: str = "",
     ) -> dict[str, Tensor]:
-        r"""Computes all the per-class metrics.
+        r"""Compute all the per-class metrics.
 
         Args:
-        ----
-            betas (sequence, optional): Specifies the betas used to
-                compute the f-beta score. Default: ``(1,)``
-            prefix (str, optional): Specifies a prefix for all the
-                metrics. Default: ``''``
-            suffix (str, optional): Specifies a suffix for all the
-                metrics. Default: ``''``
+            betas: The betas used to compute the f-beta score.
+            prefix: The prefix for all the metrics.
+            suffix: The suffix for all the metrics.
 
         Returns:
-        -------
-            dict: All the per-class metrics.
+            All the per-class metrics.
 
         Raises:
-        ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
@@ -2240,38 +2230,34 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         prefix: str = "",
         suffix: str = "",
     ) -> dict[str, float]:
-        r"""Computes all the "macro" metrics.
+        r"""Compute all the "macro" metrics.
 
         Args:
-        ----
-            betas (sequence, optional): Specifies the betas used to
-                compute the f-beta score. Default: ``(1,)``
-            prefix (str, optional): Specifies a prefix for all the
-                metrics. Default: ``''``
-            suffix (str, optional): Specifies a suffix for all the
-                metrics. Default: ``''``
+            betas: The betas used to compute the f-beta score.
+            prefix: The prefix for all the metrics.
+            suffix: The suffix for all the metrics.
 
         Returns:
-        -------
-            dict: All the "macro" metrics.
+            All the "macro" metrics.
 
         Raises:
-        ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
-        .. code-block:: pycon
+        ```pycon
 
-            >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-            >>> confmat = MulticlassConfusionMatrix.from_predictions(
-            ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
-            ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
-            ... )
-            >>> confmat.compute_macro_metrics()
-            {'macro_precision': 0.555555...,
-             'macro_recall': 0.333333...,
-             'macro_f1_score': 0.388888...}
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
+        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
+        ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
+        ... )
+        >>> confmat.compute_macro_metrics()
+        {'macro_precision': 0.555555...,
+         'macro_recall': 0.333333...,
+         'macro_f1_score': 0.388888...}
+
+        ```
         """
         if self.num_predictions == 0:
             msg = (
@@ -2293,38 +2279,34 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         prefix: str = "",
         suffix: str = "",
     ) -> dict[str, float]:
-        r"""Computes all the "micro" metrics.
+        r"""Compute all the "micro" metrics.
 
         Args:
-        ----
-            betas (sequence, optional): Specifies the betas used to
-                compute the f-beta score. Default: ``(1,)``
-            prefix (str, optional): Specifies a prefix for all the
-                metrics. Default: ``''``
-            suffix (str, optional): Specifies a suffix for all the
-                metrics. Default: ``''``
+            betas: The betas used to compute the f-beta score.
+            prefix: The prefix for all the metrics.
+            suffix: The suffix for all the metrics.
 
         Returns:
-        -------
-            dict: All the "micro" metrics.
+            All the "micro" metrics.
 
         Raises:
-        ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
-        .. code-block:: pycon
+        ```pycon
 
-            >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-            >>> confmat = MulticlassConfusionMatrix.from_predictions(
-            ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
-            ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
-            ... )
-            >>> confmat.compute_micro_metrics()
-            {'micro_precision': 0.5,
-             'micro_recall': 0.5,
-             'micro_f1_score': 0.5}
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
+        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
+        ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
+        ... )
+        >>> confmat.compute_micro_metrics()
+        {'micro_precision': 0.5,
+         'micro_recall': 0.5,
+         'micro_f1_score': 0.5}
+
+        ```
         """
         if self.num_predictions == 0:
             msg = (
@@ -2346,38 +2328,34 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         prefix: str = "",
         suffix: str = "",
     ) -> dict[str, float]:
-        r"""Computes all the "weighted" metrics.
+        r"""Compute all the "weighted" metrics.
 
         Args:
-        ----
-            betas (sequence, optional): Specifies the betas used to
-                compute the f-beta score. Default: ``(1,)``
-            prefix (str, optional): Specifies a prefix for all the
-                metrics. Default: ``''``
-            suffix (str, optional): Specifies a suffix for all the
-                metrics. Default: ``''``
+            betas: The betas used to compute the f-beta score.
+            prefix: The prefix for all the metrics.
+            suffix: The suffix for all the metrics.
 
         Returns:
-        -------
-            dict: All the "weighted" metrics.
+            All the "weighted" metrics.
 
         Raises:
-        ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
-        .. code-block:: pycon
+        ```pycon
 
-            >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-            >>> confmat = MulticlassConfusionMatrix.from_predictions(
-            ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
-            ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
-            ... )
-            >>> confmat.compute_weighted_metrics()
-            {'weighted_precision': 0.833333...,
-             'weighted_recall': 0.5,
-             'weighted_f1_score': 0.583333...}
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
+        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
+        ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
+        ... )
+        >>> confmat.compute_weighted_metrics()
+        {'weighted_precision': 0.833333...,
+         'weighted_recall': 0.5,
+         'weighted_f1_score': 0.583333...}
+
+        ```
         """
         if self.num_predictions == 0:
             msg = (
@@ -2399,46 +2377,42 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         prefix: str = "",
         suffix: str = "",
     ) -> dict[str, float]:
-        r"""Computes all the scalar metrics.
+        r"""Compute all the scalar metrics.
 
         Args:
-        ----
-            betas (sequence, optional): Specifies the betas used to
-                compute the f-beta score. Default: ``(1,)``
-            prefix (str, optional): Specifies a prefix for all the
-                metrics. Default: ``''``
-            suffix (str, optional): Specifies a suffix for all the
-                metrics. Default: ``''``
+            betas: The betas used to compute the f-beta score.
+            prefix: The prefix for all the metrics.
+            suffix: The suffix for all the metrics.
 
         Returns:
-        -------
-            dict: All the scalar metrics.
+            All the scalar metrics.
 
         Raises:
-        ------
-            ``EmptyTrackerError`` if the confusion matrix is empty.
+            EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
 
-        .. code-block:: pycon
+        ```pycon
 
-            >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-            >>> confmat = MulticlassConfusionMatrix.from_predictions(
-            ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
-            ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
-            ... )
-            >>> confmat.compute_scalar_metrics()
-            {'accuracy': 0.5,
-             'balanced_accuracy': 0.333333...,
-             'macro_precision': 0.555555...,
-             'macro_recall': 0.333333...,
-             'macro_f1_score': 0.388888...,
-             'micro_precision': 0.5,
-             'micro_recall': 0.5,
-             'micro_f1_score': 0.5,
-             'weighted_precision': 0.833333...,
-             'weighted_recall': 0.5,
-             'weighted_f1_score': 0.583333...}
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
+        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
+        ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
+        ... )
+        >>> confmat.compute_scalar_metrics()
+        {'accuracy': 0.5,
+         'balanced_accuracy': 0.333333...,
+         'macro_precision': 0.555555...,
+         'macro_recall': 0.333333...,
+         'macro_f1_score': 0.388888...,
+         'micro_precision': 0.5,
+         'micro_recall': 0.5,
+         'micro_f1_score': 0.5,
+         'weighted_precision': 0.833333...,
+         'weighted_recall': 0.5,
+         'weighted_f1_score': 0.583333...}
+
+        ```
         """
         if self.num_predictions == 0:
             msg = "It is not possible to compute the metrics because the confusion matrix is empty"
@@ -2454,19 +2428,20 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
 
 def check_confusion_matrix(matrix: Tensor) -> None:
-    r"""Checks if the input matrix is a valid confusion matrix.
+    r"""Check if the input matrix is a valid confusion matrix.
 
     Args:
-    ----
-        matrix (``torch.Tensor``): Specifies the matrix to check.
+        matrix: The confusion matrix to check.
 
     Example usage:
 
-    .. code-block:: pycon
+    ```pycon
 
-        >>> import torch
-        >>> from karbonn.utils.tracker.confmat import check_confusion_matrix
-        >>> check_confusion_matrix(torch.zeros(3, 3, dtype=torch.long))
+    >>> import torch
+    >>> from karbonn.utils.tracker.confmat import check_confusion_matrix
+    >>> check_confusion_matrix(torch.zeros(3, 3, dtype=torch.long))
+
+    ```
     """
     if matrix.ndim != 2:
         msg = (
@@ -2497,32 +2472,29 @@ def check_confusion_matrix(matrix: Tensor) -> None:
 def check_op_compatibility_binary(
     current: BinaryConfusionMatrix, other: BinaryConfusionMatrix, op_name: str
 ) -> None:
-    r"""Checks if the confusion matrices for binary labels are
-    compatible.
+    r"""Check if the confusion matrices for binary labels are compatible.
 
     Args:
-    ----
-        current (``BinaryConfusionMatrix``): Specifies the current
-            confusion matrix for binary labels.
-        other (``BinaryConfusionMatrix``): Specifies the other
-            confusion matrix for binary labels.
-        op_name (str): Specifies the operation name.
+        current: The current confusion matrix for binary labels.
+        other: The other confusion matrix for binary labels.
+        op_name: The operation name.
 
     Raises:
-    ------
-        TypeError if the other matrix type is not compatible.
+        TypeError: if the other matrix type is not compatible.
 
     Example usage:
 
-    .. code-block:: pycon
+    ```pycon
 
-        >>> from karbonn.utils.tracker.confmat import (
-        ...     BinaryConfusionMatrix,
-        ...     check_op_compatibility_binary,
-        ... )
-        >>> check_op_compatibility_binary(
-        ...     BinaryConfusionMatrix(), BinaryConfusionMatrix(), op_name="add"
-        ... )
+    >>> from karbonn.utils.tracker.confmat import (
+    ...     BinaryConfusionMatrix,
+    ...     check_op_compatibility_binary,
+    ... )
+    >>> check_op_compatibility_binary(
+    ...     BinaryConfusionMatrix(), BinaryConfusionMatrix(), op_name="add"
+    ... )
+
+    ```
     """
     if not isinstance(other, BinaryConfusionMatrix):
         msg = (
@@ -2535,35 +2507,33 @@ def check_op_compatibility_binary(
 def check_op_compatibility_multiclass(
     current: MulticlassConfusionMatrix, other: MulticlassConfusionMatrix, op_name: str
 ) -> None:
-    r"""Checks if the confusion matrices for multiclass labels are
+    r"""Check if the confusion matrices for multiclass labels are
     compatible.
 
     Args:
-    ----
-        current (``MulticlassConfusionMatrix``): Specifies the current
-            confusion matrix for multiclass labels.
-        other (``MulticlassConfusionMatrix``): Specifies the other
-            confusion matrix for multiclass labels.
-        op_name (str): Specifies the operation name.
+        current: The current confusion matrix for multiclass labels.
+        other: The other confusion matrix for multiclass labels.
+        op_name: The operation name.
 
     Raises:
-    ------
-        TypeError if the other matrix type is not compatible.
-        ValueError if the matrix shapes are different.
+        TypeError: if the other matrix type is not compatible.
+        ValueError: if the matrix shapes are different.
 
     Example usage:
 
-    .. code-block:: pycon
+    ```pycon
 
-        >>> from karbonn.utils.tracker.confmat import (
-        ...     MulticlassConfusionMatrix,
-        ...     check_op_compatibility_multiclass,
-        ... )
-        >>> check_op_compatibility_multiclass(
-        ...     MulticlassConfusionMatrix.from_num_classes(5),
-        ...     MulticlassConfusionMatrix.from_num_classes(5),
-        ...     op_name="add",
-        ... )
+    >>> from karbonn.utils.tracker.confmat import (
+    ...     MulticlassConfusionMatrix,
+    ...     check_op_compatibility_multiclass,
+    ... )
+    >>> check_op_compatibility_multiclass(
+    ...     MulticlassConfusionMatrix.from_num_classes(5),
+    ...     MulticlassConfusionMatrix.from_num_classes(5),
+    ...     op_name="add",
+    ... )
+
+    ```
     """
     if not isinstance(other, MulticlassConfusionMatrix):
         msg = (
@@ -2577,28 +2547,30 @@ def check_op_compatibility_multiclass(
 
 
 def str_binary_confusion_matrix(confmat: Tensor) -> str:
-    r"""Computes a string representation of the confusion matrix.
+    r"""Return a string representation of the confusion matrix.
 
     Args:
-        confmat (``torch.Tensor``): Specifies the confusion matrix.
+        confmat: The binary confusion matrix.
 
     Returns:
-        str: A string representation of the confusion matrix.
+        A string representation of the confusion matrix.
 
     Example usage:
 
-    .. code-block:: pycon
+    ```pycon
 
-        >>> import torch
-        >>> from karbonn.utils.tracker.confmat import str_binary_confusion_matrix
-        >>> print(str_binary_confusion_matrix(torch.tensor([[1001, 42], [123, 789]])))
-        ┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
-        ┃                     ┃ predicted negative (0) ┃ predicted positive (1) ┃
-        ┣━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━┫
-        ┃ actual negative (0) ┃ [TN]  1,001            ┃ [FP]  42               ┃
-        ┣━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━┫
-        ┃ actual positive (1) ┃ [FN]  123              ┃ [TP]  789              ┃
-        ┗━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┛
+    >>> import torch
+    >>> from karbonn.utils.tracker.confmat import str_binary_confusion_matrix
+    >>> print(str_binary_confusion_matrix(torch.tensor([[1001, 42], [123, 789]])))
+    ┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+    ┃                     ┃ predicted negative (0) ┃ predicted positive (1) ┃
+    ┣━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━┫
+    ┃ actual negative (0) ┃ [TN]  1,001            ┃ [FP]  42               ┃
+    ┣━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━┫
+    ┃ actual positive (1) ┃ [FN]  123              ┃ [TP]  789              ┃
+    ┗━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+    ```
     """
     if confmat.shape != (2, 2):
         msg = f"Expected a 2x2 confusion matrix but received: {confmat.shape}"
@@ -2609,6 +2581,4 @@ def str_binary_confusion_matrix(confmat: Tensor) -> str:
         ["actual negative (0)", f"[TN]  {confmat[0,0]:,}", f"[FP]  {confmat[0,1]:,}"],
         ["actual positive (1)", f"[FN]  {confmat[1,0]:,}", f"[TP]  {confmat[1,1]:,}"],
     ]
-    if is_tabulate_available():
-        return tabulate(table, tablefmt="heavy_grid")
-    return str(table)
+    return str_table(table, tablefmt="heavy_grid")
