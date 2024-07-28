@@ -10,11 +10,14 @@ __all__ = [
 from typing import TYPE_CHECKING, Any
 
 import torch
-from tabulate import tabulate
 from torch import Tensor
 
 from karbonn.distributed.ddp import SUM, sync_reduce_
+from karbonn.utils.imports import is_tabulate_available
 from karbonn.utils.tracker.exception import EmptyTrackerError
+
+if is_tabulate_available():
+    from tabulate import tabulate
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
@@ -2606,4 +2609,6 @@ def str_binary_confusion_matrix(confmat: Tensor) -> str:
         ["actual negative (0)", f"[TN]  {confmat[0,0]:,}", f"[FP]  {confmat[0,1]:,}"],
         ["actual positive (1)", f"[FN]  {confmat[1,0]:,}", f"[TP]  {confmat[1,1]:,}"],
     ]
-    return tabulate(table, tablefmt="heavy_grid")
+    if is_tabulate_available():
+        return tabulate(table, tablefmt="heavy_grid")
+    return str(table)
