@@ -72,6 +72,7 @@ def test_sync_reduce_avg_tensor_world_size_2_is_not_distributed(device: str) -> 
 ##################################
 
 
+@ignite_available
 @pytest.mark.parametrize("device", get_available_devices())
 @pytest.mark.parametrize("is_distributed", [True, False])
 def test_sync_reduce__sum(device: str, is_distributed: bool) -> None:
@@ -81,6 +82,7 @@ def test_sync_reduce__sum(device: str, is_distributed: bool) -> None:
         assert variable.equal(torch.ones(2, 3, device=device))
 
 
+@ignite_available
 @pytest.mark.parametrize("device", get_available_devices())
 @patch("karbonn.distributed.ddp.idist.get_world_size", lambda: 2)
 @patch("karbonn.distributed.ddp.is_distributed", lambda: True)
@@ -90,6 +92,7 @@ def test_sync_reduce__avg_world_size_2_is_distributed(device: str) -> None:
     assert variable.equal(0.5 * torch.ones(2, 3, device=device))
 
 
+@ignite_available
 @pytest.mark.parametrize("device", get_available_devices())
 @patch("karbonn.distributed.ddp.idist.get_world_size", lambda: 2)
 @patch("karbonn.distributed.ddp.is_distributed", lambda: False)
