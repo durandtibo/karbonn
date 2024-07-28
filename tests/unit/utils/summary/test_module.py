@@ -25,7 +25,7 @@ from karbonn.utils.summary.module import (
     multiline_format,
     parse_batch_dtype,
     parse_batch_shape,
-    tabulate_module_summary,
+    str_module_summary,
 )
 
 if TYPE_CHECKING:
@@ -453,15 +453,15 @@ def test_module_summary_depth_2_sequential(nested_module: nn.Module) -> None:
     assert summary["2.3"].module == nested_module[2][3]
 
 
-#############################################
-#     Tests for tabulate_module_summary     #
-#############################################
+########################################
+#     Tests for str_module_summary     #
+########################################
 
 
 @tabulate_available
 @pytest.mark.parametrize("depth", [-1, 0, 1, 2, 3])
-def test_tabulate_module_summary_linear(depth: int) -> None:
-    out = tabulate_module_summary(module_summary(nn.Linear(4, 6), depth=depth))
+def test_str_module_summary_linear(depth: int) -> None:
+    out = str_module_summary(module_summary(nn.Linear(4, 6), depth=depth))
     assert out == (
         "╒════╤════════╤════════╤══════════════════╤═══════════════════╤════════════════════╕\n"
         "│    │ name   │ type   │ params (learn)   │ in size (dtype)   │ out size (dtype)   │\n"
@@ -473,8 +473,8 @@ def test_tabulate_module_summary_linear(depth: int) -> None:
 
 @tabulate_available
 @pytest.mark.parametrize("depth", [-1, 0, 1, 2, 3])
-def test_tabulate_module_summary_linear_forward(depth: int) -> None:
-    out = tabulate_module_summary(
+def test_str_module_summary_linear_forward(depth: int) -> None:
+    out = str_module_summary(
         module_summary(nn.Linear(4, 6), depth=depth, input_args=[torch.randn(2, 4)])
     )
     assert out == (
@@ -487,8 +487,8 @@ def test_tabulate_module_summary_linear_forward(depth: int) -> None:
 
 
 @tabulate_available
-def test_tabulate_module_summary_nested_depth_0(nested_module: nn.Module) -> None:
-    out = tabulate_module_summary(module_summary(nested_module, input_args=[torch.randn(2, 4)]))
+def test_str_module_summary_nested_depth_0(nested_module: nn.Module) -> None:
+    out = str_module_summary(module_summary(nested_module, input_args=[torch.randn(2, 4)]))
     assert out == (
         "╒════╤════════╤════════════╤══════════════════╤════════════════════════╤════════════════════════╕\n"
         "│    │ name   │ type       │ params (learn)   │ in size (dtype)        │ out size (dtype)       │\n"
@@ -499,10 +499,8 @@ def test_tabulate_module_summary_nested_depth_0(nested_module: nn.Module) -> Non
 
 
 @tabulate_available
-def test_tabulate_module_summary_nested_depth_1(nested_module: nn.Module) -> None:
-    out = tabulate_module_summary(
-        module_summary(nested_module, depth=1, input_args=[torch.randn(2, 4)])
-    )
+def test_str_module_summary_nested_depth_1(nested_module: nn.Module) -> None:
+    out = str_module_summary(module_summary(nested_module, depth=1, input_args=[torch.randn(2, 4)]))
     assert out == (
         "╒════╤════════╤════════════╤══════════════════╤════════════════════════╤════════════════════════╕\n"
         "│    │ name   │ type       │ params (learn)   │ in size (dtype)        │ out size (dtype)       │\n"
@@ -519,10 +517,8 @@ def test_tabulate_module_summary_nested_depth_1(nested_module: nn.Module) -> Non
 
 
 @tabulate_available
-def test_tabulate_module_summary_nested_depth_2(nested_module: nn.Module) -> None:
-    out = tabulate_module_summary(
-        module_summary(nested_module, depth=2, input_args=[torch.randn(2, 4)])
-    )
+def test_str_module_summary_nested_depth_2(nested_module: nn.Module) -> None:
+    out = str_module_summary(module_summary(nested_module, depth=2, input_args=[torch.randn(2, 4)]))
     assert out == (
         "╒════╤════════╤════════════╤══════════════════╤════════════════════════╤════════════════════════╕\n"
         "│    │ name   │ type       │ params (learn)   │ in size (dtype)        │ out size (dtype)       │\n"

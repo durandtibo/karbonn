@@ -13,7 +13,7 @@ from karbonn.utils.summary import (
     PARAMETER_NOT_INITIALIZED,
     ParameterSummary,
     get_parameter_summaries,
-    tabulate_parameter_summary,
+    str_parameter_summary,
 )
 
 ######################################
@@ -151,16 +151,15 @@ def test_get_parameter_summaries_lazy_linear() -> None:
         ]
 
 
-############################################
-#     Tests for show_parameter_summary     #
-############################################
+###########################################
+#     Tests for str_parameter_summary     #
+###########################################
 
 
-@tabulate_available
 @pytest.mark.parametrize("device", get_available_devices())
-def test_tabulate_parameter_summary_linear(device: str) -> None:
+def test_str_parameter_summary_linear(device: str) -> None:
     device = torch.device(device)
-    summary = tabulate_parameter_summary(
+    summary = str_parameter_summary(
         nn.Sequential(nn.Linear(4, 6), nn.ReLU(), nn.BatchNorm1d(num_features=6)).to(device=device),
         tablefmt="fancy_outline",
     )
@@ -168,11 +167,11 @@ def test_tabulate_parameter_summary_linear(device: str) -> None:
 
 
 @tabulate_available
-def test_tabulate_parameter_summary_linear_one() -> None:
+def test_str_parameter_summary_linear_one() -> None:
     linear = nn.Linear(4, 6)
     nn.init.ones_(linear.weight)
     nn.init.zeros_(linear.bias)
-    summary = tabulate_parameter_summary(linear)
+    summary = str_parameter_summary(linear)
     assert summary == (
         "╒════════╤══════════╤══════════╤══════════╤══════════╤══════════╤═════════╤═════════════╤══════════╕\n"
         "│ name   │     mean │   median │      std │      min │      max │ shape   │ learnable   │ device   │\n"
