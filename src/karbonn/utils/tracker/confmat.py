@@ -24,10 +24,9 @@ class BaseConfusionMatrix:
     r"""Defines the base class to implement confusion matrix.
 
     Args:
-    ----
-        matrix (``torch.Tensor`` of type long and shape
-            ``(num_classes, num_classes)``): Specifies the initial
-            confusion matrix values. The rows indicate the true
+        matrix: The initial confusion matrix values as a
+            ``torch.Tensor`` of type long and shape
+            ``(num_classes, num_classes)``. The rows indicate the true
             labels and the columns indicate the predicted labels.
     """
 
@@ -72,69 +71,74 @@ class BaseConfusionMatrix:
 
     @property
     def num_classes(self) -> int:
-        r"""``int``: The number of classes.
+        r"""The number of classes.
 
         Example usage:
 
-        .. code-block:: pycon
+        ```pycon
 
-            >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-            >>> confmat = BinaryConfusionMatrix.from_predictions(
-            ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
-            ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
-            ... )
-            >>> confmat.num_classes
-            2
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
+        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
+        ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
+        ... )
+        >>> confmat.num_classes
+        2
+
+        ```
         """
         return self._matrix.shape[0]
 
     @property
     def num_predictions(self) -> int:
-        r"""``int``: The number of predictions.
+        r"""The number of predictions.
 
         Example usage:
 
-        .. code-block:: pycon
+        ```pycon
 
-            >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-            >>> confmat = BinaryConfusionMatrix.from_predictions(
-            ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
-            ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
-            ... )
-            >>> confmat.num_predictions
-            6
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
+        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
+        ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
+        ... )
+        >>> confmat.num_predictions
+        6
+
+        ```
         """
         return self._num_predictions
 
     def all_reduce(self) -> None:
-        r"""Reduces the meter values across all machines in such a way
-        that all get the final result.
+        r"""Reduce the values across all machines in such a way that all
+        get the final result.
 
         The confusion matrix is reduced by summing all the confusion
         matrices (1 confusion matrix per distributed process).
 
         Example usage:
 
-        .. code-block:: pycon
+        ```pycon
 
-            >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-            >>> confmat = BinaryConfusionMatrix.from_predictions(
-            ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
-            ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
-            ... )
-            >>> confmat_reduced = confmat.all_reduce()
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
+        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
+        ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
+        ... )
+        >>> confmat_reduced = confmat.all_reduce()
+
+        ```
         """
         sync_reduce_(self._matrix, SUM)
         # It is necessary to recompute the number of predictions because
-        # the confusion matrix may have changed
+        # the confusion matrix is very likely to have changed
         self._num_predictions = self._compute_num_predictions()
 
     def get_normalized_matrix(self, normalization: str) -> Tensor:
-        r"""Gets the normalized confusion matrix.
+        r"""Get the normalized confusion matrix.
 
         Args:
-        ----
-            normalization (str): Specifies the normalization strategy.
+            normalization: The normalization strategy.
                 The supported normalization strategies are:
 
                     - ``'true'``: normalization over the targets
@@ -143,42 +147,41 @@ class BaseConfusionMatrix:
                     - ``'all'``: normalization over the whole matrix
 
         Returns:
-        -------
-            ``torch.Tensor`` of type float and shape
-                ``(num_classes, num_classes)``: The normalized
-                confusion matrix.
+            The normalized confusion matrix as ``torch.Tensor`` of
+                type float and shape ``(num_classes, num_classes)``.
 
         Raises:
-        ------
-            ValueError if the normalization strategy is not supported.
+            ValueError: if the normalization strategy is not supported.
 
         Example usage:
 
-        .. code-block:: pycon
+        ```pycon
 
-            >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-            >>> confmat = BinaryConfusionMatrix.from_predictions(
-            ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
-            ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
-            ... )
-            >>> confmat.get_normalized_matrix(normalization="true")
-            tensor([[1.0000, 0.0000],
-                    [0.2500, 0.7500]])
-            >>> confmat.get_normalized_matrix(normalization="pred")
-            tensor([[0.6667, 0.0000],
-                    [0.3333, 1.0000]])
-            >>> confmat.get_normalized_matrix(normalization="all")
-            tensor([[0.3333, 0.0000],
-                    [0.1667, 0.5000]])
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
+        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
+        ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
+        ... )
+        >>> confmat.get_normalized_matrix(normalization="true")
+        tensor([[1.0000, 0.0000],
+                [0.2500, 0.7500]])
+        >>> confmat.get_normalized_matrix(normalization="pred")
+        tensor([[0.6667, 0.0000],
+                [0.3333, 1.0000]])
+        >>> confmat.get_normalized_matrix(normalization="all")
+        tensor([[0.3333, 0.0000],
+                [0.1667, 0.5000]])
+
+        ```
         """
         if normalization == "true":
-            # Clamp to avoid division by 0
+            # Clamp by a small value to avoid division by 0
             return self.matrix / self.matrix.sum(dim=1, keepdim=True).clamp(min=1e-8)
         if normalization == "pred":
-            # Clamp to avoid division by 0
+            # Clamp by a small value to avoid division by 0
             return self.matrix / self.matrix.sum(dim=0, keepdim=True).clamp(min=1e-8)
         if normalization == "all":
-            # Clamp to avoid division by 0
+            # Clamp by a small value to avoid division by 0
             return self.matrix / self.matrix.sum().clamp(min=1e-8)
         msg = (
             f"Incorrect normalization: {normalization}. The supported normalization strategies "
@@ -187,31 +190,32 @@ class BaseConfusionMatrix:
         raise ValueError(msg)
 
     def reset(self) -> None:
-        r"""Resets the confusion matrix.
+        r"""Reset the confusion matrix.
 
         Example usage:
 
-        .. code-block:: pycon
+        ```pycon
 
-            >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-            >>> confmat = BinaryConfusionMatrix.from_predictions(
-            ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
-            ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
-            ... )
-            >>> confmat.num_predictions
-            6
-            >>> confmat.reset()
-            >>> confmat.num_predictions
-            0
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
+        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
+        ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
+        ... )
+        >>> confmat.num_predictions
+        6
+        >>> confmat.reset()
+        >>> confmat.num_predictions
+        0
+
+        ```
         """
         self._matrix.zero_()
         self._num_predictions = 0
 
     def update(self, prediction: Tensor, target: Tensor) -> None:
-        r"""Updates the confusion matrix with new predictions.
+        r"""Update the confusion matrix with new predictions.
 
         Args:
-        ----
             prediction (``torch.Tensor`` of type long and shape
                 ``(d0, d1, ..., dn)``): Specifies the predicted labels.
             target (``torch.Tensor`` of type long and shape
@@ -220,23 +224,25 @@ class BaseConfusionMatrix:
 
         Example usage:
 
-        .. code-block:: pycon
+        ```pycon
 
-            >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-            >>> confmat = BinaryConfusionMatrix()
-            >>> confmat.update(
-            ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
-            ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
-            ... )
-            >>> confmat
-            ┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
-            ┃                     ┃ predicted negative (0) ┃ predicted positive (1) ┃
-            ┣━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━┫
-            ┃ actual negative (0) ┃ [TN]  2                ┃ [FP]  0                ┃
-            ┣━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━┫
-            ┃ actual positive (1) ┃ [FN]  1                ┃ [TP]  3                ┃
-            ┗━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┛
-            num_predictions=6
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
+        >>> confmat = BinaryConfusionMatrix()
+        >>> confmat.update(
+        ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
+        ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
+        ... )
+        >>> confmat
+        ┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+        ┃                     ┃ predicted negative (0) ┃ predicted positive (1) ┃
+        ┣━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━┫
+        ┃ actual negative (0) ┃ [TN]  2                ┃ [FP]  0                ┃
+        ┣━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━┫
+        ┃ actual positive (1) ┃ [FN]  1                ┃ [TP]  3                ┃
+        ┗━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┛
+        num_predictions=6
+
+        ```
         """
         self._matrix += (
             torch.bincount(

@@ -1,11 +1,13 @@
 import math
 from unittest.mock import Mock, patch
 
+import pytest
 import torch
 from coola import objects_are_allclose, objects_are_equal
-from gravitorch.distributed.ddp import SUM
-from gravitorch.utils.meters import EmptyMeterError
-from gravitorch.utils.meters.confmat import (
+
+from karbonn.distributed.ddp import SUM
+from karbonn.utils.tracker import EmptyTrackerError
+from karbonn.utils.tracker.confmat import (
     BinaryConfusionMatrix,
     MulticlassConfusionMatrix,
     check_confusion_matrix,
@@ -13,7 +15,6 @@ from gravitorch.utils.meters.confmat import (
     check_op_compatibility_multiclass,
     str_binary_confusion_matrix,
 )
-from pytest import mark, raises
 
 ###########################################
 #     Tests for BinaryConfusionMatrix     #
@@ -50,22 +51,22 @@ def test_binary_confusion_matrix_init() -> None:
 
 
 def test_binary_confusion_matrix_init_incorrect_ndim() -> None:
-    with raises(ValueError, match="Incorrect shape."):
+    with pytest.raises(ValueError, match="Incorrect shape."):
         BinaryConfusionMatrix(torch.zeros(3))
 
 
 def test_binary_confusion_matrix_init_incorrect_shape() -> None:
-    with raises(ValueError, match="Incorrect shape."):
+    with pytest.raises(ValueError, match="Incorrect shape."):
         BinaryConfusionMatrix(torch.zeros(3, 5))
 
 
 def test_binary_confusion_matrix_init_incorrect_dtype() -> None:
-    with raises(ValueError, match="Incorrect matrix data type."):
+    with pytest.raises(ValueError, match="Incorrect matrix data type."):
         BinaryConfusionMatrix(torch.zeros(2, 2, dtype=torch.float))
 
 
 def test_binary_confusion_matrix_init_negative_value() -> None:
-    with raises(ValueError, match="Incorrect matrix values."):
+    with pytest.raises(ValueError, match="Incorrect matrix values."):
         BinaryConfusionMatrix(torch.tensor([[0, 0], [-1, 0]]))
 
 
@@ -82,7 +83,7 @@ def test_binary_confusion_matrix_all_reduce() -> None:
 
 def test_binary_confusion_matrix_all_reduce_sum_reduce() -> None:
     meter = BinaryConfusionMatrix(torch.ones(2, 2, dtype=torch.long))
-    with patch("gravitorch.utils.meters.confmat.sync_reduce_") as reduce_mock:
+    with patch("karbonn.utils.tracker.confmat.sync_reduce_") as reduce_mock:
         meter.all_reduce()
         assert objects_are_equal(
             reduce_mock.call_args.args, (torch.ones(2, 2, dtype=torch.long), SUM)
@@ -161,7 +162,7 @@ def test_binary_confusion_matrix_get_normalized_matrix_normalization_all_empty()
 
 
 def test_binary_confusion_matrix_get_normalized_matrix_incorrect_normalization() -> None:
-    with raises(ValueError, match="Incorrect normalization: incorrect"):
+    with pytest.raises(ValueError, match="Incorrect normalization: incorrect"):
         BinaryConfusionMatrix().get_normalized_matrix(normalization="incorrect")
 
 
@@ -175,7 +176,7 @@ def test_binary_confusion_matrix_reset() -> None:
 def test_binary_confusion_matrix_sync_update_matrix() -> None:
     meter = BinaryConfusionMatrix(torch.ones(2, 2, dtype=torch.long))
     with patch(
-        "gravitorch.utils.meters.confmat.sync_reduce_",
+        "karbonn.utils.tracker.confmat.sync_reduce_",
         lambda variable, op: variable.mul_(4),
     ):
         meter.all_reduce()
@@ -339,8 +340,8 @@ def test_binary_confusion_matrix_accuracy_imbalanced() -> None:
 
 
 def test_binary_confusion_matrix_accuracy_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match="It is not possible to compute the accuracy because the confusion matrix is empty",
     ):
         BinaryConfusionMatrix().accuracy()
@@ -355,8 +356,8 @@ def test_binary_confusion_matrix_balanced_accuracy_imbalanced() -> None:
 
 
 def test_binary_confusion_matrix_balanced_accuracy_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match=(
             "It is not possible to compute the balanced accuracy because "
             "the confusion matrix is empty"
@@ -390,8 +391,8 @@ def test_binary_confusion_matrix_f_beta_score_1_true_negative_only() -> None:
 
 
 def test_binary_confusion_matrix_f_beta_score_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match=(
             "It is not possible to compute the F-beta score because "
             "the confusion matrix is empty"
@@ -409,8 +410,8 @@ def test_binary_confusion_matrix_false_negative_rate_zero_positive() -> None:
 
 
 def test_binary_confusion_matrix_false_negative_rate_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match=(
             "It is not possible to compute the false negative rate because "
             "the confusion matrix is empty"
@@ -428,8 +429,8 @@ def test_binary_confusion_matrix_false_positive_rate_zero_negative() -> None:
 
 
 def test_binary_confusion_matrix_false_positive_rate_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match=(
             "It is not possible to compute the false positive rate because "
             "the confusion matrix is empty"
@@ -447,8 +448,8 @@ def test_binary_confusion_matrix_jaccard_index_zero_true_positive() -> None:
 
 
 def test_binary_confusion_matrix_jaccard_index_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match=(
             "It is not possible to compute the Jaccard index because "
             "the confusion matrix is empty"
@@ -466,8 +467,8 @@ def test_binary_confusion_matrix_precision_zero_predictive_positive() -> None:
 
 
 def test_binary_confusion_matrix_precision_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match="It is not possible to compute the precision because the confusion matrix is empty",
     ):
         BinaryConfusionMatrix().precision()
@@ -482,8 +483,8 @@ def test_binary_confusion_matrix_recall_zero_positive() -> None:
 
 
 def test_binary_confusion_matrix_recall_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match="It is not possible to compute the recall because the confusion matrix is empty",
     ):
         BinaryConfusionMatrix().recall()
@@ -498,8 +499,8 @@ def test_binary_confusion_matrix_true_negative_rate_zero_negative() -> None:
 
 
 def test_binary_confusion_matrix_true_negative_rate_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match=(
             "It is not possible to compute the true negative rate because "
             "the confusion matrix is empty"
@@ -517,8 +518,8 @@ def test_binary_confusion_matrix_true_positive_rate_zero_positive() -> None:
 
 
 def test_binary_confusion_matrix_true_positive_rate_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match=(
             "It is not possible to compute the true positive rate because "
             "the confusion matrix is empty"
@@ -600,8 +601,8 @@ def test_binary_confusion_matrix_compute_all_metrics_prefix_suffix() -> None:
 
 
 def test_binary_confusion_matrix_compute_all_metrics_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match="It is not possible to compute the metrics because the confusion matrix is empty",
     ):
         BinaryConfusionMatrix().compute_all_metrics()
@@ -625,26 +626,26 @@ def test_multiclass_confusion_matrix_str() -> None:
 
 
 def test_multiclass_confusion_matrix_init_incorrect_ndim() -> None:
-    with raises(ValueError, match="Incorrect matrix dimensions."):
+    with pytest.raises(ValueError, match="Incorrect matrix dimensions."):
         MulticlassConfusionMatrix(torch.zeros(3))
 
 
 def test_multiclass_confusion_matrix_init_incorrect_shape() -> None:
-    with raises(ValueError, match="Incorrect matrix shape."):
+    with pytest.raises(ValueError, match="Incorrect matrix shape."):
         MulticlassConfusionMatrix(torch.zeros(3, 5))
 
 
 def test_multiclass_confusion_matrix_init_incorrect_dtype() -> None:
-    with raises(ValueError, match="Incorrect matrix data type."):
+    with pytest.raises(ValueError, match="Incorrect matrix data type."):
         MulticlassConfusionMatrix(torch.zeros(3, 3, dtype=torch.float))
 
 
 def test_multiclass_confusion_matrix_init_negative_value() -> None:
-    with raises(ValueError, match="Incorrect matrix values."):
+    with pytest.raises(ValueError, match="Incorrect matrix values."):
         MulticlassConfusionMatrix(torch.tensor([[0, 0], [-1, 0]]))
 
 
-@mark.parametrize("num_classes", [2, 5])
+@pytest.mark.parametrize("num_classes", [2, 5])
 def test_multiclass_confusion_matrix_num_classes(num_classes: int) -> None:
     assert (
         MulticlassConfusionMatrix.from_num_classes(num_classes=num_classes).num_classes
@@ -761,7 +762,7 @@ def test_multiclass_confusion_matrix_get_normalized_matrix_normalization_all_emp
 
 
 def test_multiclass_confusion_matrix_get_normalized_matrix_incorrect_normalization() -> None:
-    with raises(ValueError, match="Incorrect normalization: incorrect."):
+    with pytest.raises(ValueError, match="Incorrect normalization: incorrect."):
         MulticlassConfusionMatrix(torch.zeros(3, 3, dtype=torch.long)).get_normalized_matrix(
             normalization="incorrect"
         )
@@ -797,7 +798,7 @@ def test_multiclass_confusion_matrix_resize_incorrect_num_classes() -> None:
     meter = MulticlassConfusionMatrix(
         torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]], dtype=torch.long)
     )
-    with raises(ValueError, match="Incorrect number of classes: 2."):
+    with pytest.raises(ValueError, match="Incorrect number of classes: 2."):
         meter.resize(num_classes=2)
 
 
@@ -823,7 +824,7 @@ def test_multiclass_confusion_matrix_update_2() -> None:
     assert meter.matrix.equal(torch.tensor([[3, 1, 0], [0, 0, 1], [1, 2, 1]], dtype=torch.long))
 
 
-@mark.parametrize("num_classes", [2, 5])
+@pytest.mark.parametrize("num_classes", [2, 5])
 def test_multiclass_confusion_matrix_from_num_classes(num_classes: int) -> None:
     assert MulticlassConfusionMatrix.from_num_classes(num_classes=num_classes).matrix.equal(
         torch.zeros(num_classes, num_classes, dtype=torch.long)
@@ -831,7 +832,7 @@ def test_multiclass_confusion_matrix_from_num_classes(num_classes: int) -> None:
 
 
 def test_multiclass_confusion_matrix_from_num_classes_incorrect() -> None:
-    with raises(ValueError, match="Incorrect number of classes."):
+    with pytest.raises(ValueError, match="Incorrect number of classes."):
         MulticlassConfusionMatrix.from_num_classes(num_classes=0)
 
 
@@ -955,8 +956,8 @@ def test_multiclass_confusion_matrix_accuracy() -> None:
 
 
 def test_multiclass_confusion_matrix_accuracy_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match="It is not possible to compute the accuracy because the confusion matrix is empty",
     ):
         MulticlassConfusionMatrix.from_num_classes(3).accuracy()
@@ -972,8 +973,8 @@ def test_multiclass_confusion_matrix_balanced_accuracy() -> None:
 
 
 def test_multiclass_confusion_matrix_balanced_accuracy_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match=(
             "It is not possible to compute the balanced accuracy because "
             "the confusion matrix is empty"
@@ -1017,8 +1018,8 @@ def test_multiclass_confusion_matrix_f_beta_score_0_5() -> None:
 
 
 def test_multiclass_confusion_matrix_f_beta_score_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match=(
             "It is not possible to compute the F-beta score because "
             "the confusion matrix is empty"
@@ -1055,8 +1056,8 @@ def test_multiclass_confusion_matrix_macro_f_beta_score_0_5() -> None:
 
 
 def test_multiclass_confusion_matrix_macro_f_beta_score_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match=(
             "It is not possible to compute the F-beta score because "
             "the confusion matrix is empty"
@@ -1096,8 +1097,8 @@ def test_multiclass_confusion_matrix_micro_f_beta_score_0_5() -> None:
 
 
 def test_multiclass_confusion_matrix_micro_f_beta_score_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match=(
             "It is not possible to compute the micro F-beta score because "
             "the confusion matrix is empty"
@@ -1137,8 +1138,8 @@ def test_multiclass_confusion_matrix_weighted_f_beta_score_0_5() -> None:
 
 
 def test_multiclass_confusion_matrix_weighted_f_beta_score_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match=(
             "It is not possible to compute the F-beta score because "
             "the confusion matrix is empty"
@@ -1164,8 +1165,8 @@ def test_multiclass_confusion_matrix_precision_zero() -> None:
 
 
 def test_multiclass_confusion_matrix_precision_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match="It is not possible to compute the precision because the confusion matrix is empty",
     ):
         MulticlassConfusionMatrix.from_num_classes(3).precision()
@@ -1182,8 +1183,8 @@ def test_multiclass_confusion_matrix_macro_precision() -> None:
 
 
 def test_multiclass_confusion_matrix_macro_precision_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match="It is not possible to compute the precision because the confusion matrix is empty",
     ):
         MulticlassConfusionMatrix.from_num_classes(3).macro_precision()
@@ -1200,8 +1201,8 @@ def test_multiclass_confusion_matrix_micro_precision() -> None:
 
 
 def test_multiclass_confusion_matrix_micro_precision_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match=(
             "It is not possible to compute the micro precision because "
             "the confusion matrix is empty"
@@ -1220,8 +1221,8 @@ def test_multiclass_confusion_matrix_weighted_precision() -> None:
 
 
 def test_multiclass_confusion_matrix_weighted_precision_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match=("It is not possible to compute the precision because the confusion matrix is empty"),
     ):
         MulticlassConfusionMatrix.from_num_classes(3).weighted_precision()
@@ -1244,8 +1245,8 @@ def test_multiclass_confusion_matrix_recall_zero() -> None:
 
 
 def test_multiclass_confusion_matrix_recall_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match="It is not possible to compute the recall because the confusion matrix is empty",
     ):
         MulticlassConfusionMatrix.from_num_classes(3).recall()
@@ -1261,8 +1262,8 @@ def test_multiclass_confusion_matrix_macro_recall() -> None:
 
 
 def test_multiclass_confusion_matrix_macro_recall_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match="It is not possible to compute the recall because the confusion matrix is empty",
     ):
         MulticlassConfusionMatrix.from_num_classes(3).macro_recall()
@@ -1279,8 +1280,8 @@ def test_multiclass_confusion_matrix_micro_recall() -> None:
 
 
 def test_multiclass_confusion_matrix_micro_recall_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match=(
             "It is not possible to compute the micro recall because "
             "the confusion matrix is empty"
@@ -1300,8 +1301,8 @@ def test_multiclass_confusion_matrix_weighted_recall() -> None:
 
 
 def test_multiclass_confusion_matrix_weighted_recall_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match="It is not possible to compute the recall because the confusion matrix is empty",
     ):
         MulticlassConfusionMatrix.from_num_classes(3).weighted_recall()
@@ -1350,8 +1351,8 @@ def test_multiclass_confusion_matrix_compute_per_class_metrics_prefix_suffix() -
 
 
 def test_multiclass_confusion_matrix_compute_per_class_metrics_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match="It is not possible to compute the metrics because the confusion matrix is empty",
     ):
         MulticlassConfusionMatrix.from_num_classes(3).compute_per_class_metrics()
@@ -1398,8 +1399,8 @@ def test_multiclass_confusion_matrix_compute_macro_metrics_prefix_suffix() -> No
 
 
 def test_multiclass_confusion_matrix_compute_macro_metrics_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match=(
             "It is not possible to compute the 'macro' metrics because "
             "the confusion matrix is empty"
@@ -1449,8 +1450,8 @@ def test_multiclass_confusion_matrix_compute_micro_metrics_prefix_suffix() -> No
 
 
 def test_multiclass_confusion_matrix_compute_micro_metrics_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match=(
             "It is not possible to compute the 'micro' metrics because "
             "the confusion matrix is empty"
@@ -1500,8 +1501,8 @@ def test_multiclass_confusion_matrix_compute_weighted_metrics_prefix_suffix() ->
 
 
 def test_multiclass_confusion_matrix_compute_weighted_metrics_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match=(
             "It is not possible to compute the 'weighted' metrics because "
             "the confusion matrix is empty"
@@ -1577,8 +1578,8 @@ def test_multiclass_confusion_matrix_compute_scalar_metrics_prefix_suffix() -> N
 
 
 def test_multiclass_confusion_matrix_compute_scalar_metrics_empty() -> None:
-    with raises(
-        EmptyMeterError,
+    with pytest.raises(
+        EmptyTrackerError,
         match="It is not possible to compute the metrics because the confusion matrix is empty",
     ):
         MulticlassConfusionMatrix.from_num_classes(3).compute_scalar_metrics()
@@ -1590,22 +1591,22 @@ def test_multiclass_confusion_matrix_compute_scalar_metrics_empty() -> None:
 
 
 def test_check_confusion_matrix_incorrect_ndim() -> None:
-    with raises(ValueError, match="Incorrect matrix dimensions."):
+    with pytest.raises(ValueError, match="Incorrect matrix dimensions."):
         check_confusion_matrix(torch.zeros(3))
 
 
 def test_check_confusion_matrix_incorrect_shape() -> None:
-    with raises(ValueError, match="Incorrect matrix shape."):
+    with pytest.raises(ValueError, match="Incorrect matrix shape."):
         check_confusion_matrix(torch.zeros(3, 5))
 
 
 def test_check_confusion_matrix_incorrect_dtype() -> None:
-    with raises(ValueError, match="Incorrect matrix data type."):
+    with pytest.raises(ValueError, match="Incorrect matrix data type."):
         check_confusion_matrix(torch.zeros(2, 2, dtype=torch.float))
 
 
 def test_check_confusion_matrix_negative_value() -> None:
-    with raises(ValueError, match="Incorrect matrix values."):
+    with pytest.raises(ValueError, match="Incorrect matrix values."):
         check_confusion_matrix(torch.tensor([[0, 0], [-1, 0]]))
 
 
@@ -1620,7 +1621,7 @@ def test_check_op_compatibility_binary_correct() -> None:
 
 
 def test_check_op_compatibility_binary_incorrect_type() -> None:
-    with raises(TypeError, match="Incorrect type .*Mock.*"):
+    with pytest.raises(TypeError, match="Incorrect type .*Mock.*"):
         check_op_compatibility_binary(BinaryConfusionMatrix(), Mock(), "op")
 
 
@@ -1639,7 +1640,7 @@ def test_check_op_compatibility_multiclass_correct() -> None:
 
 
 def test_check_op_compatibility_multiclass_incorrect_type() -> None:
-    with raises(TypeError, match="Incorrect type: .*Mock.*"):
+    with pytest.raises(TypeError, match="Incorrect type: .*Mock.*"):
         check_op_compatibility_multiclass(
             MulticlassConfusionMatrix.from_num_classes(3),
             Mock(),
@@ -1648,7 +1649,7 @@ def test_check_op_compatibility_multiclass_incorrect_type() -> None:
 
 
 def test_check_op_compatibility_multiclass_incorrect_shape() -> None:
-    with raises(ValueError, match="Incorrect shape:"):
+    with pytest.raises(ValueError, match="Incorrect shape:"):
         check_op_compatibility_multiclass(
             MulticlassConfusionMatrix.from_num_classes(3),
             MulticlassConfusionMatrix.from_num_classes(4),
@@ -1687,7 +1688,7 @@ def test_str_binary_confusion_matrix_empty() -> None:
     )
 
 
-@mark.parametrize("shape", [(1,), (1, 1), (2, 3), (3, 2), (3, 3)])
+@pytest.mark.parametrize("shape", [(1,), (1, 1), (2, 3), (3, 2), (3, 3)])
 def test_str_binary_confusion_matrix_incorrect_shape(shape: tuple[int, ...]) -> None:
-    with raises(RuntimeError, match="Expected a 2x2 confusion matrix but received"):
+    with pytest.raises(RuntimeError, match="Expected a 2x2 confusion matrix but received"):
         str_binary_confusion_matrix(torch.zeros(*shape))
