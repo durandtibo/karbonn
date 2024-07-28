@@ -1,22 +1,22 @@
-r"""Implement a state to track the average value of float number."""
+r"""Implement a tracker to track the average value of float number."""
 
 from __future__ import annotations
 
-__all__ = ["AverageState"]
+__all__ = ["Average"]
 
 from typing import TYPE_CHECKING, Any
 
 from coola.utils import str_indent, str_mapping
 
 from karbonn.distributed.ddp import SUM, sync_reduce
-from karbonn.utils.state.exception import EmptyStateError
+from karbonn.utils.tracker.exception import EmptyTrackerError
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
 
-class AverageState:
-    r"""Implement a state to track the average value of float number.
+class Average:
+    r"""Implement a tracker to track the average value of float number.
 
     Args:
         total: The initial total value.
@@ -26,16 +26,16 @@ class AverageState:
 
     ```pycon
 
-    >>> from karbonn.utils.state import AverageState
-    >>> state = AverageState()
+    >>> from karbonn.utils.tracker import Average
+    >>> tracker = Average()
     >>> for i in range(11):
-    ...     state.update(i)
+    ...     tracker.update(i)
     ...
-    >>> state.average()
+    >>> tracker.average()
     5.0
-    >>> state.sum()
+    >>> tracker.sum()
     55.0
-    >>> state.count
+    >>> tracker.count
     11.0
 
     ```
@@ -62,17 +62,18 @@ class AverageState:
 
     @property
     def count(self) -> float:
-        r"""The number of examples in the state since the last reset."""
+        r"""The number of examples in the tracker since the last
+        reset."""
         return self._count
 
     @property
     def total(self) -> float:
-        r"""The total of the values added to the state since the last
+        r"""The total of the values added to the tracker since the last
         reset."""
         return self._total
 
-    def all_reduce(self) -> AverageState:
-        r"""Reduce the state values across all machines in such a way
+    def all_reduce(self) -> Average:
+        r"""Reduce the tracker values across all machines in such a way
         that all get the final result.
 
         The total value is reduced by summing all the sum values
@@ -81,20 +82,20 @@ class AverageState:
         (1 count value per distributed process).
 
         Returns:
-            The reduced state.
+            The reduced tracker.
 
         Example usage:
 
         ```pycon
 
-        >>> from karbonn.utils.state import AverageState
-        >>> state = AverageState()
-        >>> state.update(6)
-        >>> reduced_meter = state.all_reduce()
+        >>> from karbonn.utils.tracker import Average
+        >>> tracker = Average()
+        >>> tracker.update(6)
+        >>> reduced_meter = tracker.all_reduce()
 
         ```
         """
-        return AverageState(
+        return Average(
             total=sync_reduce(self._total, SUM),
             count=sync_reduce(self._count, SUM),
         )
@@ -106,45 +107,45 @@ class AverageState:
             The average value.
 
         Raises:
-            EmptyStateError: if the state is empty.
+            EmptyStateError: if the tracker is empty.
 
         Example usage:
 
         ```pycon
 
-        >>> from karbonn.utils.state import AverageState
-        >>> state = AverageState()
+        >>> from karbonn.utils.tracker import Average
+        >>> tracker = Average()
         >>> for i in range(11):
-        ...     state.update(i)
+        ...     tracker.update(i)
         ...
-        >>> state.average()
+        >>> tracker.average()
         5.0
 
         ```
         """
         if not self._count:
-            msg = "The state is empty"
-            raise EmptyStateError(msg)
+            msg = "The tracker is empty"
+            raise EmptyTrackerError(msg)
         return self._total / self._count
 
-    def clone(self) -> AverageState:
-        r"""Return a copy of the current state.
+    def clone(self) -> Average:
+        r"""Return a copy of the current tracker.
 
         Returns:
-            A copy of the current state.
+            A copy of the current tracker.
 
         Example usage:
 
         ```pycon
 
         >>> import torch
-        >>> from karbonn.utils.state import AverageState
-        >>> state = AverageState(total=55.0, count=11)
-        >>> meter_cloned = state.clone()
-        >>> state.update(1)
-        >>> state.sum()
+        >>> from karbonn.utils.tracker import Average
+        >>> tracker = Average(total=55.0, count=11)
+        >>> meter_cloned = tracker.clone()
+        >>> tracker.update(1)
+        >>> tracker.sum()
         56.0
-        >>> state.count
+        >>> tracker.count
         12.0
         >>> meter_cloned.sum()
         55.0
@@ -153,52 +154,52 @@ class AverageState:
 
         ```
         """
-        return AverageState(total=self.total, count=self.count)
+        return Average(total=self.total, count=self.count)
 
     def equal(self, other: Any) -> bool:
-        r"""Indicate if two states are equal or not.
+        r"""Indicate if two trackers are equal or not.
 
         Args:
             other: The value to compare.
 
         Returns:
-            ``True`` if the states are equal, ``False`` otherwise.
+            ``True`` if the trackers are equal, ``False`` otherwise.
 
         Example usage:
 
         ```pycon
 
         >>> import torch
-        >>> from karbonn.utils.state import AverageState
-        >>> meter1 = AverageState(total=55.0, count=11)
-        >>> meter2 = AverageState(total=3.0, count=3)
+        >>> from karbonn.utils.tracker import Average
+        >>> meter1 = Average(total=55.0, count=11)
+        >>> meter2 = Average(total=3.0, count=3)
         >>> meter1.equal(meter2)
         False
 
         ```
         """
-        if not isinstance(other, AverageState):
+        if not isinstance(other, Average):
             return False
-        return self.state_dict() == other.state_dict()
+        return self.tracker_dict() == other.tracker_dict()
 
-    def merge(self, states: Iterable[AverageState]) -> AverageState:
-        r"""Merge several states with the current state and return a new
-        state.
+    def merge(self, trackers: Iterable[Average]) -> Average:
+        r"""Merge several trackers with the current tracker and return a
+        new tracker.
 
         Args:
-            states: The states to merge to the current state.
+            trackers: The trackers to merge to the current tracker.
 
         Returns:
-            The merged state.
+            The merged tracker.
 
         Example usage:
 
         ```pycon
 
         >>> import torch
-        >>> from karbonn.utils.state import AverageState
-        >>> meter1 = AverageState(total=55.0, count=10)
-        >>> meter2 = AverageState(total=3.0, count=3)
+        >>> from karbonn.utils.tracker import Average
+        >>> meter1 = Average(total=55.0, count=10)
+        >>> meter2 = Average(total=3.0, count=3)
         >>> meter3 = meter1.merge([meter2])
         >>> meter3.count
         13.0
@@ -208,27 +209,27 @@ class AverageState:
         ```
         """
         count, total = self.count, self.total
-        for meter in states:
+        for meter in trackers:
             count += meter.count
             total += meter.total
-        return AverageState(total=total, count=count)
+        return Average(total=total, count=count)
 
-    def merge_(self, states: Iterable[AverageState]) -> None:
-        r"""Merge several states into the current state.
+    def merge_(self, trackers: Iterable[Average]) -> None:
+        r"""Merge several trackers into the current tracker.
 
         In-place version of ``merge``.
 
         Args:
-            states: The states to merge to the current state.
+            trackers: The trackers to merge to the current tracker.
 
         Example usage:
 
         ```pycon
 
         >>> import torch
-        >>> from karbonn.utils.state import AverageState
-        >>> meter1 = AverageState(total=55.0, count=10)
-        >>> meter2 = AverageState(total=3.0, count=3)
+        >>> from karbonn.utils.tracker import Average
+        >>> meter1 = Average(total=55.0, count=10)
+        >>> meter2 = Average(total=3.0, count=3)
         >>> meter1.merge_([meter2])
         >>> meter1.count
         13.0
@@ -237,47 +238,47 @@ class AverageState:
 
         ```
         """
-        for meter in states:
+        for meter in trackers:
             self._count += meter.count
             self._total += meter.total
 
-    def load_state_dict(self, state_dict: dict[str, Any]) -> None:
-        r"""Load a state to the history tracker.
+    def load_tracker_dict(self, tracker_dict: dict[str, Any]) -> None:
+        r"""Load a tracker to the history tracker.
 
         Args:
-            state_dict: A dictionary containing state keys with values.
+            tracker_dict: A dictionary containing tracker keys with values.
 
         Example usage:
 
         ```pycon
 
-        >>> from karbonn.utils.state import AverageState
-        >>> state = AverageState()
-        >>> state.load_state_dict({"count": 11.0, "total": 55.0})
-        >>> state.count
+        >>> from karbonn.utils.tracker import Average
+        >>> tracker = Average()
+        >>> tracker.load_tracker_dict({"count": 11.0, "total": 55.0})
+        >>> tracker.count
         11.0
-        >>> state.sum()
+        >>> tracker.sum()
         55.0
 
         ```
         """
-        self._total = float(state_dict["total"])
-        self._count = float(state_dict["count"])
+        self._total = float(tracker_dict["total"])
+        self._count = float(tracker_dict["count"])
 
     def reset(self) -> None:
-        r"""Reset the state.
+        r"""Reset the tracker.
 
         Example usage:
 
         ```pycon
 
-        >>> from karbonn.utils.state import AverageState
-        >>> state = AverageState()
+        >>> from karbonn.utils.tracker import Average
+        >>> tracker = Average()
         >>> for i in range(11):
-        ...     state.update(i)
+        ...     tracker.update(i)
         ...
-        >>> state.reset()
-        >>> state.count
+        >>> tracker.reset()
+        >>> tracker.count
         0.0
 
         ```
@@ -285,22 +286,22 @@ class AverageState:
         self._total = 0.0
         self._count = 0.0
 
-    def state_dict(self) -> dict[str, Any]:
-        r"""Return a dictionary containing state values.
+    def tracker_dict(self) -> dict[str, Any]:
+        r"""Return a dictionary containing tracker values.
 
         Returns:
-            The state values in a dict.
+            The tracker values in a dict.
 
         Example usage:
 
         ```pycon
 
-        >>> from karbonn.utils.state import AverageState
-        >>> state = AverageState()
+        >>> from karbonn.utils.tracker import Average
+        >>> tracker = Average()
         >>> for i in range(11):
-        ...     state.update(i)
+        ...     tracker.update(i)
         ...
-        >>> state.state_dict()
+        >>> tracker.tracker_dict()
         {'count': 11.0, 'total': 55.0}
 
         ```
@@ -314,33 +315,33 @@ class AverageState:
             The sum value.
 
         Raises:
-            EmptyStateError: if the state is empty.
+            EmptyStateError: if the tracker is empty.
 
         Example usage:
 
         ```pycon
 
-        >>> from karbonn.utils.state import AverageState
-        >>> state = AverageState()
+        >>> from karbonn.utils.tracker import Average
+        >>> tracker = Average()
         >>> for i in range(11):
-        ...     state.update(i)
+        ...     tracker.update(i)
         ...
-        >>> state.sum()
+        >>> tracker.sum()
         55.0
 
         ```
         """
         if not self._count:
-            msg = "The state is empty"
-            raise EmptyStateError(msg)
+            msg = "The tracker is empty"
+            raise EmptyTrackerError(msg)
         return self._total
 
     def update(self, value: float, num_examples: float = 1) -> None:
-        r"""Update the state given a new value and the number of
+        r"""Update the tracker given a new value and the number of
         examples.
 
         Args:
-            value: The value to add to the state.
+            value: The value to add to the tracker.
             num_examples: The number of examples. This argument is
                 mainly used to deal with mini-batches of different
                 sizes.
@@ -349,12 +350,12 @@ class AverageState:
 
         ```pycon
 
-        >>> from karbonn.utils.state import AverageState
-        >>> state = AverageState()
+        >>> from karbonn.utils.tracker import Average
+        >>> tracker = Average()
         >>> for i in range(11):
-        ...     state.update(i)
+        ...     tracker.update(i)
         ...
-        >>> state.sum()
+        >>> tracker.sum()
         55.0
 
         ```

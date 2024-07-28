@@ -1,8 +1,9 @@
-r"""Implement a state to track some statistics about a scalar value."""
+r"""Implement a tracker to track some statistics about a scalar
+value."""
 
 from __future__ import annotations
 
-__all__ = ["ScalarState"]
+__all__ = ["ScalarTracker"]
 
 from collections import deque
 from typing import TYPE_CHECKING, Any
@@ -10,16 +11,17 @@ from typing import TYPE_CHECKING, Any
 import torch
 from coola.utils import str_indent, str_mapping
 
-from karbonn.utils.state.exception import EmptyStateError
+from karbonn.utils.tracker.exception import EmptyTrackerError
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
 
 
-class ScalarState:
-    r"""Implement a state to track some statistics about a scalar value.
+class ScalarTracker:
+    r"""Implement a tracker to track some statistics about a scalar
+    value.
 
-    This state tracks the following values:
+    This tracker tracks the following values:
 
         - the sum of the values
         - the number of values
@@ -43,12 +45,12 @@ class ScalarState:
 
     ```pycon
 
-    >>> from karbonn.utils.state import ScalarState
-    >>> state = ScalarState()
-    >>> state.update(6)
-    >>> state.update_sequence([1, 2, 3, 4, 5, 0])
-    >>> print(state)
-    ScalarState(
+    >>> from karbonn.utils.tracker import ScalarTracker
+    >>> tracker = ScalarTracker()
+    >>> tracker.update(6)
+    >>> tracker.update_sequence([1, 2, 3, 4, 5, 0])
+    >>> print(tracker)
+    ScalarTracker(
       (average): 3.0
       (count): 7.0
       (max): 6.0
@@ -57,7 +59,7 @@ class ScalarState:
       (std): 2.16024...
       (sum): 21.0
     )
-    >>> state.average()
+    >>> tracker.average()
     3.0
 
     ```
@@ -105,17 +107,17 @@ class ScalarState:
 
     @property
     def count(self) -> float:
-        r"""The number of examples in the state."""
+        r"""The number of examples in the tracker."""
         return self._count
 
     @property
     def total(self) -> float:
-        r"""The total of the values added to the state."""
+        r"""The total of the values added to the tracker."""
         return self._total
 
     @property
     def values(self) -> tuple[float, ...]:
-        r"""The values store in this state.
+        r"""The values store in this tracker.
 
         If there are more values that the maximum size, only the last
         values are returned.
@@ -124,10 +126,10 @@ class ScalarState:
 
         ```pycon
 
-        >>> from karbonn.utils.state import ScalarState
-        >>> state = ScalarState()
-        >>> state.update_sequence([1, 2, 3, 4, 5, 0])
-        >>> state.values
+        >>> from karbonn.utils.tracker import ScalarTracker
+        >>> tracker = ScalarTracker()
+        >>> tracker.update_sequence([1, 2, 3, 4, 5, 0])
+        >>> tracker.values
         (1.0, 2.0, 3.0, 4.0, 5.0, 0.0)
 
         ```
@@ -141,65 +143,65 @@ class ScalarState:
             The average value.
 
         Raises:
-            EmptyStateError: if the state is empty.
+            EmptyStateError: if the tracker is empty.
 
         Example usage:
 
         ```pycon
 
-        >>> from karbonn.utils.state import ScalarState
-        >>> state = ScalarState()
-        >>> state.update_sequence([1, 2, 3, 4, 5, 0])
-        >>> state.average()
+        >>> from karbonn.utils.tracker import ScalarTracker
+        >>> tracker = ScalarTracker()
+        >>> tracker.update_sequence([1, 2, 3, 4, 5, 0])
+        >>> tracker.average()
         2.5
 
         ```
         """
         if not self._count:
-            msg = "The state is empty"
-            raise EmptyStateError(msg)
+            msg = "The tracker is empty"
+            raise EmptyTrackerError(msg)
         return self._total / float(self._count)
 
     def equal(self, other: Any) -> bool:
-        r"""Indicate if two states are equal or not.
+        r"""Indicate if two trackers are equal or not.
 
         Args:
             other: The value to compare.
 
         Returns:
-            ``True`` if the states are equal, ``False`` otherwise.
+            ``True`` if the trackers are equal, ``False`` otherwise.
 
         Example usage:
 
         ```pycon
 
-        >>> from karbonn.utils.state import ScalarState
-        >>> state1 = ScalarState()
-        >>> state1.update_sequence([1, 2, 3, 4, 5, 0])
-        >>> state2 = ScalarState()
-        >>> state2.update_sequence([1, 1, 1])
-        >>> state1.equal(state2)
+        >>> from karbonn.utils.tracker import ScalarTracker
+        >>> tracker1 = ScalarTracker()
+        >>> tracker1.update_sequence([1, 2, 3, 4, 5, 0])
+        >>> tracker2 = ScalarTracker()
+        >>> tracker2.update_sequence([1, 1, 1])
+        >>> tracker1.equal(tracker2)
         False
 
         ```
         """
-        if not isinstance(other, ScalarState):
+        if not isinstance(other, ScalarTracker):
             return False
-        return self.state_dict() == other.state_dict()
+        return self.tracker_dict() == other.tracker_dict()
 
-    def load_state_dict(self, state_dict: dict[str, Any]) -> None:
-        r"""Load a state to the history tracker.
+    def load_tracker_dict(self, tracker_dict: dict[str, Any]) -> None:
+        r"""Load a tracker to the history tracker.
 
         Args:
-            state_dict: Dictionary containing state keys with values.
+            tracker_dict: Dictionary containing tracker keys with values.
 
         Example usage:
 
         ```pycon
 
-        >>> from karbonn.utils.state import ScalarState
-        >>> state = ScalarState()
-        >>> state.load_state_dict(
+        >>> from karbonn.utils.tracker import ScalarTracker
+        >>> tracker = ScalarTracker()
+        >>> tracker.load_tracker_dict(
         ...     {
         ...         "count": 6,
         ...         "total": 15.0,
@@ -208,23 +210,23 @@ class ScalarState:
         ...         "min_value": 0.0,
         ...     }
         ... )
-        >>> state.count
+        >>> tracker.count
         6.0
-        >>> state.min()
+        >>> tracker.min()
         0.0
-        >>> state.max()
+        >>> tracker.max()
         5.0
-        >>> state.sum()
+        >>> tracker.sum()
         15.0
 
         ```
         """
-        self._total = float(state_dict["total"])
-        self._count = float(state_dict["count"])
-        self._max_value = float(state_dict["max_value"])
-        self._min_value = float(state_dict["min_value"])
+        self._total = float(tracker_dict["total"])
+        self._count = float(tracker_dict["count"])
+        self._max_value = float(tracker_dict["max_value"])
+        self._min_value = float(tracker_dict["min_value"])
         self._values.clear()
-        self._values.extend(state_dict["values"])
+        self._values.extend(tracker_dict["values"])
 
     def max(self) -> float:
         r"""Get the max value.
@@ -233,30 +235,30 @@ class ScalarState:
             The max value.
 
         Raises:
-            EmptyStateError: if the state is empty.
+            EmptyStateError: if the tracker is empty.
 
         Example usage:
 
         ```pycon
 
-        >>> from karbonn.utils.state import ScalarState
-        >>> state = ScalarState()
-        >>> state.update_sequence([1, 2, 3, 4, 5, 0])
-        >>> state.max()
+        >>> from karbonn.utils.tracker import ScalarTracker
+        >>> tracker = ScalarTracker()
+        >>> tracker.update_sequence([1, 2, 3, 4, 5, 0])
+        >>> tracker.max()
         5.0
 
         ```
         """
         if not self._count:
-            msg = "The state is empty"
-            raise EmptyStateError(msg)
+            msg = "The tracker is empty"
+            raise EmptyTrackerError(msg)
         return self._max_value
 
     def median(self) -> float:
         r"""Compute the median value from the last examples.
 
         If there are more values than the maximum window size, only
-        the last examples are used. Internally, this state uses a
+        the last examples are used. Internally, this tracker uses a
         deque to track the last values and the median value is
         computed on the values in the deque. The median is not unique
         for input tensors with an even number of elements. In this
@@ -266,67 +268,67 @@ class ScalarState:
             The median value from the last examples.
 
         Raises:
-            EmptyStateError: if the state is empty.
+            EmptyStateError: if the tracker is empty.
 
         Example usage:
 
         ```pycon
 
-        >>> from karbonn.utils.state import ScalarState
-        >>> state = ScalarState()
-        >>> state.update_sequence([1, 2, 3, 4, 5])
-        >>> state.average()
+        >>> from karbonn.utils.tracker import ScalarTracker
+        >>> tracker = ScalarTracker()
+        >>> tracker.update_sequence([1, 2, 3, 4, 5])
+        >>> tracker.average()
         3.0
 
         ```
         """
         if not self._count:
-            msg = "The state is empty"
-            raise EmptyStateError(msg)
+            msg = "The tracker is empty"
+            raise EmptyTrackerError(msg)
         return torch.as_tensor(list(self._values)).median().item()
 
-    def merge(self, states: Iterable[ScalarState]) -> ScalarState:
-        r"""Merge several states with the current state and returns a new
-        state.
+    def merge(self, trackers: Iterable[ScalarTracker]) -> ScalarTracker:
+        r"""Merge several trackers with the current tracker and returns a
+        new tracker.
 
-        Only the values of the current state are copied to the merged
-        state.
+        Only the values of the current tracker are copied to the merged
+        tracker.
 
         Args:
-            states: The states to merge to the current state.
+            trackers: The trackers to merge to the current tracker.
 
         Returns:
-            The merged state.
+            The merged tracker.
 
         Example usage:
 
         ```pycon
 
-        >>> from karbonn.utils.state import ScalarState
-        >>> state1 = ScalarState()
-        >>> state1.update_sequence((4, 5, 6, 7, 8, 3))
-        >>> state2 = ScalarState()
-        >>> state2.update_sequence([1, 1, 1])
-        >>> state3 = state1.merge([state2])
-        >>> state3.count
+        >>> from karbonn.utils.tracker import ScalarTracker
+        >>> tracker1 = ScalarTracker()
+        >>> tracker1.update_sequence((4, 5, 6, 7, 8, 3))
+        >>> tracker2 = ScalarTracker()
+        >>> tracker2.update_sequence([1, 1, 1])
+        >>> tracker3 = tracker1.merge([tracker2])
+        >>> tracker3.count
         9.0
-        >>> state3.max()
+        >>> tracker3.max()
         8.0
-        >>> state3.min()
+        >>> tracker3.min()
         1.0
-        >>> state3.sum()
+        >>> tracker3.sum()
         36.0
 
         ```
         """
         count, total = self._count, self._total
         min_value, max_value = self._min_value, self._max_value
-        for state in states:
-            count += state.count
-            total += state.total
-            min_value = min(min_value, state._min_value)
-            max_value = max(max_value, state._max_value)
-        return ScalarState(
+        for tracker in trackers:
+            count += tracker.count
+            total += tracker.total
+            min_value = min(min_value, tracker._min_value)
+            max_value = max(max_value, tracker._max_value)
+        return ScalarTracker(
             total=total,
             count=count,
             min_value=min_value,
@@ -335,46 +337,46 @@ class ScalarState:
             max_size=self._values.maxlen,
         )
 
-    def merge_(self, states: Iterable[ScalarState]) -> None:
-        r"""Merge several states into the current state.
+    def merge_(self, trackers: Iterable[ScalarTracker]) -> None:
+        r"""Merge several trackers into the current tracker.
 
         In-place version of ``merge``.
 
-        Only the values of the current state are copied to the merged
-        state.
+        Only the values of the current tracker are copied to the merged
+        tracker.
 
         Args:
-            states: The states to merge to the current state.
+            trackers: The trackers to merge to the current tracker.
 
         Returns:
-            The merged state.
+            The merged tracker.
 
         Example usage:
 
         ```pycon
 
-        >>> from karbonn.utils.state import ScalarState
-        >>> state1 = ScalarState()
-        >>> state1.update_sequence((4, 5, 6, 7, 8, 3))
-        >>> state2 = ScalarState()
-        >>> state2.update_sequence([1, 1, 1])
-        >>> state1.merge_([state2])
-        >>> state1.count
+        >>> from karbonn.utils.tracker import ScalarTracker
+        >>> tracker1 = ScalarTracker()
+        >>> tracker1.update_sequence((4, 5, 6, 7, 8, 3))
+        >>> tracker2 = ScalarTracker()
+        >>> tracker2.update_sequence([1, 1, 1])
+        >>> tracker1.merge_([tracker2])
+        >>> tracker1.count
         9.0
-        >>> state1.max()
+        >>> tracker1.max()
         8.0
-        >>> state1.min()
+        >>> tracker1.min()
         1.0
-        >>> state1.sum()
+        >>> tracker1.sum()
         36.0
 
         ```
         """
-        for state in states:
-            self._count += state.count
-            self._total += state.total
-            self._min_value = min(self._min_value, state._min_value)
-            self._max_value = max(self._max_value, state._max_value)
+        for tracker in trackers:
+            self._count += tracker.count
+            self._total += tracker.total
+            self._min_value = min(self._min_value, tracker._min_value)
+            self._max_value = max(self._max_value, tracker._max_value)
 
     def min(self) -> float:
         r"""Get the min value.
@@ -383,39 +385,39 @@ class ScalarState:
             The min value.
 
         Raises:
-            EmptyStateError: if the state is empty.
+            EmptyStateError: if the tracker is empty.
 
         Example usage:
 
         ```pycon
 
-        >>> from karbonn.utils.state import ScalarState
-        >>> state = ScalarState()
-        >>> state.update_sequence([1, 2, 3, 4, 5, 0])
-        >>> state.min()
+        >>> from karbonn.utils.tracker import ScalarTracker
+        >>> tracker = ScalarTracker()
+        >>> tracker.update_sequence([1, 2, 3, 4, 5, 0])
+        >>> tracker.min()
         0.0
 
         ```
         """
         if not self._count:
-            msg = "The state is empty"
-            raise EmptyStateError(msg)
+            msg = "The tracker is empty"
+            raise EmptyTrackerError(msg)
         return self._min_value
 
     def reset(self) -> None:
-        r"""Reset the state.
+        r"""Reset the tracker.
 
         Example usage:
 
         ```pycon
 
-        >>> from karbonn.utils.state import ScalarState
-        >>> state = ScalarState()
-        >>> state.update_sequence([1, 2, 3, 4, 5, 0])
-        >>> state.reset()
-        >>> state.count
+        >>> from karbonn.utils.tracker import ScalarTracker
+        >>> tracker = ScalarTracker()
+        >>> tracker.update_sequence([1, 2, 3, 4, 5, 0])
+        >>> tracker.reset()
+        >>> tracker.count
         0.0
-        >>> state.total
+        >>> tracker.total
         0.0
 
         ```
@@ -426,20 +428,20 @@ class ScalarState:
         self._max_value = -float("inf")
         self._values.clear()
 
-    def state_dict(self) -> dict[str, Any]:
-        r"""Return a dictionary containing state values.
+    def tracker_dict(self) -> dict[str, Any]:
+        r"""Return a dictionary containing tracker values.
 
         Returns:
-            The state values in a dict.
+            The tracker values in a dict.
 
         Example usage:
 
         ```pycon
 
-        >>> from karbonn.utils.state import ScalarState
-        >>> state = ScalarState()
-        >>> state.update_sequence([1, 2, 3, 4, 5, 0])
-        >>> state.state_dict()
+        >>> from karbonn.utils.tracker import ScalarTracker
+        >>> tracker = ScalarTracker()
+        >>> tracker.update_sequence([1, 2, 3, 4, 5, 0])
+        >>> tracker.tracker_dict()
         {'count': 6.0, 'total': 15.0, 'values': (1.0, 2.0, 3.0, 4.0, 5.0, 0.0), 'max_value': 5.0, 'min_value': 0.0}
 
         ```
@@ -454,10 +456,10 @@ class ScalarState:
 
     def std(self) -> float:
         r"""Return the standard deviation based on the last examples
-        added to the state.
+        added to the tracker.
 
         If there are more values than the maximum window size, only
-        the last examples are used. Internally, this state uses a
+        the last examples are used. Internally, this tracker uses a
         deque to track the last values and the standard deviation
         is computed on the values in the deque.
 
@@ -465,23 +467,23 @@ class ScalarState:
             The standard deviation from the last examples.
 
         Raises:
-            EmptyStateError: if the state is empty.
+            EmptyStateError: if the tracker is empty.
 
         Example usage:
 
         ```pycon
 
-        >>> from karbonn.utils.state import ScalarState
-        >>> state = ScalarState()
-        >>> state.update_sequence([1, 2, 3, 4, 5, 0])
-        >>> state.std()  # xdoctest: +ELLIPSIS
+        >>> from karbonn.utils.tracker import ScalarTracker
+        >>> tracker = ScalarTracker()
+        >>> tracker.update_sequence([1, 2, 3, 4, 5, 0])
+        >>> tracker.std()  # xdoctest: +ELLIPSIS
         1.8708287477...
 
         ```
         """
         if not self._count:
-            msg = "The state is empty"
-            raise EmptyStateError(msg)
+            msg = "The tracker is empty"
+            raise EmptyTrackerError(msg)
         return torch.as_tensor(self.values, dtype=torch.float).std(dim=0).item()
 
     def sum(self) -> float:
@@ -491,41 +493,41 @@ class ScalarState:
             The sum value.
 
         Raises:
-            EmptyStateError: if the state is empty.
+            EmptyStateError: if the tracker is empty.
 
         Example usage:
 
         ```pycon
 
-        >>> from karbonn.utils.state import ScalarState
-        >>> state = ScalarState()
-        >>> state.update_sequence([1, 2, 3, 4, 5, 0])
-        >>> state.sum()
+        >>> from karbonn.utils.tracker import ScalarTracker
+        >>> tracker = ScalarTracker()
+        >>> tracker.update_sequence([1, 2, 3, 4, 5, 0])
+        >>> tracker.sum()
         15.0
 
         ```
         """
         if not self._count:
-            msg = "The state is empty"
-            raise EmptyStateError(msg)
+            msg = "The tracker is empty"
+            raise EmptyTrackerError(msg)
         return self._total
 
     def update(self, value: float) -> None:
-        r"""Update the state given a new value.
+        r"""Update the tracker given a new value.
 
         Args:
-            value: The value to add to the state.
+            value: The value to add to the tracker.
 
         Example usage:
 
         ```pycon
 
-        >>> from karbonn.utils.state import ScalarState
-        >>> state = ScalarState()
-        >>> state.update(6)
-        >>> state.count
+        >>> from karbonn.utils.tracker import ScalarTracker
+        >>> tracker = ScalarTracker()
+        >>> tracker.update(6)
+        >>> tracker.count
         1.0
-        >>> state.sum()
+        >>> tracker.sum()
         6.0
 
         ```
@@ -538,19 +540,19 @@ class ScalarState:
         self._values.append(value)
 
     def update_sequence(self, values: Sequence[float]) -> None:
-        r"""Update the state given a list/tuple of values.
+        r"""Update the tracker given a list/tuple of values.
 
         Args:
-            values: The list/tuple of values to add to the state.
+            values: The list/tuple of values to add to the tracker.
 
         Example usage:
 
         ```pycon
 
-        >>> from karbonn.utils.state import ScalarState
-        >>> state = ScalarState()
-        >>> state.update_sequence([1, 2, 3, 4, 5, 0])
-        >>> state.count
+        >>> from karbonn.utils.tracker import ScalarTracker
+        >>> tracker = ScalarTracker()
+        >>> tracker.update_sequence([1, 2, 3, 4, 5, 0])
+        >>> tracker.count
         6.0
 
         ```
