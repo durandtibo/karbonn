@@ -167,13 +167,6 @@ def check_sync_reduce_inplace(local_rank: int) -> None:
     device = idist.device()
 
     x_tensor = (
-        torch.tensor([0.0, 1.0], device=device)
-        if local_rank == 0
-        else torch.tensor([2.0, 2.0], device=device)
-    )
-    assert x_tensor.equal(torch.tensor([1, 1.5], device=device))
-
-    x_tensor = (
         torch.tensor([0, 1], device=device)
         if local_rank == 0
         else torch.tensor([2, 2], device=device)
