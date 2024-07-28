@@ -1,4 +1,4 @@
-r"""Contains some functionalities to analyze the parameters of a
+r"""Contain some functionalities to analyze the parameters of a
 ``torch.nn.Module``."""
 
 from __future__ import annotations
@@ -8,7 +8,7 @@ __all__ = [
     "PARAMETER_NOT_INITIALIZED",
     "ParameterSummary",
     "get_parameter_summaries",
-    "tabulate_parameter_summary",
+    "str_parameter_summary",
 ]
 
 import logging
@@ -19,13 +19,11 @@ from typing import TYPE_CHECKING, Any
 from coola.nested import convert_to_dict_of_lists
 from torch.nn import Module, Parameter, UninitializedParameter
 
-from karbonn.utils.imports import check_tabulate, is_tabulate_available
+from karbonn.utils.format import str_table
 
 if TYPE_CHECKING:
     import torch
 
-if is_tabulate_available():  # pragma: no cover
-    from tabulate import tabulate
 
 logger = logging.getLogger(__name__)
 
@@ -136,10 +134,13 @@ def get_parameter_summaries(module: Module) -> list[ParameterSummary]:
     return list(starmap(ParameterSummary.from_parameter, module.named_parameters()))
 
 
-def tabulate_parameter_summary(
+def str_parameter_summary(
     module: Module, tablefmt: str = "fancy_outline", floatfmt: str = ".6f", **kwargs: Any
 ) -> str:
     r"""Return a string summary of the model parameters.
+
+    This function uses ``tabulate`` to generate the table if it is
+    available.
 
     Args:
         module: The module to analyze.
@@ -147,19 +148,19 @@ def tabulate_parameter_summary(
         floatfmt: The float format.
         kwargs: Variable keyword arguments to pass to ``tabulate``.
 
-    Raises:
-        RuntimeError: if ``tabulate`` package is not available.
+    Returns:
+        The string summary of the model parameters
 
     Example usage:
 
     ```pycon
 
     >>> import torch
-    >>> from karbonn.utils.summary import tabulate_parameter_summary
+    >>> from karbonn.utils.summary import str_parameter_summary
     >>> linear = torch.nn.Linear(4, 6)
     >>> torch.nn.init.ones_(linear.weight)
     >>> torch.nn.init.zeros_(linear.bias)
-    >>> desc = tabulate_parameter_summary(linear)
+    >>> desc = str_parameter_summary(linear)
     >>> print(desc)
     ╒════════╤══════════╤══════════╤══════════╤══════════╤══════════╤═════════╤═════════════╤══════════╕
     │ name   │     mean │   median │      std │      min │      max │ shape   │ learnable   │ device   │
@@ -170,8 +171,7 @@ def tabulate_parameter_summary(
 
     ```
     """
-    check_tabulate()
     summaries = convert_to_dict_of_lists(
         [asdict(summary) for summary in get_parameter_summaries(module)]
     )
-    return tabulate(summaries, headers="keys", tablefmt=tablefmt, floatfmt=floatfmt, **kwargs)
+    return str_table(summaries, headers="keys", tablefmt=tablefmt, floatfmt=floatfmt, **kwargs)
