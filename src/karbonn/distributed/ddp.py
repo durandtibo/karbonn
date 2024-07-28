@@ -3,7 +3,7 @@ setting."""
 
 from __future__ import annotations
 
-__all__ = ["sync_reduce", "AVG", "BAND", "BOR", "MAX", "MIN", "PRODUCT", "SUM"]
+__all__ = ["sync_reduce", "sync_reduce_", "BAND", "BOR", "MAX", "MIN", "PRODUCT", "SUM"]
 
 from typing import overload
 
@@ -17,7 +17,6 @@ if is_ignite_available():  # pragma: no cover
     from ignite import distributed as idist
 
 # The supported reduction operators
-AVG = "AVG"
 BAND = "AND"  # Bitwise AND (only for integer/long)
 BOR = "OR"  # Bitwise OR (only for integer/long)
 MAX = "MAX"
@@ -49,7 +48,7 @@ def sync_reduce(variable: Tensor | float, op: str) -> Tensor | float:
     Args:
         variable: The variable to reduce.
         op: The reduction operation. The available operations are:
-            ``AVG``, ``AND``, ``OR``, ``MAX``, ``MIN``, ``PRODUCT``,
+            ``AND``, ``OR``, ``MAX``, ``MIN``, ``PRODUCT``,
             and ``SUM``.
 
     Returns:
@@ -72,15 +71,50 @@ def sync_reduce(variable: Tensor | float, op: str) -> Tensor | float:
     """
     if is_distributed():
         check_ignite()
-        divide_by_world_size = False
-        if op == AVG:
-            # Average is not a supported operation by PyTorch distributed.
-            op = SUM
-            divide_by_world_size = True
         if torch.is_tensor(variable):
             # Create a copy to not change the values of the input tensor.
             variable = variable.clone()
         variable = idist.all_reduce(variable, op=op)
-        if divide_by_world_size:
-            variable = variable / idist.get_world_size()
     return variable
+
+
+def sync_reduce_(tensor: Tensor, op: str) -> Tensor:
+    r"""In-place version of ``sync_reduce`` but it works only for a
+    tensor.
+
+    Args:
+        tensor: The tensor to reduce in-place.
+        op: The reduction operation. The available operations are:
+            ``AND``, ``OR``, ``MAX``, ``MIN``, ``PRODUCT``,
+            and ``SUM``.
+
+    Returns:
+        The reduced tensor which is also the input tensor.
+
+    Raises:
+        TypeError: if the input is not a tensor.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn import distributed as dist
+    >>> from karbonn.distributed import ddp
+    >>> x = torch.ones(2, 3)
+    >>> ddp.sync_reduce_(x, op=ddp.SUM)
+    >>> # for two processes
+    >>> x  # doctest: +SKIP
+    tensor([[2., 2., 2.],
+            [2., 2., 2.]])
+
+    ```
+    """
+    if not torch.is_tensor(tensor):
+        msg = f"The function `sync_reduce_` only supports Tensor but received {type(tensor)}"
+        raise TypeError(msg)
+
+    if is_distributed():
+        check_ignite()
+        idist.all_reduce(tensor, op=op)
+    return tensor

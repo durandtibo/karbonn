@@ -41,9 +41,6 @@ def check_sync_reduce_tensor_int(local_rank: int) -> None:
         if local_rank == 0
         else torch.tensor([2, 2], device=device)
     )
-    assert ddp.sync_reduce(x_tensor, op=ddp.AVG).equal(
-        torch.tensor([1, 1.5], device=device)
-    )  # average
     assert ddp.sync_reduce(x_tensor, op=ddp.MAX).equal(torch.tensor([2, 2], device=device))  # max
     assert ddp.sync_reduce(x_tensor, op=ddp.MIN).equal(torch.tensor([0, 1], device=device))  # min
     assert ddp.sync_reduce(x_tensor, op=ddp.PRODUCT).equal(
@@ -80,9 +77,6 @@ def check_sync_reduce_tensor_float(local_rank: int) -> None:
         if local_rank == 0
         else torch.tensor([2.0, 2.0], device=device)
     )
-    assert ddp.sync_reduce(x_tensor, op=ddp.AVG).equal(
-        torch.tensor([1, 1.5], device=device)
-    )  # average
     assert ddp.sync_reduce(x_tensor, op=ddp.MAX).equal(
         torch.tensor([2.0, 2.0], device=device)
     )  # max
@@ -117,7 +111,6 @@ def check_sync_reduce_int(local_rank: int) -> None:
     assert idist.get_world_size() == 2  # This test is valid only for 2 processes.
 
     x_int = 2 if local_rank == 0 else 5
-    assert ddp.sync_reduce(x_int, op=ddp.AVG) == 3.5  # average
     assert ddp.sync_reduce(x_int, op=ddp.MAX) == 5  # max
     assert ddp.sync_reduce(x_int, op=ddp.MIN) == 2  # min
     assert ddp.sync_reduce(x_int, op=ddp.PRODUCT) == 10  # product
@@ -146,7 +139,6 @@ def check_sync_reduce_float(local_rank: int) -> None:
     assert idist.get_world_size() == 2  # This test is valid only for 2 processes.
 
     x_float = 1.0 if local_rank == 0 else 3.5
-    assert ddp.sync_reduce(x_float, op=ddp.AVG) == 2.25  # average
     assert ddp.sync_reduce(x_float, op=ddp.MAX) == 3.5  # max
     assert ddp.sync_reduce(x_float, op=ddp.MIN) == 1.0  # min
     assert ddp.sync_reduce(x_float, op=ddp.PRODUCT) == 3.5  # product
@@ -164,6 +156,75 @@ def check_sync_reduce_float(local_rank: int) -> None:
         assert x_float == 3.5
 
 
+def check_sync_reduce_inplace(local_rank: int) -> None:
+    r"""Check ``sync_reduce_`` which is the in-place version of
+    ``sync_reduce``.
+
+    Args:
+        local_rank: The local rank.
+    """
+    assert idist.get_world_size() == 2
+    device = idist.device()
+
+    x_tensor = (
+        torch.tensor([0, 1], device=device)
+        if local_rank == 0
+        else torch.tensor([2, 2], device=device)
+    )
+    assert ddp.sync_reduce_(x_tensor, op=ddp.MAX).equal(torch.tensor([2, 2], device=device))  # max
+    assert x_tensor.equal(torch.tensor([2, 2], device=device))
+
+    x_tensor = (
+        torch.tensor([0, 1], device=device)
+        if local_rank == 0
+        else torch.tensor([2, 2], device=device)
+    )
+    assert ddp.sync_reduce_(x_tensor, op=ddp.MIN).equal(torch.tensor([0, 1], device=device))  # min
+    assert x_tensor.equal(torch.tensor([0, 1], device=device))
+
+    x_tensor = (
+        torch.tensor([0, 1], device=device)
+        if local_rank == 0
+        else torch.tensor([2, 2], device=device)
+    )
+    assert ddp.sync_reduce_(x_tensor, op=ddp.PRODUCT).equal(
+        torch.tensor([0, 2], device=device)
+    )  # product
+    assert x_tensor.equal(torch.tensor([0, 2], device=device))
+
+    x_tensor = (
+        torch.tensor([0, 1], device=device)
+        if local_rank == 0
+        else torch.tensor([2, 2], device=device)
+    )
+    assert ddp.sync_reduce_(x_tensor, op=ddp.SUM).equal(torch.tensor([2, 3], device=device))  # sum
+    assert x_tensor.equal(torch.tensor([2, 3], device=device))
+
+    if idist.backend() != "nccl":  # bitwise AND and OR are not supported by NCCL
+        x_tensor = (
+            torch.tensor([0, 1], device=device)
+            if local_rank == 0
+            else torch.tensor([2, 2], device=device)
+        )
+        assert ddp.sync_reduce_(x_tensor, op=ddp.BAND).equal(
+            torch.tensor([0, 0], device=device)
+        )  # bitwise AND
+        assert x_tensor.equal(torch.tensor([0, 0], device=device))
+
+        x_tensor = (
+            torch.tensor([0, 1], device=device)
+            if local_rank == 0
+            else torch.tensor([2, 2], device=device)
+        )
+        assert ddp.sync_reduce_(x_tensor, op=ddp.BOR).equal(
+            torch.tensor([2, 3], device=device)
+        )  # bitwise OR
+        assert x_tensor.equal(torch.tensor([2, 3], device=device))
+
+    with pytest.raises(TypeError, match="The function `sync_reduce_` only supports Tensor"):
+        ddp.sync_reduce_(1.0, op=ddp.SUM)  # Does not support float
+
+
 @pytest.mark.parametrize(
     "func",
     [
@@ -171,6 +232,7 @@ def check_sync_reduce_float(local_rank: int) -> None:
         check_sync_reduce_tensor_float,
         check_sync_reduce_int,
         check_sync_reduce_float,
+        check_sync_reduce_inplace,
     ],
 )
 @distributed_available
@@ -187,6 +249,7 @@ def test_sync_reduce_gloo(parallel_gloo_2: idist.Parallel, func: Callable[[int],
         check_sync_reduce_tensor_float,
         check_sync_reduce_int,
         check_sync_reduce_float,
+        check_sync_reduce_inplace,
     ],
 )
 @two_gpus_available
