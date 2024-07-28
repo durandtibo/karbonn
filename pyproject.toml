@@ -31,9 +31,8 @@ packages = [
 
 [tool.poetry.dependencies]
 # Core dependencies
-coola = ">=0.6,<1.0"
+coola = ">=0.7.2,<1.0"
 python = ">=3.9,<3.13"
-
 torch = [
     { version = ">=1.12,<2.3", markers = "sys_platform == 'darwin' and platform_machine != 'arm64'" },
     { version = ">=1.12,<3.0" }
@@ -67,12 +66,12 @@ mkdocstrings = { extras = ["python"], version = "^0.25" }
 
 [tool.poetry.group.dev.dependencies]
 black = ">=24.4"
-coverage = { extras = ["toml"], version = "^7.5" }
+coverage = { extras = ["toml"], version = "^7.6" }
 docformatter = { extras = ["tomli"], version = "^1.7" }
 feu = ">=0.0.5,<1.0"
 pre-commit = "^3.7"
 pygments = "^2.18"
-pytest = "^8.2"
+pytest = "^8.3"
 pytest-cov = "^5.0"
 pytest-timeout = "^2.3"
 ruff = ">=0.5.0,<1.0"
