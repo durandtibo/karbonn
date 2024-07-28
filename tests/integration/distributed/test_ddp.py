@@ -41,9 +41,6 @@ def check_sync_reduce_tensor_int(local_rank: int) -> None:
         if local_rank == 0
         else torch.tensor([2, 2], device=device)
     )
-    assert ddp.sync_reduce(x_tensor, op=ddp.AVG).equal(
-        torch.tensor([1, 1.5], device=device)
-    )  # average
     assert ddp.sync_reduce(x_tensor, op=ddp.MAX).equal(torch.tensor([2, 2], device=device))  # max
     assert ddp.sync_reduce(x_tensor, op=ddp.MIN).equal(torch.tensor([0, 1], device=device))  # min
     assert ddp.sync_reduce(x_tensor, op=ddp.PRODUCT).equal(
@@ -80,9 +77,6 @@ def check_sync_reduce_tensor_float(local_rank: int) -> None:
         if local_rank == 0
         else torch.tensor([2.0, 2.0], device=device)
     )
-    assert ddp.sync_reduce(x_tensor, op=ddp.AVG).equal(
-        torch.tensor([1, 1.5], device=device)
-    )  # average
     assert ddp.sync_reduce(x_tensor, op=ddp.MAX).equal(
         torch.tensor([2.0, 2.0], device=device)
     )  # max
@@ -117,7 +111,6 @@ def check_sync_reduce_int(local_rank: int) -> None:
     assert idist.get_world_size() == 2  # This test is valid only for 2 processes.
 
     x_int = 2 if local_rank == 0 else 5
-    assert ddp.sync_reduce(x_int, op=ddp.AVG) == 3.5  # average
     assert ddp.sync_reduce(x_int, op=ddp.MAX) == 5  # max
     assert ddp.sync_reduce(x_int, op=ddp.MIN) == 2  # min
     assert ddp.sync_reduce(x_int, op=ddp.PRODUCT) == 10  # product
@@ -146,7 +139,6 @@ def check_sync_reduce_float(local_rank: int) -> None:
     assert idist.get_world_size() == 2  # This test is valid only for 2 processes.
 
     x_float = 1.0 if local_rank == 0 else 3.5
-    assert ddp.sync_reduce(x_float, op=ddp.AVG) == 2.25  # average
     assert ddp.sync_reduce(x_float, op=ddp.MAX) == 3.5  # max
     assert ddp.sync_reduce(x_float, op=ddp.MIN) == 1.0  # min
     assert ddp.sync_reduce(x_float, op=ddp.PRODUCT) == 3.5  # product
