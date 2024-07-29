@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 from unittest.mock import Mock, patch
 
@@ -6,6 +8,7 @@ import torch
 from coola import objects_are_allclose, objects_are_equal
 
 from karbonn.distributed.ddp import SUM
+from karbonn.testing import tabulate_available
 from karbonn.utils.tracker import EmptyTrackerError
 from karbonn.utils.tracker.confmat import (
     BinaryConfusionMatrix,
@@ -22,6 +25,11 @@ from karbonn.utils.tracker.confmat import (
 
 
 def test_binary_confusion_matrix_repr() -> None:
+    assert isinstance(repr(BinaryConfusionMatrix()), str)
+
+
+@tabulate_available
+def test_binary_confusion_matrix_repr_tabulate() -> None:
     assert repr(BinaryConfusionMatrix()) == (
         "┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓\n"
         "┃                     ┃ predicted negative (0) ┃ predicted positive (1) ┃\n"
@@ -177,7 +185,7 @@ def test_binary_confusion_matrix_sync_update_matrix() -> None:
     meter = BinaryConfusionMatrix(torch.ones(2, 2, dtype=torch.long))
     with patch(
         "karbonn.utils.tracker.confmat.sync_reduce_",
-        lambda variable, op: variable.mul_(4),
+        lambda variable, op: variable.mul_(4),  # noqa: ARG005
     ):
         meter.all_reduce()
     assert meter.matrix.equal(torch.ones(2, 2, dtype=torch.long).mul(4))
@@ -1663,6 +1671,11 @@ def test_check_op_compatibility_multiclass_incorrect_shape() -> None:
 
 
 def test_str_binary_confusion_matrix() -> None:
+    assert isinstance(str_binary_confusion_matrix(torch.tensor([[1001, 42], [123, 789]])), str)
+
+
+@tabulate_available
+def test_str_binary_confusion_matrix_tabulate() -> None:
     assert str_binary_confusion_matrix(torch.tensor([[1001, 42], [123, 789]])) == (
         "┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓\n"
         "┃                     ┃ predicted negative (0) ┃ predicted positive (1) ┃\n"
@@ -1675,6 +1688,11 @@ def test_str_binary_confusion_matrix() -> None:
 
 
 def test_str_binary_confusion_matrix_empty() -> None:
+    assert isinstance(str_binary_confusion_matrix(torch.zeros(2, 2)), str)
+
+
+@tabulate_available
+def test_str_binary_confusion_matrix_empty_tabulate() -> None:
     assert str_binary_confusion_matrix(torch.zeros(2, 2)) == (
         "┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓\n"
         "┃                     ┃ predicted negative (0) ┃ predicted positive (1) ┃\n"

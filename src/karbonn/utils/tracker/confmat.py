@@ -1,3 +1,6 @@
+r"""Contain confusion matrices for binary labels and multiclass
+labels."""
+
 from __future__ import annotations
 
 __all__ = [
@@ -11,6 +14,7 @@ from typing import TYPE_CHECKING, Any
 
 import torch
 from torch import Tensor
+from typing_extensions import Self
 
 from karbonn.distributed.ddp import SUM, sync_reduce_
 from karbonn.utils.format import str_table
@@ -21,7 +25,7 @@ if TYPE_CHECKING:
 
 
 class BaseConfusionMatrix:
-    r"""Defines the base class to implement confusion matrix.
+    r"""Define the base class to implement confusion matrix.
 
     Args:
         matrix: The initial confusion matrix values as a
@@ -216,11 +220,10 @@ class BaseConfusionMatrix:
         r"""Update the confusion matrix with new predictions.
 
         Args:
-            prediction (``torch.Tensor`` of type long and shape
-                ``(d0, d1, ..., dn)``): Specifies the predicted labels.
-            target (``torch.Tensor`` of type long and shape
-                ``(d0, d1, ..., dn)``): Specifies the ground truth
-                labels.
+            prediction: The predicted labels as a ``torch.Tensor`` of
+                type long and shape ``(d0, d1, ..., dn)``.
+            target: The ground truth labels as a ``torch.Tensor`` of
+                type long and shape ``(d0, d1, ..., dn)``.
 
         Example usage:
 
@@ -443,7 +446,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
     def __add__(self, other: Any) -> BinaryConfusionMatrix:
         return self.add(other)
 
-    def __iadd__(self, other: Any) -> BinaryConfusionMatrix:
+    def __iadd__(self, other: Any) -> Self:
         self.add_(other)
         return self
 
@@ -1316,7 +1319,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        return MulticlassConfusionMatrix(self.matrix.clone())
+        return self.__class__(self.matrix.clone())
 
     def equal(self, other: Any) -> bool:
         r"""Indicate if two confusion matrices are equal or not.
@@ -1470,7 +1473,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
     def __add__(self, other: Any) -> MulticlassConfusionMatrix:
         return self.add(other)
 
-    def __iadd__(self, other: Any) -> MulticlassConfusionMatrix:
+    def __iadd__(self, other: Any) -> Self:
         self.add_(other)
         return self
 
@@ -1966,9 +1969,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         r"""Compute the precision for each class.
 
         Returns:
-        -------
-            ``torch.Tensor`` of type float and shape
-                ``(num_classes,)``: The precision for each class.
+            The precision for each class as a ``torch.Tensor`` of type
+                float and shape ``(num_classes,)``.
 
         Raises:
             EmptyTrackerError: if the confusion matrix is empty.
@@ -1998,11 +2000,9 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         r"""Compute the macro (a.k.a. unweighted mean) precision.
 
         Returns:
-        -------
             The macro precision.
 
         Raises:
-        ------
             EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
@@ -2025,11 +2025,9 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         r"""Compute the micro precision.
 
         Returns:
-        -------
             The micro precision.
 
         Raises:
-        ------
             EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
@@ -2062,11 +2060,9 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         r"""Compute the weighted mean (a.k.a. unweighted mean) precision.
 
         Returns:
-        -------
             The weighted mean precision.
 
         Raises:
-        ------
             EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
@@ -2089,12 +2085,10 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         r"""Compute the recall for each class.
 
         Returns:
-        -------
-            ``torch.Tensor`` of type float and shape
-                ``(num_classes,)``: The recall for each class.
+            The recall for each class as a ``torch.Tensor`` of type
+                float and shape ``(num_classes,)``.
 
         Raises:
-        ------
             EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
@@ -2145,11 +2139,9 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         r"""Compute the micro recall.
 
         Returns:
-        -------
             The micro recall.
 
         Raises:
-        ------
             EmptyTrackerError: if the confusion matrix is empty.
 
         Example usage:
