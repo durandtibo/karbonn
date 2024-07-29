@@ -14,10 +14,9 @@ __all__ = [
     "tabulate_available",
 ]
 
-from importlib.util import find_spec
 from typing import TYPE_CHECKING, Any
 
-from coola.utils.imports import decorator_package_available
+from coola.utils.imports import decorator_package_available, package_available
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -43,7 +42,7 @@ def is_ignite_available() -> bool:
 
     ```
     """
-    return find_spec("ignite") is not None
+    return package_available("ignite")
 
 
 def check_ignite() -> None:
@@ -117,7 +116,7 @@ def is_objectory_available() -> bool:
 
     ```
     """
-    return find_spec("objectory") is not None
+    return package_available("objectory")
 
 
 def check_objectory() -> None:
@@ -191,7 +190,7 @@ def is_tabulate_available() -> bool:
 
     ```
     """
-    return find_spec("tabulate") is not None
+    return package_available("tabulate")
 
 
 def check_tabulate() -> None:
