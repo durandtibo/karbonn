@@ -8,7 +8,7 @@ from typing import Any
 
 from karbonn.utils.imports import is_tabulate_available
 
-if is_tabulate_available():
+if is_tabulate_available():  # pragma: no cover
     from tabulate import tabulate
 
 
