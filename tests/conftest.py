@@ -18,7 +18,7 @@ else:  # pragma: no cover
 
 
 @pytest.fixture(scope="session")
-def parallel_gloo_2() -> Generator[idist.Parallel, None, None]:
+def parallel_gloo_2() -> Generator[idist.Parallel]:
     check_ignite()
     with idist.Parallel(
         backend="gloo",
@@ -32,7 +32,7 @@ def parallel_gloo_2() -> Generator[idist.Parallel, None, None]:
 
 
 @pytest.fixture(scope="session")
-def parallel_nccl_2() -> Generator[idist.Parallel, None, None]:
+def parallel_nccl_2() -> Generator[idist.Parallel]:
     check_ignite()
     with idist.Parallel(
         backend="nccl",

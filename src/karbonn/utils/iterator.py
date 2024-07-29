@@ -12,9 +12,7 @@ if TYPE_CHECKING:
     from torch import nn
 
 
-def get_named_modules(
-    module: nn.Module, depth: int = 0
-) -> Generator[tuple[str, nn.Module], None, None]:
+def get_named_modules(module: nn.Module, depth: int = 0) -> Generator[tuple[str, nn.Module]]:
     r"""Return an iterator over the modules, yielding both the name of
     the module as well as the module itself.
 

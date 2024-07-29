@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 @contextmanager
-def module_mode(module: nn.Module) -> Generator[None, None, None]:
+def module_mode(module: nn.Module) -> Generator[None]:
     r"""Implement a context manager that restores the mode (train or
     eval) of every submodule individually.
 
@@ -58,7 +58,7 @@ def module_mode(module: nn.Module) -> Generator[None, None, None]:
 
 
 @contextmanager
-def top_module_mode(module: nn.Module) -> Generator[None, None, None]:
+def top_module_mode(module: nn.Module) -> Generator[None]:
     r"""Implement a context manager that restores the mode (train or
     eval) of a given module.
 
