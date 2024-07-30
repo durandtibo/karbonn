@@ -83,6 +83,7 @@ def test_all_gather_tensor_varshape_not_distributed() -> None:
     assert objects_are_equal(ddp.all_gather_tensor_varshape(torch.arange(6)), [torch.arange(6)])
 
 
+@ignite_available
 @patch("karbonn.distributed.ddp.is_distributed", lambda: True)
 @patch("karbonn.distributed.ddp.idist.all_gather", lambda tensor: tensor)
 def test_all_gather_tensor_varshape_distributed() -> None:
