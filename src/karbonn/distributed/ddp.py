@@ -118,3 +118,41 @@ def sync_reduce_(tensor: Tensor, op: str) -> Tensor:
         check_ignite()
         idist.all_reduce(tensor, op=op)
     return tensor
+
+
+def all_gather_tensor_varshape(tensor: Tensor) -> list[Tensor]:
+    r"""Implement an all gather operation for variable shape tensors.
+
+    Note: the tensors can have variable shapes, but they have to have
+    the same number of dimensions. The tensor should have at least one
+    dimension.
+
+    Args:
+        tensor: The tensor to collect across participating processes.
+
+    Returns:
+        The list of collected tensors. The tensors have the same
+            device and data type as the input tensor.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.distributed import ddp
+    >>> x = torch.tensor([[0, 1, 2], [3, 4, 5]])  # process 0
+    >>> x = torch.tensor([[1], [0]])  # process 1
+    >>> ddp.all_gather_tensor_varshape(x)  # doctest: +SKIP
+    [tensor([[0, 1, 2], [3, 4, 5]]), tensor([[1], [0]])]
+
+    ```
+    """
+    if not is_distributed():
+        return [tensor]
+
+    shapes = idist.all_gather(torch.as_tensor(tensor.shape).unsqueeze(dim=0))
+    numels = shapes.prod(dim=1)
+    tensor_padded = torch.zeros(numels.max().item(), dtype=tensor.dtype, device=tensor.device)
+    tensor_padded[: tensor.numel()] = tensor.flatten()
+    tensors_padded = idist.all_gather(tensor_padded.unsqueeze(dim=0))
+    return [values[:n].view(*shape) for n, shape, values in zip(numels, shapes, tensors_padded)]
