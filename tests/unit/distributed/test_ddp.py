@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import pytest
 import torch
+from coola import objects_are_equal
 from coola.utils.tensor import get_available_devices
 
 from karbonn.distributed import ddp
@@ -70,3 +71,20 @@ def test_sync_reduce__sum_is_not_distributed(device: str) -> None:
 def test_sync_reduce__incorrect_input() -> None:
     with pytest.raises(TypeError, match="The function `sync_reduce_` only supports Tensor"):
         ddp.sync_reduce_(1, ddp.SUM)
+
+
+################################################
+#     Tests for all_gather_tensor_varshape     #
+################################################
+
+
+@patch("karbonn.distributed.ddp.is_distributed", lambda: False)
+def test_all_gather_tensor_varshape_not_distributed() -> None:
+    assert objects_are_equal(ddp.all_gather_tensor_varshape(torch.arange(6)), [torch.arange(6)])
+
+
+@ignite_available
+@patch("karbonn.distributed.ddp.is_distributed", lambda: True)
+@patch("karbonn.distributed.ddp.idist.all_gather", lambda tensor: tensor)
+def test_all_gather_tensor_varshape_distributed() -> None:
+    assert objects_are_equal(ddp.all_gather_tensor_varshape(torch.arange(6)), [torch.arange(6)])
