@@ -5,6 +5,7 @@ from unittest.mock import Mock
 
 import pytest
 import torch
+from coola import objects_are_equal
 
 from karbonn.distributed import ddp
 from karbonn.testing import (
@@ -156,6 +157,11 @@ def check_sync_reduce_float(local_rank: int) -> None:
         assert x_float == 3.5
 
 
+##################################
+#     Tests for sync_reduce_     #
+##################################
+
+
 def check_sync_reduce_inplace(local_rank: int) -> None:
     r"""Check ``sync_reduce_`` which is the in-place version of
     ``sync_reduce``.
@@ -225,6 +231,46 @@ def check_sync_reduce_inplace(local_rank: int) -> None:
         ddp.sync_reduce_(1.0, op=ddp.SUM)  # Does not support float
 
 
+################################################
+#     Tests for all_gather_tensor_varshape     #
+################################################
+
+
+def check_all_gather_tensor_varshape(local_rank: int) -> None:
+    assert idist.get_world_size() == 2
+    device = idist.device()
+
+    # 1-d tensor
+    assert objects_are_equal(
+        ddp.all_gather_tensor_varshape(
+            torch.tensor([0.0, 1.0]) if local_rank == 0 else torch.tensor([2.0, 3.0, 4.0])
+        ),
+        [
+            torch.tensor([0.0, 1.0], dtype=torch.float, device=device),
+            torch.tensor([2.0, 3.0, 4.0], dtype=torch.float, device=device),
+        ],
+    )
+
+    # 2-d tensor
+    assert objects_are_equal(
+        ddp.all_gather_tensor_varshape(
+            torch.tensor([[0, 1, 2], [3, 4, 5]]) if local_rank == 0 else torch.tensor([[1], [0]])
+        ),
+        [
+            torch.tensor([[0, 1, 2], [3, 4, 5]], dtype=torch.long, device=device),
+            torch.tensor([[1], [0]], dtype=torch.long, device=device),
+        ],
+    )
+
+    # 3-d tensor
+    assert objects_are_equal(
+        ddp.all_gather_tensor_varshape(
+            torch.ones(2, 3, 4) if local_rank == 0 else torch.ones(4, 3, 1)
+        ),
+        [torch.ones(2, 3, 4, device=device), torch.ones(4, 3, 1, device=device)],
+    )
+
+
 @pytest.mark.parametrize(
     "func",
     [
@@ -233,6 +279,7 @@ def check_sync_reduce_inplace(local_rank: int) -> None:
         check_sync_reduce_int,
         check_sync_reduce_float,
         check_sync_reduce_inplace,
+        check_all_gather_tensor_varshape,
     ],
 )
 @distributed_available
@@ -250,6 +297,7 @@ def test_sync_reduce_gloo(parallel_gloo_2: idist.Parallel, func: Callable[[int],
         check_sync_reduce_int,
         check_sync_reduce_float,
         check_sync_reduce_inplace,
+        check_all_gather_tensor_varshape,
     ],
 )
 @two_gpus_available
