@@ -34,7 +34,7 @@ def test_check_ignite_with_package() -> None:
 def test_check_ignite_without_package() -> None:
     with (
         patch("karbonn.utils.imports.is_ignite_available", lambda: False),
-        pytest.raises(RuntimeError, match="`ignite` package is required but not installed."),
+        pytest.raises(RuntimeError, match="'ignite' package is required but not installed."),
     ):
         check_ignite()
 
@@ -88,7 +88,7 @@ def test_check_objectory_with_package() -> None:
 def test_check_objectory_without_package() -> None:
     with (
         patch("karbonn.utils.imports.is_objectory_available", lambda: False),
-        pytest.raises(RuntimeError, match="`objectory` package is required but not installed."),
+        pytest.raises(RuntimeError, match="'objectory' package is required but not installed."),
     ):
         check_objectory()
 
@@ -142,7 +142,7 @@ def test_check_tabulate_with_package() -> None:
 def test_check_tabulate_without_package() -> None:
     with (
         patch("karbonn.utils.imports.is_tabulate_available", lambda: False),
-        pytest.raises(RuntimeError, match="`tabulate` package is required but not installed."),
+        pytest.raises(RuntimeError, match="'tabulate' package is required but not installed."),
     ):
         check_tabulate()
 

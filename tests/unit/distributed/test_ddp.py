@@ -69,7 +69,7 @@ def test_sync_reduce__sum_is_not_distributed(device: str) -> None:
 
 
 def test_sync_reduce__incorrect_input() -> None:
-    with pytest.raises(TypeError, match="The function `sync_reduce_` only supports Tensor"):
+    with pytest.raises(TypeError, match="sync_reduce_ only supports Tensor"):
         ddp.sync_reduce_(1, ddp.SUM)
 
 
