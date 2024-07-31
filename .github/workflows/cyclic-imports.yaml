@@ -44,6 +44,19 @@ jobs:
       - name: check karbonn.testing
         run: |
           poetry run python -c "from karbonn import testing"
+
       - name: check karbonn.utils
         run: |
           poetry run python -c "from karbonn import utils"
+      - name: check karbonn.utils.size
+        run: |
+          poetry run python -c "from karbonn.utils import size"
+      - name: check karbonn.utils.summary
+        run: |
+          poetry run python -c "from karbonn.utils import summary"
+      - name: check karbonn.utils.tensor
+        run: |
+          poetry run python -c "from karbonn.utils import tensor"
+      - name: check karbonn.utils.tracker
+        run: |
+          poetry run python -c "from karbonn.utils import tracker"
