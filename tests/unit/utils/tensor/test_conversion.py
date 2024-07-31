@@ -8,7 +8,7 @@ import torch
 from coola.testing import numpy_available
 from coola.utils import is_numpy_available
 
-from karbonn.utils.tensor import to_tensor
+from karbonn.utils.tensor.conversion import to_tensor
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
