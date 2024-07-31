@@ -6,8 +6,12 @@ from unittest.mock import Mock, patch
 import pytest
 import torch
 
-from karbonn.distributed.ddp import SUM
-from karbonn.utils.tracker import EmptyTrackerError, MeanTensorTracker
+from karbonn.distributed.ddp import MAX, MIN, SUM
+from karbonn.utils.tracker import (
+    EmptyTrackerError,
+    ExtremaTensorTracker,
+    MeanTensorTracker,
+)
 
 #######################################
 #     Tests for MeanTensorTracker     #
@@ -242,4 +246,234 @@ def test_mean_tensor_tracker_state_dict_empty() -> None:
     assert MeanTensorTracker().state_dict() == {
         "count": 0,
         "total": 0,
+    }
+
+
+########################################
+#     Tests for ExtremaTensorTracker     #
+########################################
+
+
+def test_extrema_tensor_tracker_repr() -> None:
+    assert (
+        repr(ExtremaTensorTracker(count=8, min_value=-2.0, max_value=5.0))
+        == "ExtremaTensorTracker(count=8, min_value=-2.0, max_value=5.0)"
+    )
+
+
+def test_extrema_tensor_tracker_str() -> None:
+    assert (
+        str(ExtremaTensorTracker(count=8, min_value=-2.0, max_value=5.0))
+        == "ExtremaTensorTracker(count=8, min_value=-2.0, max_value=5.0)"
+    )
+
+
+def test_extrema_tensor_tracker_str_empty() -> None:
+    assert (
+        str(ExtremaTensorTracker())
+        == "ExtremaTensorTracker(count=0, min_value=inf, max_value=-inf)"
+    )
+
+
+def test_extrema_tensor_tracker_count() -> None:
+    assert ExtremaTensorTracker(count=8).count == 8
+
+
+def test_extrema_tensor_tracker_count_empty() -> None:
+    assert ExtremaTensorTracker().count == 0
+
+
+def test_extrema_tensor_tracker_reset() -> None:
+    tracker = ExtremaTensorTracker(count=8, min_value=-2.0, max_value=5.0)
+    tracker.reset()
+    assert tracker.equal(ExtremaTensorTracker())
+
+
+def test_extrema_tensor_tracker_update() -> None:
+    tracker = ExtremaTensorTracker()
+    tracker.update(torch.arange(6, dtype=torch.float))
+    tracker.update(torch.tensor([4.0, -1.0]))
+    assert tracker.equal(ExtremaTensorTracker(count=8, min_value=-1.0, max_value=5.0))
+
+
+def test_extrema_tensor_tracker_update_1d() -> None:
+    tracker = ExtremaTensorTracker()
+    tracker.update(torch.arange(6, dtype=torch.float))
+    assert tracker.equal(ExtremaTensorTracker(count=6, min_value=0.0, max_value=5.0))
+
+
+def test_extrema_tensor_tracker_update_2d() -> None:
+    tracker = ExtremaTensorTracker()
+    tracker.update(torch.arange(6, dtype=torch.float).view(2, 3))
+    assert tracker.equal(ExtremaTensorTracker(count=6, min_value=0.0, max_value=5.0))
+
+
+def test_extrema_tensor_tracker_update_3d() -> None:
+    tracker = ExtremaTensorTracker()
+    tracker.update(torch.ones(2, 3, 4))
+    assert tracker.equal(ExtremaTensorTracker(count=24, min_value=1.0, max_value=1.0))
+
+
+def test_extrema_tensor_tracker_update_nan() -> None:
+    tracker = ExtremaTensorTracker()
+    tracker.update(torch.tensor(float("NaN")))
+    assert tracker.equal(
+        ExtremaTensorTracker(count=1, min_value=float("inf"), max_value=float("-inf"))
+    )
+
+
+def test_extrema_tensor_tracker_update_inf() -> None:
+    tracker = ExtremaTensorTracker()
+    tracker.update(torch.tensor(float("inf")))
+    assert tracker.equal(
+        ExtremaTensorTracker(count=1, min_value=float("inf"), max_value=float("inf"))
+    )
+
+
+@pytest.mark.parametrize("max_value", [0.0, 5.0])
+def test_extrema_tensor_tracker_max(max_value: float) -> None:
+    assert ExtremaTensorTracker(count=8, min_value=0.0, max_value=max_value).max() == max_value
+
+
+def test_extrema_tensor_tracker_max_empty() -> None:
+    tracker = ExtremaTensorTracker()
+    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+        tracker.max()
+
+
+@pytest.mark.parametrize("min_value", [0.0, -5.0])
+def test_extrema_tensor_tracker_min(min_value: float) -> None:
+    assert ExtremaTensorTracker(count=8, min_value=min_value, max_value=5.0).min() == min_value
+
+
+def test_extrema_tensor_tracker_min_empty() -> None:
+    tracker = ExtremaTensorTracker()
+    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+        tracker.min()
+
+
+def test_extrema_tensor_tracker_all_reduce() -> None:
+    tracker = ExtremaTensorTracker(count=6, min_value=-2.0, max_value=5.0)
+    tracker_reduced = tracker.all_reduce()
+    assert tracker_reduced is not tracker
+    assert tracker.equal(ExtremaTensorTracker(count=6, min_value=-2.0, max_value=5.0))
+    assert tracker_reduced.equal(ExtremaTensorTracker(count=6, min_value=-2.0, max_value=5.0))
+
+
+def test_extrema_tensor_tracker_all_reduce_empty() -> None:
+    tracker = ExtremaTensorTracker()
+    tracker_reduced = tracker.all_reduce()
+    assert tracker_reduced is not tracker
+    assert tracker.equal(ExtremaTensorTracker())
+    assert tracker_reduced.equal(ExtremaTensorTracker())
+
+
+def test_extrema_tensor_tracker_all_reduce_ops() -> None:
+    tracker = ExtremaTensorTracker(count=6, min_value=-2.0, max_value=5.0)
+    reduce_mock = Mock(side_effect=lambda variable, op: variable + 1)  # noqa: ARG005
+    with patch("karbonn.utils.tracker.tensor.sync_reduce", reduce_mock):
+        tracker_reduced = tracker.all_reduce()
+        assert tracker.equal(ExtremaTensorTracker(count=6, min_value=-2.0, max_value=5.0))
+        assert tracker_reduced.equal(ExtremaTensorTracker(count=7, min_value=-1.0, max_value=6.0))
+        assert reduce_mock.call_args_list == [
+            ((6, SUM), {}),
+            ((-2.0, MIN), {}),
+            ((5.0, MAX), {}),
+        ]
+
+
+def test_extrema_tensor_tracker_clone() -> None:
+    tracker = ExtremaTensorTracker(count=6, min_value=-2.0, max_value=5.0)
+    tracker_cloned = tracker.clone()
+    assert tracker_cloned is not tracker
+    assert tracker.equal(ExtremaTensorTracker(count=6, min_value=-2.0, max_value=5.0))
+    assert tracker_cloned.equal(ExtremaTensorTracker(count=6, min_value=-2.0, max_value=5.0))
+
+
+def test_extrema_tensor_tracker_clone_empty() -> None:
+    tracker = ExtremaTensorTracker()
+    tracker_cloned = tracker.clone()
+    assert tracker_cloned is not tracker
+    assert tracker.equal(ExtremaTensorTracker())
+    assert tracker_cloned.equal(ExtremaTensorTracker())
+
+
+def test_extrema_tensor_tracker_equal_true() -> None:
+    assert ExtremaTensorTracker(count=6, min_value=-2.0, max_value=5.0).equal(
+        ExtremaTensorTracker(count=6, min_value=-2.0, max_value=5.0)
+    )
+
+
+def test_extrema_tensor_tracker_equal_true_empty() -> None:
+    assert ExtremaTensorTracker().equal(ExtremaTensorTracker())
+
+
+def test_extrema_tensor_tracker_equal_false_different_count() -> None:
+    assert not ExtremaTensorTracker(count=6, min_value=-2.0, max_value=5.0).equal(
+        ExtremaTensorTracker(count=5, min_value=-2.0, max_value=5.0)
+    )
+
+
+def test_extrema_tensor_tracker_equal_false_different_min_value() -> None:
+    assert not ExtremaTensorTracker(count=6, min_value=-2.0, max_value=5.0).equal(
+        ExtremaTensorTracker(count=6, min_value=-3.0, max_value=5.0)
+    )
+
+
+def test_extrema_tensor_tracker_equal_false_different_max_value() -> None:
+    assert not ExtremaTensorTracker(count=6, min_value=-2.0, max_value=5.0).equal(
+        ExtremaTensorTracker(count=6, min_value=-2.0, max_value=6.0)
+    )
+
+
+def test_extrema_tensor_tracker_equal_false_different_type() -> None:
+    assert not ExtremaTensorTracker(count=6, min_value=-2.0, max_value=5.0).equal(1)
+
+
+def test_extrema_tensor_tracker_merge() -> None:
+    tracker = ExtremaTensorTracker(count=6, min_value=-2.0, max_value=5.0)
+    tracker_merged = tracker.merge(
+        [
+            ExtremaTensorTracker(count=4, min_value=-3.0, max_value=2.0),
+            ExtremaTensorTracker(),
+            ExtremaTensorTracker(count=2, min_value=-1.0, max_value=7.0),
+        ]
+    )
+    assert tracker.equal(ExtremaTensorTracker(count=6, min_value=-2.0, max_value=5.0))
+    assert tracker_merged.equal(ExtremaTensorTracker(count=12, min_value=-3.0, max_value=7.0))
+
+
+def test_extrema_tensor_tracker_merge_() -> None:
+    tracker = ExtremaTensorTracker(count=6, min_value=-2.0, max_value=5.0)
+    tracker.merge_(
+        [
+            ExtremaTensorTracker(count=4, min_value=-3.0, max_value=2.0),
+            ExtremaTensorTracker(),
+            ExtremaTensorTracker(count=2, min_value=-1.0, max_value=7.0),
+        ]
+    )
+    assert tracker.equal(ExtremaTensorTracker(count=12, min_value=-3.0, max_value=7.0))
+
+
+def test_extrema_tensor_tracker_load_state_dict() -> None:
+    tracker = ExtremaTensorTracker()
+    tracker.load_state_dict({"count": 6, "min_value": -2.0, "max_value": 5.0})
+    assert tracker.min() == -2.0
+    assert tracker.max() == 5.0
+    assert tracker.count == 6
+
+
+def test_extrema_tensor_tracker_state_dict() -> None:
+    assert ExtremaTensorTracker(count=6, min_value=-2.0, max_value=5.0).state_dict() == {
+        "count": 6,
+        "min_value": -2.0,
+        "max_value": 5.0,
+    }
+
+
+def test_extrema_tensor_tracker_state_dict_empty() -> None:
+    assert ExtremaTensorTracker().state_dict() == {
+        "count": 0,
+        "min_value": float("inf"),
+        "max_value": float("-inf"),
     }
