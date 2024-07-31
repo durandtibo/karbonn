@@ -8,11 +8,12 @@ __all__ = [
     "BinaryConfusionMatrix",
     "EmptyTrackerError",
     "ExponentialMovingAverage",
+    "ExtremaTensorTracker",
+    "MeanTensorTracker",
     "MovingAverage",
     "MulticlassConfusionMatrix",
     "ScalarTracker",
-    "MeanTensorTracker",
-    "ExtremaTensorTracker",
+    "TensorTracker",
 ]
 
 from karbonn.utils.tracker.average import Average
@@ -24,4 +25,8 @@ from karbonn.utils.tracker.confmat import (
 from karbonn.utils.tracker.exception import EmptyTrackerError
 from karbonn.utils.tracker.moving import ExponentialMovingAverage, MovingAverage
 from karbonn.utils.tracker.scalar import ScalarTracker
-from karbonn.utils.tracker.tensor import ExtremaTensorTracker, MeanTensorTracker
+from karbonn.utils.tracker.tensor import (
+    ExtremaTensorTracker,
+    MeanTensorTracker,
+    TensorTracker,
+)
