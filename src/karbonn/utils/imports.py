@@ -62,8 +62,8 @@ def check_ignite() -> None:
     """
     if not is_ignite_available():
         msg = (
-            "`ignite` package is required but not installed. "
-            "You can install `ignite` package with the command:\n\n"
+            "'ignite' package is required but not installed. "
+            "You can install 'ignite' package with the command:\n\n"
             "pip install pytorch-ignite\n"
         )
         raise RuntimeError(msg)
@@ -136,8 +136,8 @@ def check_objectory() -> None:
     """
     if not is_objectory_available():
         msg = (
-            "`objectory` package is required but not installed. "
-            "You can install `objectory` package with the command:\n\n"
+            "'objectory' package is required but not installed. "
+            "You can install 'objectory' package with the command:\n\n"
             "pip install objectory\n"
         )
         raise RuntimeError(msg)
@@ -210,8 +210,8 @@ def check_tabulate() -> None:
     """
     if not is_tabulate_available():
         msg = (
-            "`tabulate` package is required but not installed. "
-            "You can install `tabulate` package with the command:\n\n"
+            "'tabulate' package is required but not installed. "
+            "You can install 'tabulate' package with the command:\n\n"
             "pip install tabulate\n"
         )
         raise RuntimeError(msg)

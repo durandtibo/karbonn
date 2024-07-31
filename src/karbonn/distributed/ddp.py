@@ -111,7 +111,7 @@ def sync_reduce_(tensor: Tensor, op: str) -> Tensor:
     ```
     """
     if not torch.is_tensor(tensor):
-        msg = f"The function `sync_reduce_` only supports Tensor but received {type(tensor)}"
+        msg = f"sync_reduce_ only supports Tensor but received {type(tensor)}"
         raise TypeError(msg)
 
     if is_distributed():

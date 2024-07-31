@@ -1,4 +1,4 @@
-r"""Contain tensor utility functions."""
+r"""Contain tensor conversion utility functions."""
 
 from __future__ import annotations
 
