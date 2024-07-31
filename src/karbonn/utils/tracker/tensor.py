@@ -80,7 +80,7 @@ class MeanTensorTracker:
         >>> tracker.count
         0
         >>> tracker.total
-        0
+        0.0
 
         ```
         """
@@ -178,7 +178,7 @@ class MeanTensorTracker:
         >>> tracker = MeanTensorTracker()
         >>> tracker.update(torch.arange(6))
         >>> tracker.sum()
-        15
+        15.0
 
         ```
         """
@@ -237,7 +237,7 @@ class MeanTensorTracker:
         >>> tracker.sum()
         18.0
         >>> tracker_cloned.sum()
-        15
+        15.0
 
         ```
         """
