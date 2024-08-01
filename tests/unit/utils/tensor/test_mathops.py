@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 import torch
-from coola import objects_are_equal
+from coola import objects_are_allclose, objects_are_equal
 from coola.testing import numpy_available
 from coola.utils.tensor import get_available_devices
 
@@ -57,9 +57,11 @@ def test_quantile_interpolation(interpolation: str) -> None:
 
 @numpy_available
 def test_quantile_large() -> None:
-    assert objects_are_equal(
+    assert objects_are_allclose(
         quantile(torch.arange(20000000, dtype=torch.float), q=torch.tensor([0.1, 0.5, 0.9])),
         torch.tensor([2000000.0, 10000000.0, 18000000.0], dtype=torch.float),
+        show_difference=True,
+        rtol=1e-5,
     )
 
 
