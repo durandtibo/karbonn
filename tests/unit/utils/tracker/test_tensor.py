@@ -5,12 +5,14 @@ from unittest.mock import Mock, patch
 
 import pytest
 import torch
+from coola import objects_are_equal
 
 from karbonn.distributed.ddp import MAX, MIN, SUM
 from karbonn.utils.tracker import (
     EmptyTrackerError,
     ExtremaTensorTracker,
     MeanTensorTracker,
+    TensorTracker,
 )
 
 #######################################
@@ -477,3 +479,323 @@ def test_extrema_tensor_tracker_state_dict_empty() -> None:
         "min_value": float("inf"),
         "max_value": float("-inf"),
     }
+
+
+###################################
+#     Tests for TensorTracker     #
+###################################
+
+
+def test_tensor_tracker_repr() -> None:
+    assert repr(TensorTracker(torch.arange(6))) == "TensorTracker(count=6)"
+
+
+def test_tensor_tracker_str() -> None:
+    assert repr(TensorTracker(torch.arange(6))) == "TensorTracker(count=6)"
+
+
+def test_tensor_tracker_str_empty() -> None:
+    assert repr(TensorTracker()) == "TensorTracker(count=0)"
+
+
+def test_tensor_tracker_count() -> None:
+    assert TensorTracker(torch.arange(6)).count == 6
+
+
+def test_tensor_tracker_count_empty() -> None:
+    assert TensorTracker().count == 0
+
+
+def test_tensor_tracker_reset() -> None:
+    tracker = TensorTracker(torch.arange(6))
+    tracker.reset()
+    assert tracker.equal(TensorTracker())
+
+
+def test_tensor_tracker_update() -> None:
+    tracker = TensorTracker()
+    tracker.update(torch.arange(6))
+    tracker.update(torch.tensor([4.0, 1.0]))
+    assert tracker.equal(
+        TensorTracker(torch.tensor([0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 4.0, 1.0], dtype=torch.float))
+    )
+
+
+def test_tensor_tracker_update_1d() -> None:
+    tracker = TensorTracker()
+    tracker.update(torch.tensor([0.0, 1.0, 2.0, 3.0, 4.0, 5.0], dtype=torch.float))
+    assert tracker.equal(
+        TensorTracker(torch.tensor([0.0, 1.0, 2.0, 3.0, 4.0, 5.0], dtype=torch.float))
+    )
+
+
+def test_tensor_tracker_update_2d() -> None:
+    tracker = TensorTracker()
+    tracker.update(torch.tensor([[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]], dtype=torch.float))
+    assert tracker.equal(
+        TensorTracker(torch.tensor([0.0, 1.0, 2.0, 3.0, 4.0, 5.0], dtype=torch.float))
+    )
+
+
+def test_tensor_tracker_update_3d() -> None:
+    tracker = TensorTracker()
+    tracker.update(torch.ones(2, 3, 4))
+    assert tracker.equal(TensorTracker(torch.ones(24)))
+
+
+def test_tensor_tracker_update_float() -> None:
+    tracker = TensorTracker()
+    tracker.update(torch.tensor([4.0, 1.0], dtype=torch.float))
+    assert tracker.equal(TensorTracker(torch.tensor([4.0, 1.0], dtype=torch.float)))
+
+
+def test_tensor_tracker_update_long() -> None:
+    tracker = TensorTracker()
+    tracker.update(torch.tensor([4, 1], dtype=torch.long))
+    assert tracker.equal(TensorTracker(torch.tensor([4, 1], dtype=torch.long)))
+
+
+def test_tensor_tracker_update_nan() -> None:
+    tracker = TensorTracker()
+    tracker.update(torch.tensor(float("NaN")))
+    assert math.isnan(tracker.sum())
+    assert tracker.count == 1
+
+
+def test_tensor_tracker_update_inf() -> None:
+    tracker = TensorTracker()
+    tracker.update(torch.tensor(float("inf")))
+    assert tracker.equal(TensorTracker(torch.tensor([float("inf")])))
+
+
+def test_tensor_tracker_average_float() -> None:
+    assert TensorTracker(torch.tensor([-2.0, 1.0, 7.0], dtype=torch.float)).average() == 2.0
+
+
+def test_tensor_tracker_average_long() -> None:
+    assert TensorTracker(torch.tensor([-2, 1, 7], dtype=torch.long)).average() == 2.0
+
+
+def test_tensor_tracker_average_empty() -> None:
+    tracker = TensorTracker()
+    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+        tracker.average()
+
+
+def test_tensor_tracker_max_float() -> None:
+    max_value = TensorTracker(torch.tensor([-3.0, 1.0, 7.0], dtype=torch.float)).max()
+    assert max_value == 7.0
+    assert isinstance(max_value, float)
+
+
+def test_tensor_tracker_max_long() -> None:
+    max_value = TensorTracker(torch.tensor([-3, 1, 7], dtype=torch.long)).max()
+    assert max_value == 7
+    assert isinstance(max_value, int)
+
+
+def test_tensor_tracker_max_empty() -> None:
+    tracker = TensorTracker()
+    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+        tracker.max()
+
+
+def test_tensor_tracker_mean_float() -> None:
+    assert TensorTracker(torch.tensor([-2.0, 1.0, 7.0], dtype=torch.float)).mean() == 2.0
+
+
+def test_tensor_tracker_mean_long() -> None:
+    assert TensorTracker(torch.tensor([-2, 1, 7], dtype=torch.long)).mean() == 2.0
+
+
+def test_tensor_tracker_mean_empty() -> None:
+    tracker = TensorTracker()
+    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+        tracker.mean()
+
+
+def test_tensor_tracker_median_float() -> None:
+    assert TensorTracker(torch.tensor([-3.0, 1.0, 7.0], dtype=torch.float)).median() == 1.0
+
+
+def test_tensor_tracker_median_long() -> None:
+    assert TensorTracker(torch.tensor([-3, 1, 7], dtype=torch.long)).median() == 1
+
+
+def test_tensor_tracker_median_empty() -> None:
+    tracker = TensorTracker()
+    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+        tracker.median()
+
+
+def test_tensor_tracker_min_float() -> None:
+    min_value = TensorTracker(torch.tensor([-3.0, 1.0, 7.0], dtype=torch.float)).min()
+    assert min_value == -3.0
+    assert isinstance(min_value, float)
+
+
+def test_tensor_tracker_min_long() -> None:
+    min_value = TensorTracker(torch.tensor([-3, 1, 7], dtype=torch.long)).min()
+    assert min_value == -3
+    assert isinstance(min_value, int)
+
+
+def test_tensor_tracker_min_empty() -> None:
+    tracker = TensorTracker()
+    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+        tracker.min()
+
+
+def test_tensor_tracker_quantile_float() -> None:
+    assert (
+        TensorTracker(torch.arange(11, dtype=torch.float))
+        .quantile(q=torch.tensor([0.5, 0.9], dtype=torch.float))
+        .equal(torch.tensor([5.0, 9.0], dtype=torch.float))
+    )
+
+
+def test_tensor_tracker_quantile_long() -> None:
+    assert (
+        TensorTracker(torch.arange(11, dtype=torch.long))
+        .quantile(q=torch.tensor([0.5, 0.9], dtype=torch.float))
+        .equal(torch.tensor([5.0, 9.0], dtype=torch.float))
+    )
+
+
+def test_tensor_tracker_quantile_empty() -> None:
+    tracker = TensorTracker()
+    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+        tracker.quantile(q=torch.tensor([0.5, 0.9]))
+
+
+def test_tensor_tracker_std_float() -> None:
+    assert TensorTracker(torch.ones(3, dtype=torch.float)).std() == 0.0
+
+
+def test_tensor_tracker_std_long() -> None:
+    assert TensorTracker(torch.ones(3, dtype=torch.long)).std() == 0.0
+
+
+def test_tensor_tracker_std_empty() -> None:
+    tracker = TensorTracker()
+    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+        tracker.std()
+
+
+def test_tensor_tracker_sum_float() -> None:
+    total = TensorTracker(torch.tensor([-3.0, 1.0, 7.0], dtype=torch.float)).sum()
+    assert total == 5.0
+    assert isinstance(total, float)
+
+
+def test_tensor_tracker_sum_long() -> None:
+    total = TensorTracker(torch.arange(6)).sum()
+    assert total == 15
+    assert isinstance(total, int)
+
+
+def test_tensor_tracker_sum_empty() -> None:
+    tracker = TensorTracker()
+    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+        tracker.sum()
+
+
+def test_tensor_tracker_all_reduce() -> None:
+    tracker = TensorTracker(torch.tensor([-3.0, 1.0, 7.0], dtype=torch.float))
+    tracker_reduced = tracker.all_reduce()
+    assert tracker_reduced is not tracker
+    assert tracker.equal(TensorTracker(torch.tensor([-3.0, 1.0, 7.0], dtype=torch.float)))
+    assert tracker_reduced.equal(TensorTracker(torch.tensor([-3.0, 1.0, 7.0], dtype=torch.float)))
+
+
+def test_tensor_tracker_all_reduce_empty() -> None:
+    tracker = TensorTracker()
+    tracker_reduced = tracker.all_reduce()
+    assert tracker_reduced is not tracker
+    assert tracker.equal(TensorTracker())
+    assert tracker_reduced.equal(TensorTracker())
+
+
+def test_tensor_tracker_clone() -> None:
+    tracker = TensorTracker(torch.tensor([-3.0, 1.0, 7.0], dtype=torch.float))
+    tracker_cloned = tracker.clone()
+    assert tracker_cloned is not tracker
+    assert tracker.equal(TensorTracker(torch.tensor([-3.0, 1.0, 7.0], dtype=torch.float)))
+    assert tracker_cloned.equal(TensorTracker(torch.tensor([-3.0, 1.0, 7.0], dtype=torch.float)))
+
+
+def test_tensor_tracker_clone_empty() -> None:
+    tracker = TensorTracker()
+    tracker_cloned = tracker.clone()
+    assert tracker_cloned is not tracker
+    assert tracker.equal(TensorTracker())
+    assert tracker_cloned.equal(TensorTracker())
+
+
+def test_tensor_tracker_equal_true() -> None:
+    assert TensorTracker(torch.tensor([-3.0, 1.0, 7.0], dtype=torch.float)).equal(
+        TensorTracker(torch.tensor([-3.0, 1.0, 7.0], dtype=torch.float))
+    )
+
+
+def test_tensor_tracker_equal_true_empty() -> None:
+    assert TensorTracker().equal(TensorTracker())
+
+
+def test_tensor_tracker_equal_false_different_values() -> None:
+    assert not TensorTracker(torch.tensor([-3.0, 1.0, 7.0], dtype=torch.float)).equal(
+        TensorTracker(torch.tensor([-3.0, 1.0, 7.0, 2.0], dtype=torch.float))
+    )
+
+
+def test_tensor_tracker_equal_false_different_type() -> None:
+    assert not TensorTracker(torch.tensor([-3.0, 1.0, 7.0], dtype=torch.float)).equal(1)
+
+
+def test_tensor_tracker_merge() -> None:
+    tracker = TensorTracker(torch.tensor([-3.0, 1.0, 7.0], dtype=torch.float))
+    tracker_merged = tracker.merge(
+        [
+            TensorTracker(torch.tensor([2.0, 5.0], dtype=torch.float)),
+            TensorTracker(),
+            TensorTracker(torch.tensor([-1.0], dtype=torch.float)),
+        ]
+    )
+    assert tracker.equal(TensorTracker(torch.tensor([-3.0, 1.0, 7.0], dtype=torch.float)))
+    assert tracker_merged.equal(
+        TensorTracker(torch.tensor([-3.0, 1.0, 7.0, 2.0, 5.0, -1.0], dtype=torch.float))
+    )
+    assert tracker_merged.count == 6
+
+
+def test_tensor_tracker_merge_() -> None:
+    tracker = TensorTracker(torch.tensor([-3.0, 1.0, 7.0], dtype=torch.float))
+    tracker.merge_(
+        [
+            TensorTracker(torch.tensor([2.0, 5.0], dtype=torch.float)),
+            TensorTracker(),
+            TensorTracker(torch.tensor([-1.0], dtype=torch.float)),
+        ]
+    )
+    assert tracker.equal(
+        TensorTracker(torch.tensor([-3.0, 1.0, 7.0, 2.0, 5.0, -1.0], dtype=torch.float))
+    )
+    assert tracker.count == 6
+
+
+def test_tensor_tracker_load_state_dict() -> None:
+    tracker = TensorTracker()
+    tracker.load_state_dict({"values": torch.tensor([-3.0, 1.0, 7.0], dtype=torch.float)})
+    assert tracker.equal(TensorTracker(torch.tensor([-3.0, 1.0, 7.0], dtype=torch.float)))
+    assert tracker.count == 3
+
+
+def test_tensor_tracker_state_dict() -> None:
+    assert objects_are_equal(
+        TensorTracker(torch.tensor([-3.0, 1.0, 7.0], dtype=torch.float)).state_dict(),
+        {"values": torch.tensor([-3.0, 1.0, 7.0], dtype=torch.float)},
+    )
+
+
+def test_tensor_tracker_state_dict_empty() -> None:
+    assert objects_are_equal(TensorTracker().state_dict(), {"values": torch.tensor([])})

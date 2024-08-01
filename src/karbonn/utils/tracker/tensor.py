@@ -10,6 +10,7 @@ import torch
 from coola import objects_are_equal
 
 from karbonn.distributed.ddp import MAX, MIN, SUM, sync_reduce
+from karbonn.utils.tensor import FlattenBuffer, quantile
 from karbonn.utils.tracker.exception import EmptyTrackerError
 
 if TYPE_CHECKING:
@@ -768,7 +769,7 @@ class TensorTracker:
     """
 
     def __init__(self, values: Tensor | None = None) -> None:
-        self._values = LazyFlattedTensor(values)
+        self._values = FlattenBuffer(values)
         self._count = self._values.numel()
 
     def __repr__(self) -> str:
@@ -958,18 +959,17 @@ class TensorTracker:
         r"""Compute the ``q``-th quantiles.
 
         Args:
-            q (``torch.Tensor`` of type float and shape
-                ``(num_q_values,)``): Specifies the ``q``-values in
-                the range ``[0, 1]``.
-            method (str, optional): Specifies the interpolation
-                method to use when the desired quantile lies between
-                two data points. Can be ``'linear'``, ``'lower'``,
-                ``'higher'``, ``'midpoint'`` and ``'nearest'``.
-                Default: ``'linear'``.
+            q: The ``q``-values in the range ``[0, 1]`` as a
+                ``torch.Tensor`` of type float and shape
+                ``(num_q_values,)``.
+            method: The interpolation method to use when the desired
+                quantile lies between two data points.
+                Can be ``'linear'``, ``'lower'``, ``'higher'``,
+                ``'midpoint'``, and ``'nearest'``.
 
         Returns:
-            ``torch.Tensor`` of shape ``(num_q_values,)``: The
-                ``q``-th quantiles.
+            The ``q``-th quantiles as a ``torch.Tensor`` of shape
+                ``(num_q_values,)``
 
         Raises:
             EmptyTrackerError: if the tracker is empty.
@@ -990,7 +990,7 @@ class TensorTracker:
         if not self._count:
             msg = "The tracker is empty"
             raise EmptyTrackerError(msg)
-        return scalable_quantile(self._values.values().float(), q=q, method=method)
+        return quantile(self._values.values().float(), q=q, method=method)
 
     def std(self) -> float:
         r"""Get the standard deviation value.
