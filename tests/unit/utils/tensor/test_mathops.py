@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 import torch
 from coola import objects_are_allclose, objects_are_equal
-from coola.testing import numpy_available
+from coola.testing import numpy_available, torch_numpy_available
 from coola.utils.tensor import get_available_devices
 
 from karbonn.utils.tensor import quantile, quantile_numpy
@@ -55,7 +55,7 @@ def test_quantile_interpolation(interpolation: str) -> None:
     )
 
 
-@numpy_available
+@torch_numpy_available
 def test_quantile_large() -> None:
     assert objects_are_allclose(
         quantile(torch.arange(20000000, dtype=torch.float), q=torch.tensor([0.1, 0.5, 0.9])),
@@ -83,7 +83,7 @@ def test_quantile_compatibility(device: str, interpolation: str) -> None:
 ####################################
 
 
-@numpy_available
+@torch_numpy_available
 @pytest.mark.parametrize("dtype", DTYPES)
 def test_quantile_numpy_dtype(dtype: torch.dtype) -> None:
     assert objects_are_equal(
@@ -92,7 +92,7 @@ def test_quantile_numpy_dtype(dtype: torch.dtype) -> None:
     )
 
 
-@numpy_available
+@torch_numpy_available
 @pytest.mark.parametrize("device", get_available_devices())
 def test_quantile_numpy_device(device: str) -> None:
     device = torch.device(device)
@@ -102,7 +102,7 @@ def test_quantile_numpy_device(device: str) -> None:
     )
 
 
-@numpy_available
+@torch_numpy_available
 def test_quantile_numpy_q_multiple() -> None:
     assert objects_are_equal(
         quantile_numpy(torch.arange(11), q=torch.tensor([0.1, 0.5, 0.9])),
@@ -110,7 +110,7 @@ def test_quantile_numpy_q_multiple() -> None:
     )
 
 
-@numpy_available
+@torch_numpy_available
 @pytest.mark.parametrize("interpolation", QUANTILE_INTERPOLATIONS)
 def test_quantile_numpy_interpolation(interpolation: str) -> None:
     assert objects_are_equal(
