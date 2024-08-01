@@ -48,13 +48,13 @@ def test_binary_confusion_matrix_str() -> None:
 
 def test_binary_confusion_matrix_init_default() -> None:
     meter = BinaryConfusionMatrix()
-    assert objects_are_equal(meter.matrix,torch.zeros(2, 2, dtype=torch.long))
+    assert objects_are_equal(meter.matrix, torch.zeros(2, 2, dtype=torch.long))
     assert meter.num_predictions == 0
 
 
 def test_binary_confusion_matrix_init() -> None:
     meter = BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
-    assert objects_are_equal(meter.matrix,torch.tensor([[3, 2], [1, 4]]))
+    assert objects_are_equal(meter.matrix, torch.tensor([[3, 2], [1, 4]]))
     assert meter.num_predictions == 10
 
 
