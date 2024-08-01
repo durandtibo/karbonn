@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import pytest
 import torch
+from coola import objects_are_allclose, objects_are_equal
 from coola.utils.tensor import get_available_devices
 
 from karbonn import GeneralRobustRegressionLoss
@@ -121,112 +122,134 @@ def test_general_robust_regression_loss_forward_3d(
 
 def test_general_robust_regression_loss_forward_alpha_2_scale_1() -> None:
     criterion = GeneralRobustRegressionLoss(alpha=2.0, scale=1.0)
-    assert criterion(
-        prediction=torch.ones(2, 3, dtype=torch.float),
-        target=-torch.ones(2, 3, dtype=torch.float),
-    ).equal(torch.tensor(4.0))
+    assert objects_are_equal(
+        criterion(
+            prediction=torch.ones(2, 3, dtype=torch.float),
+            target=-torch.ones(2, 3, dtype=torch.float),
+        ),
+        torch.tensor(4.0),
+    )
 
 
 def test_general_robust_regression_loss_forward_alpha_2_scale_2() -> None:
     criterion = GeneralRobustRegressionLoss(alpha=2.0, scale=2.0)
-    assert criterion(
-        prediction=torch.ones(2, 3, dtype=torch.float),
-        target=-torch.ones(2, 3, dtype=torch.float),
-    ).equal(torch.tensor(1.0))
+    assert objects_are_equal(
+        criterion(
+            prediction=torch.ones(2, 3, dtype=torch.float),
+            target=-torch.ones(2, 3, dtype=torch.float),
+        ),
+        torch.tensor(1.0),
+    )
 
 
 def test_general_robust_regression_loss_forward_alpha_1_scale_1() -> None:
     criterion = GeneralRobustRegressionLoss(alpha=1.0, scale=1.0)
-    assert criterion(
-        prediction=torch.ones(2, 3, dtype=torch.float),
-        target=-torch.ones(2, 3, dtype=torch.float),
-    ).allclose(
+    assert objects_are_allclose(
+        criterion(
+            prediction=torch.ones(2, 3, dtype=torch.float),
+            target=-torch.ones(2, 3, dtype=torch.float),
+        ),
         torch.tensor(1.2360679774997898),
     )
 
 
 def test_general_robust_regression_loss_forward_alpha_1_scale_2() -> None:
     criterion = GeneralRobustRegressionLoss(alpha=1.0, scale=2.0)
-    assert criterion(
-        prediction=torch.ones(2, 3, dtype=torch.float),
-        target=-torch.ones(2, 3, dtype=torch.float),
-    ).allclose(
+    assert objects_are_allclose(
+        criterion(
+            prediction=torch.ones(2, 3, dtype=torch.float),
+            target=-torch.ones(2, 3, dtype=torch.float),
+        ),
         torch.tensor(0.41421356237309515),
     )
 
 
 def test_general_robust_regression_loss_forward_alpha_0_scale_1() -> None:
     criterion = GeneralRobustRegressionLoss(alpha=0.0, scale=1.0)
-    assert criterion(
-        prediction=torch.ones(2, 3, dtype=torch.float),
-        target=-torch.ones(2, 3, dtype=torch.float),
-    ).allclose(
+    assert objects_are_allclose(
+        criterion(
+            prediction=torch.ones(2, 3, dtype=torch.float),
+            target=-torch.ones(2, 3, dtype=torch.float),
+        ),
         torch.tensor(1.0986122886681098),
     )
 
 
 def test_general_robust_regression_loss_forward_alpha_0_scale_2() -> None:
     criterion = GeneralRobustRegressionLoss(alpha=0.0, scale=2.0)
-    assert criterion(
-        prediction=torch.ones(2, 3, dtype=torch.float),
-        target=-torch.ones(2, 3, dtype=torch.float),
-    ).allclose(
+    assert objects_are_allclose(
+        criterion(
+            prediction=torch.ones(2, 3, dtype=torch.float),
+            target=-torch.ones(2, 3, dtype=torch.float),
+        ),
         torch.tensor(0.4054651081081644),
     )
 
 
 def test_general_robust_regression_loss_forward_alpha_minus_2_scale_1() -> None:
     criterion = GeneralRobustRegressionLoss(alpha=-2.0, scale=1.0)
-    assert criterion(
-        prediction=torch.ones(2, 3, dtype=torch.float),
-        target=-torch.ones(2, 3, dtype=torch.float),
-    ).allclose(
+    assert objects_are_allclose(
+        criterion(
+            prediction=torch.ones(2, 3, dtype=torch.float),
+            target=-torch.ones(2, 3, dtype=torch.float),
+        ),
         torch.tensor(1.0),
     )
 
 
 def test_general_robust_regression_loss_forward_alpha_minus_2_scale_2() -> None:
     criterion = GeneralRobustRegressionLoss(alpha=-2.0, scale=2.0)
-    assert criterion(
-        prediction=torch.ones(2, 3, dtype=torch.float),
-        target=-torch.ones(2, 3, dtype=torch.float),
-    ).allclose(
+    assert objects_are_allclose(
+        criterion(
+            prediction=torch.ones(2, 3, dtype=torch.float),
+            target=-torch.ones(2, 3, dtype=torch.float),
+        ),
         torch.tensor(0.4),
     )
 
 
 def test_general_robust_regression_loss_forward_reduction_mean() -> None:
     criterion = GeneralRobustRegressionLoss(alpha=2.0, scale=1.0, reduction="mean")
-    assert criterion(
-        prediction=torch.tensor([[0, 1, 2], [2, 1, 0]], dtype=torch.float),
-        target=torch.tensor([[0, 1, 2], [1, 1, 1]], dtype=torch.float),
-    ).allclose(
+    assert objects_are_allclose(
+        criterion(
+            prediction=torch.tensor([[0, 1, 2], [2, 1, 0]], dtype=torch.float),
+            target=torch.tensor([[0, 1, 2], [1, 1, 1]], dtype=torch.float),
+        ),
         torch.tensor(1 / 3),
     )
 
 
 def test_general_robust_regression_loss_forward_reduction_sum() -> None:
     criterion = GeneralRobustRegressionLoss(alpha=2.0, scale=1.0, reduction="sum")
-    assert criterion(
-        prediction=torch.tensor([[0, 1, 2], [2, 1, 0]], dtype=torch.float),
-        target=torch.tensor([[0, 1, 2], [1, 1, 1]], dtype=torch.float),
-    ).equal(torch.tensor(2.0))
+    assert objects_are_equal(
+        criterion(
+            prediction=torch.tensor([[0, 1, 2], [2, 1, 0]], dtype=torch.float),
+            target=torch.tensor([[0, 1, 2], [1, 1, 1]], dtype=torch.float),
+        ),
+        torch.tensor(2.0),
+    )
 
 
 def test_general_robust_regression_loss_forward_reduction_none() -> None:
     criterion = GeneralRobustRegressionLoss(alpha=2.0, scale=1.0, reduction="none")
-    assert criterion(
-        prediction=torch.tensor([[0, 1, 2], [2, 1, 0]], dtype=torch.float),
-        target=torch.tensor([[0, 1, 2], [1, 1, 1]], dtype=torch.float),
-    ).equal(torch.tensor([[0.0, 0.0, 0.0], [1.0, 0.0, 1.0]]))
+    assert objects_are_equal(
+        criterion(
+            prediction=torch.tensor([[0, 1, 2], [2, 1, 0]], dtype=torch.float),
+            target=torch.tensor([[0, 1, 2], [1, 1, 1]], dtype=torch.float),
+        ),
+        torch.tensor([[0.0, 0.0, 0.0], [1.0, 0.0, 1.0]]),
+    )
 
 
 def test_general_robust_regression_loss_forward_max() -> None:
     criterion = GeneralRobustRegressionLoss(alpha=2.0, scale=1.0, max=0.5, reduction="none")
-    assert criterion(
-        prediction=torch.tensor([[0, 1, 2], [2, 1, 0]], dtype=torch.float),
-        target=torch.tensor([[0, 1, 2], [1, 1, 1]], dtype=torch.float),
-    ).equal(torch.tensor([[0.0, 0.0, 0.0], [0.5, 0.0, 0.5]]))
+    assert objects_are_equal(
+        criterion(
+            prediction=torch.tensor([[0, 1, 2], [2, 1, 0]], dtype=torch.float),
+            target=torch.tensor([[0, 1, 2], [1, 1, 1]], dtype=torch.float),
+        ),
+        torch.tensor([[0.0, 0.0, 0.0], [0.5, 0.0, 0.5]]),
+    )
 
 
 @pytest.mark.parametrize("alpha", [1.0, 2.0])
