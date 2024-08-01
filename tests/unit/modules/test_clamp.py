@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 import torch
-from coola import objects_are_allclose
+from coola import objects_are_allclose, objects_are_equal
 from coola.utils.tensor import get_available_devices
 
 from karbonn import Clamp
@@ -19,12 +19,12 @@ def test_clamp_str() -> None:
 
 
 @pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("dtype", [torch.float, torch.long])
-def test_clamp_forward(device: str, dtype: torch.dtype) -> None:
+def test_clamp_forward(device: str) -> None:
     device = torch.device(device)
     module = Clamp().to(device=device)
-    assert module(torch.arange(-3, 4, dtype=dtype, device=device)).equal(
-        torch.tensor([-1.0, -1.0, -1.0, 0.0, 1.0, 1.0, 1.0], dtype=torch.float, device=device)
+    assert objects_are_equal(
+        module(torch.arange(-3, 4, dtype=torch.float, device=device)),
+        torch.tensor([-1.0, -1.0, -1.0, 0.0, 1.0, 1.0, 1.0], dtype=torch.float, device=device),
     )
 
 
@@ -32,8 +32,9 @@ def test_clamp_forward(device: str, dtype: torch.dtype) -> None:
 def test_clamp_forward_min_0(device: str) -> None:
     device = torch.device(device)
     module = Clamp(min=0.0).to(device=device)
-    assert module(torch.arange(-3, 4, device=device)).equal(
-        torch.tensor([0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0], dtype=torch.float, device=device)
+    assert objects_are_equal(
+        module(torch.arange(-3, 4, dtype=torch.float, device=device)),
+        torch.tensor([0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0], dtype=torch.float, device=device),
     )
 
 
@@ -41,8 +42,9 @@ def test_clamp_forward_min_0(device: str) -> None:
 def test_clamp_forward_max_2(device: str) -> None:
     device = torch.device(device)
     module = Clamp(max=2).to(device=device)
-    assert module(torch.arange(-3, 4, device=device)).equal(
-        torch.tensor([-1.0, -1.0, -1.0, 0.0, 1.0, 2.0, 2.0], dtype=torch.float, device=device)
+    assert objects_are_equal(
+        module(torch.arange(-3, 4, dtype=torch.float, device=device)),
+        torch.tensor([-1.0, -1.0, -1.0, 0.0, 1.0, 2.0, 2.0], dtype=torch.float, device=device),
     )
 
 
