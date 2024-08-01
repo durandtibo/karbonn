@@ -7,7 +7,7 @@ __all__ = ["quantile", "quantile_numpy"]
 from unittest.mock import Mock
 
 import torch
-from coola.utils import check_numpy, is_numpy_available
+from coola.utils.imports import check_torch_numpy, is_numpy_available
 from torch import Tensor
 
 if is_numpy_available():
@@ -82,7 +82,8 @@ def quantile_numpy(
             ``(num_q_values,)``.
 
     Raises:
-        RuntimeError: if ``numpy`` is not installed.
+        RuntimeError: if ``numpy`` is not installed or not compatible
+            with ``torch``.
 
     Example usage:
 
@@ -95,7 +96,7 @@ def quantile_numpy(
 
     ```
     """
-    check_numpy()
+    check_torch_numpy()
     return torch.from_numpy(
         np.quantile(
             tensor.detach().cpu().numpy(),
