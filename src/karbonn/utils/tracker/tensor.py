@@ -733,7 +733,9 @@ class ExtremaTensorTracker:
 class TensorTracker:
     r"""Implement a tracker to compute some stats on ``torch.Tensor``s.
 
-    This tracker has a linear space complexity as its store all the values.
+    This tracker has a linear space complexity as its store all the
+    values. You cannot use this tracker if you want to track a large
+    number of values that cannot be store in memory.
 
     Args:
         values: The initial values. The tensor is flattened if
