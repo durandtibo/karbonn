@@ -60,7 +60,6 @@ def test_quantile_large() -> None:
     assert objects_are_allclose(
         quantile(torch.arange(20000000, dtype=torch.float), q=torch.tensor([0.1, 0.5, 0.9])),
         torch.tensor([2000000.0, 10000000.0, 18000000.0], dtype=torch.float),
-        show_difference=True,
         rtol=1e-5,
     )
 

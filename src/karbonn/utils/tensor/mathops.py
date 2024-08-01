@@ -7,8 +7,7 @@ __all__ = ["quantile", "quantile_numpy"]
 from unittest.mock import Mock
 
 import torch
-from coola.utils import is_numpy_available
-from coola.utils.imports import check_torch_numpy
+from coola.utils.imports import check_torch_numpy, is_numpy_available
 from torch import Tensor
 
 if is_numpy_available():
