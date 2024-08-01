@@ -957,15 +957,15 @@ class TensorTracker:
             raise EmptyTrackerError(msg)
         return self._values.values().min().item()
 
-    def quantile(self, q: Tensor, method: str = "linear") -> Tensor:
+    def quantile(self, q: Tensor, interpolation: str = "linear") -> Tensor:
         r"""Compute the ``q``-th quantiles.
 
         Args:
             q: The ``q``-values in the range ``[0, 1]`` as a
                 ``torch.Tensor`` of type float and shape
                 ``(num_q_values,)``.
-            method: The interpolation method to use when the desired
-                quantile lies between two data points.
+            interpolation: The interpolation method to use when the
+                desired quantile lies between two data points.
                 Can be ``'linear'``, ``'lower'``, ``'higher'``,
                 ``'midpoint'``, and ``'nearest'``.
 
@@ -992,7 +992,7 @@ class TensorTracker:
         if not self._count:
             msg = "The tracker is empty"
             raise EmptyTrackerError(msg)
-        return quantile(self._values.values().float(), q=q, method=method)
+        return quantile(self._values.values().float(), q=q, interpolation=interpolation)
 
     def std(self) -> float:
         r"""Get the standard deviation value.
