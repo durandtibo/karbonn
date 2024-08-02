@@ -83,15 +83,15 @@ def test_binary_confusion_matrix_num_classes() -> None:
 
 
 def test_binary_confusion_matrix_all_reduce() -> None:
-    meter = BinaryConfusionMatrix(torch.ones(2, 2, dtype=torch.long))
-    meter.all_reduce()
+    meter = BinaryConfusionMatrix(torch.ones(2, 2, dtype=torch.long)).all_reduce()
     assert meter.matrix.equal(torch.ones(2, 2, dtype=torch.long))
     assert meter.num_predictions == 4
 
 
 def test_binary_confusion_matrix_all_reduce_sum_reduce() -> None:
     meter = BinaryConfusionMatrix(torch.ones(2, 2, dtype=torch.long))
-    with patch("karbonn.utils.tracker.confmat.sync_reduce_") as reduce_mock:
+    reduce_mock = Mock(return_value=torch.ones(2, 2, dtype=torch.long))
+    with patch("karbonn.utils.tracker.confmat.sync_reduce", reduce_mock):
         meter.all_reduce()
         assert objects_are_equal(
             reduce_mock.call_args.args, (torch.ones(2, 2, dtype=torch.long), SUM)
@@ -182,12 +182,11 @@ def test_binary_confusion_matrix_reset() -> None:
 
 
 def test_binary_confusion_matrix_sync_update_matrix() -> None:
-    meter = BinaryConfusionMatrix(torch.ones(2, 2, dtype=torch.long))
     with patch(
-        "karbonn.utils.tracker.confmat.sync_reduce_",
+        "karbonn.utils.tracker.confmat.sync_reduce",
         lambda variable, op: variable.mul_(4),  # noqa: ARG005
     ):
-        meter.all_reduce()
+        meter = BinaryConfusionMatrix(torch.ones(2, 2, dtype=torch.long)).all_reduce()
     assert meter.matrix.equal(torch.ones(2, 2, dtype=torch.long).mul(4))
     assert meter.num_predictions == 16
 
@@ -659,6 +658,29 @@ def test_multiclass_confusion_matrix_num_classes(num_classes: int) -> None:
         MulticlassConfusionMatrix.from_num_classes(num_classes=num_classes).num_classes
         == num_classes
     )
+
+
+def test_multiclass_confusion_matrix_all_reduce() -> None:
+    meter = MulticlassConfusionMatrix(
+        torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]], dtype=torch.long)
+    ).all_reduce()
+    assert meter.matrix.equal(torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]], dtype=torch.long))
+    assert meter.num_predictions == 6
+
+
+def test_multiclass_confusion_matrix_all_reduce_sum_reduce() -> None:
+    meter = MulticlassConfusionMatrix(
+        torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]], dtype=torch.long)
+    )
+    reduce_mock = Mock(
+        return_value=torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]], dtype=torch.long)
+    )
+    with patch("karbonn.utils.tracker.confmat.sync_reduce", reduce_mock):
+        meter.all_reduce()
+        assert objects_are_equal(
+            reduce_mock.call_args.args,
+            (torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]], dtype=torch.long), SUM),
+        )
 
 
 def test_multiclass_confusion_matrix_auto_update_resize() -> None:
