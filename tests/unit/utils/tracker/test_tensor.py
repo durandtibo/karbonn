@@ -12,6 +12,7 @@ from karbonn.utils.tracker import (
     EmptyTrackerError,
     ExtremaTensorTracker,
     MeanTensorTracker,
+    ScalableTensorTracker,
     TensorTracker,
 )
 
@@ -799,3 +800,303 @@ def test_tensor_tracker_state_dict() -> None:
 
 def test_tensor_tracker_state_dict_empty() -> None:
     assert objects_are_equal(TensorTracker().state_dict(), {"values": torch.tensor([])})
+
+
+#################################
+#     Tests for ScalableTensorTracker     #
+#################################
+
+
+def test_scalable_tensor_tracker_repr() -> None:
+    assert (
+        repr(ScalableTensorTracker())
+        == "ScalableTensorTracker(count=0, total=0.0, min_value=inf, max_value=-inf)"
+    )
+
+
+def test_scalable_tensor_tracker_str() -> None:
+    assert str(ScalableTensorTracker(count=8, total=20.0, min_value=0.0, max_value=5.0)) == (
+        "ScalableTensorTracker(\n"
+        "  (count): 8\n"
+        "  (sum): 20.0\n"
+        "  (average): 2.5\n"
+        "  (min): 0.0\n"
+        "  (max): 5.0\n"
+        ")"
+    )
+
+
+def test_scalable_tensor_tracker_str_empty() -> None:
+    assert str(ScalableTensorTracker()) == (
+        "ScalableTensorTracker(\n"
+        "  (count): 0\n"
+        "  (sum): N/A (empty)\n"
+        "  (average): N/A (empty)\n"
+        "  (min): N/A (empty)\n"
+        "  (max): N/A (empty)\n"
+        ")"
+    )
+
+
+def test_scalable_tensor_tracker_count() -> None:
+    assert ScalableTensorTracker(count=8).count == 8
+
+
+def test_scalable_tensor_tracker_count_empty() -> None:
+    assert ScalableTensorTracker().count == 0
+
+
+def test_scalable_tensor_tracker_total() -> None:
+    assert ScalableTensorTracker(total=12.0).total == 12.0
+
+
+def test_scalable_tensor_tracker_total_empty() -> None:
+    assert ScalableTensorTracker().total == 0
+
+
+def test_scalable_tensor_tracker_all_reduce() -> None:
+    tracker = ScalableTensorTracker(count=10, total=122.0, min_value=-5.0, max_value=20.0)
+    tracker_reduced = tracker.all_reduce()
+    assert tracker_reduced is not tracker
+    assert tracker.equal(
+        ScalableTensorTracker(count=10, total=122.0, min_value=-5.0, max_value=20.0)
+    )
+    assert tracker_reduced.equal(
+        ScalableTensorTracker(count=10, total=122.0, min_value=-5.0, max_value=20.0)
+    )
+
+
+def test_scalable_tensor_tracker_all_reduce_empty() -> None:
+    tracker = ScalableTensorTracker()
+    tracker_reduced = tracker.all_reduce()
+    assert tracker_reduced is not tracker
+    assert tracker.equal(ScalableTensorTracker())
+    assert tracker_reduced.equal(ScalableTensorTracker())
+
+
+def test_scalable_tensor_tracker_all_reduce_sum_reduce() -> None:
+    tracker = ScalableTensorTracker(count=10, total=122.0, min_value=-5.0, max_value=20.0)
+    reduce_mock = Mock(side_effect=lambda variable, op: variable + 1)  # noqa: ARG005
+    with patch("karbonn.utils.tracker.tensor.sync_reduce", reduce_mock):
+        tracker_reduced = tracker.all_reduce()
+        assert tracker.equal(
+            ScalableTensorTracker(count=10, total=122.0, min_value=-5.0, max_value=20.0)
+        )
+        assert tracker_reduced.equal(
+            ScalableTensorTracker(count=11, total=123.0, min_value=-4.0, max_value=21.0)
+        )
+        assert reduce_mock.call_args_list == [
+            ((10, SUM), {}),
+            ((122.0, SUM), {}),
+            ((-5.0, MIN), {}),
+            ((20.0, MAX), {}),
+        ]
+
+
+def test_scalable_tensor_tracker_average() -> None:
+    assert ScalableTensorTracker(count=8, total=20.0, min_value=0.0, max_value=5.0).average() == 2.5
+
+
+def test_scalable_tensor_tracker_average_empty() -> None:
+    tracker = ScalableTensorTracker()
+    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+        tracker.average()
+
+
+@pytest.mark.parametrize("max_value", [0.0, 5.0])
+def test_scalable_tensor_tracker_max(max_value: float) -> None:
+    assert (
+        ScalableTensorTracker(count=8, total=20.0, min_value=0.0, max_value=max_value).max()
+        == max_value
+    )
+
+
+def test_scalable_tensor_tracker_max_empty() -> None:
+    tracker = ScalableTensorTracker()
+    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+        tracker.max()
+
+
+def test_scalable_tensor_tracker_mean() -> None:
+    assert ScalableTensorTracker(count=8, total=20.0, min_value=0.0, max_value=5.0).mean() == 2.5
+
+
+def test_scalable_tensor_tracker_mean_empty() -> None:
+    tracker = ScalableTensorTracker()
+    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+        tracker.mean()
+
+
+@pytest.mark.parametrize("min_value", [0.0, -5.0])
+def test_scalable_tensor_tracker_min(min_value: float) -> None:
+    assert (
+        ScalableTensorTracker(count=8, total=20.0, min_value=min_value, max_value=5.0).min()
+        == min_value
+    )
+
+
+def test_scalable_tensor_tracker_min_empty() -> None:
+    tracker = ScalableTensorTracker()
+    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+        tracker.min()
+
+
+def test_scalable_tensor_tracker_clone() -> None:
+    tracker = ScalableTensorTracker(count=10, total=122.0, min_value=-5.0, max_value=20.0)
+    tracker_cloned = tracker.clone()
+    assert tracker is not tracker_cloned
+    assert tracker.equal(
+        ScalableTensorTracker(count=10, total=122.0, min_value=-5.0, max_value=20.0)
+    )
+    assert tracker_cloned.equal(
+        ScalableTensorTracker(count=10, total=122.0, min_value=-5.0, max_value=20.0)
+    )
+
+
+def test_scalable_tensor_tracker_clone_empty() -> None:
+    tracker = ScalableTensorTracker()
+    tracker_cloned = tracker.clone()
+    assert tracker is not tracker_cloned
+    assert tracker.equal(ScalableTensorTracker())
+    assert tracker_cloned.equal(ScalableTensorTracker())
+
+
+def test_scalable_tensor_tracker_equal_true() -> None:
+    assert ScalableTensorTracker(count=6, total=122.0, min_value=-2.0, max_value=5.0).equal(
+        ScalableTensorTracker(count=6, total=122.0, min_value=-2.0, max_value=5.0)
+    )
+
+
+def test_scalable_tensor_tracker_equal_true_empty() -> None:
+    assert ScalableTensorTracker().equal(ScalableTensorTracker())
+
+
+def test_scalable_tensor_tracker_equal_false_different_count() -> None:
+    assert not ScalableTensorTracker(count=6, total=122.0, min_value=-2.0, max_value=5.0).equal(
+        ScalableTensorTracker(count=5, total=122.0, min_value=-2.0, max_value=5.0)
+    )
+
+
+def test_scalable_tensor_tracker_equal_false_different_total() -> None:
+    assert not ScalableTensorTracker(count=6, total=122.0, min_value=-2.0, max_value=5.0).equal(
+        ScalableTensorTracker(count=6, total=121.0, min_value=-2.0, max_value=5.0)
+    )
+
+
+def test_scalable_tensor_tracker_equal_false_different_min_value() -> None:
+    assert not ScalableTensorTracker(count=6, total=122.0, min_value=-2.0, max_value=5.0).equal(
+        ScalableTensorTracker(count=6, total=122.0, min_value=-3.0, max_value=5.0)
+    )
+
+
+def test_scalable_tensor_tracker_equal_false_different_max_value() -> None:
+    assert not ScalableTensorTracker(count=6, total=122.0, min_value=-2.0, max_value=5.0).equal(
+        ScalableTensorTracker(count=6, total=122.0, min_value=-2.0, max_value=6.0)
+    )
+
+
+def test_scalable_tensor_tracker_equal_false_different_type() -> None:
+    assert not ScalableTensorTracker(count=6, total=122.0, min_value=-2.0, max_value=5.0).equal(1)
+
+
+def test_scalable_tensor_tracker_merge() -> None:
+    tracker = ScalableTensorTracker(count=10, total=122.0, min_value=-2.0, max_value=5.0)
+    tracker_merged = tracker.merge(
+        [
+            ScalableTensorTracker(count=5, total=10.0, min_value=-1.0, max_value=6.0),
+            ScalableTensorTracker(),
+            ScalableTensorTracker(count=2, total=-5.0, min_value=-3.0, max_value=2.0),
+        ]
+    )
+    assert tracker.equal(
+        ScalableTensorTracker(count=10, total=122.0, min_value=-2.0, max_value=5.0)
+    )
+    assert tracker_merged.equal(
+        ScalableTensorTracker(count=17, total=127.0, min_value=-3.0, max_value=6.0)
+    )
+
+
+def test_scalable_tensor_tracker_merge_() -> None:
+    tracker = ScalableTensorTracker(count=10, total=122.0, min_value=-2.0, max_value=5.0)
+    tracker.merge_(
+        [
+            ScalableTensorTracker(count=5, total=10.0, min_value=-1.0, max_value=6.0),
+            ScalableTensorTracker(),
+            ScalableTensorTracker(count=2, total=-5.0, min_value=-3.0, max_value=2.0),
+        ]
+    )
+    assert tracker.equal(
+        ScalableTensorTracker(count=17, total=127.0, min_value=-3.0, max_value=6.0)
+    )
+
+
+def test_scalable_tensor_tracker_load_state_dict() -> None:
+    tracker = ScalableTensorTracker()
+    tracker.load_state_dict({"count": 10, "max_value": 5.0, "min_value": -2.0, "total": 122.0})
+    assert tracker.equal(
+        ScalableTensorTracker(count=10, total=122.0, min_value=-2.0, max_value=5.0)
+    )
+    assert tracker.count == 10
+
+
+def test_scalable_tensor_tracker_reset() -> None:
+    tracker = ScalableTensorTracker(count=6, total=122.0, min_value=-2.0, max_value=5.0)
+    tracker.reset()
+    assert tracker.equal(ScalableTensorTracker())
+
+
+def test_scalable_tensor_tracker_state_dict() -> None:
+    assert ScalableTensorTracker(
+        count=6, total=15.0, min_value=0.0, max_value=5.0
+    ).state_dict() == {
+        "count": 6,
+        "max_value": 5.0,
+        "min_value": 0.0,
+        "total": 15.0,
+    }
+
+
+def test_scalable_tensor_tracker_state_dict_empty() -> None:
+    assert ScalableTensorTracker().state_dict() == {
+        "count": 0,
+        "max_value": float("-inf"),
+        "min_value": float("inf"),
+        "total": 0.0,
+    }
+
+
+@pytest.mark.parametrize("total", [15.0, 20.0])
+def test_scalable_tensor_tracker_sum(total: float) -> None:
+    assert ScalableTensorTracker(count=6, total=total, min_value=0.0, max_value=5.0).sum() == total
+
+
+def test_scalable_tensor_tracker_sum_empty() -> None:
+    tracker = ScalableTensorTracker()
+    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+        tracker.sum()
+
+
+def test_scalable_tensor_tracker_update() -> None:
+    tracker = ScalableTensorTracker()
+    tracker.update(torch.arange(6))
+    tracker.update(torch.tensor([4.0, 1.0]))
+    assert tracker.equal(ScalableTensorTracker(count=8, total=20.0, min_value=0.0, max_value=5.0))
+
+
+def test_scalable_tensor_tracker_update_nan() -> None:
+    tracker = ScalableTensorTracker()
+    tracker.update(torch.tensor(float("NaN")))
+    assert tracker.max() == float("-inf")
+    assert tracker.min() == float("inf")
+    assert math.isnan(tracker.sum())
+    assert tracker.count == 1
+
+
+def test_scalable_tensor_tracker_update_inf() -> None:
+    tracker = ScalableTensorTracker()
+    tracker.update(torch.tensor(float("inf")))
+    assert tracker.equal(
+        ScalableTensorTracker(
+            count=1, total=float("inf"), min_value=float("inf"), max_value=float("inf")
+        )
+    )
