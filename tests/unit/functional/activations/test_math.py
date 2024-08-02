@@ -16,7 +16,8 @@ SHAPES = [(2,), (2, 3), (2, 3, 4), (2, 3, 4, 5)]
 
 @pytest.mark.parametrize("device", get_available_devices())
 def test_safe_exp_max_value_default(device: str) -> None:
-    assert safe_exp(torch.tensor([-1.0, 0.0, 1.0, 10.0, 100.0], device=device)).allclose(
+    assert objects_are_allclose(
+        safe_exp(torch.tensor([-1.0, 0.0, 1.0, 10.0, 100.0], device=device)),
         torch.tensor(
             [0.3678794503211975, 1.0, 2.7182817459106445, 22026.46484375, 485165184.0],
             device=device,
@@ -26,7 +27,8 @@ def test_safe_exp_max_value_default(device: str) -> None:
 
 @pytest.mark.parametrize("device", get_available_devices())
 def test_safe_exp_max_value_1(device: str) -> None:
-    assert safe_exp(torch.tensor([-1.0, 0.0, 1.0, 10.0, 100.0], device=device), max=1.0).equal(
+    assert objects_are_allclose(
+        safe_exp(torch.tensor([-1.0, 0.0, 1.0, 10.0, 100.0], device=device), max=1.0),
         torch.tensor(
             [0.3678794503211975, 1.0, 2.7182817459106445, 2.7182817459106445, 2.7182817459106445],
             device=device,

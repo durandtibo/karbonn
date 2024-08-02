@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pytest
 import torch
+from coola import objects_are_equal
 from coola.utils.tensor import get_available_devices
 
 from karbonn import ReLUn, SquaredReLU
@@ -21,8 +22,9 @@ def test_relun_str() -> None:
 def test_relun_forward(device: str) -> None:
     device = torch.device(device)
     module = ReLUn().to(device=device)
-    assert module(torch.arange(-1, 4, dtype=torch.float, device=device)).equal(
-        torch.tensor([0.0, 0.0, 1.0, 1.0, 1.0], dtype=torch.float, device=device)
+    assert objects_are_equal(
+        module(torch.arange(-1, 4, dtype=torch.float, device=device)),
+        torch.tensor([0.0, 0.0, 1.0, 1.0, 1.0], dtype=torch.float, device=device),
     )
 
 
@@ -30,8 +32,9 @@ def test_relun_forward(device: str) -> None:
 def test_relun_forward_max_value_2(device: str) -> None:
     device = torch.device(device)
     module = ReLUn(max=2).to(device=device)
-    assert module(torch.arange(-1, 4, dtype=torch.float, device=device)).equal(
-        torch.tensor([0.0, 0.0, 1.0, 2.0, 2.0], dtype=torch.float, device=device)
+    assert objects_are_equal(
+        module(torch.arange(-1, 4, dtype=torch.float, device=device)),
+        torch.tensor([0.0, 0.0, 1.0, 2.0, 2.0], dtype=torch.float, device=device),
     )
 
 
@@ -55,8 +58,9 @@ def test_relun_forward_shape(device: str, shape: tuple[int, ...]) -> None:
 def test_squared_relu_forward(device: str) -> None:
     device = torch.device(device)
     module = SquaredReLU().to(device=device)
-    assert module(torch.arange(-1, 4, dtype=torch.float, device=device)).equal(
-        torch.tensor([0.0, 0.0, 1.0, 4.0, 9.0], dtype=torch.float, device=device)
+    assert objects_are_equal(
+        module(torch.arange(-1, 4, dtype=torch.float, device=device)),
+        torch.tensor([0.0, 0.0, 1.0, 4.0, 9.0], dtype=torch.float, device=device),
     )
 
 

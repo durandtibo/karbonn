@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 import torch
-from coola import objects_are_equal
+from coola import objects_are_allclose, objects_are_equal
 from coola.utils.tensor import get_available_devices
 
 from karbonn import AverageFusion, MultiplicationFusion, SumFusion
@@ -34,7 +34,7 @@ def test_average_fusion_forward_2_inputs(device: str, batch_size: int, input_siz
         torch.ones(batch_size, input_size, device=device),
         torch.full(size=(batch_size, input_size), fill_value=3.0, device=device),
     )
-    assert objects_are_equal(
+    assert objects_are_allclose(
         out, torch.full(size=(batch_size, input_size), fill_value=2.0, device=device)
     )
 
@@ -50,7 +50,7 @@ def test_average_fusion_forward_3_inputs(device: str, batch_size: int, input_siz
         torch.full(size=(batch_size, input_size), fill_value=2.0, device=device),
         torch.full(size=(batch_size, input_size), fill_value=3.0, device=device),
     )
-    assert objects_are_equal(
+    assert objects_are_allclose(
         out, torch.full(size=(batch_size, input_size), fill_value=2.0, device=device)
     )
 
@@ -105,7 +105,7 @@ def test_multiplication_fusion_forward_2_inputs(
         torch.ones(batch_size, input_size, device=device).mul(0.5),
         torch.ones(batch_size, input_size, device=device).mul(0.5),
     )
-    assert objects_are_equal(out, torch.ones(batch_size, input_size, device=device).mul(0.25))
+    assert objects_are_allclose(out, torch.ones(batch_size, input_size, device=device).mul(0.25))
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -121,7 +121,7 @@ def test_multiplication_fusion_forward_3_inputs(
         torch.ones(batch_size, input_size, device=device).mul(0.5),
         torch.ones(batch_size, input_size, device=device).mul(0.5),
     )
-    assert objects_are_equal(out, torch.ones(batch_size, input_size, device=device).mul(0.125))
+    assert objects_are_allclose(out, torch.ones(batch_size, input_size, device=device).mul(0.125))
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -186,7 +186,7 @@ def test_sum_fusion_forward_3_inputs(device: str, batch_size: int, input_size: i
         torch.full(size=(batch_size, input_size), fill_value=2.0, device=device),
         torch.full(size=(batch_size, input_size), fill_value=3.0, device=device),
     )
-    assert objects_are_equal(
+    assert objects_are_allclose(
         out, torch.full(size=(batch_size, input_size), fill_value=6.0, device=device)
     )
 

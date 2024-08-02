@@ -59,7 +59,8 @@ def test_squeeze_str() -> None:
 def test_squeeze_forward_dim_none(device: str) -> None:
     device = torch.device(device)
     module = Squeeze().to(device=device)
-    assert module(torch.ones(2, 1, 3, 1, 4, device=device)).equal(
+    assert objects_are_equal(
+        module(torch.ones(2, 1, 3, 1, 4, device=device)),
         torch.ones(2, 3, 4, device=device),
     )
 
@@ -68,6 +69,7 @@ def test_squeeze_forward_dim_none(device: str) -> None:
 def test_squeeze_forward_dim_1(device: str) -> None:
     device = torch.device(device)
     module = Squeeze(dim=1).to(device=device)
-    assert module(torch.ones(2, 1, 3, 1, 4, device=device)).equal(
+    assert objects_are_equal(
+        module(torch.ones(2, 1, 3, 1, 4, device=device)),
         torch.ones(2, 3, 1, 4, device=device),
     )

@@ -45,7 +45,7 @@ REDUCTIONS = ["mean", "sum"]
 
 @pytest.fixture()
 def module() -> nn.Module:
-    return nn.Sequential(nn.Linear(8, 16), nn.ReLU(), nn.Linear(16, 8))
+    return nn.Sequential(nn.Linear(10, 32), nn.ReLU(), nn.Linear(32, 8))
 
 
 ###################################
@@ -72,7 +72,7 @@ def test_relative_loss_loss_decreasing(
     assert is_loss_decreasing_with_sgd(
         module=module,
         criterion=my_loss,
-        feature=torch.randn(16, 8).clamp(-1.0, 1.0),
+        feature=torch.randn(16, 10).clamp(-1.0, 1.0),
         target=torch.rand(16, 8),
         num_iterations=50,
     )
