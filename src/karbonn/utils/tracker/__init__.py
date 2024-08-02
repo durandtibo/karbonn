@@ -12,6 +12,7 @@ __all__ = [
     "MeanTensorTracker",
     "MovingAverage",
     "MulticlassConfusionMatrix",
+    "ScalableTensorTracker",
     "ScalarTracker",
     "TensorTracker",
 ]
@@ -28,5 +29,6 @@ from karbonn.utils.tracker.scalar import ScalarTracker
 from karbonn.utils.tracker.tensor import (
     ExtremaTensorTracker,
     MeanTensorTracker,
+    ScalableTensorTracker,
     TensorTracker,
 )
