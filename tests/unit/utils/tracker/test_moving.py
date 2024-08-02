@@ -77,9 +77,9 @@ def test_moving_average_equal_false_different_type() -> None:
     assert not MovingAverage(values=(4, 2, 1), window_size=5).equal(1)
 
 
-def test_moving_average_load_tracker_dict() -> None:
+def test_moving_average_load_state_dict() -> None:
     tracker = MovingAverage()
-    tracker.load_tracker_dict({"values": (4, 2, 1), "window_size": 5})
+    tracker.load_state_dict({"values": (4, 2, 1), "window_size": 5})
     assert tracker.equal(MovingAverage(values=(4, 2, 1), window_size=5))
 
 
@@ -105,15 +105,15 @@ def test_moving_average_smoothed_average_empty() -> None:
         tracker.smoothed_average()
 
 
-def test_moving_average_tracker_dict() -> None:
-    assert MovingAverage(values=(4, 2, 1), window_size=5).tracker_dict() == {
+def test_moving_average_state_dict() -> None:
+    assert MovingAverage(values=(4, 2, 1), window_size=5).state_dict() == {
         "values": (4, 2, 1),
         "window_size": 5,
     }
 
 
-def test_moving_average_tracker_dict_empty() -> None:
-    assert MovingAverage().tracker_dict() == {"values": (), "window_size": 20}
+def test_moving_average_state_dict_empty() -> None:
+    assert MovingAverage().state_dict() == {"values": (), "window_size": 20}
 
 
 def test_moving_average_update() -> None:
@@ -192,9 +192,9 @@ def test_exponential_moving_average_equal_false_different_type() -> None:
     assert not ExponentialMovingAverage(alpha=0.9, count=10, smoothed_average=1.35).equal(1)
 
 
-def test_exponential_moving_average_load_tracker_dict() -> None:
+def test_exponential_moving_average_load_state_dict() -> None:
     tracker = ExponentialMovingAverage()
-    tracker.load_tracker_dict({"alpha": 0.9, "count": 10, "smoothed_average": 1.35})
+    tracker.load_state_dict({"alpha": 0.9, "count": 10, "smoothed_average": 1.35})
     assert tracker.equal(ExponentialMovingAverage(alpha=0.9, count=10, smoothed_average=1.35))
 
 
@@ -210,16 +210,16 @@ def test_exponential_moving_average_reset_empty() -> None:
     assert tracker.equal(ExponentialMovingAverage())
 
 
-def test_exponential_moving_average_tracker_dict() -> None:
-    assert ExponentialMovingAverage(alpha=0.9, count=10, smoothed_average=1.35).tracker_dict() == {
+def test_exponential_moving_average_state_dict() -> None:
+    assert ExponentialMovingAverage(alpha=0.9, count=10, smoothed_average=1.35).state_dict() == {
         "alpha": 0.9,
         "count": 10,
         "smoothed_average": 1.35,
     }
 
 
-def test_exponential_moving_average_tracker_dict_empty() -> None:
-    assert ExponentialMovingAverage().tracker_dict() == {
+def test_exponential_moving_average_state_dict_empty() -> None:
+    assert ExponentialMovingAverage().state_dict() == {
         "alpha": 0.98,
         "count": 0,
         "smoothed_average": 0.0,

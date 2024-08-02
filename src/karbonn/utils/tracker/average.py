@@ -180,7 +180,7 @@ class Average:
         """
         if not isinstance(other, Average):
             return False
-        return self.tracker_dict() == other.tracker_dict()
+        return self.state_dict() == other.state_dict()
 
     def merge(self, trackers: Iterable[Average]) -> Average:
         r"""Merge several trackers with the current tracker and return a
@@ -242,11 +242,11 @@ class Average:
             self._count += meter.count
             self._total += meter.total
 
-    def load_tracker_dict(self, tracker_dict: dict[str, Any]) -> None:
+    def load_state_dict(self, state_dict: dict[str, Any]) -> None:
         r"""Load a tracker to the history tracker.
 
         Args:
-            tracker_dict: A dictionary containing tracker keys with values.
+            state_dict: A dictionary containing tracker keys with values.
 
         Example usage:
 
@@ -254,7 +254,7 @@ class Average:
 
         >>> from karbonn.utils.tracker import Average
         >>> tracker = Average()
-        >>> tracker.load_tracker_dict({"count": 11.0, "total": 55.0})
+        >>> tracker.load_state_dict({"count": 11.0, "total": 55.0})
         >>> tracker.count
         11.0
         >>> tracker.sum()
@@ -262,8 +262,8 @@ class Average:
 
         ```
         """
-        self._total = float(tracker_dict["total"])
-        self._count = float(tracker_dict["count"])
+        self._total = float(state_dict["total"])
+        self._count = float(state_dict["count"])
 
     def reset(self) -> None:
         r"""Reset the tracker.
@@ -286,7 +286,7 @@ class Average:
         self._total = 0.0
         self._count = 0.0
 
-    def tracker_dict(self) -> dict[str, Any]:
+    def state_dict(self) -> dict[str, Any]:
         r"""Return a dictionary containing tracker values.
 
         Returns:
@@ -301,7 +301,7 @@ class Average:
         >>> for i in range(11):
         ...     tracker.update(i)
         ...
-        >>> tracker.tracker_dict()
+        >>> tracker.state_dict()
         {'count': 11.0, 'total': 55.0}
 
         ```

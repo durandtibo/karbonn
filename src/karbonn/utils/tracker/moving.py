@@ -104,13 +104,13 @@ class MovingAverage:
         """
         if not isinstance(other, MovingAverage):
             return False
-        return self.tracker_dict() == other.tracker_dict()
+        return self.state_dict() == other.state_dict()
 
-    def load_tracker_dict(self, tracker_dict: dict[str, Any]) -> None:
-        r"""Load a tracker to the tracker.
+    def load_state_dict(self, state_dict: dict[str, Any]) -> None:
+        r"""Load a state to the tracker.
 
         Args:
-            tracker_dict: A dictionary containing tracker keys with values.
+            state_dict: A dictionary containing tracker state.
 
         Example usage:
 
@@ -118,7 +118,7 @@ class MovingAverage:
 
         >>> from karbonn.utils.tracker import MovingAverage
         >>> tracker = MovingAverage()
-        >>> tracker.load_tracker_dict(
+        >>> tracker.load_state_dict(
         ...     {"values": (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10), "window_size": 20}
         ... )
         >>> tracker.smoothed_average()
@@ -126,7 +126,7 @@ class MovingAverage:
 
         ```
         """
-        self._deque = deque(tracker_dict["values"], maxlen=tracker_dict["window_size"])
+        self._deque = deque(state_dict["values"], maxlen=state_dict["window_size"])
 
     def reset(self) -> None:
         r"""Reset the tracker.
@@ -176,11 +176,11 @@ class MovingAverage:
             raise EmptyTrackerError(msg)
         return torch.as_tensor(self.values).float().mean().item()
 
-    def tracker_dict(self) -> dict[str, Any]:
-        r"""Return a dictionary containing tracker values.
+    def state_dict(self) -> dict[str, Any]:
+        r"""Return a dictionary containing tracker state values.
 
         Returns:
-            The tracker values in a dict.
+            The tracker state values in a dict.
 
         Example usage:
 
@@ -191,7 +191,7 @@ class MovingAverage:
         >>> for i in range(11):
         ...     tracker.update(i)
         ...
-        >>> tracker.tracker_dict()
+        >>> tracker.state_dict()
         {'values': (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10), 'window_size': 20}
 
         ```
@@ -325,13 +325,13 @@ class ExponentialMovingAverage:
         """
         if not isinstance(other, ExponentialMovingAverage):
             return False
-        return self.tracker_dict() == other.tracker_dict()
+        return self.state_dict() == other.state_dict()
 
-    def load_tracker_dict(self, tracker_dict: dict[str, Any]) -> None:
-        r"""Load a tracker to the history tracker.
+    def load_state_dict(self, state_dict: dict[str, Any]) -> None:
+        r"""Load a state to the tracker.
 
         Args:
-            tracker_dict: A dictionary containing tracker keys with values.
+            state_dict: A dictionary containing tracker state.
 
         Example usage:
 
@@ -342,7 +342,7 @@ class ExponentialMovingAverage:
         >>> for i in range(11):
         ...     tracker.update(i)
         ...
-        >>> tracker.load_tracker_dict({"alpha": 0.98, "count": 11, "smoothed_average": 42.0})
+        >>> tracker.load_state_dict({"alpha": 0.98, "count": 11, "smoothed_average": 42.0})
         >>> tracker.count
         11.0
         >>> tracker.smoothed_average()
@@ -350,9 +350,9 @@ class ExponentialMovingAverage:
 
         ```
         """
-        self._alpha = float(tracker_dict["alpha"])
-        self._count = float(tracker_dict["count"])
-        self._smoothed_average = float(tracker_dict["smoothed_average"])
+        self._alpha = float(state_dict["alpha"])
+        self._count = float(state_dict["count"])
+        self._smoothed_average = float(state_dict["smoothed_average"])
 
     def reset(self) -> None:
         r"""Reset the tracker.
@@ -403,11 +403,11 @@ class ExponentialMovingAverage:
             raise EmptyTrackerError(msg)
         return self._smoothed_average
 
-    def tracker_dict(self) -> dict[str, Any]:
-        r"""Return a dictionary containing tracker values.
+    def state_dict(self) -> dict[str, Any]:
+        r"""Return a dictionary containing tracker state values.
 
         Returns:
-            The tracker values in a dict.
+            The tracker state values in a dict.
 
         Example usage:
 
@@ -418,7 +418,7 @@ class ExponentialMovingAverage:
         >>> for i in range(11):
         ...     tracker.update(i)
         ...
-        >>> tracker.tracker_dict()
+        >>> tracker.state_dict()
         {'alpha': 0.98, 'count': 11.0, 'smoothed_average': 1.036567...}
 
         ```
