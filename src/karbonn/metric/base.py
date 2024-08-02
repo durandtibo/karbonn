@@ -48,9 +48,13 @@ class BaseMetric(Module, metaclass=AbstractFactory):
         r"""Reset the metric."""
 
     @abstractmethod
-    def value(self) -> dict:
+    def value(self, prefix: str = "", suffix: str = "") -> dict:
         r"""Evaluate the metric and return the results given all the
         examples previously seen.
+
+        Args:
+            prefix: The key prefix in the returned dictionary.
+            suffix: The key suffix in the returned dictionary.
 
         Returns:
              The results of the metric.
