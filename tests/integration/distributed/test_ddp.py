@@ -271,17 +271,17 @@ def check_all_gather_tensor_varshape(local_rank: int) -> None:
     )
 
 
-@pytest.mark.parametrize(
-    "func",
-    [
-        check_sync_reduce_tensor_int,
-        check_sync_reduce_tensor_float,
-        check_sync_reduce_int,
-        check_sync_reduce_float,
-        check_sync_reduce_inplace,
-        check_all_gather_tensor_varshape,
-    ],
-)
+CHECKS = [
+    check_sync_reduce_tensor_int,
+    check_sync_reduce_tensor_float,
+    check_sync_reduce_int,
+    check_sync_reduce_float,
+    check_sync_reduce_inplace,
+    check_all_gather_tensor_varshape,
+]
+
+
+@pytest.mark.parametrize("func", CHECKS)
 @distributed_available
 @gloo_available
 @ignite_available
@@ -289,17 +289,7 @@ def test_sync_reduce_gloo(parallel_gloo_2: idist.Parallel, func: Callable[[int],
     parallel_gloo_2.run(func)
 
 
-@pytest.mark.parametrize(
-    "func",
-    [
-        check_sync_reduce_tensor_int,
-        check_sync_reduce_tensor_float,
-        check_sync_reduce_int,
-        check_sync_reduce_float,
-        check_sync_reduce_inplace,
-        check_all_gather_tensor_varshape,
-    ],
-)
+@pytest.mark.parametrize("func", CHECKS)
 @two_gpus_available
 @distributed_available
 @nccl_available

@@ -252,9 +252,9 @@ def test_mean_tensor_tracker_state_dict_empty() -> None:
     }
 
 
-########################################
+##########################################
 #     Tests for ExtremaTensorTracker     #
-########################################
+##########################################
 
 
 def test_extrema_tensor_tracker_repr() -> None:
@@ -802,9 +802,9 @@ def test_tensor_tracker_state_dict_empty() -> None:
     assert objects_are_equal(TensorTracker().state_dict(), {"values": torch.tensor([])})
 
 
-#################################
+###########################################
 #     Tests for ScalableTensorTracker     #
-#################################
+###########################################
 
 
 def test_scalable_tensor_tracker_repr() -> None:
