@@ -16,7 +16,7 @@ import torch
 from torch import Tensor
 from typing_extensions import Self
 
-from karbonn.distributed.ddp import SUM, sync_reduce_
+from karbonn.distributed.ddp import SUM, sync_reduce
 from karbonn.utils.format import str_table
 from karbonn.utils.tracker.exception import EmptyTrackerError
 
@@ -113,7 +113,7 @@ class BaseConfusionMatrix:
         """
         return self._num_predictions
 
-    def all_reduce(self) -> None:
+    def all_reduce(self) -> BaseConfusionMatrix:
         r"""Reduce the values across all machines in such a way that all
         get the final result.
 
@@ -133,10 +133,7 @@ class BaseConfusionMatrix:
 
         ```
         """
-        sync_reduce_(self._matrix, SUM)
-        # It is necessary to recompute the number of predictions because
-        # the confusion matrix is very likely to have changed
-        self._num_predictions = self._compute_num_predictions()
+        return self.__class__(sync_reduce(self._matrix, SUM))
 
     def get_normalized_matrix(self, normalization: str) -> Tensor:
         r"""Get the normalized confusion matrix.
