@@ -19,6 +19,7 @@ from karbonn.utils.tracker import (
     BinaryConfusionMatrix,
     ExtremaTensorTracker,
     MeanTensorTracker,
+    MulticlassConfusionMatrix,
     ScalableTensorTracker,
     TensorTracker,
 )
@@ -199,6 +200,33 @@ def check_binary_confusion_matrix(local_rank: int) -> None:
 ###############################################
 
 
+def check_multiclass_confusion_matrix(local_rank: int) -> None:
+    r"""Check ``MulticlassConfusionMatrix``.
+
+    Args:
+        local_rank: The local rank.
+    """
+    assert idist.get_world_size() == 2  # This test is valid only for 2 processes.
+
+    tracker = (
+        MulticlassConfusionMatrix(torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]]))
+        if local_rank == 0
+        else MulticlassConfusionMatrix(torch.tensor([[1, 1, 1], [0, 1, 0], [1, 1, 1]]))
+    )
+    assert tracker.all_reduce().equal(
+        MulticlassConfusionMatrix(torch.tensor([[3, 2, 1], [0, 1, 0], [2, 2, 2]]))
+    )
+
+    tracker = (
+        MulticlassConfusionMatrix(torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]]))
+        if local_rank == 0
+        else MulticlassConfusionMatrix(torch.zeros(3, 3, dtype=torch.long))
+    )
+    assert tracker.all_reduce().equal(
+        MulticlassConfusionMatrix(torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]]))
+    )
+
+
 CHECKS = [
     check_average,
     check_mean_tensor_tracker,
@@ -206,6 +234,7 @@ CHECKS = [
     check_tensor_tracker,
     check_scalable_tensor_tracker,
     check_binary_confusion_matrix,
+    check_multiclass_confusion_matrix,
 ]
 
 
