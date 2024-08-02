@@ -16,8 +16,10 @@ from karbonn.testing import (
 from karbonn.utils.imports import is_ignite_available
 from karbonn.utils.tracker import (
     Average,
+    BinaryConfusionMatrix,
     ExtremaTensorTracker,
     MeanTensorTracker,
+    MulticlassConfusionMatrix,
     ScalableTensorTracker,
     TensorTracker,
 )
@@ -40,7 +42,6 @@ def check_average(local_rank: int) -> None:
         local_rank: The local rank.
     """
     assert idist.get_world_size() == 2  # This test is valid only for 2 processes.
-    idist.device()
 
     tracker = Average(count=8, total=20.0) if local_rank == 0 else Average(count=2, total=12.0)
     assert tracker.all_reduce().equal(Average(count=10, total=32.0))
@@ -66,7 +67,6 @@ def check_mean_tensor_tracker(local_rank: int) -> None:
         local_rank: The local rank.
     """
     assert idist.get_world_size() == 2  # This test is valid only for 2 processes.
-    idist.device()
 
     tracker = (
         MeanTensorTracker(count=8, total=20.0)
@@ -91,7 +91,6 @@ def check_extrema_tensor_tracker(local_rank: int) -> None:
         local_rank: The local rank.
     """
     assert idist.get_world_size() == 2  # This test is valid only for 2 processes.
-    idist.device()
 
     tracker = (
         ExtremaTensorTracker(count=8, min_value=-2.0, max_value=5.0)
@@ -120,7 +119,6 @@ def check_tensor_tracker(local_rank: int) -> None:
         local_rank: The local rank.
     """
     assert idist.get_world_size() == 2  # This test is valid only for 2 processes.
-    idist.device()
 
     tracker = (
         TensorTracker(torch.arange(6, dtype=torch.float))
@@ -149,7 +147,6 @@ def check_scalable_tensor_tracker(local_rank: int) -> None:
         local_rank: The local rank.
     """
     assert idist.get_world_size() == 2  # This test is valid only for 2 processes.
-    idist.device()
 
     tracker = (
         ScalableTensorTracker(count=8, total=20.0, min_value=0.0, max_value=5.0)
@@ -175,9 +172,59 @@ def check_scalable_tensor_tracker(local_rank: int) -> None:
 ###########################################
 
 
+def check_binary_confusion_matrix(local_rank: int) -> None:
+    r"""Check ``BinaryConfusionMatrix``.
+
+    Args:
+        local_rank: The local rank.
+    """
+    assert idist.get_world_size() == 2  # This test is valid only for 2 processes.
+
+    tracker = (
+        BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
+        if local_rank == 0
+        else BinaryConfusionMatrix(torch.tensor([[1, 1], [1, 1]]))
+    )
+    assert tracker.all_reduce().equal(BinaryConfusionMatrix(torch.tensor([[4, 3], [2, 5]])))
+
+    tracker = (
+        BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
+        if local_rank == 0
+        else BinaryConfusionMatrix()
+    )
+    assert tracker.all_reduce().equal(BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])))
+
+
 ###############################################
 #     Tests for MulticlassConfusionMatrix     #
 ###############################################
+
+
+def check_multiclass_confusion_matrix(local_rank: int) -> None:
+    r"""Check ``MulticlassConfusionMatrix``.
+
+    Args:
+        local_rank: The local rank.
+    """
+    assert idist.get_world_size() == 2  # This test is valid only for 2 processes.
+
+    tracker = (
+        MulticlassConfusionMatrix(torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]]))
+        if local_rank == 0
+        else MulticlassConfusionMatrix(torch.tensor([[1, 1, 1], [0, 1, 0], [1, 1, 1]]))
+    )
+    assert tracker.all_reduce().equal(
+        MulticlassConfusionMatrix(torch.tensor([[3, 2, 1], [0, 1, 0], [2, 2, 2]]))
+    )
+
+    tracker = (
+        MulticlassConfusionMatrix(torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]]))
+        if local_rank == 0
+        else MulticlassConfusionMatrix(torch.zeros(3, 3, dtype=torch.long))
+    )
+    assert tracker.all_reduce().equal(
+        MulticlassConfusionMatrix(torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]]))
+    )
 
 
 CHECKS = [
@@ -186,6 +233,8 @@ CHECKS = [
     check_extrema_tensor_tracker,
     check_tensor_tracker,
     check_scalable_tensor_tracker,
+    check_binary_confusion_matrix,
+    check_multiclass_confusion_matrix,
 ]
 
 
