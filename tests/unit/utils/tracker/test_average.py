@@ -118,9 +118,9 @@ def test_average_merge_() -> None:
     assert tracker.equal(Average(total=121.0, count=16))
 
 
-def test_average_load_tracker_dict() -> None:
+def test_average_load_state_dict() -> None:
     tracker = Average()
-    tracker.load_tracker_dict({"count": 10, "total": 122.0})
+    tracker.load_state_dict({"count": 10, "total": 122.0})
     assert tracker.equal(Average(total=122.0, count=10))
 
 
@@ -136,12 +136,12 @@ def test_average_reset_empty() -> None:
     assert tracker.equal(Average())
 
 
-def test_average_tracker_dict() -> None:
-    assert Average(total=19.0, count=4).tracker_dict() == {"count": 4, "total": 19}
+def test_average_state_dict() -> None:
+    assert Average(total=19.0, count=4).state_dict() == {"count": 4, "total": 19}
 
 
-def test_average_tracker_dict_empty() -> None:
-    assert Average().tracker_dict() == {"count": 0, "total": 0}
+def test_average_state_dict_empty() -> None:
+    assert Average().state_dict() == {"count": 0, "total": 0}
 
 
 def test_average_sum() -> None:

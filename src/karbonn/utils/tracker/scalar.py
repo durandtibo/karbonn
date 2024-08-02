@@ -187,13 +187,13 @@ class ScalarTracker:
         """
         if not isinstance(other, ScalarTracker):
             return False
-        return self.tracker_dict() == other.tracker_dict()
+        return self.state_dict() == other.state_dict()
 
-    def load_tracker_dict(self, tracker_dict: dict[str, Any]) -> None:
-        r"""Load a tracker to the history tracker.
+    def load_state_dict(self, state_dict: dict[str, Any]) -> None:
+        r"""Load a state to the history tracker.
 
         Args:
-            tracker_dict: Dictionary containing tracker keys with values.
+            state_dict: Dictionary containing tracker state.
 
         Example usage:
 
@@ -201,7 +201,7 @@ class ScalarTracker:
 
         >>> from karbonn.utils.tracker import ScalarTracker
         >>> tracker = ScalarTracker()
-        >>> tracker.load_tracker_dict(
+        >>> tracker.load_state_dict(
         ...     {
         ...         "count": 6,
         ...         "total": 15.0,
@@ -221,12 +221,12 @@ class ScalarTracker:
 
         ```
         """
-        self._total = float(tracker_dict["total"])
-        self._count = float(tracker_dict["count"])
-        self._max_value = float(tracker_dict["max_value"])
-        self._min_value = float(tracker_dict["min_value"])
+        self._total = float(state_dict["total"])
+        self._count = float(state_dict["count"])
+        self._max_value = float(state_dict["max_value"])
+        self._min_value = float(state_dict["min_value"])
         self._values.clear()
-        self._values.extend(tracker_dict["values"])
+        self._values.extend(state_dict["values"])
 
     def max(self) -> float:
         r"""Get the max value.
@@ -428,11 +428,11 @@ class ScalarTracker:
         self._max_value = -float("inf")
         self._values.clear()
 
-    def tracker_dict(self) -> dict[str, Any]:
-        r"""Return a dictionary containing tracker values.
+    def state_dict(self) -> dict[str, Any]:
+        r"""Return a dictionary containing state values.
 
         Returns:
-            The tracker values in a dict.
+            The state values in a dict.
 
         Example usage:
 
@@ -441,7 +441,7 @@ class ScalarTracker:
         >>> from karbonn.utils.tracker import ScalarTracker
         >>> tracker = ScalarTracker()
         >>> tracker.update_sequence([1, 2, 3, 4, 5, 0])
-        >>> tracker.tracker_dict()
+        >>> tracker.state_dict()
         {'count': 6.0, 'total': 15.0, 'values': (1.0, 2.0, 3.0, 4.0, 5.0, 0.0), 'max_value': 5.0, 'min_value': 0.0}
 
         ```

@@ -169,9 +169,9 @@ def test_scalar_tracker_equal_false_different_type() -> None:
     ).equal(1)
 
 
-def test_scalar_tracker_load_tracker_dict() -> None:
+def test_scalar_tracker_load_state_dict() -> None:
     tracker = ScalarTracker()
-    tracker.load_tracker_dict(
+    tracker.load_state_dict(
         {
             "count": 10,
             "total": 122.0,
@@ -287,10 +287,10 @@ def test_scalar_tracker_reset_empty() -> None:
     assert tracker.equal(ScalarTracker())
 
 
-def test_scalar_tracker_tracker_dict() -> None:
+def test_scalar_tracker_state_dict() -> None:
     assert ScalarTracker(
         total=122.0, count=10, max_value=6.0, min_value=-2.0, values=(1.0, 3.0, 5.0, 4.0, 2.0)
-    ).tracker_dict() == {
+    ).state_dict() == {
         "count": 10,
         "total": 122.0,
         "values": (1.0, 3.0, 5.0, 4.0, 2.0),
@@ -299,8 +299,8 @@ def test_scalar_tracker_tracker_dict() -> None:
     }
 
 
-def test_scalar_tracker_tracker_dict_empty() -> None:
-    assert ScalarTracker().tracker_dict() == {
+def test_scalar_tracker_state_dict_empty() -> None:
+    assert ScalarTracker().state_dict() == {
         "count": 0,
         "total": 0.0,
         "values": (),

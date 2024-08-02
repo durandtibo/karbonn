@@ -49,16 +49,6 @@ def check_average(local_rank: int) -> None:
     assert tracker.all_reduce().equal(Average(count=8, total=20.0))
 
 
-##############################################
-#     Tests for ExponentialMovingAverage     #
-##############################################
-
-
-###################################
-#     Tests for MovingAverage     #
-###################################
-
-
 ###################################
 #     Tests for ScalarTracker     #
 ###################################
