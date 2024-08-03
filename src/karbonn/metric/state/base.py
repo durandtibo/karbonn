@@ -75,10 +75,10 @@ class BaseState(ABC, metaclass=AbstractFactory):
         >>> from karbonn.metric.state import ErrorState
         >>> state = ErrorState()
         >>> state.get_records("error_")
-        ScalarRecord(name=error_mean, max_size=10, size=0),
-        ScalarRecord(name=error_min, max_size=10, size=0),
-        ScalarRecord(name=error_max, max_size=10, size=0),
-        ScalarRecord(name=error_sum, max_size=10, size=0))
+        (MinScalarRecord(name=error_mean, max_size=10, size=0),
+         MinScalarRecord(name=error_min, max_size=10, size=0),
+         MinScalarRecord(name=error_max, max_size=10, size=0),
+         MinScalarRecord(name=error_sum, max_size=10, size=0))
 
         ```
         """
