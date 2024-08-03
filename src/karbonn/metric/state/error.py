@@ -75,7 +75,7 @@ class ErrorState(BaseState):
             str_mapping(
                 {
                     "meter": self._meter,
-                    "num_predictions": self.num_predictions,
+                    "num_predictions": f"{self.num_predictions:,}",
                     "track_num_predictions": self._track_num_predictions,
                 }
             )
@@ -186,7 +186,7 @@ class MeanErrorState(BaseState):
             str_mapping(
                 {
                     "meter": self._meter,
-                    "num_predictions": self.num_predictions,
+                    "num_predictions": f"{self.num_predictions:,}",
                     "track_num_predictions": self._track_num_predictions,
                 }
             )
