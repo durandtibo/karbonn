@@ -70,19 +70,19 @@ def test_error_state_reset() -> None:
 def test_error_state_update_1d() -> None:
     state = ErrorState()
     state.update(torch.arange(6))
-    assert state._meter.count == 6
-    assert state._meter.sum() == 15.0
-    assert state._meter.max() == 5.0
-    assert state._meter.min() == 0.0
+    assert state._tracker.count == 6
+    assert state._tracker.sum() == 15.0
+    assert state._tracker.max() == 5.0
+    assert state._tracker.min() == 0.0
 
 
 def test_error_state_update_2d() -> None:
     state = ErrorState()
     state.update(torch.arange(6).view(2, 3))
-    assert state._meter.count == 6
-    assert state._meter.sum() == 15.0
-    assert state._meter.max() == 5.0
-    assert state._meter.min() == 0.0
+    assert state._tracker.count == 6
+    assert state._tracker.sum() == 15.0
+    assert state._tracker.max() == 5.0
+    assert state._tracker.min() == 0.0
 
 
 def test_error_state_value() -> None:
@@ -163,15 +163,15 @@ def test_mean_error_state_reset() -> None:
 def test_mean_error_state_update_1d() -> None:
     state = MeanErrorState()
     state.update(torch.arange(6))
-    assert state._meter.count == 6
-    assert state._meter.sum() == 15.0
+    assert state._tracker.count == 6
+    assert state._tracker.sum() == 15.0
 
 
 def test_mean_error_state_update_2d() -> None:
     state = MeanErrorState()
     state.update(torch.arange(6).view(2, 3))
-    assert state._meter.count == 6
-    assert state._meter.sum() == 15.0
+    assert state._tracker.count == 6
+    assert state._tracker.sum() == 15.0
 
 
 def test_mean_error_state_value() -> None:
@@ -406,15 +406,15 @@ def test_root_mean_error_state_reset() -> None:
 def test_root_mean_error_state_update_1d() -> None:
     state = RootMeanErrorState()
     state.update(torch.arange(6))
-    assert state._meter.count == 6
-    assert state._meter.sum() == 15.0
+    assert state._tracker.count == 6
+    assert state._tracker.sum() == 15.0
 
 
 def test_root_mean_error_state_update_2d() -> None:
     state = RootMeanErrorState()
     state.update(torch.arange(6).view(2, 3))
-    assert state._meter.count == 6
-    assert state._meter.sum() == 15.0
+    assert state._tracker.count == 6
+    assert state._tracker.sum() == 15.0
 
 
 def test_root_mean_error_state_value() -> None:

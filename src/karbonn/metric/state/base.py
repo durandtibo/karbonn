@@ -39,7 +39,7 @@ class BaseState(ABC, metaclass=AbstractFactory):
     >>> state = ErrorState()
     >>> state
     ErrorState(
-      (meter): ScalableTensorTracker(count=0, total=0.0, min_value=inf, max_value=-inf)
+      (tracker): ScalableTensorTracker(count=0, total=0.0, min_value=inf, max_value=-inf)
       (track_num_predictions): True
     )
     >>> state.get_records("error_")
@@ -105,13 +105,13 @@ class BaseState(ABC, metaclass=AbstractFactory):
         >>> state.update(torch.arange(6))
         >>> state
         ErrorState(
-          (meter): ScalableTensorTracker(count=6, total=15.0, min_value=0, max_value=5)
+          (tracker): ScalableTensorTracker(count=6, total=15.0, min_value=0, max_value=5)
           (track_num_predictions): True
         )
         >>> state.reset()
         >>> state
         ErrorState(
-          (meter): ScalableTensorTracker(count=0, total=0.0, min_value=inf, max_value=-inf)
+          (tracker): ScalableTensorTracker(count=0, total=0.0, min_value=inf, max_value=-inf)
           (track_num_predictions): True
         )
 
@@ -139,7 +139,7 @@ class BaseState(ABC, metaclass=AbstractFactory):
         >>> state.update(torch.arange(6))
         >>> state
         ErrorState(
-          (meter): ScalableTensorTracker(count=6, total=15.0, min_value=0, max_value=5)
+          (tracker): ScalableTensorTracker(count=6, total=15.0, min_value=0, max_value=5)
           (track_num_predictions): True
         )
 
@@ -223,7 +223,7 @@ def setup_state(state: BaseState | dict) -> BaseState:
     >>> state = setup_state({"_target_": "karbonn.metric.state.ErrorState"})
     >>> state
     ErrorState(
-      (meter): ScalableTensorTracker(count=0, total=0.0, min_value=inf, max_value=-inf)
+      (tracker): ScalableTensorTracker(count=0, total=0.0, min_value=inf, max_value=-inf)
       (track_num_predictions): True
     )
 
