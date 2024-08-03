@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 from coola.utils import repr_indent, repr_mapping, str_indent, str_mapping
 from minrecord import BaseRecord, MinScalarRecord
 
-from karbonn.metric import EmptyMetricError
+from karbonn.metric.base import EmptyMetricError
 from karbonn.metric.state.base import BaseState
 from karbonn.utils.tensor import to_tensor
 from karbonn.utils.tracker import (
@@ -30,6 +30,10 @@ class ErrorState(BaseState):
     errors.
 
     This state has a constant space complexity.
+
+    Args:
+        track_num_predictions: If ``True``, the state tracks and
+            returns the number of predictions.
 
     Example usage:
 
