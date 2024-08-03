@@ -9,7 +9,13 @@ __all__ = [
     "ExtendedErrorState",
     "is_state_config",
     "setup_state",
+    "RootMeanErrorState",
 ]
 
 from karbonn.metric.state.base import BaseState, is_state_config, setup_state
-from karbonn.metric.state.error import ErrorState, ExtendedErrorState, MeanErrorState
+from karbonn.metric.state.error import (
+    ErrorState,
+    ExtendedErrorState,
+    MeanErrorState,
+    RootMeanErrorState,
+)

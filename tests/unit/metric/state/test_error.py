@@ -8,7 +8,12 @@ from coola import objects_are_allclose
 from minrecord import MinScalarRecord
 
 from karbonn.metric import EmptyMetricError
-from karbonn.metric.state import ErrorState, ExtendedErrorState, MeanErrorState
+from karbonn.metric.state import (
+    ErrorState,
+    ExtendedErrorState,
+    MeanErrorState,
+    RootMeanErrorState,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -229,37 +234,37 @@ def test_extended_error_state_init_quantiles_empty() -> None:
 
 
 def test_extended_error_state_get_records_no_quantile() -> None:
-    histories = ExtendedErrorState().get_records()
-    assert len(histories) == 5
-    assert isinstance(histories[0], MinScalarRecord)
-    assert histories[0].name == "mean"
-    assert isinstance(histories[1], MinScalarRecord)
-    assert histories[1].name == "median"
-    assert isinstance(histories[2], MinScalarRecord)
-    assert histories[2].name == "min"
-    assert isinstance(histories[3], MinScalarRecord)
-    assert histories[3].name == "max"
-    assert isinstance(histories[4], MinScalarRecord)
-    assert histories[4].name == "sum"
+    records = ExtendedErrorState().get_records()
+    assert len(records) == 5
+    assert isinstance(records[0], MinScalarRecord)
+    assert records[0].name == "mean"
+    assert isinstance(records[1], MinScalarRecord)
+    assert records[1].name == "median"
+    assert isinstance(records[2], MinScalarRecord)
+    assert records[2].name == "min"
+    assert isinstance(records[3], MinScalarRecord)
+    assert records[3].name == "max"
+    assert isinstance(records[4], MinScalarRecord)
+    assert records[4].name == "sum"
 
 
 def test_extended_error_state_get_records_quantiles() -> None:
-    histories = ExtendedErrorState(quantiles=[0.5, 0.9]).get_records()
-    assert len(histories) == 7
-    assert isinstance(histories[0], MinScalarRecord)
-    assert histories[0].name == "mean"
-    assert isinstance(histories[1], MinScalarRecord)
-    assert histories[1].name == "median"
-    assert isinstance(histories[2], MinScalarRecord)
-    assert histories[2].name == "min"
-    assert isinstance(histories[3], MinScalarRecord)
-    assert histories[3].name == "max"
-    assert isinstance(histories[4], MinScalarRecord)
-    assert histories[4].name == "sum"
-    assert isinstance(histories[5], MinScalarRecord)
-    assert histories[5].name == "quantile_0.5"
-    assert isinstance(histories[6], MinScalarRecord)
-    assert histories[6].name == "quantile_0.9"
+    records = ExtendedErrorState(quantiles=[0.5, 0.9]).get_records()
+    assert len(records) == 7
+    assert isinstance(records[0], MinScalarRecord)
+    assert records[0].name == "mean"
+    assert isinstance(records[1], MinScalarRecord)
+    assert records[1].name == "median"
+    assert isinstance(records[2], MinScalarRecord)
+    assert records[2].name == "min"
+    assert isinstance(records[3], MinScalarRecord)
+    assert records[3].name == "max"
+    assert isinstance(records[4], MinScalarRecord)
+    assert records[4].name == "sum"
+    assert isinstance(records[5], MinScalarRecord)
+    assert records[5].name == "quantile_0.5"
+    assert isinstance(records[6], MinScalarRecord)
+    assert records[6].name == "quantile_0.9"
 
 
 def test_extended_error_state_reset() -> None:
@@ -358,4 +363,90 @@ def test_extended_error_state_value_prefix_suffix(prefix: str, suffix: str) -> N
 def test_extended_error_state_value_empty() -> None:
     state = ExtendedErrorState()
     with pytest.raises(EmptyMetricError, match="ExtendedErrorState is empty"):
+        state.value()
+
+
+########################################
+#     Tests for RootMeanErrorState     #
+########################################
+
+
+def test_root_mean_error_state_repr() -> None:
+    assert repr(RootMeanErrorState()).startswith("RootMeanErrorState(")
+
+
+def test_root_mean_error_state_str() -> None:
+    assert str(RootMeanErrorState()).startswith("RootMeanErrorState(")
+
+
+def test_root_mean_error_state_get_records() -> None:
+    records = RootMeanErrorState().get_records()
+    assert len(records) == 1
+    assert isinstance(records[0], MinScalarRecord)
+    assert records[0].name == "root_mean"
+
+
+@pytest.mark.parametrize("prefix", ["", "prefix_"])
+@pytest.mark.parametrize("suffix", ["", "_suffix"])
+def test_root_mean_error_state_get_records_prefix_suffix(prefix: str, suffix: str) -> None:
+    records = RootMeanErrorState().get_records(prefix, suffix)
+    assert len(records) == 1
+    assert isinstance(records[0], MinScalarRecord)
+    assert records[0].name == f"{prefix}root_mean{suffix}"
+
+
+def test_root_mean_error_state_reset() -> None:
+    state = RootMeanErrorState()
+    state.update(torch.arange(6))
+    assert state.num_predictions == 6
+    state.reset()
+    assert state.num_predictions == 0
+
+
+def test_root_mean_error_state_update_1d() -> None:
+    state = RootMeanErrorState()
+    state.update(torch.arange(6))
+    assert state._meter.count == 6
+    assert state._meter.sum() == 15.0
+
+
+def test_root_mean_error_state_update_2d() -> None:
+    state = RootMeanErrorState()
+    state.update(torch.arange(6).view(2, 3))
+    assert state._meter.count == 6
+    assert state._meter.sum() == 15.0
+
+
+def test_root_mean_error_state_value() -> None:
+    state = RootMeanErrorState()
+    state.update(torch.tensor([1, 9, 2, 7, 3, 2]))
+    assert state.value() == {"root_mean": 2.0, "num_predictions": 6}
+
+
+def test_root_mean_error_state_value_correct() -> None:
+    state = RootMeanErrorState()
+    state.update(torch.zeros(4))
+    assert state.value() == {"root_mean": 0.0, "num_predictions": 4}
+
+
+def test_root_mean_error_state_value_track_num_predictions_false() -> None:
+    state = RootMeanErrorState(track_num_predictions=False)
+    state.update(torch.tensor([1, 9, 2, 7, 3, 2]))
+    assert state.value() == {"root_mean": 2.0}
+
+
+@pytest.mark.parametrize("prefix", ["", "prefix_"])
+@pytest.mark.parametrize("suffix", ["", "_suffix"])
+def test_root_mean_error_state_value_prefix_suffix(prefix: str, suffix: str) -> None:
+    state = RootMeanErrorState()
+    state.update(torch.tensor([1, 9, 2, 7, 3, 2]))
+    assert state.value(prefix, suffix) == {
+        f"{prefix}root_mean{suffix}": 2.0,
+        f"{prefix}num_predictions{suffix}": 6,
+    }
+
+
+def test_root_mean_error_state_value_empty() -> None:
+    state = RootMeanErrorState()
+    with pytest.raises(EmptyMetricError, match="RootMeanErrorState is empty"):
         state.value()
