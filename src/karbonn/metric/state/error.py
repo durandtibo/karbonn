@@ -40,7 +40,7 @@ class ErrorState(BaseState):
     >>> state = ErrorState()
     >>> state
     ErrorState(
-      (meter): ScalableTensorTracker(count=0, total=0.0, min_value=inf, max_value=-inf)
+      (tracker): ScalableTensorTracker(count=0, total=0.0, min_value=inf, max_value=-inf)
       (track_num_predictions): True
     )
     >>> state.get_records("error_")
@@ -60,13 +60,13 @@ class ErrorState(BaseState):
     """
 
     def __init__(self, track_num_predictions: bool = True) -> None:
-        self._meter = ScalableTensorTracker()
+        self._tracker = ScalableTensorTracker()
         self._track_num_predictions = bool(track_num_predictions)
 
     def __repr__(self) -> str:
         args = repr_indent(
             repr_mapping(
-                {"meter": self._meter, "track_num_predictions": self._track_num_predictions}
+                {"tracker": self._tracker, "track_num_predictions": self._track_num_predictions}
             )
         )
         return f"{self.__class__.__qualname__}(\n  {args}\n)"
@@ -75,7 +75,7 @@ class ErrorState(BaseState):
         args = str_indent(
             str_mapping(
                 {
-                    "meter": self._meter,
+                    "tracker": self._tracker,
                     "num_predictions": f"{self.num_predictions:,}",
                     "track_num_predictions": self._track_num_predictions,
                 }
@@ -85,7 +85,7 @@ class ErrorState(BaseState):
 
     @property
     def num_predictions(self) -> int:
-        return self._meter.count
+        return self._tracker.count
 
     def get_records(self, prefix: str = "", suffix: str = "") -> tuple[BaseRecord, ...]:
         return (
@@ -96,7 +96,7 @@ class ErrorState(BaseState):
         )
 
     def reset(self) -> None:
-        self._meter.reset()
+        self._tracker.reset()
 
     def update(self, error: torch.Tensor) -> None:
         r"""Update the metric state with a new tensor of errors.
@@ -121,22 +121,22 @@ class ErrorState(BaseState):
 
         ```
         """
-        self._meter.update(error.detach())
+        self._tracker.update(error.detach())
 
     def value(self, prefix: str = "", suffix: str = "") -> dict[str, int | float]:
-        meter = self._meter.all_reduce()
-        if not meter.count:
+        tracker = self._tracker.all_reduce()
+        if not tracker.count:
             msg = f"{self.__class__.__qualname__} is empty"
             raise EmptyMetricError(msg)
 
         results = {
-            f"{prefix}mean{suffix}": self._meter.mean(),
-            f"{prefix}min{suffix}": self._meter.min(),
-            f"{prefix}max{suffix}": self._meter.max(),
-            f"{prefix}sum{suffix}": self._meter.sum(),
+            f"{prefix}mean{suffix}": self._tracker.mean(),
+            f"{prefix}min{suffix}": self._tracker.min(),
+            f"{prefix}max{suffix}": self._tracker.max(),
+            f"{prefix}sum{suffix}": self._tracker.sum(),
         }
         if self._track_num_predictions:
-            results[f"{prefix}num_predictions{suffix}"] = meter.count
+            results[f"{prefix}num_predictions{suffix}"] = tracker.count
         return results
 
 
@@ -158,7 +158,7 @@ class MeanErrorState(BaseState):
     >>> state = MeanErrorState()
     >>> state
     MeanErrorState(
-      (meter): MeanTensorTracker(count=0, total=0.0)
+      (tracker): MeanTensorTracker(count=0, total=0.0)
       (track_num_predictions): True
     )
     >>> state.get_records("error_")
@@ -171,13 +171,13 @@ class MeanErrorState(BaseState):
     """
 
     def __init__(self, track_num_predictions: bool = True) -> None:
-        self._meter = MeanTensorTracker()
+        self._tracker = MeanTensorTracker()
         self._track_num_predictions = bool(track_num_predictions)
 
     def __repr__(self) -> str:
         args = repr_indent(
             repr_mapping(
-                {"meter": self._meter, "track_num_predictions": self._track_num_predictions}
+                {"tracker": self._tracker, "track_num_predictions": self._track_num_predictions}
             )
         )
         return f"{self.__class__.__qualname__}(\n  {args}\n)"
@@ -186,7 +186,7 @@ class MeanErrorState(BaseState):
         args = str_indent(
             str_mapping(
                 {
-                    "meter": self._meter,
+                    "tracker": self._tracker,
                     "num_predictions": f"{self.num_predictions:,}",
                     "track_num_predictions": self._track_num_predictions,
                 }
@@ -196,13 +196,13 @@ class MeanErrorState(BaseState):
 
     @property
     def num_predictions(self) -> int:
-        return self._meter.count
+        return self._tracker.count
 
     def get_records(self, prefix: str = "", suffix: str = "") -> tuple[BaseRecord, ...]:
         return (MinScalarRecord(name=f"{prefix}mean{suffix}"),)
 
     def reset(self) -> None:
-        self._meter.reset()
+        self._tracker.reset()
 
     def update(self, error: torch.Tensor) -> None:
         r"""Update the metric state with a new tensor of errors.
@@ -224,17 +224,17 @@ class MeanErrorState(BaseState):
 
         ```
         """
-        self._meter.update(error.detach())
+        self._tracker.update(error.detach())
 
     def value(self, prefix: str = "", suffix: str = "") -> dict[str, int | float]:
-        meter = self._meter.all_reduce()
-        if not meter.count:
+        tracker = self._tracker.all_reduce()
+        if not tracker.count:
             msg = f"{self.__class__.__qualname__} is empty"
             raise EmptyMetricError(msg)
 
-        results = {f"{prefix}mean{suffix}": self._meter.mean()}
+        results = {f"{prefix}mean{suffix}": self._tracker.mean()}
         if self._track_num_predictions:
-            results[f"{prefix}num_predictions{suffix}"] = meter.count
+            results[f"{prefix}num_predictions{suffix}"] = tracker.count
         return results
 
 
@@ -259,7 +259,7 @@ class ExtendedErrorState(BaseState):
     >>> state = ExtendedErrorState(quantiles=[0.5, 0.9])
     >>> state
     ExtendedErrorState(
-      (meter): TensorTracker(count=0)
+      (tracker): TensorTracker(count=0)
       (quantiles): tensor([0.5000, 0.9000])
       (track_num_predictions): True
     )
@@ -289,7 +289,7 @@ class ExtendedErrorState(BaseState):
     def __init__(
         self, quantiles: torch.Tensor | Sequence[float] = (), track_num_predictions: bool = True
     ) -> None:
-        self._meter = TensorTracker()
+        self._tracker = TensorTracker()
         self._quantiles = to_tensor(quantiles)
         self._track_num_predictions = bool(track_num_predictions)
 
@@ -297,7 +297,7 @@ class ExtendedErrorState(BaseState):
         args = repr_indent(
             repr_mapping(
                 {
-                    "meter": self._meter,
+                    "tracker": self._tracker,
                     "quantiles": self._quantiles,
                     "track_num_predictions": self._track_num_predictions,
                 }
@@ -309,7 +309,7 @@ class ExtendedErrorState(BaseState):
         args = str_indent(
             str_mapping(
                 {
-                    "meter": self._meter,
+                    "tracker": self._tracker,
                     "num_predictions": self.num_predictions,
                     "quantiles": self._quantiles,
                     "track_num_predictions": self._track_num_predictions,
@@ -320,7 +320,7 @@ class ExtendedErrorState(BaseState):
 
     @property
     def num_predictions(self) -> int:
-        return self._meter.count
+        return self._tracker.count
 
     def get_records(self, prefix: str = "", suffix: str = "") -> tuple[BaseRecord, ...]:
         trackers = [
@@ -336,7 +336,7 @@ class ExtendedErrorState(BaseState):
         return tuple(trackers)
 
     def reset(self) -> None:
-        self._meter.reset()
+        self._tracker.reset()
 
     def update(self, error: torch.Tensor) -> None:
         r"""Update the metric state with a new tensor of errors.
@@ -365,28 +365,28 @@ class ExtendedErrorState(BaseState):
 
         ```
         """
-        self._meter.update(error.detach().cpu())
+        self._tracker.update(error.detach().cpu())
 
     def value(self, prefix: str = "", suffix: str = "") -> dict[str, int | float]:
-        meter = self._meter.all_reduce()
-        if not meter.count:
+        tracker = self._tracker.all_reduce()
+        if not tracker.count:
             msg = f"{self.__class__.__qualname__} is empty"
             raise EmptyMetricError(msg)
 
         results = {
-            f"{prefix}mean{suffix}": self._meter.mean(),
-            f"{prefix}median{suffix}": self._meter.median(),
-            f"{prefix}min{suffix}": self._meter.min(),
-            f"{prefix}max{suffix}": self._meter.max(),
-            f"{prefix}sum{suffix}": self._meter.sum(),
-            f"{prefix}std{suffix}": self._meter.std(),
+            f"{prefix}mean{suffix}": self._tracker.mean(),
+            f"{prefix}median{suffix}": self._tracker.median(),
+            f"{prefix}min{suffix}": self._tracker.min(),
+            f"{prefix}max{suffix}": self._tracker.max(),
+            f"{prefix}sum{suffix}": self._tracker.sum(),
+            f"{prefix}std{suffix}": self._tracker.std(),
         }
         if self._quantiles.numel() > 0:
-            values = self._meter.quantile(self._quantiles)
+            values = self._tracker.quantile(self._quantiles)
             for q, v in zip(self._quantiles, values):
                 results[f"{prefix}quantile_{q:g}{suffix}"] = v.item()
         if self._track_num_predictions:
-            results[f"{prefix}num_predictions{suffix}"] = meter.count
+            results[f"{prefix}num_predictions{suffix}"] = tracker.count
         return results
 
 
@@ -408,7 +408,7 @@ class RootMeanErrorState(BaseState):
     >>> state = RootMeanErrorState()
     >>> state
     RootMeanErrorState(
-      (meter): MeanTensorTracker(count=0, total=0.0)
+      (tracker): MeanTensorTracker(count=0, total=0.0)
       (track_num_predictions): True
     )
     >>> state.get_records("error_")
@@ -421,26 +421,26 @@ class RootMeanErrorState(BaseState):
     """
 
     def __init__(self, track_num_predictions: bool = True) -> None:
-        self._meter = MeanTensorTracker()
+        self._tracker = MeanTensorTracker()
         self._track_num_predictions = bool(track_num_predictions)
 
     def __repr__(self) -> str:
         args = str_indent(
             str_mapping(
-                {"meter": self._meter, "track_num_predictions": self._track_num_predictions}
+                {"tracker": self._tracker, "track_num_predictions": self._track_num_predictions}
             )
         )
         return f"{self.__class__.__qualname__}(\n  {args}\n)"
 
     @property
     def num_predictions(self) -> int:
-        return self._meter.count
+        return self._tracker.count
 
     def get_records(self, prefix: str = "", suffix: str = "") -> tuple[BaseRecord, ...]:
         return (MinScalarRecord(name=f"{prefix}root_mean{suffix}"),)
 
     def reset(self) -> None:
-        self._meter.reset()
+        self._tracker.reset()
 
     def update(self, error: torch.Tensor) -> None:
         r"""Update the metric state with a new tensor of errors.
@@ -461,15 +461,15 @@ class RootMeanErrorState(BaseState):
 
         ```
         """
-        self._meter.update(error.detach())
+        self._tracker.update(error.detach())
 
     def value(self, prefix: str = "", suffix: str = "") -> dict[str, int | float]:
-        meter = self._meter.all_reduce()
-        if not meter.count:
+        tracker = self._tracker.all_reduce()
+        if not tracker.count:
             msg = f"{self.__class__.__qualname__} is empty"
             raise EmptyMetricError(msg)
 
-        results = {f"{prefix}root_mean{suffix}": math.sqrt(self._meter.mean())}
+        results = {f"{prefix}root_mean{suffix}": math.sqrt(self._tracker.mean())}
         if self._track_num_predictions:
-            results[f"{prefix}num_predictions{suffix}"] = meter.count
+            results[f"{prefix}num_predictions{suffix}"] = tracker.count
         return results
