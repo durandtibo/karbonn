@@ -28,18 +28,14 @@ class BaseState(ABC, metaclass=AbstractFactory):
     >>> state = ErrorState()
     >>> state
     ErrorState(
-      (meter): TensorMeter
-          count   : 0
-          sum     : N/A (empty)
-          average : N/A (empty)
-          min     : N/A (empty)
-          max     : N/A (empty)
+      (meter): ScalableTensorTracker(count=0, total=0.0, min_value=inf, max_value=-inf)
+      (track_num_predictions): True
     )
     >>> state.get_records("error_")
-    (MinScalarHistory(name=error_mean, max_size=10, history=()),
-     MinScalarHistory(name=error_min, max_size=10, history=()),
-     MinScalarHistory(name=error_max, max_size=10, history=()),
-     MinScalarHistory(name=error_sum, max_size=10, history=()))
+    (MinScalarRecord(name=error_mean, max_size=10, size=0),
+     MinScalarRecord(name=error_min, max_size=10, size=0),
+     MinScalarRecord(name=error_max, max_size=10, size=0),
+     MinScalarRecord(name=error_sum, max_size=10, size=0))
     >>> state.update(torch.arange(6))
     >>> state.value("error_")
     {'error_mean': 2.5,
@@ -79,10 +75,10 @@ class BaseState(ABC, metaclass=AbstractFactory):
         >>> from karbonn.metric.state import ErrorState
         >>> state = ErrorState()
         >>> state.get_records("error_")
-        (MinScalarHistory(name=error_mean, max_size=10, history=()),
-         MinScalarHistory(name=error_min, max_size=10, history=()),
-         MinScalarHistory(name=error_max, max_size=10, history=()),
-         MinScalarHistory(name=error_sum, max_size=10, history=()))
+        ScalarRecord(name=error_mean, max_size=10, size=0),
+        ScalarRecord(name=error_min, max_size=10, size=0),
+        ScalarRecord(name=error_max, max_size=10, size=0),
+        ScalarRecord(name=error_sum, max_size=10, size=0))
 
         ```
         """
@@ -101,22 +97,14 @@ class BaseState(ABC, metaclass=AbstractFactory):
         >>> state.update(torch.arange(6))
         >>> state
         ErrorState(
-          (meter): TensorMeter
-              count   : 6
-              sum     : 15.0
-              average : 2.5
-              min     : 0.0
-              max     : 5.0
+          (meter): ScalableTensorTracker(count=6, total=15.0, min_value=0, max_value=5)
+          (track_num_predictions): True
         )
         >>> state.reset()
         >>> state
         ErrorState(
-          (meter): TensorMeter
-              count   : 0
-              sum     : N/A (empty)
-              average : N/A (empty)
-              min     : N/A (empty)
-              max     : N/A (empty)
+          (meter): ScalableTensorTracker(count=0, total=0.0, min_value=inf, max_value=-inf)
+          (track_num_predictions): True
         )
 
         ```
@@ -143,12 +131,8 @@ class BaseState(ABC, metaclass=AbstractFactory):
         >>> state.update(torch.arange(6))
         >>> state
         ErrorState(
-          (meter): TensorMeter
-              count   : 6
-              sum     : 15.0
-              average : 2.5
-              min     : 0.0
-              max     : 5.0
+          (meter): ScalableTensorTracker(count=6, total=15.0, min_value=0, max_value=5)
+          (track_num_predictions): True
         )
 
         ```
