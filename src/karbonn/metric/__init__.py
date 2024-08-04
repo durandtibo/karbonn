@@ -9,8 +9,13 @@ __all__ = [
     "BaseStateMetric",
     "AbsoluteError",
     "AbsoluteRelativeError",
+    "SymmetricAbsoluteRelativeError",
 ]
 
 from karbonn.metric.base import BaseMetric, EmptyMetricError, setup_metric
-from karbonn.metric.regression import AbsoluteError, AbsoluteRelativeError
+from karbonn.metric.regression import (
+    AbsoluteError,
+    AbsoluteRelativeError,
+    SymmetricAbsoluteRelativeError,
+)
 from karbonn.metric.state_ import BaseStateMetric
