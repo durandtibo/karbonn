@@ -203,8 +203,8 @@ def test_absolute_error_value_empty() -> None:
 
 
 @pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("prefix", ["abs_err_", "abs_err/"])
-@pytest.mark.parametrize("suffix", ["_abs_err", "/abs_err"])
+@pytest.mark.parametrize("prefix", ["prefix_", "suffix/"])
+@pytest.mark.parametrize("suffix", ["_prefix", "/suffix"])
 def test_absolute_error_value_prefix_suffix(device: str, prefix: str, suffix: str) -> None:
     device = torch.device(device)
     metric = AbsoluteError().to(device=device)
