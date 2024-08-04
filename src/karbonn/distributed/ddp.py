@@ -3,7 +3,7 @@ setting."""
 
 from __future__ import annotations
 
-__all__ = ["sync_reduce", "sync_reduce_", "BAND", "BOR", "MAX", "MIN", "PRODUCT", "SUM"]
+__all__ = ["BAND", "BOR", "MAX", "MIN", "PRODUCT", "SUM", "sync_reduce", "sync_reduce_"]
 
 from typing import overload
 

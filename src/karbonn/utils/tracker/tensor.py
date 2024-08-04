@@ -2,7 +2,7 @@ r"""Contain trackers for tensors."""
 
 from __future__ import annotations
 
-__all__ = ["MeanTensorTracker", "ExtremaTensorTracker", "TensorTracker", "ScalableTensorTracker"]
+__all__ = ["ExtremaTensorTracker", "MeanTensorTracker", "ScalableTensorTracker", "TensorTracker"]
 
 from typing import TYPE_CHECKING, Any
 
