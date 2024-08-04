@@ -38,6 +38,17 @@ jobs:
       - name: check karbonn.functional
         run: |
           poetry run python -c "from karbonn import functional"
+
+      - name: check karbonn.metric
+        run: |
+          poetry run python -c "from karbonn import metric"
+      - name: check karbonn.metric.regression
+        run: |
+          poetry run python -c "from karbonn.metric import regression"
+      - name: check karbonn.metric.state
+        run: |
+          poetry run python -c "from karbonn.metric import state"
+
       - name: check karbonn.modules
         run: |
           poetry run python -c "from karbonn import modules"
