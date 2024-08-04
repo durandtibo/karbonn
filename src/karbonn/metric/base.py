@@ -32,17 +32,6 @@ class BaseMetric(Module, metaclass=AbstractFactory):
         - ``value``
     """
 
-    # @abstractmethod
-    # def forward(self, *args: Any, **kwargs: Any) -> dict | None:
-    #     r"""Update the metric given a mini-batch of examples.
-    #
-    #     Args:
-    #         *args: Variable length argument list.
-    #         **kwargs: Arbitrary keyword arguments.
-    #
-    #     Returns:
-    #     """
-
     @abstractmethod
     def reset(self) -> None:
         r"""Reset the metric."""
@@ -62,7 +51,7 @@ class BaseMetric(Module, metaclass=AbstractFactory):
 
 
 class EmptyMetricError(Exception):
-    r"""Raised when you try to evaluate an empty metric."""
+    r"""Raised when an empty metric is evaluated."""
 
 
 def setup_metric(metric: BaseMetric | dict) -> BaseMetric:
