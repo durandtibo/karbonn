@@ -416,10 +416,10 @@ class RootMeanErrorState(BaseState):
       (track_num_predictions): True
     )
     >>> state.get_records("error_")
-    (MinScalarRecord(name=error_root_mean, max_size=10, size=0),)
+    (MinScalarRecord(name=error_mean, max_size=10, size=0),)
     >>> state.update(torch.arange(6))
     >>> state.value("error_")
-    {'error_root_mean': 1.581..., 'error_num_predictions': 6}
+    {'error_mean': 1.581..., 'error_num_predictions': 6}
 
     ```
     """
@@ -441,7 +441,7 @@ class RootMeanErrorState(BaseState):
         return self._tracker.count
 
     def get_records(self, prefix: str = "", suffix: str = "") -> tuple[BaseRecord, ...]:
-        return (MinScalarRecord(name=f"{prefix}root_mean{suffix}"),)
+        return (MinScalarRecord(name=f"{prefix}mean{suffix}"),)
 
     def reset(self) -> None:
         self._tracker.reset()
@@ -461,7 +461,7 @@ class RootMeanErrorState(BaseState):
         >>> state = RootMeanErrorState()
         >>> state.update(torch.arange(6))
         >>> state.value("error_")
-        {'error_root_mean': 1.5811388300841898, 'error_num_predictions': 6}
+        {'error_mean': 1.5811388300841898, 'error_num_predictions': 6}
 
         ```
         """
@@ -473,7 +473,7 @@ class RootMeanErrorState(BaseState):
             msg = f"{self.__class__.__qualname__} is empty"
             raise EmptyMetricError(msg)
 
-        results = {f"{prefix}root_mean{suffix}": math.sqrt(self._tracker.mean())}
+        results = {f"{prefix}mean{suffix}": math.sqrt(self._tracker.mean())}
         if self._track_num_predictions:
             results[f"{prefix}num_predictions{suffix}"] = tracker.count
         return results

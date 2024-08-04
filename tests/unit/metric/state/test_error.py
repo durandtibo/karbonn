@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 import torch
-from coola import objects_are_allclose, objects_are_equal
+from coola import objects_are_allclose
 from minrecord import MinScalarRecord
 
 from karbonn.metric import EmptyMetricError
@@ -88,22 +88,19 @@ def test_error_state_update_2d() -> None:
 def test_error_state_value() -> None:
     state = ErrorState()
     state.update(torch.arange(6))
-    assert objects_are_equal(
-        state.value(),
-        {
-            "mean": 2.5,
-            "min": 0.0,
-            "max": 5.0,
-            "sum": 15.0,
-            "num_predictions": 6,
-        },
-    )
+    assert state.value() == {
+        "mean": 2.5,
+        "min": 0.0,
+        "max": 5.0,
+        "sum": 15.0,
+        "num_predictions": 6,
+    }
 
 
 def test_error_state_value_num_predictions_false() -> None:
     state = ErrorState(track_num_predictions=False)
     state.update(torch.arange(6))
-    assert objects_are_equal(state.value(), {"mean": 2.5, "min": 0.0, "max": 5.0, "sum": 15.0})
+    assert state.value() == {"mean": 2.5, "min": 0.0, "max": 5.0, "sum": 15.0}
 
 
 @pytest.mark.parametrize("prefix", ["", "prefix_"])
@@ -111,16 +108,13 @@ def test_error_state_value_num_predictions_false() -> None:
 def test_error_state_value_prefix_suffix(prefix: str, suffix: str) -> None:
     state = ErrorState()
     state.update(torch.arange(6))
-    assert objects_are_equal(
-        state.value(prefix, suffix),
-        {
-            f"{prefix}mean{suffix}": 2.5,
-            f"{prefix}min{suffix}": 0.0,
-            f"{prefix}max{suffix}": 5.0,
-            f"{prefix}sum{suffix}": 15.0,
-            f"{prefix}num_predictions{suffix}": 6,
-        },
-    )
+    assert state.value(prefix, suffix) == {
+        f"{prefix}mean{suffix}": 2.5,
+        f"{prefix}min{suffix}": 0.0,
+        f"{prefix}max{suffix}": 5.0,
+        f"{prefix}sum{suffix}": 15.0,
+        f"{prefix}num_predictions{suffix}": 6,
+    }
 
 
 def test_error_state_value_empty() -> None:
@@ -340,19 +334,19 @@ def test_mean_error_state_update_2d() -> None:
 def test_mean_error_state_value() -> None:
     state = MeanErrorState()
     state.update(torch.arange(6))
-    assert objects_are_equal(state.value(), {"mean": 2.5, "num_predictions": 6})
+    assert state.value() == {"mean": 2.5, "num_predictions": 6}
 
 
 def test_mean_error_state_value_correct() -> None:
     state = MeanErrorState()
     state.update(torch.zeros(4))
-    assert objects_are_equal(state.value(), {"mean": 0.0, "num_predictions": 4})
+    assert state.value() == {"mean": 0.0, "num_predictions": 4}
 
 
 def test_mean_error_state_value_track_num_predictions_false() -> None:
     state = MeanErrorState(track_num_predictions=False)
     state.update(torch.arange(6))
-    assert objects_are_equal(state.value(), {"mean": 2.5})
+    assert state.value() == {"mean": 2.5}
 
 
 @pytest.mark.parametrize("prefix", ["", "prefix_"])
@@ -360,13 +354,10 @@ def test_mean_error_state_value_track_num_predictions_false() -> None:
 def test_mean_error_state_value_prefix_suffix(prefix: str, suffix: str) -> None:
     state = MeanErrorState()
     state.update(torch.arange(6))
-    assert objects_are_equal(
-        state.value(prefix, suffix),
-        {
-            f"{prefix}mean{suffix}": 2.5,
-            f"{prefix}num_predictions{suffix}": 6,
-        },
-    )
+    assert state.value(prefix, suffix) == {
+        f"{prefix}mean{suffix}": 2.5,
+        f"{prefix}num_predictions{suffix}": 6,
+    }
 
 
 def test_mean_error_state_value_empty() -> None:
@@ -392,7 +383,7 @@ def test_root_mean_error_state_get_records() -> None:
     records = RootMeanErrorState().get_records()
     assert len(records) == 1
     assert isinstance(records[0], MinScalarRecord)
-    assert records[0].name == "root_mean"
+    assert records[0].name == "mean"
 
 
 @pytest.mark.parametrize("prefix", ["", "prefix_"])
@@ -401,7 +392,7 @@ def test_root_mean_error_state_get_records_prefix_suffix(prefix: str, suffix: st
     records = RootMeanErrorState().get_records(prefix, suffix)
     assert len(records) == 1
     assert isinstance(records[0], MinScalarRecord)
-    assert records[0].name == f"{prefix}root_mean{suffix}"
+    assert records[0].name == f"{prefix}mean{suffix}"
 
 
 def test_root_mean_error_state_reset() -> None:
@@ -429,19 +420,19 @@ def test_root_mean_error_state_update_2d() -> None:
 def test_root_mean_error_state_value() -> None:
     state = RootMeanErrorState()
     state.update(torch.tensor([1, 9, 2, 7, 3, 2]))
-    assert objects_are_equal(state.value(), {"root_mean": 2.0, "num_predictions": 6})
+    assert state.value() == {"mean": 2.0, "num_predictions": 6}
 
 
 def test_root_mean_error_state_value_correct() -> None:
     state = RootMeanErrorState()
     state.update(torch.zeros(4))
-    assert objects_are_equal(state.value(), {"root_mean": 0.0, "num_predictions": 4})
+    assert state.value() == {"mean": 0.0, "num_predictions": 4}
 
 
 def test_root_mean_error_state_value_track_num_predictions_false() -> None:
     state = RootMeanErrorState(track_num_predictions=False)
     state.update(torch.tensor([1, 9, 2, 7, 3, 2]))
-    assert objects_are_equal(state.value(), {"root_mean": 2.0})
+    assert state.value() == {"mean": 2.0}
 
 
 @pytest.mark.parametrize("prefix", ["", "prefix_"])
@@ -449,13 +440,10 @@ def test_root_mean_error_state_value_track_num_predictions_false() -> None:
 def test_root_mean_error_state_value_prefix_suffix(prefix: str, suffix: str) -> None:
     state = RootMeanErrorState()
     state.update(torch.tensor([1, 9, 2, 7, 3, 2]))
-    assert objects_are_equal(
-        state.value(prefix, suffix),
-        {
-            f"{prefix}root_mean{suffix}": 2.0,
-            f"{prefix}num_predictions{suffix}": 6,
-        },
-    )
+    assert state.value(prefix, suffix) == {
+        f"{prefix}mean{suffix}": 2.0,
+        f"{prefix}num_predictions{suffix}": 6,
+    }
 
 
 def test_root_mean_error_state_value_empty() -> None:
