@@ -11,6 +11,8 @@ __all__ = [
     "AbsoluteRelativeError",
     "SymmetricAbsoluteRelativeError",
     "LogCoshError",
+    "RootMeanSquaredError",
+    "SquaredError",
 ]
 
 from karbonn.metric.base import BaseMetric, EmptyMetricError, setup_metric
@@ -18,6 +20,8 @@ from karbonn.metric.regression import (
     AbsoluteError,
     AbsoluteRelativeError,
     LogCoshError,
+    RootMeanSquaredError,
+    SquaredError,
     SymmetricAbsoluteRelativeError,
 )
 from karbonn.metric.state_ import BaseStateMetric
