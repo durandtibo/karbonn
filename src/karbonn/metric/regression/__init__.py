@@ -7,6 +7,8 @@ __all__ = [
     "AbsoluteRelativeError",
     "SymmetricAbsoluteRelativeError",
     "LogCoshError",
+    "RootMeanSquaredError",
+    "SquaredError",
 ]
 
 from karbonn.metric.regression.absolute_error import AbsoluteError
@@ -15,3 +17,4 @@ from karbonn.metric.regression.absolute_relative_error import (
     SymmetricAbsoluteRelativeError,
 )
 from karbonn.metric.regression.log_cosh_error import LogCoshError
+from karbonn.metric.regression.squared_error import RootMeanSquaredError, SquaredError
