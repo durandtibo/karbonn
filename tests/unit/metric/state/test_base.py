@@ -15,9 +15,9 @@ if is_objectory_available():
 else:  # pragma: no cover
     OBJECT_TARGET = "_target_"
 
-######################################
+#####################################
 #     Tests for is_state_config     #
-######################################
+#####################################
 
 
 @objectory_available
@@ -30,9 +30,9 @@ def test_is_state_config_false() -> None:
     assert not is_state_config({OBJECT_TARGET: "torch.device"})
 
 
-##################################
+#################################
 #     Tests for setup_state     #
-##################################
+#################################
 
 
 @objectory_available
