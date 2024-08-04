@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pytest
 import torch
+from coola import objects_are_equal
 from minrecord import MaxScalarRecord, MinScalarRecord
 
 from karbonn.metric import EmptyMetricError
@@ -61,19 +62,19 @@ def test_accuracy_state_update_2d() -> None:
 def test_accuracy_state_value_correct() -> None:
     state = AccuracyState()
     state.update(torch.ones(4))
-    assert state.value() == {"accuracy": 1.0, "num_predictions": 4}
+    assert objects_are_equal(state.value(), {"accuracy": 1.0, "num_predictions": 4})
 
 
 def test_accuracy_state_value_partially_correct() -> None:
     state = AccuracyState()
     state.update(torch.eye(2))
-    assert state.value() == {"accuracy": 0.5, "num_predictions": 4}
+    assert objects_are_equal(state.value(), {"accuracy": 0.5, "num_predictions": 4})
 
 
 def test_accuracy_state_value_incorrect() -> None:
     state = AccuracyState()
     state.update(torch.zeros(4))
-    assert state.value() == {"accuracy": 0.0, "num_predictions": 4}
+    assert objects_are_equal(state.value(), {"accuracy": 0.0, "num_predictions": 4})
 
 
 def test_accuracy_state_value_track_num_predictions_false() -> None:
@@ -87,10 +88,13 @@ def test_accuracy_state_value_track_num_predictions_false() -> None:
 def test_accuracy_state_value_prefix_suffix(prefix: str, suffix: str) -> None:
     state = AccuracyState()
     state.update(torch.eye(2))
-    assert state.value(prefix, suffix) == {
-        f"{prefix}accuracy{suffix}": 0.5,
-        f"{prefix}num_predictions{suffix}": 4,
-    }
+    assert objects_are_equal(
+        state.value(prefix, suffix),
+        {
+            f"{prefix}accuracy{suffix}": 0.5,
+            f"{prefix}num_predictions{suffix}": 4,
+        },
+    )
 
 
 def test_accuracy_state_value_empty() -> None:
@@ -165,37 +169,46 @@ def test_extended_accuracy_state_update_2d() -> None:
 def test_extended_accuracy_state_value_correct() -> None:
     state = ExtendedAccuracyState()
     state.update(torch.ones(2, 3))
-    assert state.value() == {
-        "accuracy": 1.0,
-        "error": 0.0,
-        "num_correct_predictions": 6,
-        "num_incorrect_predictions": 0,
-        "num_predictions": 6,
-    }
+    assert objects_are_equal(
+        state.value(),
+        {
+            "accuracy": 1.0,
+            "error": 0.0,
+            "num_correct_predictions": 6,
+            "num_incorrect_predictions": 0,
+            "num_predictions": 6,
+        },
+    )
 
 
 def test_extended_accuracy_state_value_partially_correct() -> None:
     state = ExtendedAccuracyState()
     state.update(torch.eye(2))
-    assert state.value() == {
-        "accuracy": 0.5,
-        "error": 0.5,
-        "num_correct_predictions": 2,
-        "num_incorrect_predictions": 2,
-        "num_predictions": 4,
-    }
+    assert objects_are_equal(
+        state.value(),
+        {
+            "accuracy": 0.5,
+            "error": 0.5,
+            "num_correct_predictions": 2,
+            "num_incorrect_predictions": 2,
+            "num_predictions": 4,
+        },
+    )
 
 
 def test_extended_accuracy_state_value_incorrect() -> None:
     state = ExtendedAccuracyState()
     state.update(torch.zeros(2, 3))
-    assert state.value() == {
-        "accuracy": 0.0,
-        "error": 1.0,
-        "num_correct_predictions": 0,
-        "num_incorrect_predictions": 6,
-        "num_predictions": 6,
-    }
+    assert objects_are_equal(
+        state.value(),
+        {
+            "accuracy": 0.0,
+            "error": 1.0,
+            "num_correct_predictions": 0,
+            "num_incorrect_predictions": 6,
+            "num_predictions": 6,
+        },
+    )
 
 
 @pytest.mark.parametrize("prefix", ["", "prefix_"])
@@ -203,22 +216,22 @@ def test_extended_accuracy_state_value_incorrect() -> None:
 def test_extended_accuracy_state_value_prefix_suffix(prefix: str, suffix: str) -> None:
     state = ExtendedAccuracyState()
     state.update(torch.eye(2))
-    assert state.value(prefix, suffix) == {
-        f"{prefix}accuracy{suffix}": 0.5,
-        f"{prefix}error{suffix}": 0.5,
-        f"{prefix}num_correct_predictions{suffix}": 2,
-        f"{prefix}num_incorrect_predictions{suffix}": 2,
-        f"{prefix}num_predictions{suffix}": 4,
-    }
+    assert objects_are_equal(
+        state.value(prefix, suffix),
+        {
+            f"{prefix}accuracy{suffix}": 0.5,
+            f"{prefix}error{suffix}": 0.5,
+            f"{prefix}num_correct_predictions{suffix}": 2,
+            f"{prefix}num_incorrect_predictions{suffix}": 2,
+            f"{prefix}num_predictions{suffix}": 4,
+        },
+    )
 
 
 def test_extended_accuracy_state_value_track_num_predictions_false() -> None:
     state = ExtendedAccuracyState(track_num_predictions=False)
     state.update(torch.eye(2))
-    assert state.value() == {
-        "accuracy": 0.5,
-        "error": 0.5,
-    }
+    assert objects_are_equal(state.value(), {"accuracy": 0.5, "error": 0.5})
 
 
 def test_extended_accuracy_state_value_empty() -> None:
