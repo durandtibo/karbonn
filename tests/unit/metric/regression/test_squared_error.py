@@ -232,6 +232,22 @@ def test_squared_error_value_empty() -> None:
         SquaredError().value()
 
 
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("prefix", ["prefix_", "suffix/"])
+@pytest.mark.parametrize("suffix", ["_prefix", "/suffix"])
+def test_squared_error_value_prefix_suffix(device: str, prefix: str, suffix: str) -> None:
+    device = torch.device(device)
+    metric = SquaredError().to(device=device)
+    metric(torch.ones(2, device=device), torch.ones(2, device=device))
+    assert metric.value(prefix, suffix) == {
+        f"{prefix}mean{suffix}": 0.0,
+        f"{prefix}max{suffix}": 0.0,
+        f"{prefix}min{suffix}": 0.0,
+        f"{prefix}sum{suffix}": 0.0,
+        f"{prefix}num_predictions{suffix}": 2,
+    }
+
+
 def test_squared_error_reset() -> None:
     state = Mock(spec=BaseState)
     metric = SquaredError(state=state)
@@ -403,6 +419,19 @@ def test_root_mean_squared_error_forward_multiple_batches_with_reset(
 def test_root_mean_squared_error_value_empty() -> None:
     with pytest.raises(EmptyMetricError, match="ErrorState is empty"):
         RootMeanSquaredError().value()
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("prefix", ["prefix_", "suffix/"])
+@pytest.mark.parametrize("suffix", ["_prefix", "/suffix"])
+def test_root_mean_squared_error_value_prefix_suffix(device: str, prefix: str, suffix: str) -> None:
+    device = torch.device(device)
+    metric = RootMeanSquaredError().to(device=device)
+    metric(torch.ones(2, device=device), torch.ones(2, device=device))
+    assert metric.value(prefix, suffix) == {
+        f"{prefix}mean{suffix}": 0.0,
+        f"{prefix}num_predictions{suffix}": 2,
+    }
 
 
 def test_root_mean_squared_error_reset() -> None:
