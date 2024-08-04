@@ -47,11 +47,11 @@ def test_absolute_relative_error_init_eps_incorrect(eps: float) -> None:
 
 
 def test_absolute_relative_error_init_state_default() -> None:
-    assert isinstance(AbsoluteRelativeError()._state, ErrorState)
+    assert isinstance(AbsoluteRelativeError().state, ErrorState)
 
 
 def test_absolute_relative_error_init_state_mean() -> None:
-    assert isinstance(AbsoluteRelativeError(state=MeanErrorState())._state, MeanErrorState)
+    assert isinstance(AbsoluteRelativeError(state=MeanErrorState()).state, MeanErrorState)
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -304,9 +304,9 @@ def test_absolute_relative_error_value_empty() -> None:
 
 
 @pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("prefix", ["abs_err_", "abs_err/"])
-@pytest.mark.parametrize("suffix", ["_abs_err", "/abs_err"])
-def test_absolute_error_value_prefix_suffix(device: str, prefix: str, suffix: str) -> None:
+@pytest.mark.parametrize("prefix", ["prefix_", "suffix/"])
+@pytest.mark.parametrize("suffix", ["_prefix", "/suffix"])
+def test_absolute_relative_error_value_prefix_suffix(device: str, prefix: str, suffix: str) -> None:
     device = torch.device(device)
     metric = AbsoluteRelativeError().to(device=device)
     metric(torch.ones(2, device=device), torch.ones(2, device=device))
@@ -632,8 +632,8 @@ def test_symmetric_absolute_relative_error_value_empty() -> None:
 
 
 @pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("prefix", ["abs_err_", "abs_err/"])
-@pytest.mark.parametrize("suffix", ["_abs_err", "/abs_err"])
+@pytest.mark.parametrize("prefix", ["prefix_", "suffix/"])
+@pytest.mark.parametrize("suffix", ["_prefix", "/suffix"])
 def test_symmetric_absolute_relative_error_value_prefix_suffix(
     device: str, prefix: str, suffix: str
 ) -> None:
