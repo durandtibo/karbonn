@@ -5,7 +5,7 @@ from __future__ import annotations
 __all__ = ["BaseState", "is_state_config", "setup_state"]
 
 import logging
-from abc import ABC, abstractmethod
+from abc import ABC, ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Any
 from unittest.mock import Mock
 
@@ -21,7 +21,7 @@ if is_objectory_available():
 else:  # pragma: no cover
     objectory = Mock()
 
-    class AbstractFactory: ...
+    AbstractFactory = ABCMeta
 
 
 logger = logging.getLogger(__name__)

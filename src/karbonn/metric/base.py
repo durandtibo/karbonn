@@ -5,7 +5,7 @@ from __future__ import annotations
 __all__ = ["BaseMetric", "EmptyMetricError", "setup_metric"]
 
 import logging
-from abc import abstractmethod
+from abc import ABCMeta, abstractmethod
 
 from torch.nn import Module
 
@@ -14,8 +14,7 @@ from karbonn.utils.imports import check_objectory, is_objectory_available
 if is_objectory_available():
     from objectory import AbstractFactory
 else:  # pragma: no cover
-
-    class AbstractFactory: ...
+    AbstractFactory = ABCMeta
 
 
 logger = logging.getLogger(__name__)
