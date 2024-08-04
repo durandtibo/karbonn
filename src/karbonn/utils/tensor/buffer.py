@@ -196,7 +196,7 @@ class FlattenBuffer:
 
         ```
         """
-        return self._values.numel() + sum([tensor.numel() for tensor in self._buffer])
+        return self._values.numel() + sum(tensor.numel() for tensor in self._buffer)
 
     def update(self, tensor: Tensor) -> None:
         r"""Update the internal buffer by adding a new tensor.

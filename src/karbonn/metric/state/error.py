@@ -2,7 +2,7 @@ r"""Contain the error-based metric states."""
 
 from __future__ import annotations
 
-__all__ = ["ErrorState", "MeanErrorState", "ExtendedErrorState", "RootMeanErrorState"]
+__all__ = ["ErrorState", "ExtendedErrorState", "MeanErrorState", "RootMeanErrorState"]
 
 import math
 from typing import TYPE_CHECKING

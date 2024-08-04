@@ -2590,7 +2590,7 @@ def str_binary_confusion_matrix(confmat: Tensor) -> str:
     confmat = confmat.long()
     table = [
         ["", "predicted negative (0)", "predicted positive (1)"],
-        ["actual negative (0)", f"[TN]  {confmat[0,0]:,}", f"[FP]  {confmat[0,1]:,}"],
-        ["actual positive (1)", f"[FN]  {confmat[1,0]:,}", f"[TP]  {confmat[1,1]:,}"],
+        ["actual negative (0)", f"[TN]  {confmat[0, 0]:,}", f"[FP]  {confmat[0, 1]:,}"],
+        ["actual positive (1)", f"[FN]  {confmat[1, 0]:,}", f"[TP]  {confmat[1, 1]:,}"],
     ]
     return str_table(table, tablefmt="heavy_grid")
