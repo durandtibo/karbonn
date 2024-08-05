@@ -140,10 +140,10 @@ class ErrorState(BaseState):
             raise EmptyMetricError(msg)
 
         results = {
-            f"{prefix}mean{suffix}": self._tracker.mean(),
-            f"{prefix}min{suffix}": self._tracker.min(),
-            f"{prefix}max{suffix}": self._tracker.max(),
-            f"{prefix}sum{suffix}": self._tracker.sum(),
+            f"{prefix}mean{suffix}": tracker.mean(),
+            f"{prefix}min{suffix}": tracker.min(),
+            f"{prefix}max{suffix}": tracker.max(),
+            f"{prefix}sum{suffix}": tracker.sum(),
         }
         if self._track_num_predictions:
             results[f"{prefix}num_predictions{suffix}"] = tracker.count
@@ -286,15 +286,15 @@ class ExtendedErrorState(BaseState):
             raise EmptyMetricError(msg)
 
         results = {
-            f"{prefix}mean{suffix}": self._tracker.mean(),
-            f"{prefix}median{suffix}": self._tracker.median(),
-            f"{prefix}min{suffix}": self._tracker.min(),
-            f"{prefix}max{suffix}": self._tracker.max(),
-            f"{prefix}sum{suffix}": self._tracker.sum(),
-            f"{prefix}std{suffix}": self._tracker.std(),
+            f"{prefix}mean{suffix}": tracker.mean(),
+            f"{prefix}median{suffix}": tracker.median(),
+            f"{prefix}min{suffix}": tracker.min(),
+            f"{prefix}max{suffix}": tracker.max(),
+            f"{prefix}sum{suffix}": tracker.sum(),
+            f"{prefix}std{suffix}": tracker.std(),
         }
         if self._quantiles.numel() > 0:
-            values = self._tracker.quantile(self._quantiles)
+            values = tracker.quantile(self._quantiles)
             for q, v in zip(self._quantiles, values):
                 results[f"{prefix}quantile_{q:g}{suffix}"] = v.item()
         if self._track_num_predictions:
@@ -394,7 +394,7 @@ class MeanErrorState(BaseState):
             msg = f"{self.__class__.__qualname__} is empty"
             raise EmptyMetricError(msg)
 
-        results = {f"{prefix}mean{suffix}": self._tracker.mean()}
+        results = {f"{prefix}mean{suffix}": tracker.mean()}
         if self._track_num_predictions:
             results[f"{prefix}num_predictions{suffix}"] = tracker.count
         return results
@@ -479,7 +479,7 @@ class RootMeanErrorState(BaseState):
             msg = f"{self.__class__.__qualname__} is empty"
             raise EmptyMetricError(msg)
 
-        results = {f"{prefix}mean{suffix}": math.sqrt(self._tracker.mean())}
+        results = {f"{prefix}mean{suffix}": math.sqrt(tracker.mean())}
         if self._track_num_predictions:
             results[f"{prefix}num_predictions{suffix}"] = tracker.count
         return results
