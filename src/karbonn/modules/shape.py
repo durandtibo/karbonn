@@ -13,7 +13,7 @@ from karbonn.utils import setup_module
 
 
 class MulticlassFlatten(nn.Module):
-    r"""Implements a wrapper to flat the multiclass inputs of a
+    r"""Implement a wrapper to flat the multiclass inputs of a
     ``torch.nn.Module``.
 
     The input prediction tensor shape is ``(d1, d2, ..., dn, C)``

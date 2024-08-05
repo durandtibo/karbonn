@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 class Snake(nn.Module):
-    r"""Implements the Snake activation layer.
+    r"""Implement the Snake activation layer.
 
     Snake was proposed in the following paper:
 

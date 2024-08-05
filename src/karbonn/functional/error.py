@@ -47,9 +47,8 @@ def absolute_relative_error(prediction: Tensor, target: Tensor, eps: float = 1e-
         prediction: The tensor of predictions.
         target: The target tensor, which must have the same shape and
             data type as ``prediction``.
-        eps (float, optional): Specifies an arbitrary small strictly
-            positive number to avoid undefined results when the target
-            is zero.
+        eps: An arbitrary small strictly positive number to avoid
+            undefined results when the target is zero.
 
     Returns:
         The absolute relative error tensor, which has the same shape
@@ -80,9 +79,8 @@ def symmetric_absolute_relative_error(
         prediction: The tensor of predictions.
         target: The target tensor, which must have the same shape and
             data type as ``prediction``.
-        eps: Specifies an arbitrary small strictly
-            positive number to avoid undefined results when the target
-            is zero.
+        eps: An arbitrary small strictly positive number to avoid
+            undefined results when the target is zero.
 
     Returns:
         The symmetric absolute relative error tensor, which has the

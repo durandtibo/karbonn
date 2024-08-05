@@ -74,7 +74,7 @@ def ignite_available(fn: Callable[..., Any]) -> Callable[..., Any]:
     package is installed.
 
     Args:
-        fn: Specifies the function to execute.
+        fn: The function to execute.
 
     Returns:
         A wrapper around ``fn`` if ``ignite`` package is installed,
@@ -148,7 +148,7 @@ def objectory_available(fn: Callable[..., Any]) -> Callable[..., Any]:
     package is installed.
 
     Args:
-        fn: Specifies the function to execute.
+        fn: The function to execute.
 
     Returns:
         A wrapper around ``fn`` if ``objectory`` package is installed,
@@ -222,7 +222,7 @@ def tabulate_available(fn: Callable[..., Any]) -> Callable[..., Any]:
     package is installed.
 
     Args:
-        fn: Specifies the function to execute.
+        fn: The function to execute.
 
     Returns:
         A wrapper around ``fn`` if ``tabulate`` package is installed,

@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 
 
 class ErrorState(BaseState):
-    r"""Implements a metric state to capture some metrics about the
+    r"""Implement a metric state to capture some metrics about the
     errors.
 
     This state has a constant space complexity.
