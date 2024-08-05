@@ -7,6 +7,7 @@ from minrecord import MaxScalarRecord, MinScalarRecord
 
 from karbonn.metric import EmptyMetricError
 from karbonn.metric.state import AccuracyState, ExtendedAccuracyState
+from karbonn.utils.tracker import MeanTensorTracker
 
 ###################################
 #     Tests for AccuracyState     #
@@ -22,19 +23,19 @@ def test_accuracy_state_str() -> None:
 
 
 def test_accuracy_state_get_records() -> None:
-    records = AccuracyState().get_records()
-    assert len(records) == 1
-    assert isinstance(records[0], MaxScalarRecord)
-    assert records[0].name == "accuracy"
+    assert objects_are_equal(
+        AccuracyState().get_records(),
+        (MaxScalarRecord(name="accuracy"),),
+    )
 
 
 @pytest.mark.parametrize("prefix", ["", "prefix_"])
 @pytest.mark.parametrize("suffix", ["", "_suffix"])
 def test_accuracy_state_get_records_prefix_suffix(prefix: str, suffix: str) -> None:
-    records = AccuracyState().get_records(prefix, suffix)
-    assert len(records) == 1
-    assert isinstance(records[0], MaxScalarRecord)
-    assert records[0].name == f"{prefix}accuracy{suffix}"
+    assert objects_are_equal(
+        AccuracyState().get_records(prefix, suffix),
+        (MaxScalarRecord(name=f"{prefix}accuracy{suffix}"),),
+    )
 
 
 def test_accuracy_state_reset() -> None:
@@ -48,15 +49,13 @@ def test_accuracy_state_reset() -> None:
 def test_accuracy_state_update_1d() -> None:
     state = AccuracyState()
     state.update(torch.ones(4))
-    assert state._tracker.count == 4
-    assert state._tracker.sum() == 4.0
+    assert state._tracker.equal(MeanTensorTracker(count=4, total=4.0))
 
 
 def test_accuracy_state_update_2d() -> None:
     state = AccuracyState()
     state.update(torch.ones(2, 3))
-    assert state._tracker.count == 6
-    assert state._tracker.sum() == 6.0
+    assert state._tracker.equal(MeanTensorTracker(count=6, total=6.0))
 
 
 def test_accuracy_state_value_correct() -> None:
@@ -80,7 +79,7 @@ def test_accuracy_state_value_incorrect() -> None:
 def test_accuracy_state_value_track_num_predictions_false() -> None:
     state = AccuracyState(track_num_predictions=False)
     state.update(torch.eye(2))
-    assert state.value() == {"accuracy": 0.5}
+    assert objects_are_equal(state.value(), {"accuracy": 0.5})
 
 
 @pytest.mark.parametrize("prefix", ["", "prefix_"])
@@ -117,31 +116,29 @@ def test_extended_accuracy_state_str() -> None:
 
 
 def test_extended_accuracy_state_get_records() -> None:
-    records = ExtendedAccuracyState().get_records()
-    assert len(records) == 4
-    assert isinstance(records[0], MaxScalarRecord)
-    assert records[0].name == "accuracy"
-    assert isinstance(records[1], MinScalarRecord)
-    assert records[1].name == "error"
-    assert isinstance(records[2], MaxScalarRecord)
-    assert records[2].name == "num_correct_predictions"
-    assert isinstance(records[3], MinScalarRecord)
-    assert records[3].name == "num_incorrect_predictions"
+    assert objects_are_equal(
+        ExtendedAccuracyState().get_records(),
+        (
+            MaxScalarRecord(name="accuracy"),
+            MinScalarRecord(name="error"),
+            MaxScalarRecord(name="num_correct_predictions"),
+            MinScalarRecord(name="num_incorrect_predictions"),
+        ),
+    )
 
 
 @pytest.mark.parametrize("prefix", ["", "prefix_"])
 @pytest.mark.parametrize("suffix", ["", "_suffix"])
 def test_extended_accuracy_state_get_records_prefix_suffix(prefix: str, suffix: str) -> None:
-    records = ExtendedAccuracyState().get_records(prefix, suffix)
-    assert len(records) == 4
-    assert isinstance(records[0], MaxScalarRecord)
-    assert records[0].name == f"{prefix}accuracy{suffix}"
-    assert isinstance(records[1], MinScalarRecord)
-    assert records[1].name == f"{prefix}error{suffix}"
-    assert isinstance(records[2], MaxScalarRecord)
-    assert records[2].name == f"{prefix}num_correct_predictions{suffix}"
-    assert isinstance(records[3], MinScalarRecord)
-    assert records[3].name == f"{prefix}num_incorrect_predictions{suffix}"
+    assert objects_are_equal(
+        ExtendedAccuracyState().get_records(prefix, suffix),
+        (
+            MaxScalarRecord(name=f"{prefix}accuracy{suffix}"),
+            MinScalarRecord(name=f"{prefix}error{suffix}"),
+            MaxScalarRecord(name=f"{prefix}num_correct_predictions{suffix}"),
+            MinScalarRecord(name=f"{prefix}num_incorrect_predictions{suffix}"),
+        ),
+    )
 
 
 def test_extended_accuracy_state_reset() -> None:
@@ -155,15 +152,13 @@ def test_extended_accuracy_state_reset() -> None:
 def test_extended_accuracy_state_update_1d() -> None:
     state = ExtendedAccuracyState()
     state.update(torch.ones(4))
-    assert state._tracker.count == 4
-    assert state._tracker.sum() == 4.0
+    assert state._tracker.equal(MeanTensorTracker(count=4, total=4.0))
 
 
 def test_extended_accuracy_state_update_2d() -> None:
     state = ExtendedAccuracyState()
     state.update(torch.ones(2, 3))
-    assert state._tracker.count == 6
-    assert state._tracker.sum() == 6.0
+    assert state._tracker.equal(MeanTensorTracker(count=6, total=6.0))
 
 
 def test_extended_accuracy_state_value_correct() -> None:
