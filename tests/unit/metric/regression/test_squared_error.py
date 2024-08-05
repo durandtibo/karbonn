@@ -5,7 +5,7 @@ from unittest.mock import Mock
 
 import pytest
 import torch
-from coola import objects_are_allclose
+from coola import objects_are_allclose, objects_are_equal
 from coola.utils.tensor import get_available_devices
 
 from karbonn.metric import EmptyMetricError, RootMeanSquaredError, SquaredError
@@ -52,13 +52,16 @@ def test_squared_error_forward_correct(
         torch.ones(batch_size, feature_size, device=device),
         torch.ones(batch_size, feature_size, device=device),
     )
-    assert metric.value() == {
-        "mean": 0.0,
-        "max": 0.0,
-        "min": 0.0,
-        "sum": 0.0,
-        "num_predictions": batch_size * feature_size,
-    }
+    assert objects_are_equal(
+        metric.value(),
+        {
+            "mean": 0.0,
+            "max": 0.0,
+            "min": 0.0,
+            "sum": 0.0,
+            "num_predictions": batch_size * feature_size,
+        },
+    )
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -75,13 +78,16 @@ def test_squared_error_forward_incorrect(
         -torch.ones(batch_size, feature_size, device=device),
         torch.ones(batch_size, feature_size, device=device),
     )
-    assert metric.value() == {
-        "mean": 4.0,
-        "max": 4.0,
-        "min": 4.0,
-        "sum": 4.0 * batch_size * feature_size,
-        "num_predictions": batch_size * feature_size,
-    }
+    assert objects_are_equal(
+        metric.value(),
+        {
+            "mean": 4.0,
+            "max": 4.0,
+            "min": 4.0,
+            "sum": 4.0 * batch_size * feature_size,
+            "num_predictions": batch_size * feature_size,
+        },
+    )
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -91,13 +97,16 @@ def test_squared_error_forward_partially_correct(device: str, mode: bool) -> Non
     metric = SquaredError().to(device=device)
     metric.train(mode)
     metric(torch.eye(2, device=device), -torch.eye(2, device=device))
-    assert metric.value() == {
-        "mean": 2.0,
-        "max": 4.0,
-        "min": 0.0,
-        "sum": 8.0,
-        "num_predictions": 4,
-    }
+    assert objects_are_equal(
+        metric.value(),
+        {
+            "mean": 2.0,
+            "max": 4.0,
+            "min": 0.0,
+            "sum": 8.0,
+            "num_predictions": 4,
+        },
+    )
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -107,13 +116,16 @@ def test_squared_error_forward_1d(device: str, mode: bool) -> None:
     metric = SquaredError().to(device=device)
     metric.train(mode)
     metric(torch.ones(2, device=device), torch.ones(2, device=device))
-    assert metric.value() == {
-        "mean": 0.0,
-        "max": 0.0,
-        "min": 0.0,
-        "sum": 0.0,
-        "num_predictions": 2,
-    }
+    assert objects_are_equal(
+        metric.value(),
+        {
+            "mean": 0.0,
+            "max": 0.0,
+            "min": 0.0,
+            "sum": 0.0,
+            "num_predictions": 2,
+        },
+    )
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -123,13 +135,16 @@ def test_squared_error_forward_2d(device: str, mode: bool) -> None:
     metric = SquaredError().to(device=device)
     metric.train(mode)
     metric(torch.ones(2, 3, device=device), torch.ones(2, 3, device=device))
-    assert metric.value() == {
-        "mean": 0.0,
-        "max": 0.0,
-        "min": 0.0,
-        "sum": 0.0,
-        "num_predictions": 6,
-    }
+    assert objects_are_equal(
+        metric.value(),
+        {
+            "mean": 0.0,
+            "max": 0.0,
+            "min": 0.0,
+            "sum": 0.0,
+            "num_predictions": 6,
+        },
+    )
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -139,13 +154,16 @@ def test_squared_error_forward_3d(device: str, mode: bool) -> None:
     metric = SquaredError().to(device=device)
     metric.train(mode)
     metric(torch.ones(2, 3, 4, device=device), torch.ones(2, 3, 4, device=device))
-    assert metric.value() == {
-        "mean": 0.0,
-        "max": 0.0,
-        "min": 0.0,
-        "sum": 0.0,
-        "num_predictions": 24,
-    }
+    assert objects_are_equal(
+        metric.value(),
+        {
+            "mean": 0.0,
+            "max": 0.0,
+            "min": 0.0,
+            "sum": 0.0,
+            "num_predictions": 24,
+        },
+    )
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -165,13 +183,16 @@ def test_squared_error_forward_dtypes(
         torch.ones(2, 2, device=device, dtype=dtype_prediction),
         torch.ones(2, 2, device=device, dtype=dtype_target),
     )
-    assert metric.value() == {
-        "mean": 0.0,
-        "max": 0.0,
-        "min": 0.0,
-        "sum": 0.0,
-        "num_predictions": 4,
-    }
+    assert objects_are_equal(
+        metric.value(),
+        {
+            "mean": 0.0,
+            "max": 0.0,
+            "min": 0.0,
+            "sum": 0.0,
+            "num_predictions": 4,
+        },
+    )
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -181,15 +202,18 @@ def test_squared_error_forward_state(device: str, mode: bool) -> None:
     metric = SquaredError(state=ExtendedErrorState()).to(device=device)
     metric.train(mode)
     metric(torch.ones(2, 2, device=device), torch.ones(2, 2, device=device))
-    assert metric.value() == {
-        "mean": 0.0,
-        "max": 0.0,
-        "min": 0.0,
-        "sum": 0.0,
-        "std": 0.0,
-        "median": 0.0,
-        "num_predictions": 4,
-    }
+    assert objects_are_equal(
+        metric.value(),
+        {
+            "mean": 0.0,
+            "max": 0.0,
+            "min": 0.0,
+            "sum": 0.0,
+            "std": 0.0,
+            "median": 0.0,
+            "num_predictions": 4,
+        },
+    )
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -200,13 +224,16 @@ def test_squared_error_forward_multiple_batches(device: str, mode: bool) -> None
     metric.train(mode)
     metric(torch.ones(2, 2, device=device), torch.ones(2, 2, device=device))
     metric(torch.eye(2, device=device), -torch.eye(2, device=device))
-    assert metric.value() == {
-        "mean": 1.0,
-        "max": 4.0,
-        "min": 0.0,
-        "sum": 8.0,
-        "num_predictions": 8,
-    }
+    assert objects_are_equal(
+        metric.value(),
+        {
+            "mean": 1.0,
+            "max": 4.0,
+            "min": 0.0,
+            "sum": 8.0,
+            "num_predictions": 8,
+        },
+    )
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -218,13 +245,16 @@ def test_squared_error_forward_multiple_batches_with_reset(device: str, mode: bo
     metric(torch.ones(2, 2, device=device), torch.ones(2, 2, device=device))
     metric.reset()
     metric(torch.eye(2, device=device), -torch.eye(2, device=device))
-    assert metric.value() == {
-        "mean": 2.0,
-        "max": 4.0,
-        "min": 0.0,
-        "sum": 8.0,
-        "num_predictions": 4,
-    }
+    assert objects_are_equal(
+        metric.value(),
+        {
+            "mean": 2.0,
+            "max": 4.0,
+            "min": 0.0,
+            "sum": 8.0,
+            "num_predictions": 4,
+        },
+    )
 
 
 def test_squared_error_value_empty() -> None:
@@ -239,13 +269,16 @@ def test_squared_error_value_prefix_suffix(device: str, prefix: str, suffix: str
     device = torch.device(device)
     metric = SquaredError().to(device=device)
     metric(torch.ones(2, device=device), torch.ones(2, device=device))
-    assert metric.value(prefix, suffix) == {
-        f"{prefix}mean{suffix}": 0.0,
-        f"{prefix}max{suffix}": 0.0,
-        f"{prefix}min{suffix}": 0.0,
-        f"{prefix}sum{suffix}": 0.0,
-        f"{prefix}num_predictions{suffix}": 2,
-    }
+    assert objects_are_equal(
+        metric.value(prefix, suffix),
+        {
+            f"{prefix}mean{suffix}": 0.0,
+            f"{prefix}max{suffix}": 0.0,
+            f"{prefix}min{suffix}": 0.0,
+            f"{prefix}sum{suffix}": 0.0,
+            f"{prefix}num_predictions{suffix}": 2,
+        },
+    )
 
 
 def test_squared_error_reset() -> None:
@@ -278,10 +311,13 @@ def test_root_mean_squared_error_forward_correct(
         torch.ones(batch_size, feature_size, device=device),
         torch.ones(batch_size, feature_size, device=device),
     )
-    assert metric.value() == {
-        "mean": 0.0,
-        "num_predictions": batch_size * feature_size,
-    }
+    assert objects_are_equal(
+        metric.value(),
+        {
+            "mean": 0.0,
+            "num_predictions": batch_size * feature_size,
+        },
+    )
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -298,10 +334,13 @@ def test_root_mean_squared_error_forward_incorrect(
         torch.ones(batch_size, feature_size, device=device),
         -torch.ones(batch_size, feature_size, device=device),
     )
-    assert metric.value() == {
-        "mean": 2.0,
-        "num_predictions": batch_size * feature_size,
-    }
+    assert objects_are_equal(
+        metric.value(),
+        {
+            "mean": 2.0,
+            "num_predictions": batch_size * feature_size,
+        },
+    )
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -327,10 +366,13 @@ def test_root_mean_squared_error_forward_1d(device: str, mode: bool) -> None:
     metric = RootMeanSquaredError().to(device=device)
     metric.train(mode)
     metric(torch.ones(2, device=device), torch.ones(2, device=device))
-    assert metric.value() == {
-        "mean": 0.0,
-        "num_predictions": 2,
-    }
+    assert objects_are_equal(
+        metric.value(),
+        {
+            "mean": 0.0,
+            "num_predictions": 2,
+        },
+    )
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -340,10 +382,13 @@ def test_root_mean_squared_error_forward_2d(device: str, mode: bool) -> None:
     metric = RootMeanSquaredError().to(device=device)
     metric.train(mode)
     metric(torch.ones(2, 3, device=device), torch.ones(2, 3, device=device))
-    assert metric.value() == {
-        "mean": 0.0,
-        "num_predictions": 6,
-    }
+    assert objects_are_equal(
+        metric.value(),
+        {
+            "mean": 0.0,
+            "num_predictions": 6,
+        },
+    )
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -353,10 +398,13 @@ def test_root_mean_squared_error_forward_3d(device: str, mode: bool) -> None:
     metric = RootMeanSquaredError().to(device=device)
     metric.train(mode)
     metric(torch.ones(2, 3, 4, device=device), torch.ones(2, 3, 4, device=device))
-    assert metric.value() == {
-        "mean": 0.0,
-        "num_predictions": 24,
-    }
+    assert objects_are_equal(
+        metric.value(),
+        {
+            "mean": 0.0,
+            "num_predictions": 24,
+        },
+    )
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -376,10 +424,13 @@ def test_root_mean_squared_error_forward_dtypes(
         torch.ones(2, 2, device=device, dtype=dtype_prediction),
         torch.ones(2, 2, device=device, dtype=dtype_target),
     )
-    assert metric.value() == {
-        "mean": 0.0,
-        "num_predictions": 4,
-    }
+    assert objects_are_equal(
+        metric.value(),
+        {
+            "mean": 0.0,
+            "num_predictions": 4,
+        },
+    )
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -390,10 +441,13 @@ def test_root_mean_squared_error_forward_multiple_batches(device: str, mode: boo
     metric.train(mode)
     metric(torch.ones(2, 2, device=device), torch.ones(2, 2, device=device))
     metric(torch.eye(2, device=device), -torch.eye(2, device=device))
-    assert metric.value() == {
-        "mean": 1.0,
-        "num_predictions": 8,
-    }
+    assert objects_are_equal(
+        metric.value(),
+        {
+            "mean": 1.0,
+            "num_predictions": 8,
+        },
+    )
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -428,10 +482,13 @@ def test_root_mean_squared_error_value_prefix_suffix(device: str, prefix: str, s
     device = torch.device(device)
     metric = RootMeanSquaredError().to(device=device)
     metric(torch.ones(2, device=device), torch.ones(2, device=device))
-    assert metric.value(prefix, suffix) == {
-        f"{prefix}mean{suffix}": 0.0,
-        f"{prefix}num_predictions{suffix}": 2,
-    }
+    assert objects_are_equal(
+        metric.value(prefix, suffix),
+        {
+            f"{prefix}mean{suffix}": 0.0,
+            f"{prefix}num_predictions{suffix}": 2,
+        },
+    )
 
 
 def test_root_mean_squared_error_reset() -> None:
