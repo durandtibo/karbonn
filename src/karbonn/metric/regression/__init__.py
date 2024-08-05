@@ -11,6 +11,7 @@ __all__ = [
     "SquaredError",
     "SquaredLogError",
     "SymmetricAbsoluteRelativeError",
+    "NormalizedMeanSquaredError",
 ]
 
 from karbonn.metric.regression.absolute_error import AbsoluteError
@@ -19,6 +20,7 @@ from karbonn.metric.regression.absolute_relative_error import (
     SymmetricAbsoluteRelativeError,
 )
 from karbonn.metric.regression.log_cosh_error import LogCoshError
+from karbonn.metric.regression.nmse import NormalizedMeanSquaredError
 from karbonn.metric.regression.squared_error import RootMeanSquaredError, SquaredError
 from karbonn.metric.regression.squared_log_error import (
     SquaredAsinhError,
