@@ -2,7 +2,13 @@ r"""Contain the error-based metric states."""
 
 from __future__ import annotations
 
-__all__ = ["ErrorState", "ExtendedErrorState", "MeanErrorState", "RootMeanErrorState"]
+__all__ = [
+    "ErrorState",
+    "ExtendedErrorState",
+    "MeanErrorState",
+    "RootMeanErrorState",
+    "NormalizedMeanSquaredErrorState",
+]
 
 import math
 from typing import TYPE_CHECKING
@@ -476,4 +482,100 @@ class RootMeanErrorState(BaseState):
         results = {f"{prefix}mean{suffix}": math.sqrt(self._tracker.mean())}
         if self._track_num_predictions:
             results[f"{prefix}num_predictions{suffix}"] = tracker.count
+        return results
+
+
+class NormalizedMeanSquaredErrorState(BaseState):
+    r"""Implement a metric state to capture the normalized mean squared
+    error value.
+
+    This state has a constant space complexity.
+
+    Args:
+        track_num_predictions: If ``True``, the state tracks and
+            returns the number of predictions.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.metric.state import NormalizedMeanSquaredErrorState
+    >>> state = NormalizedMeanSquaredErrorState()
+    >>> state
+    NormalizedMeanSquaredErrorState(
+      (squared_errors): MeanTensorTracker(count=0, total=0.0)
+      (squared_targets): MeanTensorTracker(count=0, total=0.0)
+      (track_num_predictions): True
+    )
+    >>> state.get_records("nmse_")
+    (MinScalarRecord(name=nmse_mean, max_size=10, size=0),)
+    >>> state.update(torch.arange(6), torch.ones(6))
+    >>> state.value("nmse_")
+    {'nmse_mean': 9.166..., 'nmse_num_predictions': 6}
+
+    ```
+    """
+
+    def __init__(self, track_num_predictions: bool = True) -> None:
+        self._squared_errors = MeanTensorTracker()
+        self._squared_targets = MeanTensorTracker()
+        self._track_num_predictions = bool(track_num_predictions)
+
+    def __repr__(self) -> str:
+        args = str_indent(
+            str_mapping(
+                {
+                    "squared_errors": self._squared_errors,
+                    "squared_targets": self._squared_targets,
+                    "track_num_predictions": self._track_num_predictions,
+                }
+            )
+        )
+        return f"{self.__class__.__qualname__}(\n  {args}\n)"
+
+    @property
+    def num_predictions(self) -> int:
+        return self._squared_errors.count
+
+    def get_records(self, prefix: str = "", suffix: str = "") -> tuple[BaseRecord, ...]:
+        return (MinScalarRecord(name=f"{prefix}mean{suffix}"),)
+
+    def reset(self) -> None:
+        self._squared_errors.reset()
+        self._squared_targets.reset()
+
+    def update(self, error: torch.Tensor, target: torch.Tensor) -> None:
+        r"""Update the metric state with a new tensor of errors.
+
+        Args:
+            error: A tensor of errors.
+            target: A tensor with the target values.
+
+        Example usage:
+
+        ```pycon
+
+        >>> import torch
+        >>> from karbonn.metric.state import NormalizedMeanSquaredErrorState
+        >>> state = NormalizedMeanSquaredErrorState()
+        >>> state.update(torch.arange(6), torch.ones(6))
+        >>> state.value("nmse_")
+        {'nmse_mean': 9.166..., 'nmse_num_predictions': 6}
+
+        ```
+        """
+        self._squared_errors.update(error.detach().pow(2))
+        self._squared_targets.update(target.detach().pow(2))
+
+    def value(self, prefix: str = "", suffix: str = "") -> dict[str, int | float]:
+        squared_errors = self._squared_errors.all_reduce()
+        squared_targets = self._squared_targets.all_reduce()
+        if not squared_errors.count:
+            msg = f"{self.__class__.__qualname__} is empty"
+            raise EmptyMetricError(msg)
+
+        results = {f"{prefix}mean{suffix}": squared_errors.sum() / squared_targets.sum()}
+        if self._track_num_predictions:
+            results[f"{prefix}num_predictions{suffix}"] = squared_errors.count
         return results

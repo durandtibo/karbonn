@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 import torch
-from coola import objects_are_allclose
+from coola import objects_are_allclose, objects_are_equal
 from minrecord import MinScalarRecord
 
 from karbonn.metric import EmptyMetricError
@@ -12,8 +12,10 @@ from karbonn.metric.state import (
     ErrorState,
     ExtendedErrorState,
     MeanErrorState,
+    NormalizedMeanSquaredErrorState,
     RootMeanErrorState,
 )
+from karbonn.utils.tracker import MeanTensorTracker
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -449,4 +451,95 @@ def test_root_mean_error_state_value_prefix_suffix(prefix: str, suffix: str) -> 
 def test_root_mean_error_state_value_empty() -> None:
     state = RootMeanErrorState()
     with pytest.raises(EmptyMetricError, match="RootMeanErrorState is empty"):
+        state.value()
+
+
+#####################################################
+#     Tests for NormalizedMeanSquaredErrorState     #
+#####################################################
+
+
+def test_normalized_mean_squared_error_state_repr() -> None:
+    assert repr(NormalizedMeanSquaredErrorState()).startswith("NormalizedMeanSquaredErrorState(")
+
+
+def test_normalized_mean_squared_error_state_str() -> None:
+    assert str(NormalizedMeanSquaredErrorState()).startswith("NormalizedMeanSquaredErrorState(")
+
+
+def test_normalized_mean_squared_error_state_get_records() -> None:
+    records = NormalizedMeanSquaredErrorState().get_records()
+    assert len(records) == 1
+    assert isinstance(records[0], MinScalarRecord)
+    assert records[0].name == "mean"
+
+
+@pytest.mark.parametrize("prefix", ["", "prefix_"])
+@pytest.mark.parametrize("suffix", ["", "_suffix"])
+def test_normalized_mean_squared_error_state_get_records_prefix_suffix(
+    prefix: str, suffix: str
+) -> None:
+    records = NormalizedMeanSquaredErrorState().get_records(prefix, suffix)
+    assert len(records) == 1
+    assert isinstance(records[0], MinScalarRecord)
+    assert records[0].name == f"{prefix}mean{suffix}"
+
+
+def test_normalized_mean_squared_error_state_reset() -> None:
+    state = NormalizedMeanSquaredErrorState()
+    state.update(torch.arange(6), torch.arange(6))
+    assert state.num_predictions == 6
+    state.reset()
+    assert state.num_predictions == 0
+
+
+def test_normalized_mean_squared_error_state_update_1d() -> None:
+    state = NormalizedMeanSquaredErrorState()
+    state.update(torch.arange(6), torch.ones(6))
+    assert state._squared_errors.equal(MeanTensorTracker(total=55.0, count=6))
+    assert state._squared_targets.equal(MeanTensorTracker(total=6.0, count=6))
+
+
+def test_normalized_mean_squared_error_state_update_2d() -> None:
+    state = NormalizedMeanSquaredErrorState()
+    state.update(torch.arange(6).view(2, 3), torch.ones(2, 3))
+    assert state._squared_errors.equal(MeanTensorTracker(total=55.0, count=6))
+    assert state._squared_targets.equal(MeanTensorTracker(total=6.0, count=6))
+
+
+def test_normalized_mean_squared_error_state_value() -> None:
+    state = NormalizedMeanSquaredErrorState()
+    state.update(torch.tensor([1, 9, 2, 7, 3, 2]), torch.tensor([1, 2, 3, 4, 5, 6]))
+    assert objects_are_allclose(state.value(), {"mean": 1.6263736486434937, "num_predictions": 6})
+
+
+def test_normalized_mean_squared_error_state_value_correct() -> None:
+    state = NormalizedMeanSquaredErrorState()
+    state.update(torch.zeros(4), torch.ones(4))
+    assert objects_are_equal(state.value(), {"mean": 0.0, "num_predictions": 4})
+
+
+def test_normalized_mean_squared_error_state_value_track_num_predictions_false() -> None:
+    state = NormalizedMeanSquaredErrorState(track_num_predictions=False)
+    state.update(torch.zeros(4), torch.ones(4))
+    assert objects_are_equal(state.value(), {"mean": 0.0})
+
+
+@pytest.mark.parametrize("prefix", ["", "prefix_"])
+@pytest.mark.parametrize("suffix", ["", "_suffix"])
+def test_normalized_mean_squared_error_state_value_prefix_suffix(prefix: str, suffix: str) -> None:
+    state = NormalizedMeanSquaredErrorState()
+    state.update(torch.zeros(4), torch.ones(4))
+    assert objects_are_equal(
+        state.value(prefix, suffix),
+        {
+            f"{prefix}mean{suffix}": 0.0,
+            f"{prefix}num_predictions{suffix}": 4,
+        },
+    )
+
+
+def test_normalized_mean_squared_error_state_value_empty() -> None:
+    state = NormalizedMeanSquaredErrorState()
+    with pytest.raises(EmptyMetricError, match="NormalizedMeanSquaredErrorState is empty"):
         state.value()

@@ -9,6 +9,7 @@ __all__ = [
     "ExtendedAccuracyState",
     "ExtendedErrorState",
     "MeanErrorState",
+    "NormalizedMeanSquaredErrorState",
     "RootMeanErrorState",
     "is_state_config",
     "setup_state",
@@ -20,5 +21,6 @@ from karbonn.metric.state.error import (
     ErrorState,
     ExtendedErrorState,
     MeanErrorState,
+    NormalizedMeanSquaredErrorState,
     RootMeanErrorState,
 )
