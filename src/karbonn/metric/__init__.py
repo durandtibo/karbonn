@@ -3,18 +3,18 @@ r"""Contain the metrics."""
 from __future__ import annotations
 
 __all__ = [
-    "BaseMetric",
-    "EmptyMetricError",
-    "setup_metric",
-    "BaseStateMetric",
     "AbsoluteError",
     "AbsoluteRelativeError",
-    "SymmetricAbsoluteRelativeError",
+    "BaseMetric",
+    "BaseStateMetric",
+    "EmptyMetricError",
     "LogCoshError",
     "RootMeanSquaredError",
-    "SquaredError",
     "SquaredAsinhError",
+    "SquaredError",
     "SquaredLogError",
+    "SymmetricAbsoluteRelativeError",
+    "setup_metric",
 ]
 
 from karbonn.metric.base import BaseMetric, EmptyMetricError, setup_metric

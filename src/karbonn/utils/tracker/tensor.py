@@ -469,7 +469,7 @@ class ExtremaTensorTracker:
 
         ```
         """
-        min_value, max_value = torch.aminmax(tensor)
+        min_value, max_value = torch.aminmax(tensor.detach())
         self._max_value = max(self._max_value, max_value.item())
         self._min_value = min(self._min_value, min_value.item())
         self._count += tensor.numel()
@@ -1588,6 +1588,7 @@ class ScalableTensorTracker:
 
         ```
         """
+        tensor = tensor.detach()
         min_value, max_value = torch.aminmax(tensor)
         self._max_value = max(self._max_value, max_value.item())
         self._min_value = min(self._min_value, min_value.item())

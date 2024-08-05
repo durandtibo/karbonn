@@ -5,12 +5,12 @@ from __future__ import annotations
 __all__ = [
     "AbsoluteError",
     "AbsoluteRelativeError",
-    "SymmetricAbsoluteRelativeError",
     "LogCoshError",
     "RootMeanSquaredError",
-    "SquaredError",
     "SquaredAsinhError",
+    "SquaredError",
     "SquaredLogError",
+    "SymmetricAbsoluteRelativeError",
 ]
 
 from karbonn.metric.regression.absolute_error import AbsoluteError
