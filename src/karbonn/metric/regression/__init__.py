@@ -6,12 +6,12 @@ __all__ = [
     "AbsoluteError",
     "AbsoluteRelativeError",
     "LogCoshError",
+    "NormalizedMeanSquaredError",
     "RootMeanSquaredError",
     "SquaredAsinhError",
     "SquaredError",
     "SquaredLogError",
     "SymmetricAbsoluteRelativeError",
-    "NormalizedMeanSquaredError",
 ]
 
 from karbonn.metric.regression.absolute_error import AbsoluteError

@@ -9,13 +9,13 @@ __all__ = [
     "BaseStateMetric",
     "EmptyMetricError",
     "LogCoshError",
+    "NormalizedMeanSquaredError",
     "RootMeanSquaredError",
     "SquaredAsinhError",
     "SquaredError",
     "SquaredLogError",
     "SymmetricAbsoluteRelativeError",
     "setup_metric",
-    "NormalizedMeanSquaredError",
 ]
 
 from karbonn.metric.base import BaseMetric, EmptyMetricError, setup_metric
