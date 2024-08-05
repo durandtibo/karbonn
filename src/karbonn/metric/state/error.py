@@ -6,8 +6,8 @@ __all__ = [
     "ErrorState",
     "ExtendedErrorState",
     "MeanErrorState",
-    "RootMeanErrorState",
     "NormalizedMeanSquaredErrorState",
+    "RootMeanErrorState",
 ]
 
 import math
