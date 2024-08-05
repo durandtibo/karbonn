@@ -120,7 +120,7 @@ class AbsoluteRelativeError(BaseStateMetric):
 
 
 class SymmetricAbsoluteRelativeError(BaseStateMetric):
-    r"""Implements the symmetric absolute relative error (SARE) metric.
+    r"""Implement the symmetric absolute relative error (SARE) metric.
 
     This metric tracks the mean, maximum and minimum absolute
     relative error values.

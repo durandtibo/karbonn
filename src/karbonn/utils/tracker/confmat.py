@@ -1222,7 +1222,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
 
 class MulticlassConfusionMatrix(BaseConfusionMatrix):
-    r"""Implements a confusion matrix for multiclass labels.
+    r"""Implement a confusion matrix for multiclass labels.
 
     Example usage:
 

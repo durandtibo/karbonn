@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class NormalizedMeanSquaredError(BaseStateMetric):
-    r"""Implements the normalized mean squared error (NMSE) metric.
+    r"""Implement the normalized mean squared error (NMSE) metric.
 
     Note: this metric does not work if all the targets are zero.
 

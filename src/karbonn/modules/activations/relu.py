@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 class ReLUn(nn.Module):
-    r"""Implements the ReLU-n module.
+    r"""Implement the ReLU-n module.
 
     The ReLU-n equation is: ``ReLUn(x, n)=min(max(0,x),n)``
 
@@ -54,7 +54,7 @@ class ReLUn(nn.Module):
 
 
 class SquaredReLU(nn.Module):
-    r"""Implements the Squared ReLU.
+    r"""Implement the Squared ReLU.
 
     Squared ReLU is defined in the following paper:
 

@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 
 class AccuracyState(BaseState):
-    r"""Implements a metric state to compute the accuracy.
+    r"""Implement a metric state to compute the accuracy.
 
     This state has a constant space complexity.
 
@@ -117,7 +117,7 @@ class AccuracyState(BaseState):
 
 
 class ExtendedAccuracyState(BaseState):
-    r"""Implements a metric state to compute the accuracy and other
+    r"""Implement a metric state to compute the accuracy and other
     metrics.
 
     This state has a constant space complexity.
