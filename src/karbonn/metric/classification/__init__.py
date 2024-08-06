@@ -2,6 +2,6 @@ r"""Contain classification metrics."""
 
 from __future__ import annotations
 
-__all__ = ["BinaryAccuracy"]
+__all__ = ["BinaryAccuracy", "CategoricalAccuracy"]
 
-from karbonn.metric.classification.accuracy import BinaryAccuracy
+from karbonn.metric.classification.accuracy import BinaryAccuracy, CategoricalAccuracy

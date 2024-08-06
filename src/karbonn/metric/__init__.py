@@ -17,10 +17,11 @@ __all__ = [
     "SquaredLogError",
     "SymmetricAbsoluteRelativeError",
     "setup_metric",
+    "CategoricalAccuracy",
 ]
 
 from karbonn.metric.base import BaseMetric, EmptyMetricError, setup_metric
-from karbonn.metric.classification import BinaryAccuracy
+from karbonn.metric.classification import BinaryAccuracy, CategoricalAccuracy
 from karbonn.metric.regression import (
     AbsoluteError,
     AbsoluteRelativeError,
