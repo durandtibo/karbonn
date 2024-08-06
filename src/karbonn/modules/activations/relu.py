@@ -30,7 +30,7 @@ class ReLUn(nn.Module):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import ReLUn
+    >>> from karbonn.modules import ReLUn
     >>> m = ReLUn(max=5)
     >>> m
     ReLUn(max=5.0)
@@ -71,7 +71,7 @@ class SquaredReLU(nn.Module):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import SquaredReLU
+    >>> from karbonn.modules import SquaredReLU
     >>> m = SquaredReLU()
     >>> m
     SquaredReLU()

@@ -33,7 +33,7 @@ class Snake(nn.Module):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import Snake
+    >>> from karbonn.modules import Snake
     >>> m = Snake()
     >>> m
     Snake(frequency=1.0)

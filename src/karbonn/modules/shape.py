@@ -25,7 +25,7 @@ class MulticlassFlatten(nn.Module):
 
     ```pycon
     >>> import torch
-    >>> from karbonn import MulticlassFlatten
+    >>> from karbonn.modules import MulticlassFlatten
     >>> m = MulticlassFlatten(torch.nn.CrossEntropyLoss())
     >>> m
     MulticlassFlatten(
@@ -59,7 +59,7 @@ class Squeeze(nn.Module):
 
     ```pycon
     >>> import torch
-    >>> from karbonn import Squeeze
+    >>> from karbonn.modules import Squeeze
     >>> m = Squeeze()
     >>> m
     Squeeze(dim=None)

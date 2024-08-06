@@ -53,7 +53,7 @@ class GeneralRobustRegressionLoss(nn.Module):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import GeneralRobustRegressionLoss
+    >>> from karbonn.modules import GeneralRobustRegressionLoss
     >>> criterion = GeneralRobustRegressionLoss()
     >>> criterion
     GeneralRobustRegressionLoss(alpha=2.0, scale=1.0, max=None, reduction=mean)

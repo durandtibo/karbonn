@@ -37,7 +37,7 @@ class CosSinScalarEncoder(nn.Module):
 
     ```pycon
     >>> import torch
-    >>> from karbonn import CosSinScalarEncoder
+    >>> from karbonn.modules import CosSinScalarEncoder
     >>> m = CosSinScalarEncoder(
     ...     frequency=torch.tensor([1.0, 2.0, 4.0]), phase_shift=torch.tensor([1.0, 3.0, -2.0])
     ... )
@@ -125,7 +125,7 @@ class CosSinScalarEncoder(nn.Module):
 
         ```pycon
         >>> import torch
-        >>> from karbonn import CosSinScalarEncoder
+        >>> from karbonn.modules import CosSinScalarEncoder
         >>> m = CosSinScalarEncoder.create_rand_frequency(
         ...     num_frequencies=5, min_frequency=0.1, max_frequency=1.0
         ... )
@@ -182,7 +182,7 @@ class CosSinScalarEncoder(nn.Module):
 
         ```pycon
         >>> import torch
-        >>> from karbonn import CosSinScalarEncoder
+        >>> from karbonn.modules import CosSinScalarEncoder
         >>> m = CosSinScalarEncoder.create_rand_value_range(
         ...     num_frequencies=5, min_abs_value=0.1, max_abs_value=1.0
         ... )
@@ -224,7 +224,7 @@ class CosSinScalarEncoder(nn.Module):
 
         ```pycon
         >>> import torch
-        >>> from karbonn import CosSinScalarEncoder
+        >>> from karbonn.modules import CosSinScalarEncoder
         >>> m = CosSinScalarEncoder.create_linspace_frequency(
         ...     num_frequencies=5, min_frequency=0.1, max_frequency=1.0
         ... )
@@ -279,7 +279,7 @@ class CosSinScalarEncoder(nn.Module):
 
         ```pycon
         >>> import torch
-        >>> from karbonn import CosSinScalarEncoder
+        >>> from karbonn.modules import CosSinScalarEncoder
         >>> m = CosSinScalarEncoder.create_linspace_value_range(
         ...     num_frequencies=5, min_abs_value=0.1, max_abs_value=1.0
         ... )
@@ -322,7 +322,7 @@ class CosSinScalarEncoder(nn.Module):
 
         ```pycon
         >>> import torch
-        >>> from karbonn import CosSinScalarEncoder
+        >>> from karbonn.modules import CosSinScalarEncoder
         >>> m = CosSinScalarEncoder.create_logspace_frequency(
         ...     num_frequencies=5, min_frequency=0.1, max_frequency=1.0
         ... )
@@ -379,7 +379,7 @@ class CosSinScalarEncoder(nn.Module):
 
         ```pycon
         >>> import torch
-        >>> from karbonn import CosSinScalarEncoder
+        >>> from karbonn.modules import CosSinScalarEncoder
         >>> m = CosSinScalarEncoder.create_logspace_value_range(
         ...     num_frequencies=5, min_abs_value=0.1, max_abs_value=1.0
         ... )
@@ -404,7 +404,7 @@ class AsinhCosSinScalarEncoder(CosSinScalarEncoder):
 
     ```pycon
     >>> import torch
-    >>> from karbonn import AsinhCosSinScalarEncoder
+    >>> from karbonn.modules import AsinhCosSinScalarEncoder
     >>> m = AsinhCosSinScalarEncoder(
     ...     frequency=torch.tensor([1.0, 2.0, 4.0]), phase_shift=torch.tensor([1.0, 3.0, -2.0])
     ... )

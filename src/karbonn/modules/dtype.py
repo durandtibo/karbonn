@@ -20,7 +20,7 @@ class ToFloat(nn.Module):
 
     ```pycon
     >>> import torch
-    >>> from karbonn import ToFloat
+    >>> from karbonn.modules import ToFloat
     >>> m = ToFloat()
     >>> m
     ToFloat()
@@ -48,7 +48,7 @@ class ToLong(nn.Module):
 
     ```pycon
     >>> import torch
-    >>> from karbonn import ToLong
+    >>> from karbonn.modules import ToLong
     >>> m = ToLong()
     >>> m
     ToLong()

@@ -8,7 +8,7 @@ from coola import objects_are_allclose, objects_are_equal
 from coola.utils.tensor import get_available_devices
 from torch import nn
 
-from karbonn import MulticlassFlatten, Squeeze
+from karbonn.modules import MulticlassFlatten, Squeeze
 
 #######################################
 #     Tests for MulticlassFlatten     #

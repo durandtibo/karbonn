@@ -5,7 +5,7 @@ import torch
 from coola import objects_are_allclose, objects_are_equal
 from coola.utils.tensor import get_available_devices
 
-from karbonn import ExpSin, Gaussian, Laplacian, MultiQuadratic, Quadratic
+from karbonn.modules import ExpSin, Gaussian, Laplacian, MultiQuadratic, Quadratic
 
 SIZES = (1, 2, 3)
 SHAPES = [(2,), (2, 3), (2, 3, 4), (2, 3, 4, 5)]

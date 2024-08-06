@@ -41,7 +41,7 @@ class RelativeLoss(nn.Module):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import RelativeLoss
+    >>> from karbonn.modules import RelativeLoss
     >>> from karbonn.modules.loss import ClassicalRelativeIndicator
     >>> criterion = RelativeLoss(
     ...     criterion=torch.nn.MSELoss(reduction="none"),
@@ -112,7 +112,7 @@ class RelativeMSELoss(RelativeLoss):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import RelativeMSELoss
+    >>> from karbonn.modules import RelativeMSELoss
     >>> from karbonn.modules.loss import ClassicalRelativeIndicator
     >>> criterion = RelativeMSELoss(indicator=ClassicalRelativeIndicator())
     >>> criterion
@@ -165,7 +165,7 @@ class RelativeSmoothL1Loss(RelativeLoss):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import RelativeSmoothL1Loss
+    >>> from karbonn.modules import RelativeSmoothL1Loss
     >>> from karbonn.modules.loss import ClassicalRelativeIndicator
     >>> criterion = RelativeSmoothL1Loss(indicator=ClassicalRelativeIndicator())
     >>> criterion

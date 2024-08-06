@@ -5,7 +5,7 @@ import torch
 from coola import objects_are_equal
 from coola.utils.tensor import get_available_devices
 
-from karbonn import ToFloat, ToLong
+from karbonn.modules import ToFloat, ToLong
 
 #############################
 #     Tests for ToFloat     #

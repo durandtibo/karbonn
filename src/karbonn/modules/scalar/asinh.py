@@ -37,7 +37,7 @@ class AsinhScalarEncoder(Module):
 
     ```pycon
     >>> import torch
-    >>> from karbonn import AsinhScalarEncoder
+    >>> from karbonn.modules import AsinhScalarEncoder
     >>> m = AsinhScalarEncoder(scale=torch.tensor([1.0, 2.0, 4.0]))
     >>> m
     AsinhScalarEncoder(dim=3, learnable=False)
@@ -97,7 +97,7 @@ class AsinhScalarEncoder(Module):
 
         ```pycon
         >>> import torch
-        >>> from karbonn import AsinhScalarEncoder
+        >>> from karbonn.modules import AsinhScalarEncoder
         >>> m = AsinhScalarEncoder.create_rand_scale(dim=5, min_scale=1, max_scale=10)
         >>> m
         AsinhScalarEncoder(dim=5, learnable=False)
@@ -147,7 +147,7 @@ class AsinhScalarEncoder(Module):
 
         ```pycon
         >>> import torch
-        >>> from karbonn import AsinhScalarEncoder
+        >>> from karbonn.modules import AsinhScalarEncoder
         >>> m = AsinhScalarEncoder.create_linspace_scale(dim=5, min_scale=1, max_scale=10)
         >>> m
         AsinhScalarEncoder(dim=5, learnable=False)
@@ -197,7 +197,7 @@ class AsinhScalarEncoder(Module):
 
         ```pycon
         >>> import torch
-        >>> from karbonn import AsinhScalarEncoder
+        >>> from karbonn.modules import AsinhScalarEncoder
         >>> m = AsinhScalarEncoder.create_logspace_scale(dim=5, min_scale=1, max_scale=10)
         >>> m
         AsinhScalarEncoder(dim=5, learnable=False)

@@ -7,8 +7,8 @@ import torch
 from coola import objects_are_allclose, objects_are_equal
 from coola.utils.tensor import get_available_devices
 
-from karbonn import GeneralRobustRegressionLoss
 from karbonn.functional.reduction import VALID_REDUCTIONS
+from karbonn.modules import GeneralRobustRegressionLoss
 
 SIZES = (1, 2, 3)
 
