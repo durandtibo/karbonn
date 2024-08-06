@@ -42,6 +42,7 @@ __all__ = [
     "ToFloat",
     "ToLong",
     "TransformedLoss",
+    "ToBinaryLabel",
     "binary_focal_loss",
 ]
 
@@ -65,6 +66,7 @@ from karbonn.modules.activations import (
     SquaredReLU,
 )
 from karbonn.modules.clamp import Clamp
+from karbonn.modules.classification import ToBinaryLabel
 from karbonn.modules.dtype import ToFloat, ToLong
 from karbonn.modules.exu import ExU
 from karbonn.modules.fusion import (
