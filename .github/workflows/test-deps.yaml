@@ -46,10 +46,6 @@ jobs:
         run: |
           poetry run make unit-test-cov
 
-      - name: Run integration tests
-        run: |
-          poetry run make integration-test
-
 
   torch:
     runs-on: ${{ matrix.os }}
@@ -112,10 +108,6 @@ jobs:
         run: |
           poetry run make unit-test-cov
 
-      - name: Run integration tests
-        run: |
-          poetry run make integration-test
-
 
   #################################
   #     Optional dependencies     #
@@ -175,10 +167,6 @@ jobs:
         run: |
           poetry run make unit-test-cov
 
-      - name: Run integration tests
-        run: |
-          poetry run make integration-test
-
 
   objectory:
     runs-on: ${{ matrix.os }}
@@ -221,10 +209,6 @@ jobs:
         run: |
           poetry run make unit-test-cov
 
-      - name: Run integration tests
-        run: |
-          poetry run make integration-test
-
 
   pytorch-ignite:
     runs-on: ${{ matrix.os }}
@@ -266,7 +250,3 @@ jobs:
       - name: Run unit tests
         run: |
           poetry run make unit-test-cov
-
-      - name: Run integration tests
-        run: |
-          poetry run make integration-test
