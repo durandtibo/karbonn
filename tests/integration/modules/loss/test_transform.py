@@ -4,7 +4,7 @@ import pytest
 import torch
 from torch import nn
 
-from karbonn import Asinh, Clamp, Sinh, TransformedLoss
+from karbonn.modules import Asinh, Clamp, Sinh, TransformedLoss
 from karbonn.utils import is_loss_decreasing_with_sgd
 
 CRITERIA = [nn.MSELoss(), nn.SmoothL1Loss(), nn.L1Loss()]

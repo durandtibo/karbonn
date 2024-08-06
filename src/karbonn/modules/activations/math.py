@@ -23,7 +23,7 @@ class Asinh(nn.Module):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import Asinh
+    >>> from karbonn.modules import Asinh
     >>> m = Asinh()
     >>> m
     Asinh()
@@ -54,7 +54,7 @@ class Exp(nn.Module):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import Exp
+    >>> from karbonn.modules import Exp
     >>> m = Exp()
     >>> m
     Exp()
@@ -85,7 +85,7 @@ class Expm1(nn.Module):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import Expm1
+    >>> from karbonn.modules import Expm1
     >>> m = Expm1()
     >>> m
     Expm1()
@@ -116,7 +116,7 @@ class Log(nn.Module):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import Log
+    >>> from karbonn.modules import Log
     >>> m = Log()
     >>> m
     Log()
@@ -147,7 +147,7 @@ class Log1p(nn.Module):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import Log1p
+    >>> from karbonn.modules import Log1p
     >>> m = Log1p()
     >>> m
     Log1p()
@@ -183,7 +183,7 @@ class SafeExp(nn.Module):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import SafeExp
+    >>> from karbonn.modules import SafeExp
     >>> m = SafeExp()
     >>> m
     SafeExp(max=20.0)
@@ -226,7 +226,7 @@ class SafeLog(nn.Module):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import SafeLog
+    >>> from karbonn.modules import SafeLog
     >>> m = SafeLog()
     >>> m
     SafeLog(min=1e-08)
@@ -261,7 +261,7 @@ class Sin(nn.Module):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import Sin
+    >>> from karbonn.modules import Sin
     >>> m = Sin()
     >>> m
     Sin()
@@ -290,7 +290,7 @@ class Sinh(nn.Module):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import Sinh
+    >>> from karbonn.modules import Sinh
     >>> m = Sinh()
     >>> m
     Sinh()

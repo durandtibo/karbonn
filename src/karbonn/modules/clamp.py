@@ -25,7 +25,7 @@ class Clamp(torch.nn.Module):
 
     ```pycon
     >>> import torch
-    >>> from karbonn import Clamp
+    >>> from karbonn.modules import Clamp
     >>> m = Clamp(min=-1, max=2)
     >>> m
     Clamp(min=-1, max=2)

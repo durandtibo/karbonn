@@ -57,10 +57,10 @@ def get_karbonn_size_finders() -> dict[type[nn.Module], BaseSizeFinder]:
     ```
     """
     # Local import to avoid cyclic dependencies
-    import karbonn
+    from karbonn.modules import ExU
     from karbonn.utils import size as size_finders
 
-    return {karbonn.ExU: size_finders.LinearSizeFinder()}
+    return {ExU: size_finders.LinearSizeFinder()}
 
 
 def get_torch_size_finders() -> dict[type[nn.Module], BaseSizeFinder]:

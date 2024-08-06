@@ -5,7 +5,7 @@ import torch
 from coola.utils.tensor import get_available_devices
 from torch import nn
 
-from karbonn import ResidualBlock
+from karbonn.modules import ResidualBlock
 
 SIZES = (1, 2)
 

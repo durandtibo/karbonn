@@ -3,7 +3,7 @@ from __future__ import annotations
 import torch
 from torch import nn
 
-from karbonn import AsinhMSELoss, AsinhSmoothL1Loss
+from karbonn.modules import AsinhMSELoss, AsinhSmoothL1Loss
 from karbonn.utils import is_loss_decreasing_with_sgd
 
 ##################################

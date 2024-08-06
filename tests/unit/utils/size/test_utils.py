@@ -3,7 +3,7 @@ from __future__ import annotations
 from coola import objects_are_equal
 from torch import nn
 
-from karbonn import ExU
+from karbonn.modules import ExU
 from karbonn.utils.size import (
     BatchNormSizeFinder,
     BilinearSizeFinder,

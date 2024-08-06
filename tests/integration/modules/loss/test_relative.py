@@ -4,7 +4,7 @@ import pytest
 import torch
 from torch import nn
 
-from karbonn import RelativeLoss, RelativeMSELoss, RelativeSmoothL1Loss
+from karbonn.modules import RelativeLoss, RelativeMSELoss, RelativeSmoothL1Loss
 from karbonn.modules.loss import (
     ArithmeticalMeanIndicator,
     BaseRelativeIndicator,

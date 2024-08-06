@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 from torch import nn
 
-from karbonn import ExU
+from karbonn.modules import ExU
 from karbonn.utils.size import BilinearSizeFinder, LinearSizeFinder
 from karbonn.utils.size.base import SizeNotFoundError
 from tests.unit.utils.size.utils import ModuleSizes

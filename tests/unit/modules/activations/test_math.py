@@ -5,7 +5,7 @@ import torch
 from coola import objects_are_allclose
 from coola.utils.tensor import get_available_devices
 
-from karbonn import Asinh, Exp, Expm1, Log, Log1p, SafeExp, SafeLog, Sin, Sinh
+from karbonn.modules import Asinh, Exp, Expm1, Log, Log1p, SafeExp, SafeLog, Sin, Sinh
 
 SHAPES = [(2,), (2, 3), (2, 3, 4), (2, 3, 4, 5)]
 

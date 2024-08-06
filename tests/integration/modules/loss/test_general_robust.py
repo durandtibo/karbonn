@@ -3,7 +3,7 @@ from __future__ import annotations
 import torch
 from torch import nn
 
-from karbonn import GeneralRobustRegressionLoss
+from karbonn.modules import GeneralRobustRegressionLoss
 from karbonn.utils import is_loss_decreasing_with_adam
 
 SIZES = (1, 2)

@@ -25,7 +25,7 @@ class ResidualBlock(nn.Module):
     ```pycon
     >>> import torch
     >>> from torch import nn
-    >>> from karbonn import ResidualBlock
+    >>> from karbonn.modules import ResidualBlock
     >>> m = ResidualBlock(residual=nn.Sequential(nn.Linear(4, 6), nn.ReLU(), nn.Linear(6, 4)))
     >>> m
     ResidualBlock(

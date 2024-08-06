@@ -4,7 +4,7 @@ import pytest
 import torch
 from torch import nn
 
-from karbonn import ExpSin, Gaussian, Laplacian, MultiQuadratic, Quadratic
+from karbonn.modules import ExpSin, Gaussian, Laplacian, MultiQuadratic, Quadratic
 from karbonn.utils import is_loss_decreasing_with_adam
 
 

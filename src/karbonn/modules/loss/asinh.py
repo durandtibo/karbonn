@@ -33,7 +33,7 @@ class AsinhMSELoss(nn.Module):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import AsinhMSELoss
+    >>> from karbonn.modules import AsinhMSELoss
     >>> criterion = AsinhMSELoss()
     >>> criterion
     AsinhMSELoss(reduction=mean)
@@ -80,7 +80,7 @@ class AsinhSmoothL1Loss(nn.Module):
 
     >>> import torch
     >>> from karbonn.functional import asinh_smooth_l1_loss
-    >>> from karbonn import AsinhSmoothL1Loss
+    >>> from karbonn.modules import AsinhSmoothL1Loss
     >>> criterion = AsinhSmoothL1Loss()
     >>> criterion
     AsinhSmoothL1Loss(reduction=mean, beta=1.0)

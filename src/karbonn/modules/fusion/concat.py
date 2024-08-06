@@ -19,7 +19,7 @@ class ConcatFusion(nn.Module):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import ConcatFusion
+    >>> from karbonn.modules import ConcatFusion
     >>> module = ConcatFusion()
     >>> module
     ConcatFusion(dim=-1)

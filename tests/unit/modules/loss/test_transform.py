@@ -6,7 +6,7 @@ from coola import objects_are_allclose, objects_are_equal
 from coola.utils.tensor import get_available_devices
 from torch import nn
 
-from karbonn import Asinh, TransformedLoss
+from karbonn.modules import Asinh, TransformedLoss
 
 SHAPES = [(2,), (2, 3), (2, 3, 4)]
 

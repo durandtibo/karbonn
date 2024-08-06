@@ -41,7 +41,7 @@ class BaseAlphaActivation(Module):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import MultiQuadratic
+    >>> from karbonn.modules import MultiQuadratic
     >>> m = MultiQuadratic()
     >>> m
     MultiQuadratic(num_parameters=1, learnable=True)
@@ -91,7 +91,7 @@ class ExpSin(BaseAlphaActivation):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import ExpSin
+    >>> from karbonn.modules import ExpSin
     >>> m = ExpSin()
     >>> m
     ExpSin(num_parameters=1, learnable=True)
@@ -135,7 +135,7 @@ class Gaussian(BaseAlphaActivation):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import Gaussian
+    >>> from karbonn.modules import Gaussian
     >>> m = Gaussian()
     >>> m
     Gaussian(num_parameters=1, learnable=True)
@@ -179,7 +179,7 @@ class Laplacian(BaseAlphaActivation):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import Laplacian
+    >>> from karbonn.modules import Laplacian
     >>> m = Laplacian()
     >>> m
     Laplacian(num_parameters=1, learnable=True)
@@ -223,7 +223,7 @@ class MultiQuadratic(BaseAlphaActivation):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import MultiQuadratic
+    >>> from karbonn.modules import MultiQuadratic
     >>> m = MultiQuadratic()
     >>> m
     MultiQuadratic(num_parameters=1, learnable=True)
@@ -267,7 +267,7 @@ class Quadratic(BaseAlphaActivation):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import Quadratic
+    >>> from karbonn.modules import Quadratic
     >>> m = Quadratic()
     >>> m
     Quadratic(num_parameters=1, learnable=True)

@@ -40,7 +40,7 @@ class ExU(nn.Module):
 
     ```pycon
     >>> import torch
-    >>> from karbonn import ExU
+    >>> from karbonn.modules import ExU
     >>> m = ExU(4, 6)
     >>> m
     ExU(in_features=4, out_features=6, bias=True)

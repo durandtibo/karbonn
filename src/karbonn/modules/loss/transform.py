@@ -30,7 +30,7 @@ class TransformedLoss(nn.Module):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import TransformedLoss, Asinh
+    >>> from karbonn.modules import TransformedLoss, Asinh
     >>> criterion = TransformedLoss(
     ...     criterion=torch.nn.SmoothL1Loss(),
     ...     prediction=Asinh(),
