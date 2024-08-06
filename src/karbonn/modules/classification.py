@@ -2,7 +2,7 @@ r"""Contain the classification specific layers."""
 
 from __future__ import annotations
 
-__all__ = ["ToBinaryLabel"]
+__all__ = ["ToBinaryLabel", "ToCategoricalLabel"]
 
 import torch
 from torch import nn
@@ -59,5 +59,68 @@ class ToBinaryLabel(nn.Module):
             The computed binary labels where the values are ``0`` and
                 ``1``. The output is a ``torch.Tensor`` of type long
                 and shape ``(d0, d1, ..., dn)``.
+
+        Example usage:
+
+        ```pycon
+
+        >>> import torch
+        >>> from karbonn.modules import ToBinaryLabel
+        >>> transform = ToBinaryLabel()
+        >>> out = transform(torch.tensor([-1.0, 1.0, -2.0, 1.0]))
+        >>> out
+        tensor([0, 1, 0, 1])
+
+        ```
         """
         return (scores > self._threshold).long()
+
+
+class ToCategoricalLabel(nn.Module):
+    r"""Implement a ``torch.nn.Module`` to compute categorical labels
+    from scores.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.modules import ToCategoricalLabel
+    >>> transform = ToCategoricalLabel()
+    >>> transform
+    ToCategoricalLabel()
+    >>> out = transform(torch.tensor([[1.0, 2.0, 3.0, 4.0], [5.0, 3.0, 2.0, 2.0]]))
+    >>> out
+    tensor([3, 0])
+
+    ```
+    """
+
+    def forward(self, scores: torch.Tensor) -> torch.Tensor:
+        r"""Compute categorical labels from scores.
+
+        Args:
+            scores: The scores used to compute the categorical labels.
+                This input must be a ``torch.Tensor`` of shape
+                ``(d0, d1, ..., dn, num_classes)`` and type float.
+
+        Returns:
+            The computed categorical labels where the values are in
+                ``{0, 1, ..., num_classes-1}``. The output is a
+                ``torch.Tensor`` of type long and shape
+                ``(d0, d1, ..., dn)``.
+
+        Example usage:
+
+        ```pycon
+
+        >>> import torch
+        >>> from karbonn.modules import ToCategoricalLabel
+        >>> transform = ToCategoricalLabel()
+        >>> out = transform(torch.tensor([[1.0, 2.0, 3.0, 4.0], [5.0, 3.0, 2.0, 2.0]]))
+        >>> out
+        tensor([3, 0])
+
+        ```
+        """
+        return scores.argmax(dim=-1, keepdim=False)
