@@ -5,7 +5,7 @@ import torch
 from coola import objects_are_allclose, objects_are_equal
 from coola.utils.tensor import get_available_devices
 
-from karbonn import AverageFusion, MultiplicationFusion, SumFusion
+from karbonn.modules import AverageFusion, MultiplicationFusion, SumFusion
 
 SIZES = (1, 2, 3)
 

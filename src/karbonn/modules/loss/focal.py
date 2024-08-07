@@ -44,7 +44,7 @@ class BinaryFocalLoss(nn.Module):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import BinaryFocalLoss
+    >>> from karbonn.modules import BinaryFocalLoss
     >>> criterion = BinaryFocalLoss(nn.BCEWithLogitsLoss(reduction="none"))
     >>> criterion
     BinaryFocalLoss(
@@ -140,7 +140,7 @@ def binary_focal_loss(
 
     ```pycon
 
-    >>> from karbonn import binary_focal_loss
+    >>> from karbonn.modules import binary_focal_loss
     >>> criterion = binary_focal_loss()
     >>> criterion
     BinaryFocalLoss(

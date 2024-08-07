@@ -42,6 +42,9 @@ jobs:
       - name: check karbonn.metric
         run: |
           poetry run python -c "from karbonn import metric"
+      - name: check karbonn.metric.classification
+        run: |
+          poetry run python -c "from karbonn.metric import classification"
       - name: check karbonn.metric.regression
         run: |
           poetry run python -c "from karbonn.metric import regression"

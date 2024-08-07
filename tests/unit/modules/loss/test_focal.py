@@ -6,7 +6,7 @@ from coola import objects_are_allclose
 from coola.utils.tensor import get_available_devices
 from torch import nn
 
-from karbonn import BinaryFocalLoss, binary_focal_loss
+from karbonn.modules import BinaryFocalLoss, binary_focal_loss
 
 SIZES = (1, 2)
 TOLERANCE = 1e-6

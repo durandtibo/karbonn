@@ -16,7 +16,7 @@ class MultiplicationFusion(nn.Module):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import MultiplicationFusion
+    >>> from karbonn.modules import MultiplicationFusion
     >>> module = MultiplicationFusion()
     >>> module
     MultiplicationFusion()
@@ -52,7 +52,7 @@ class SumFusion(nn.Module):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import SumFusion
+    >>> from karbonn.modules import SumFusion
     >>> module = SumFusion()
     >>> module
     SumFusion(normalized=False)
@@ -96,7 +96,7 @@ class AverageFusion(SumFusion):
     ```pycon
 
     >>> import torch
-    >>> from karbonn import AverageFusion
+    >>> from karbonn.modules import AverageFusion
     >>> module = AverageFusion()
     >>> module
     AverageFusion(normalized=True)

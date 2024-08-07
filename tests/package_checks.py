@@ -6,7 +6,7 @@ import logging
 import torch
 from torch import nn
 
-from karbonn import ResidualBlock
+from karbonn.modules import ResidualBlock
 from karbonn.utils import setup_module
 from karbonn.utils.imports import is_objectory_available, objectory_available
 

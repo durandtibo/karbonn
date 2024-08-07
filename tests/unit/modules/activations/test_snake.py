@@ -4,7 +4,7 @@ import pytest
 import torch
 from coola.utils.tensor import get_available_devices
 
-from karbonn import Snake
+from karbonn.modules import Snake
 
 SHAPES = [(2,), (2, 3), (2, 3, 4), (2, 3, 4, 5)]
 

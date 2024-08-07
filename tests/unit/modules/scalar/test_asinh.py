@@ -7,7 +7,7 @@ import pytest
 import torch
 from coola.utils.tensor import get_available_devices
 
-from karbonn import AsinhScalarEncoder
+from karbonn.modules import AsinhScalarEncoder
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence

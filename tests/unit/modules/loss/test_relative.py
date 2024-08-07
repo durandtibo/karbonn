@@ -6,7 +6,7 @@ from coola import objects_are_allclose, objects_are_equal
 from coola.utils.tensor import get_available_devices
 from torch import nn
 
-from karbonn import RelativeLoss, RelativeMSELoss, RelativeSmoothL1Loss
+from karbonn.modules import RelativeLoss, RelativeMSELoss, RelativeSmoothL1Loss
 from karbonn.modules.loss import (
     ArithmeticalMeanIndicator,
     ClassicalRelativeIndicator,
