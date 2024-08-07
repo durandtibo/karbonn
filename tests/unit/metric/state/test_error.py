@@ -15,7 +15,11 @@ from karbonn.metric.state import (
     NormalizedMeanSquaredErrorState,
     RootMeanErrorState,
 )
-from karbonn.utils.tracker import MeanTensorTracker, ScalableTensorTracker
+from karbonn.utils.tracker import (
+    MeanTensorTracker,
+    ScalableTensorTracker,
+    TensorTracker,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -31,6 +35,30 @@ def test_error_state_repr() -> None:
 
 def test_error_state_str() -> None:
     assert str(ErrorState()).startswith("ErrorState(")
+
+
+def test_error_state_equal_true() -> None:
+    assert ErrorState(
+        ScalableTensorTracker(count=4, total=10.0, min_value=0.0, max_value=5.0)
+    ).equal(ErrorState(ScalableTensorTracker(count=4, total=10.0, min_value=0.0, max_value=5.0)))
+
+
+def test_error_state_equal_true_empty() -> None:
+    assert ErrorState().equal(ErrorState())
+
+
+def test_error_state_equal_false_different_tracker() -> None:
+    assert not ErrorState(
+        ScalableTensorTracker(count=4, total=10.0, min_value=0.0, max_value=5.0)
+    ).equal(ErrorState())
+
+
+def test_error_state_equal_false_different_track_num_predictions() -> None:
+    assert not ErrorState().equal(ErrorState(track_num_predictions=False))
+
+
+def test_error_state_equal_false_different_type() -> None:
+    assert not ErrorState().equal(ScalableTensorTracker())
 
 
 def test_error_state_get_records() -> None:
@@ -149,6 +177,30 @@ def test_extended_error_state_init_quantiles(quantiles: torch.Tensor | Sequence[
 
 def test_extended_error_state_init_quantiles_empty() -> None:
     assert ExtendedErrorState()._quantiles.equal(torch.tensor([]))
+
+
+def test_extended_error_state_equal_true() -> None:
+    assert ExtendedErrorState(tracker=TensorTracker(torch.arange(6))).equal(
+        ExtendedErrorState(tracker=TensorTracker(torch.arange(6)))
+    )
+
+
+def test_extended_error_state_equal_true_empty() -> None:
+    assert ExtendedErrorState().equal(ExtendedErrorState())
+
+
+def test_extended_error_state_equal_false_different_tracker() -> None:
+    assert not ExtendedErrorState(tracker=TensorTracker(torch.arange(6))).equal(
+        ExtendedErrorState()
+    )
+
+
+def test_extended_error_state_equal_false_different_track_num_predictions() -> None:
+    assert not ExtendedErrorState().equal(ExtendedErrorState(track_num_predictions=False))
+
+
+def test_extended_error_state_equal_false_different_type() -> None:
+    assert not ExtendedErrorState().equal(ScalableTensorTracker())
 
 
 def test_extended_error_state_get_records_no_quantile() -> None:
@@ -291,6 +343,28 @@ def test_mean_error_state_str() -> None:
     assert str(MeanErrorState()).startswith("MeanErrorState(")
 
 
+def test_mean_error_state_equal_true() -> None:
+    assert MeanErrorState(MeanTensorTracker(count=4, total=10.0)).equal(
+        MeanErrorState(MeanTensorTracker(count=4, total=10.0))
+    )
+
+
+def test_mean_error_state_equal_true_empty() -> None:
+    assert MeanErrorState().equal(MeanErrorState())
+
+
+def test_mean_error_state_equal_false_different_tracker() -> None:
+    assert not MeanErrorState(MeanTensorTracker(count=4, total=10.0)).equal(MeanErrorState())
+
+
+def test_mean_error_state_equal_false_different_track_num_predictions() -> None:
+    assert not MeanErrorState().equal(MeanErrorState(track_num_predictions=False))
+
+
+def test_mean_error_state_equal_false_different_type() -> None:
+    assert not MeanErrorState().equal(ScalableTensorTracker())
+
+
 def test_mean_error_state_get_records() -> None:
     assert objects_are_equal(
         MeanErrorState().get_records(),
@@ -378,6 +452,30 @@ def test_root_mean_error_state_str() -> None:
     assert str(RootMeanErrorState()).startswith("RootMeanErrorState(")
 
 
+def test_root_mean_error_state_equal_true() -> None:
+    assert RootMeanErrorState(MeanTensorTracker(count=4, total=10.0)).equal(
+        RootMeanErrorState(MeanTensorTracker(count=4, total=10.0))
+    )
+
+
+def test_root_mean_error_state_equal_true_empty() -> None:
+    assert RootMeanErrorState().equal(RootMeanErrorState())
+
+
+def test_root_mean_error_state_equal_false_different_tracker() -> None:
+    assert not RootMeanErrorState(MeanTensorTracker(count=4, total=10.0)).equal(
+        RootMeanErrorState()
+    )
+
+
+def test_root_mean_error_state_equal_false_different_track_num_predictions() -> None:
+    assert not RootMeanErrorState().equal(RootMeanErrorState(track_num_predictions=False))
+
+
+def test_root_mean_error_state_equal_false_different_type() -> None:
+    assert not RootMeanErrorState().equal(ScalableTensorTracker())
+
+
 def test_root_mean_error_state_get_records() -> None:
     assert objects_are_equal(
         RootMeanErrorState().get_records(),
@@ -463,6 +561,44 @@ def test_normalized_mean_squared_error_state_repr() -> None:
 
 def test_normalized_mean_squared_error_state_str() -> None:
     assert str(NormalizedMeanSquaredErrorState()).startswith("NormalizedMeanSquaredErrorState(")
+
+
+def test_normalized_mean_squared_error_state_equal_true() -> None:
+    assert NormalizedMeanSquaredErrorState(
+        squared_errors=MeanTensorTracker(count=4, total=10.0),
+        squared_targets=MeanTensorTracker(count=4, total=16.0),
+    ).equal(
+        NormalizedMeanSquaredErrorState(
+            squared_errors=MeanTensorTracker(count=4, total=10.0),
+            squared_targets=MeanTensorTracker(count=4, total=16.0),
+        )
+    )
+
+
+def test_normalized_mean_squared_error_state_equal_true_empty() -> None:
+    assert NormalizedMeanSquaredErrorState().equal(NormalizedMeanSquaredErrorState())
+
+
+def test_normalized_mean_squared_error_state_equal_false_different_errors() -> None:
+    assert not NormalizedMeanSquaredErrorState(
+        squared_errors=MeanTensorTracker(count=4, total=10.0)
+    ).equal(NormalizedMeanSquaredErrorState())
+
+
+def test_normalized_mean_squared_error_state_equal_false_different_targets() -> None:
+    assert not NormalizedMeanSquaredErrorState(
+        squared_targets=MeanTensorTracker(count=4, total=10.0)
+    ).equal(NormalizedMeanSquaredErrorState())
+
+
+def test_normalized_mean_squared_error_state_equal_false_different_track_num_predictions() -> None:
+    assert not NormalizedMeanSquaredErrorState().equal(
+        NormalizedMeanSquaredErrorState(track_num_predictions=False)
+    )
+
+
+def test_normalized_mean_squared_error_state_equal_false_different_type() -> None:
+    assert not NormalizedMeanSquaredErrorState().equal(ScalableTensorTracker())
 
 
 def test_normalized_mean_squared_error_state_get_records() -> None:

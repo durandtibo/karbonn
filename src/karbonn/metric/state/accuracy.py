@@ -23,7 +23,7 @@ class AccuracyState(BaseState):
     This state has a constant space complexity.
 
     Args:
-        tracker: The initial mean value tracker.
+        tracker: The mean value tracker.
         track_num_predictions: If ``True``, the state tracks and
             returns the number of predictions.
 
@@ -138,7 +138,7 @@ class ExtendedAccuracyState(BaseState):
     This state has a constant space complexity.
 
     Args:
-        tracker: The initial mean value tracker.
+        tracker: The mean value tracker.
         track_num_predictions: If ``True``, the state tracks and
             returns the number of predictions.
 

@@ -64,6 +64,35 @@ class BaseState(ABC, metaclass=AbstractFactory):
         r"""The number of predictions in the state."""
 
     @abstractmethod
+    def equal(self, other: Any) -> bool:
+        r"""Indicate if two metric states are equal or not.
+
+        Args:
+                other: The other metric state to compare.
+
+        Returns:
+                ``True`` if the two metric states are equal,
+                    otherwise ``False``.
+
+            Example usage:
+
+        ```pycon
+
+        >>> import torch
+        >>> from karbonn.metric.state import ErrorState
+        >>> from karbonn.utils.tracker import ScalableTensorTracker
+        >>> state = ErrorState()
+        >>> state.equal(ErrorState())
+        True
+        >>> state.equal(
+        ...     ErrorState(ScalableTensorTracker(count=4, total=10.0, min_value=0.0, max_value=5.0))
+        ... )
+        False
+
+        ```
+        """
+
+    @abstractmethod
     def get_records(self, prefix: str = "", suffix: str = "") -> tuple[BaseRecord, ...]:
         r"""Get the records for the metrics associated to the current
         state.
