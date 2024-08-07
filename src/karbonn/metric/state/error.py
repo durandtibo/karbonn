@@ -101,6 +101,11 @@ class ErrorState(BaseState):
     def num_predictions(self) -> int:
         return self._tracker.count
 
+    def clone(self) -> ErrorState:
+        return self.__class__(
+            tracker=self._tracker.clone(), track_num_predictions=self._track_num_predictions
+        )
+
     def equal(self, other: Any) -> bool:
         if not isinstance(other, ErrorState):
             return False
@@ -249,6 +254,13 @@ class ExtendedErrorState(BaseState):
     def num_predictions(self) -> int:
         return self._tracker.count
 
+    def clone(self) -> ExtendedErrorState:
+        return self.__class__(
+            quantiles=self._quantiles,
+            tracker=self._tracker.clone(),
+            track_num_predictions=self._track_num_predictions,
+        )
+
     def equal(self, other: Any) -> bool:
         if not isinstance(other, ExtendedErrorState):
             return False
@@ -387,6 +399,11 @@ class MeanErrorState(BaseState):
     def num_predictions(self) -> int:
         return self._tracker.count
 
+    def clone(self) -> MeanErrorState:
+        return self.__class__(
+            tracker=self._tracker.clone(), track_num_predictions=self._track_num_predictions
+        )
+
     def equal(self, other: Any) -> bool:
         if not isinstance(other, MeanErrorState):
             return False
@@ -482,6 +499,11 @@ class RootMeanErrorState(BaseState):
     @property
     def num_predictions(self) -> int:
         return self._tracker.count
+
+    def clone(self) -> RootMeanErrorState:
+        return self.__class__(
+            tracker=self._tracker.clone(), track_num_predictions=self._track_num_predictions
+        )
 
     def equal(self, other: Any) -> bool:
         if not isinstance(other, RootMeanErrorState):
@@ -588,6 +610,13 @@ class NormalizedMeanSquaredErrorState(BaseState):
     @property
     def num_predictions(self) -> int:
         return self._squared_errors.count
+
+    def clone(self) -> NormalizedMeanSquaredErrorState:
+        return self.__class__(
+            squared_errors=self._squared_errors.clone(),
+            squared_targets=self._squared_targets.clone(),
+            track_num_predictions=self._track_num_predictions,
+        )
 
     def equal(self, other: Any) -> bool:
         if not isinstance(other, NormalizedMeanSquaredErrorState):

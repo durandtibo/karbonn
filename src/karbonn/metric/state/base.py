@@ -63,6 +63,36 @@ class BaseState(ABC, metaclass=AbstractFactory):
     def num_predictions(self) -> int:
         r"""The number of predictions in the state."""
 
+    def clone(self) -> BaseState:
+        r"""Create a copy of the current state.
+
+        Returns:
+            A copy of the current state.
+
+        Example usage:
+
+        ```pycon
+
+        >>> import torch
+        >>> from karbonn.metric.state import ErrorState
+        >>> state = ErrorState()
+        >>> state.update(torch.arange(6))
+        >>> state_cloned = state.clone()
+        >>> state.update(torch.ones(3))
+        >>> state
+        ErrorState(
+          (tracker): ScalableTensorTracker(count=9, total=18.0, min_value=0, max_value=5)
+          (track_num_predictions): True
+        )
+        >>> state_cloned
+        ErrorState(
+          (tracker): ScalableTensorTracker(count=6, total=15.0, min_value=0.0, max_value=5.0)
+          (track_num_predictions): True
+        )
+
+        ```
+        """
+
     @abstractmethod
     def equal(self, other: Any) -> bool:
         r"""Indicate if two metric states are equal or not.

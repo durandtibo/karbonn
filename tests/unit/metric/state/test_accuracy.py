@@ -27,6 +27,8 @@ def test_accuracy_state_clone() -> None:
     cloned = state.clone()
     assert state is not cloned
     assert state.equal(cloned)
+    state.update(torch.ones(4))
+    assert not state.equal(cloned)
 
 
 def test_accuracy_state_clone_empty() -> None:
@@ -34,6 +36,8 @@ def test_accuracy_state_clone_empty() -> None:
     cloned = state.clone()
     assert state is not cloned
     assert state.equal(cloned)
+    state.update(torch.ones(4))
+    assert not state.equal(cloned)
 
 
 def test_accuracy_state_equal_true() -> None:
@@ -156,6 +160,8 @@ def test_extended_accuracy_state_clone() -> None:
     cloned = state.clone()
     assert state is not cloned
     assert state.equal(cloned)
+    state.update(torch.ones(4))
+    assert not state.equal(cloned)
 
 
 def test_extended_accuracy_state_clone_empty() -> None:
@@ -163,6 +169,8 @@ def test_extended_accuracy_state_clone_empty() -> None:
     cloned = state.clone()
     assert state is not cloned
     assert state.equal(cloned)
+    state.update(torch.ones(4))
+    assert not state.equal(cloned)
 
 
 def test_extended_accuracy_state_equal_true() -> None:
