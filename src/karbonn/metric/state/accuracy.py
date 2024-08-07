@@ -80,7 +80,7 @@ class AccuracyState(BaseState):
 
     def clone(self) -> AccuracyState:
         return self.__class__(
-            tracker=self._tracker, track_num_predictions=self._track_num_predictions
+            tracker=self._tracker.clone(), track_num_predictions=self._track_num_predictions
         )
 
     def equal(self, other: Any) -> bool:
@@ -202,7 +202,7 @@ class ExtendedAccuracyState(BaseState):
 
     def clone(self) -> ExtendedAccuracyState:
         return self.__class__(
-            tracker=self._tracker, track_num_predictions=self._track_num_predictions
+            tracker=self._tracker.clone(), track_num_predictions=self._track_num_predictions
         )
 
     def equal(self, other: Any) -> bool:

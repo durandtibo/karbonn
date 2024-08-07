@@ -37,6 +37,24 @@ def test_error_state_str() -> None:
     assert str(ErrorState()).startswith("ErrorState(")
 
 
+def test_error_state_clone() -> None:
+    state = ErrorState(ScalableTensorTracker(count=4, total=10.0, min_value=0.0, max_value=5.0))
+    cloned = state.clone()
+    assert state is not cloned
+    assert state.equal(cloned)
+    state.update(torch.ones(4))
+    assert not state.equal(cloned)
+
+
+def test_error_state_clone_empty() -> None:
+    state = ErrorState()
+    cloned = state.clone()
+    assert state is not cloned
+    assert state.equal(cloned)
+    state.update(torch.ones(4))
+    assert not state.equal(cloned)
+
+
 def test_error_state_equal_true() -> None:
     assert ErrorState(
         ScalableTensorTracker(count=4, total=10.0, min_value=0.0, max_value=5.0)
@@ -177,6 +195,24 @@ def test_extended_error_state_init_quantiles(quantiles: torch.Tensor | Sequence[
 
 def test_extended_error_state_init_quantiles_empty() -> None:
     assert ExtendedErrorState()._quantiles.equal(torch.tensor([]))
+
+
+def test_extended_error_state_clone() -> None:
+    state = ExtendedErrorState(tracker=TensorTracker(torch.arange(6)))
+    cloned = state.clone()
+    assert state is not cloned
+    assert state.equal(cloned)
+    state.update(torch.ones(4))
+    assert not state.equal(cloned)
+
+
+def test_extended_error_state_clone_empty() -> None:
+    state = ExtendedErrorState()
+    cloned = state.clone()
+    assert state is not cloned
+    assert state.equal(cloned)
+    state.update(torch.ones(4))
+    assert not state.equal(cloned)
 
 
 def test_extended_error_state_equal_true() -> None:
@@ -343,6 +379,24 @@ def test_mean_error_state_str() -> None:
     assert str(MeanErrorState()).startswith("MeanErrorState(")
 
 
+def test_mean_error_state_clone() -> None:
+    state = MeanErrorState(MeanTensorTracker(count=4, total=10.0))
+    cloned = state.clone()
+    assert state is not cloned
+    assert state.equal(cloned)
+    state.update(torch.ones(4))
+    assert not state.equal(cloned)
+
+
+def test_mean_error_state_clone_empty() -> None:
+    state = MeanErrorState()
+    cloned = state.clone()
+    assert state is not cloned
+    assert state.equal(cloned)
+    state.update(torch.ones(4))
+    assert not state.equal(cloned)
+
+
 def test_mean_error_state_equal_true() -> None:
     assert MeanErrorState(MeanTensorTracker(count=4, total=10.0)).equal(
         MeanErrorState(MeanTensorTracker(count=4, total=10.0))
@@ -450,6 +504,24 @@ def test_root_mean_error_state_repr() -> None:
 
 def test_root_mean_error_state_str() -> None:
     assert str(RootMeanErrorState()).startswith("RootMeanErrorState(")
+
+
+def test_root_mean_error_state_clone() -> None:
+    state = RootMeanErrorState(MeanTensorTracker(count=4, total=10.0))
+    cloned = state.clone()
+    assert state is not cloned
+    assert state.equal(cloned)
+    state.update(torch.ones(4))
+    assert not state.equal(cloned)
+
+
+def test_root_mean_error_state_clone_empty() -> None:
+    state = RootMeanErrorState()
+    cloned = state.clone()
+    assert state is not cloned
+    assert state.equal(cloned)
+    state.update(torch.ones(4))
+    assert not state.equal(cloned)
 
 
 def test_root_mean_error_state_equal_true() -> None:
@@ -561,6 +633,27 @@ def test_normalized_mean_squared_error_state_repr() -> None:
 
 def test_normalized_mean_squared_error_state_str() -> None:
     assert str(NormalizedMeanSquaredErrorState()).startswith("NormalizedMeanSquaredErrorState(")
+
+
+def test_normalized_mean_squared_error_state_clone() -> None:
+    state = NormalizedMeanSquaredErrorState(
+        squared_errors=MeanTensorTracker(count=4, total=10.0),
+        squared_targets=MeanTensorTracker(count=4, total=16.0),
+    )
+    cloned = state.clone()
+    assert state is not cloned
+    assert state.equal(cloned)
+    state.update(torch.ones(4), torch.ones(4))
+    assert not state.equal(cloned)
+
+
+def test_normalized_mean_squared_error_state_clone_empty() -> None:
+    state = NormalizedMeanSquaredErrorState()
+    cloned = state.clone()
+    assert state is not cloned
+    assert state.equal(cloned)
+    state.update(torch.ones(4), torch.ones(4))
+    assert not state.equal(cloned)
 
 
 def test_normalized_mean_squared_error_state_equal_true() -> None:
