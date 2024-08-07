@@ -2,18 +2,21 @@ r"""Contain accuracy metrics."""
 
 from __future__ import annotations
 
-__all__ = ["BinaryAccuracy", "CategoricalAccuracy"]
+__all__ = ["BinaryAccuracy", "CategoricalAccuracy", "TopKAccuracy"]
 
 import logging
 from typing import TYPE_CHECKING
 
+from coola.utils import repr_indent, repr_mapping
 from torch.nn import Identity, Module
 
-from karbonn.metric.state import AccuracyState, BaseState
+from karbonn.metric import BaseMetric
+from karbonn.metric.state import AccuracyState, BaseState, setup_state
 from karbonn.metric.state_ import BaseStateMetric
 from karbonn.utils import setup_module
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
     from torch import Tensor
 
 logger = logging.getLogger(__name__)
@@ -28,8 +31,8 @@ class BinaryAccuracy(BaseStateMetric):
         transform: The transformation applied on the predictions to
             generate the predicted binary labels. If ``None``, the
             identity module is used. The transform module must take
-            a single input tensor and output a single input tensor
-            with the same shape as the input.
+            a single input tensor and output a single tensor with the
+            same shape as the input.
 
     Example usage:
 
@@ -106,13 +109,12 @@ class CategoricalAccuracy(BaseStateMetric):
     r"""Implement a categorical accuracy metric.
 
     Args:
-    ----
-        mode (str): Specifies the mode.
-        name (str, optional): Specifies the name used to log the
-            metric. Default: ``'cat_acc'``
-        state (``BaseState`` or dict or ``None``, optional): Specifies
-            the metric state or its configuration. If ``None``,
-            ``AccuracyState`` is instantiated. Default: ``None``
+        state: The metric state or its configuration. If ``None``,
+            ``AccuracyState`` is instantiated.
+        transform: The transformation applied on the predictions to
+            generate the predicted categorical labels. If ``None``, the
+            identity module is used. The transform module must take
+            a single input tensor and output a single tensor.
 
     Example usage:
 
@@ -184,3 +186,103 @@ class CategoricalAccuracy(BaseStateMetric):
         """
         prediction = self.transform(prediction)
         self._state.update(prediction.eq(target.view_as(prediction)))
+
+
+class TopKAccuracy(BaseMetric):
+    r"""Implement the accuracy at k metric a.k.a. top-k accuracy.
+
+    Args:
+        topk: The k values used to evaluate the top-k accuracy metric.
+        name (str, optional): Specifies the name used to log the
+            metric. Default: ``'accuracy'``
+
+    Example usage:
+
+    .. code-block:: pycon
+
+        >>> import torch
+        >>> from gravitorch.models.metrics import TopKAccuracy
+        >>> metric = TopKAccuracy("eval", topk=(1,))
+        >>> metric
+        TopKAccuracy(
+          (mode): eval
+          (name): acc_top
+          (topk): (1,)
+          (states):
+            (1): AccuracyState(num_predictions=0)
+        )
+        >>> metric(torch.tensor([[0, 2, 1], [2, 1, 0]]), torch.tensor([1, 0]))
+        >>> metric.value()
+        {'eval/acc_top_1_accuracy': 1.0, 'eval/acc_top_1_num_predictions': 2}
+        >>> metric(torch.tensor([[0, 2, 1], [2, 1, 0]]), torch.tensor([1, 2]))
+        >>> metric.value()
+        {'eval/acc_top_1_accuracy': 0.75, 'eval/acc_top_1_num_predictions': 4}
+        >>> metric.reset()
+        >>> metric(torch.tensor([[0, 2, 1], [2, 1, 0]]), torch.tensor([1, 2]))
+        >>> metric.value()
+        {'eval/acc_top_1_accuracy': 0.5, 'eval/acc_top_1_num_predictions': 2}
+    """
+
+    def __init__(
+        self,
+        topk: Sequence[int] = (1, 5),
+        state: dict | None = None,
+    ) -> None:
+        super().__init__()
+        self._topk = topk if isinstance(topk, tuple) else tuple(topk)
+        self._maxk = max(self._topk)
+
+        state = setup_state(state or AccuracyState())
+        self._states = {tol: state.clone() for tol in self._topk}
+
+    def extra_repr(self) -> str:
+        return repr_mapping(
+            {
+                "topk": self._topk,
+                "states": "\n" + repr_indent(repr_mapping(self._states)),
+            }
+        )
+
+    @property
+    def topk(self) -> tuple[int, ...]:
+        return self._topk
+
+    def forward(self, prediction: Tensor, target: Tensor) -> None:
+        r"""Update the accuracy metric given a mini-batch of examples.
+
+        Args:
+        ----
+            prediction (``torch.Tensor`` of shape
+                ``(d0, d1, ..., dn, num_classes)`` and type float):
+                Specifies the predictions.
+            target (``torch.Tensor`` of shape
+                ``(d0, d1, ..., dn)`` or ``(d0, d1, ..., dn, 1)``
+                and type long or float): Specifies the targets.
+                The values have to be in
+                ``{0, 1, ..., num_classes-1}``.
+
+        Example usage:
+
+        .. code-block:: pycon
+
+            >>> import torch
+            >>> from gravitorch.models.metrics import TopKAccuracy
+            >>> metric = TopKAccuracy("eval", topk=(1,))
+            >>> metric(torch.tensor([[0, 2, 1], [2, 1, 0]]), torch.tensor([1, 0]))
+            >>> metric.value()
+            {'eval/acc_top_1_accuracy': 1.0, 'eval/acc_top_1_num_predictions': 2}
+        """
+        pred = prediction.topk(self._maxk, -1, True, True)[1]
+        correct = pred.eq(target.view(*pred.shape[:-1], 1).expand_as(pred)).float()
+        for k, state in self._states.items():
+            state.update(correct[..., :k].sum(dim=-1))
+
+    def reset(self) -> None:
+        for state in self._states.values():
+            state.reset()
+
+    def value(self, prefix: str = "", suffix: str = "") -> dict:
+        results = {}
+        for k, state in self._states.items():
+            results.update(state.value(prefix=f"{prefix}{k}_", suffix=suffix))
+        return results
