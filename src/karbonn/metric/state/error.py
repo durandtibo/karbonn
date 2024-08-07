@@ -11,8 +11,9 @@ __all__ = [
 ]
 
 import math
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
+from coola import objects_are_equal
 from coola.utils import repr_indent, repr_mapping, str_indent, str_mapping
 from minrecord import BaseRecord, MinScalarRecord
 
@@ -38,6 +39,7 @@ class ErrorState(BaseState):
     This state has a constant space complexity.
 
     Args:
+        tracker: The value tracker.
         track_num_predictions: If ``True``, the state tracks and
             returns the number of predictions.
 
@@ -69,8 +71,10 @@ class ErrorState(BaseState):
     ```
     """
 
-    def __init__(self, track_num_predictions: bool = True) -> None:
-        self._tracker = ScalableTensorTracker()
+    def __init__(
+        self, tracker: ScalableTensorTracker | None = None, track_num_predictions: bool = True
+    ) -> None:
+        self._tracker = tracker or ScalableTensorTracker()
         self._track_num_predictions = bool(track_num_predictions)
 
     def __repr__(self) -> str:
@@ -96,6 +100,18 @@ class ErrorState(BaseState):
     @property
     def num_predictions(self) -> int:
         return self._tracker.count
+
+    def clone(self) -> ErrorState:
+        return self.__class__(
+            tracker=self._tracker.clone(), track_num_predictions=self._track_num_predictions
+        )
+
+    def equal(self, other: Any) -> bool:
+        if not isinstance(other, ErrorState):
+            return False
+        return self._track_num_predictions == other._track_num_predictions and self._tracker.equal(
+            other._tracker
+        )
 
     def get_records(self, prefix: str = "", suffix: str = "") -> tuple[BaseRecord, ...]:
         return (
@@ -159,6 +175,7 @@ class ExtendedErrorState(BaseState):
 
     Args:
         quantiles: The quantile values to evaluate.
+        tracker: The value tracker.
         track_num_predictions: If ``True``, the state tracks and
             returns the number of predictions.
 
@@ -171,8 +188,8 @@ class ExtendedErrorState(BaseState):
     >>> state = ExtendedErrorState(quantiles=[0.5, 0.9])
     >>> state
     ExtendedErrorState(
-      (tracker): TensorTracker(count=0)
       (quantiles): tensor([0.5000, 0.9000])
+      (tracker): TensorTracker(count=0)
       (track_num_predictions): True
     )
     >>> state.get_records("error_")
@@ -190,7 +207,7 @@ class ExtendedErrorState(BaseState):
      'error_min': 0,
      'error_max': 10,
      'error_sum': 55,
-     'error_std': 3.316624879837036,
+     'error_std': 3.316...,
      'error_quantile_0.5': 5.0,
      'error_quantile_0.9': 9.0,
      'error_num_predictions': 11}
@@ -199,18 +216,21 @@ class ExtendedErrorState(BaseState):
     """
 
     def __init__(
-        self, quantiles: torch.Tensor | Sequence[float] = (), track_num_predictions: bool = True
+        self,
+        quantiles: torch.Tensor | Sequence[float] = (),
+        tracker: TensorTracker | None = None,
+        track_num_predictions: bool = True,
     ) -> None:
-        self._tracker = TensorTracker()
         self._quantiles = to_tensor(quantiles)
+        self._tracker = tracker or TensorTracker()
         self._track_num_predictions = bool(track_num_predictions)
 
     def __repr__(self) -> str:
         args = repr_indent(
             repr_mapping(
                 {
-                    "tracker": self._tracker,
                     "quantiles": self._quantiles,
+                    "tracker": self._tracker,
                     "track_num_predictions": self._track_num_predictions,
                 }
             )
@@ -221,9 +241,9 @@ class ExtendedErrorState(BaseState):
         args = str_indent(
             str_mapping(
                 {
+                    "quantiles": self._quantiles,
                     "tracker": self._tracker,
                     "num_predictions": self.num_predictions,
-                    "quantiles": self._quantiles,
                     "track_num_predictions": self._track_num_predictions,
                 }
             )
@@ -233,6 +253,22 @@ class ExtendedErrorState(BaseState):
     @property
     def num_predictions(self) -> int:
         return self._tracker.count
+
+    def clone(self) -> ExtendedErrorState:
+        return self.__class__(
+            quantiles=self._quantiles,
+            tracker=self._tracker.clone(),
+            track_num_predictions=self._track_num_predictions,
+        )
+
+    def equal(self, other: Any) -> bool:
+        if not isinstance(other, ExtendedErrorState):
+            return False
+        return (
+            self._track_num_predictions == other._track_num_predictions
+            and self._tracker.equal(other._tracker)
+            and objects_are_equal(self._quantiles, other._quantiles)
+        )
 
     def get_records(self, prefix: str = "", suffix: str = "") -> tuple[BaseRecord, ...]:
         trackers = [
@@ -270,7 +306,7 @@ class ExtendedErrorState(BaseState):
          'error_min': 0,
          'error_max': 10,
          'error_sum': 55,
-         'error_std': 3.316624879837036,
+         'error_std': 3.316...,
          'error_quantile_0.5': 5.0,
          'error_quantile_0.9': 9.0,
          'error_num_predictions': 11}
@@ -308,6 +344,7 @@ class MeanErrorState(BaseState):
     This state has a constant space complexity.
 
     Args:
+        tracker: The mean value tracker.
         track_num_predictions: If ``True``, the state tracks and
             returns the number of predictions.
 
@@ -332,8 +369,10 @@ class MeanErrorState(BaseState):
     ```
     """
 
-    def __init__(self, track_num_predictions: bool = True) -> None:
-        self._tracker = MeanTensorTracker()
+    def __init__(
+        self, tracker: MeanTensorTracker | None = None, track_num_predictions: bool = True
+    ) -> None:
+        self._tracker = tracker or MeanTensorTracker()
         self._track_num_predictions = bool(track_num_predictions)
 
     def __repr__(self) -> str:
@@ -359,6 +398,18 @@ class MeanErrorState(BaseState):
     @property
     def num_predictions(self) -> int:
         return self._tracker.count
+
+    def clone(self) -> MeanErrorState:
+        return self.__class__(
+            tracker=self._tracker.clone(), track_num_predictions=self._track_num_predictions
+        )
+
+    def equal(self, other: Any) -> bool:
+        if not isinstance(other, MeanErrorState):
+            return False
+        return self._track_num_predictions == other._track_num_predictions and self._tracker.equal(
+            other._tracker
+        )
 
     def get_records(self, prefix: str = "", suffix: str = "") -> tuple[BaseRecord, ...]:
         return (MinScalarRecord(name=f"{prefix}mean{suffix}"),)
@@ -406,6 +457,7 @@ class RootMeanErrorState(BaseState):
     This state has a constant space complexity.
 
     Args:
+        tracker: The mean value tracker.
         track_num_predictions: If ``True``, the state tracks and
             returns the number of predictions.
 
@@ -430,8 +482,10 @@ class RootMeanErrorState(BaseState):
     ```
     """
 
-    def __init__(self, track_num_predictions: bool = True) -> None:
-        self._tracker = MeanTensorTracker()
+    def __init__(
+        self, tracker: MeanTensorTracker | None = None, track_num_predictions: bool = True
+    ) -> None:
+        self._tracker = tracker or MeanTensorTracker()
         self._track_num_predictions = bool(track_num_predictions)
 
     def __repr__(self) -> str:
@@ -445,6 +499,18 @@ class RootMeanErrorState(BaseState):
     @property
     def num_predictions(self) -> int:
         return self._tracker.count
+
+    def clone(self) -> RootMeanErrorState:
+        return self.__class__(
+            tracker=self._tracker.clone(), track_num_predictions=self._track_num_predictions
+        )
+
+    def equal(self, other: Any) -> bool:
+        if not isinstance(other, RootMeanErrorState):
+            return False
+        return self._track_num_predictions == other._track_num_predictions and self._tracker.equal(
+            other._tracker
+        )
 
     def get_records(self, prefix: str = "", suffix: str = "") -> tuple[BaseRecord, ...]:
         return (MinScalarRecord(name=f"{prefix}mean{suffix}"),)
@@ -467,7 +533,7 @@ class RootMeanErrorState(BaseState):
         >>> state = RootMeanErrorState()
         >>> state.update(torch.arange(6))
         >>> state.value("error_")
-        {'error_mean': 1.5811388300841898, 'error_num_predictions': 6}
+        {'error_mean': 1.581..., 'error_num_predictions': 6}
 
         ```
         """
@@ -492,6 +558,8 @@ class NormalizedMeanSquaredErrorState(BaseState):
     This state has a constant space complexity.
 
     Args:
+        squared_errors: The value tracker for squared errors.
+        squared_targets: The value tracker for squared targets.
         track_num_predictions: If ``True``, the state tracks and
             returns the number of predictions.
 
@@ -517,9 +585,14 @@ class NormalizedMeanSquaredErrorState(BaseState):
     ```
     """
 
-    def __init__(self, track_num_predictions: bool = True) -> None:
-        self._squared_errors = MeanTensorTracker()
-        self._squared_targets = MeanTensorTracker()
+    def __init__(
+        self,
+        squared_errors: MeanTensorTracker | None = None,
+        squared_targets: MeanTensorTracker | None = None,
+        track_num_predictions: bool = True,
+    ) -> None:
+        self._squared_errors = squared_errors or MeanTensorTracker()
+        self._squared_targets = squared_targets or MeanTensorTracker()
         self._track_num_predictions = bool(track_num_predictions)
 
     def __repr__(self) -> str:
@@ -537,6 +610,22 @@ class NormalizedMeanSquaredErrorState(BaseState):
     @property
     def num_predictions(self) -> int:
         return self._squared_errors.count
+
+    def clone(self) -> NormalizedMeanSquaredErrorState:
+        return self.__class__(
+            squared_errors=self._squared_errors.clone(),
+            squared_targets=self._squared_targets.clone(),
+            track_num_predictions=self._track_num_predictions,
+        )
+
+    def equal(self, other: Any) -> bool:
+        if not isinstance(other, NormalizedMeanSquaredErrorState):
+            return False
+        return (
+            self._track_num_predictions == other._track_num_predictions
+            and self._squared_errors.equal(other._squared_errors)
+            and self._squared_targets.equal(other._squared_targets)
+        )
 
     def get_records(self, prefix: str = "", suffix: str = "") -> tuple[BaseRecord, ...]:
         return (MinScalarRecord(name=f"{prefix}mean{suffix}"),)

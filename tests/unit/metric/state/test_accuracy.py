@@ -22,6 +22,46 @@ def test_accuracy_state_str() -> None:
     assert str(AccuracyState()).startswith("AccuracyState(")
 
 
+def test_accuracy_state_clone() -> None:
+    state = AccuracyState(MeanTensorTracker(count=4, total=10.0))
+    cloned = state.clone()
+    assert state is not cloned
+    assert state.equal(cloned)
+    state.update(torch.ones(4))
+    assert not state.equal(cloned)
+
+
+def test_accuracy_state_clone_empty() -> None:
+    state = AccuracyState()
+    cloned = state.clone()
+    assert state is not cloned
+    assert state.equal(cloned)
+    state.update(torch.ones(4))
+    assert not state.equal(cloned)
+
+
+def test_accuracy_state_equal_true() -> None:
+    assert AccuracyState(MeanTensorTracker(count=4, total=10.0)).equal(
+        AccuracyState(MeanTensorTracker(count=4, total=10.0))
+    )
+
+
+def test_accuracy_state_equal_true_empty() -> None:
+    assert AccuracyState().equal(AccuracyState())
+
+
+def test_accuracy_state_equal_false_different_tracker() -> None:
+    assert not AccuracyState(MeanTensorTracker(count=4, total=10.0)).equal(AccuracyState())
+
+
+def test_accuracy_state_equal_false_different_track_num_predictions() -> None:
+    assert not AccuracyState().equal(AccuracyState(track_num_predictions=False))
+
+
+def test_accuracy_state_equal_false_different_type() -> None:
+    assert not AccuracyState().equal(MeanTensorTracker(count=4, total=10.0))
+
+
 def test_accuracy_state_get_records() -> None:
     assert objects_are_equal(
         AccuracyState().get_records(),
@@ -113,6 +153,48 @@ def test_extended_accuracy_state_repr() -> None:
 
 def test_extended_accuracy_state_str() -> None:
     assert str(ExtendedAccuracyState()).startswith("ExtendedAccuracyState(")
+
+
+def test_extended_accuracy_state_clone() -> None:
+    state = ExtendedAccuracyState(MeanTensorTracker(count=4, total=10.0))
+    cloned = state.clone()
+    assert state is not cloned
+    assert state.equal(cloned)
+    state.update(torch.ones(4))
+    assert not state.equal(cloned)
+
+
+def test_extended_accuracy_state_clone_empty() -> None:
+    state = ExtendedAccuracyState()
+    cloned = state.clone()
+    assert state is not cloned
+    assert state.equal(cloned)
+    state.update(torch.ones(4))
+    assert not state.equal(cloned)
+
+
+def test_extended_accuracy_state_equal_true() -> None:
+    assert ExtendedAccuracyState(MeanTensorTracker(count=4, total=10.0)).equal(
+        ExtendedAccuracyState(MeanTensorTracker(count=4, total=10.0))
+    )
+
+
+def test_extended_accuracy_state_equal_true_empty() -> None:
+    assert ExtendedAccuracyState().equal(ExtendedAccuracyState())
+
+
+def test_extended_accuracy_state_equal_false_different_tracker() -> None:
+    assert not ExtendedAccuracyState(MeanTensorTracker(count=4, total=10.0)).equal(
+        ExtendedAccuracyState()
+    )
+
+
+def test_extended_accuracy_state_equal_false_different_track_num_predictions() -> None:
+    assert not ExtendedAccuracyState().equal(ExtendedAccuracyState(track_num_predictions=False))
+
+
+def test_extended_accuracy_state_equal_false_different_type() -> None:
+    assert not ExtendedAccuracyState().equal(MeanTensorTracker(count=4, total=10.0))
 
 
 def test_extended_accuracy_state_get_records() -> None:

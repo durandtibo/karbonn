@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["AccuracyState"]
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from coola.utils import repr_indent, repr_mapping, str_indent, str_mapping
 from minrecord import BaseRecord, MaxScalarRecord, MinScalarRecord
@@ -23,6 +23,7 @@ class AccuracyState(BaseState):
     This state has a constant space complexity.
 
     Args:
+        tracker: The mean value tracker.
         track_num_predictions: If ``True``, the state tracks and
             returns the number of predictions.
 
@@ -47,8 +48,10 @@ class AccuracyState(BaseState):
     ```
     """
 
-    def __init__(self, track_num_predictions: bool = True) -> None:
-        self._tracker = MeanTensorTracker()
+    def __init__(
+        self, tracker: MeanTensorTracker | None = None, track_num_predictions: bool = True
+    ) -> None:
+        self._tracker = tracker or MeanTensorTracker()
         self._track_num_predictions = bool(track_num_predictions)
 
     def __repr__(self) -> str:
@@ -74,6 +77,18 @@ class AccuracyState(BaseState):
     @property
     def num_predictions(self) -> int:
         return self._tracker.count
+
+    def clone(self) -> AccuracyState:
+        return self.__class__(
+            tracker=self._tracker.clone(), track_num_predictions=self._track_num_predictions
+        )
+
+    def equal(self, other: Any) -> bool:
+        if not isinstance(other, AccuracyState):
+            return False
+        return self._track_num_predictions == other._track_num_predictions and self._tracker.equal(
+            other._tracker
+        )
 
     def get_records(self, prefix: str = "", suffix: str = "") -> tuple[BaseRecord, ...]:
         return (MaxScalarRecord(name=f"{prefix}accuracy{suffix}"),)
@@ -123,6 +138,7 @@ class ExtendedAccuracyState(BaseState):
     This state has a constant space complexity.
 
     Args:
+        tracker: The mean value tracker.
         track_num_predictions: If ``True``, the state tracks and
             returns the number of predictions.
 
@@ -154,8 +170,10 @@ class ExtendedAccuracyState(BaseState):
     ```
     """
 
-    def __init__(self, track_num_predictions: bool = True) -> None:
-        self._tracker = MeanTensorTracker()
+    def __init__(
+        self, tracker: MeanTensorTracker | None = None, track_num_predictions: bool = True
+    ) -> None:
+        self._tracker = tracker or MeanTensorTracker()
         self._track_num_predictions = bool(track_num_predictions)
 
     def __repr__(self) -> str:
@@ -181,6 +199,18 @@ class ExtendedAccuracyState(BaseState):
     @property
     def num_predictions(self) -> int:
         return self._tracker.count
+
+    def clone(self) -> ExtendedAccuracyState:
+        return self.__class__(
+            tracker=self._tracker.clone(), track_num_predictions=self._track_num_predictions
+        )
+
+    def equal(self, other: Any) -> bool:
+        if not isinstance(other, ExtendedAccuracyState):
+            return False
+        return self._track_num_predictions == other._track_num_predictions and self._tracker.equal(
+            other._tracker
+        )
 
     def get_records(self, prefix: str = "", suffix: str = "") -> tuple[BaseRecord, ...]:
         return (
