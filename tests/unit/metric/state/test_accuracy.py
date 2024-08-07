@@ -46,22 +46,16 @@ def test_accuracy_state_equal_true_empty() -> None:
     assert AccuracyState().equal(AccuracyState())
 
 
-def test_accuracy_state_equal_false_different_state() -> None:
-    assert not AccuracyState(MeanTensorTracker(count=4, total=10.0)).equal(
-        AccuracyState(MeanTensorTracker(count=4, total=8.0))
-    )
+def test_accuracy_state_equal_false_different_tracker() -> None:
+    assert not AccuracyState(MeanTensorTracker(count=4, total=10.0)).equal(AccuracyState())
 
 
 def test_accuracy_state_equal_false_different_track_num_predictions() -> None:
-    assert not AccuracyState(MeanTensorTracker(count=4, total=10.0)).equal(
-        AccuracyState(MeanTensorTracker(count=4, total=8.0), track_num_predictions=False)
-    )
+    assert not AccuracyState().equal(AccuracyState(track_num_predictions=False))
 
 
 def test_accuracy_state_equal_false_different_type() -> None:
-    assert not AccuracyState(MeanTensorTracker(count=4, total=10.0)).equal(
-        MeanTensorTracker(count=4, total=10.0)
-    )
+    assert not AccuracyState().equal(MeanTensorTracker(count=4, total=10.0))
 
 
 def test_accuracy_state_get_records() -> None:
@@ -181,22 +175,18 @@ def test_extended_accuracy_state_equal_true_empty() -> None:
     assert ExtendedAccuracyState().equal(ExtendedAccuracyState())
 
 
-def test_extended_accuracy_state_equal_false_different_state() -> None:
+def test_extended_accuracy_state_equal_false_different_tracker() -> None:
     assert not ExtendedAccuracyState(MeanTensorTracker(count=4, total=10.0)).equal(
-        ExtendedAccuracyState(MeanTensorTracker(count=4, total=8.0))
+        ExtendedAccuracyState()
     )
 
 
 def test_extended_accuracy_state_equal_false_different_track_num_predictions() -> None:
-    assert not ExtendedAccuracyState(MeanTensorTracker(count=4, total=10.0)).equal(
-        ExtendedAccuracyState(MeanTensorTracker(count=4, total=8.0), track_num_predictions=False)
-    )
+    assert not ExtendedAccuracyState().equal(ExtendedAccuracyState(track_num_predictions=False))
 
 
 def test_extended_accuracy_state_equal_false_different_type() -> None:
-    assert not ExtendedAccuracyState(MeanTensorTracker(count=4, total=10.0)).equal(
-        MeanTensorTracker(count=4, total=10.0)
-    )
+    assert not ExtendedAccuracyState().equal(MeanTensorTracker(count=4, total=10.0))
 
 
 def test_extended_accuracy_state_get_records() -> None:
