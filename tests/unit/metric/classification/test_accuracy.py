@@ -474,20 +474,16 @@ def test_top_k_accuracy_tolerances(topk: Sequence[int], tuple_topk: tuple[int, .
     assert TopKAccuracy(topk=topk).topk == tuple_topk
 
 
-# TODO
-# def test_top_k_accuracy_state_default() -> None:
-#     metric = TopKAccuracy(topk=(1, 5))
-#     assert objects_are_equal(metric._states, {1: AccuracyState(), 5: AccuracyState()})
-#
-#
-# def test_top_k_accuracy_state_extended() -> None:
-#     metric = TopKAccuracy(
-#         topk=(1, 5),
-#         state={OBJECT_TARGET: "karbonn.metric.state.ExtendedAccuracyState"},
-#     )
-#     assert objects_are_equal(
-#         metric._states, {1: ExtendedAccuracyState(), 5: ExtendedAccuracyState()}
-#     )
+def test_top_k_accuracy_state_default() -> None:
+    metric = TopKAccuracy(topk=(1, 5))
+    assert objects_are_equal(metric._states, {1: AccuracyState(), 5: AccuracyState()})
+
+
+def test_top_k_accuracy_state_extended() -> None:
+    metric = TopKAccuracy(topk=(1, 5), state=ExtendedAccuracyState())
+    assert objects_are_equal(
+        metric._states, {1: ExtendedAccuracyState(), 5: ExtendedAccuracyState()}
+    )
 
 
 @pytest.mark.parametrize("device", get_available_devices())
