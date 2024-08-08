@@ -6,6 +6,7 @@ import pytest
 import torch
 from coola import objects_are_allclose, objects_are_equal
 from coola.utils.tensor import get_available_devices
+from minrecord import MinScalarRecord
 
 from karbonn.metric import EmptyMetricError, SquaredAsinhError, SquaredLogError
 from karbonn.metric.state import (
@@ -309,6 +310,34 @@ def test_squared_asinh_error_reset() -> None:
     state.reset.assert_called_once_with()
 
 
+def test_squared_asinh_error_get_records() -> None:
+    metric = SquaredAsinhError()
+    assert objects_are_equal(
+        metric.get_records(),
+        (
+            MinScalarRecord(name="mean"),
+            MinScalarRecord(name="min"),
+            MinScalarRecord(name="max"),
+            MinScalarRecord(name="sum"),
+        ),
+    )
+
+
+@pytest.mark.parametrize("prefix", ["prefix_", "suffix/"])
+@pytest.mark.parametrize("suffix", ["_prefix", "/suffix"])
+def test_squared_asinh_error_get_records_prefix_suffix(prefix: str, suffix: str) -> None:
+    metric = SquaredAsinhError()
+    assert objects_are_equal(
+        metric.get_records(prefix, suffix),
+        (
+            MinScalarRecord(name=f"{prefix}mean{suffix}"),
+            MinScalarRecord(name=f"{prefix}min{suffix}"),
+            MinScalarRecord(name=f"{prefix}max{suffix}"),
+            MinScalarRecord(name=f"{prefix}sum{suffix}"),
+        ),
+    )
+
+
 #####################################
 #     Tests for SquaredLogError     #
 #####################################
@@ -576,3 +605,31 @@ def test_squared_log_error_reset() -> None:
     metric = SquaredLogError(state=state)
     metric.reset()
     state.reset.assert_called_once_with()
+
+
+def test_squared_log_error_get_records() -> None:
+    metric = SquaredLogError()
+    assert objects_are_equal(
+        metric.get_records(),
+        (
+            MinScalarRecord(name="mean"),
+            MinScalarRecord(name="min"),
+            MinScalarRecord(name="max"),
+            MinScalarRecord(name="sum"),
+        ),
+    )
+
+
+@pytest.mark.parametrize("prefix", ["prefix_", "suffix/"])
+@pytest.mark.parametrize("suffix", ["_prefix", "/suffix"])
+def test_squared_log_error_get_records_prefix_suffix(prefix: str, suffix: str) -> None:
+    metric = SquaredLogError()
+    assert objects_are_equal(
+        metric.get_records(prefix, suffix),
+        (
+            MinScalarRecord(name=f"{prefix}mean{suffix}"),
+            MinScalarRecord(name=f"{prefix}min{suffix}"),
+            MinScalarRecord(name=f"{prefix}max{suffix}"),
+            MinScalarRecord(name=f"{prefix}sum{suffix}"),
+        ),
+    )

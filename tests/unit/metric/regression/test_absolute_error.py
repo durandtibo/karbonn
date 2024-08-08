@@ -4,6 +4,7 @@ import pytest
 import torch
 from coola import objects_are_equal
 from coola.utils.tensor import get_available_devices
+from minrecord import MinScalarRecord
 
 from karbonn.metric import AbsoluteError, EmptyMetricError
 from karbonn.metric.state import BaseState, ErrorState, MeanErrorState
@@ -254,3 +255,31 @@ def test_absolute_error_reset() -> None:
     metric = AbsoluteError(state=state)
     metric.reset()
     state.reset.assert_called_once_with()
+
+
+def test_absolute_error_get_records() -> None:
+    metric = AbsoluteError()
+    assert objects_are_equal(
+        metric.get_records(),
+        (
+            MinScalarRecord(name="mean"),
+            MinScalarRecord(name="min"),
+            MinScalarRecord(name="max"),
+            MinScalarRecord(name="sum"),
+        ),
+    )
+
+
+@pytest.mark.parametrize("prefix", ["prefix_", "suffix/"])
+@pytest.mark.parametrize("suffix", ["_prefix", "/suffix"])
+def test_absolute_error_get_records_prefix_suffix(prefix: str, suffix: str) -> None:
+    metric = AbsoluteError()
+    assert objects_are_equal(
+        metric.get_records(prefix, suffix),
+        (
+            MinScalarRecord(name=f"{prefix}mean{suffix}"),
+            MinScalarRecord(name=f"{prefix}min{suffix}"),
+            MinScalarRecord(name=f"{prefix}max{suffix}"),
+            MinScalarRecord(name=f"{prefix}sum{suffix}"),
+        ),
+    )
