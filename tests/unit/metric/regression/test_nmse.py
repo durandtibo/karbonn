@@ -6,6 +6,7 @@ import pytest
 import torch
 from coola import objects_are_equal
 from coola.utils.tensor import get_available_devices
+from minrecord import MinScalarRecord
 
 from karbonn.metric import EmptyMetricError, NormalizedMeanSquaredError
 from karbonn.metric.state import BaseState, NormalizedMeanSquaredErrorState
@@ -187,3 +188,21 @@ def test_normalized_mean_squared_error_reset() -> None:
     metric = NormalizedMeanSquaredError(state=state)
     metric.reset()
     state.reset.assert_called_once_with()
+
+
+def test_normalized_mean_squared_error_get_records() -> None:
+    metric = NormalizedMeanSquaredError()
+    assert objects_are_equal(
+        metric.get_records(),
+        (MinScalarRecord(name="mean"),),
+    )
+
+
+@pytest.mark.parametrize("prefix", ["prefix_", "suffix/"])
+@pytest.mark.parametrize("suffix", ["_prefix", "/suffix"])
+def test_normalized_mean_squared_error_get_records_prefix_suffix(prefix: str, suffix: str) -> None:
+    metric = NormalizedMeanSquaredError()
+    assert objects_are_equal(
+        metric.get_records(prefix, suffix),
+        (MinScalarRecord(name=f"{prefix}mean{suffix}"),),
+    )

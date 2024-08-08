@@ -7,6 +7,7 @@ import pytest
 import torch
 from coola import objects_are_equal
 from coola.utils.tensor import get_available_devices
+from minrecord import MaxScalarRecord
 from torch.nn import Identity
 
 from karbonn.metric import (
@@ -254,6 +255,24 @@ def test_binary_accuracy_reset() -> None:
     state.reset.assert_called_once_with()
 
 
+def test_binary_accuracy_get_records() -> None:
+    metric = BinaryAccuracy()
+    assert objects_are_equal(
+        metric.get_records(),
+        (MaxScalarRecord(name="accuracy"),),
+    )
+
+
+@pytest.mark.parametrize("prefix", ["prefix_", "suffix/"])
+@pytest.mark.parametrize("suffix", ["_prefix", "/suffix"])
+def test_binary_accuracy_get_records_prefix_suffix(prefix: str, suffix: str) -> None:
+    metric = BinaryAccuracy()
+    assert objects_are_equal(
+        metric.get_records(prefix, suffix),
+        (MaxScalarRecord(name=f"{prefix}accuracy{suffix}"),),
+    )
+
+
 #########################################
 #     Tests for CategoricalAccuracy     #
 #########################################
@@ -450,6 +469,24 @@ def test_categorical_accuracy_reset() -> None:
     metric = CategoricalAccuracy(state=state)
     metric.reset()
     state.reset.assert_called_once_with()
+
+
+def test_categorical_accuracy_get_records() -> None:
+    metric = CategoricalAccuracy()
+    assert objects_are_equal(
+        metric.get_records(),
+        (MaxScalarRecord(name="accuracy"),),
+    )
+
+
+@pytest.mark.parametrize("prefix", ["prefix_", "suffix/"])
+@pytest.mark.parametrize("suffix", ["_prefix", "/suffix"])
+def test_categorical_accuracy_get_records_prefix_suffix(prefix: str, suffix: str) -> None:
+    metric = CategoricalAccuracy()
+    assert objects_are_equal(
+        metric.get_records(prefix, suffix),
+        (MaxScalarRecord(name=f"{prefix}accuracy{suffix}"),),
+    )
 
 
 ##################################
