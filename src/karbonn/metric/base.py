@@ -6,10 +6,14 @@ __all__ = ["BaseMetric", "EmptyMetricError", "setup_metric"]
 
 import logging
 from abc import ABCMeta, abstractmethod
+from typing import TYPE_CHECKING
 
 from torch.nn import Module
 
 from karbonn.utils.imports import check_objectory, is_objectory_available
+
+if TYPE_CHECKING:
+    from minrecord import BaseRecord
 
 if is_objectory_available():
     from objectory import AbstractFactory
@@ -27,9 +31,37 @@ class BaseMetric(Module, metaclass=AbstractFactory):
     factory. Child classes must implement the following methods:
 
         - ``forward``
+        - ``get_records``
         - ``reset``
         - ``value``
     """
+
+    @abstractmethod
+    def get_records(self, prefix: str = "", suffix: str = "") -> tuple[BaseRecord, ...]:
+        r"""Get the records for the metrics associated to the current
+        state.
+
+        Args:
+            prefix: The key prefix in the record names.
+            suffix: The key suffix in the record names.
+
+        Returns:
+            tuple: The records.
+
+        Example usage:
+
+        ```pycon
+
+        >>> from karbonn.metric import AbsoluteError
+        >>> metric = AbsoluteError()
+        >>> metric.get_records("error_")
+        (MinScalarRecord(name=error_mean, max_size=10, size=0),
+         MinScalarRecord(name=error_min, max_size=10, size=0),
+         MinScalarRecord(name=error_max, max_size=10, size=0),
+         MinScalarRecord(name=error_sum, max_size=10, size=0))
+
+        ```
+        """
 
     @abstractmethod
     def reset(self) -> None:
