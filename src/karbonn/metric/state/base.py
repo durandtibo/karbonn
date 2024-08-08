@@ -9,9 +9,14 @@ from abc import ABC, ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Any
 from unittest.mock import Mock
 
+from coola.equality.comparators import BaseEqualityComparator
+from coola.equality.handlers import EqualHandler, SameObjectHandler, SameTypeHandler
+from coola.equality.testers import EqualityTester
+
 from karbonn.utils.imports import check_objectory, is_objectory_available
 
 if TYPE_CHECKING:
+    from coola.equality import EqualityConfig
     from minrecord import BaseRecord
 
 
@@ -295,3 +300,24 @@ def setup_state(state: BaseState | dict) -> BaseState:
     if not isinstance(state, BaseState):
         logger.warning(f"state is not a 'BaseState' (received: {type(state)})")
     return state
+
+
+class StateEqualityComparator(BaseEqualityComparator[BaseState]):
+    r"""Implement an equality comparator for ``BaseState`` objects."""
+
+    def __init__(self) -> None:
+        self._handler = SameObjectHandler()
+        self._handler.chain(SameTypeHandler()).chain(EqualHandler())
+
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, self.__class__)
+
+    def clone(self) -> StateEqualityComparator:
+        return self.__class__()
+
+    def equal(self, actual: BaseState, expected: Any, config: EqualityConfig) -> bool:
+        return self._handler.handle(actual, expected, config=config)
+
+
+if not EqualityTester.has_comparator(BaseState):  # pragma: no cover
+    EqualityTester.add_comparator(BaseState, StateEqualityComparator())
