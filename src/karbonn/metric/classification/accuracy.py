@@ -18,6 +18,7 @@ from karbonn.utils import setup_module
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
+    from minrecord import BaseRecord
     from torch import Tensor
 
 logger = logging.getLogger(__name__)
@@ -279,6 +280,12 @@ class TopKAccuracy(BaseMetric):
         correct = pred.eq(target.view(*pred.shape[:-1], 1).expand_as(pred)).float()
         for k, state in self._states.items():
             state.update(correct[..., :k].sum(dim=-1))
+
+    def get_records(self, prefix: str = "", suffix: str = "") -> tuple[BaseRecord, ...]:
+        records = []
+        for k, state in self._states.items():
+            records.extend(state.get_records(prefix=f"{prefix}top_{k}_", suffix=suffix))
+        return tuple(records)
 
     def reset(self) -> None:
         for state in self._states.values():

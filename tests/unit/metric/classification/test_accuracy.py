@@ -778,3 +778,27 @@ def test_top_k_accuracy_reset() -> None:
     metric.reset()
     assert metric._states[1].num_predictions == 0
     assert metric._states[3].num_predictions == 0
+
+
+def test_top_k_accuracy_get_records() -> None:
+    metric = TopKAccuracy(topk=(1, 3))
+    assert objects_are_equal(
+        metric.get_records(),
+        (
+            MaxScalarRecord(name="top_1_accuracy"),
+            MaxScalarRecord(name="top_3_accuracy"),
+        ),
+    )
+
+
+@pytest.mark.parametrize("prefix", ["prefix_", "suffix/"])
+@pytest.mark.parametrize("suffix", ["_prefix", "/suffix"])
+def test_top_k_accuracy_get_records_prefix_suffix(prefix: str, suffix: str) -> None:
+    metric = TopKAccuracy(topk=(1, 3))
+    assert objects_are_equal(
+        metric.get_records(prefix, suffix),
+        (
+            MaxScalarRecord(name=f"{prefix}top_1_accuracy{suffix}"),
+            MaxScalarRecord(name=f"{prefix}top_3_accuracy{suffix}"),
+        ),
+    )

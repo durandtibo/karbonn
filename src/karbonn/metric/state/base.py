@@ -143,7 +143,6 @@ class BaseState(ABC, metaclass=AbstractFactory):
 
         ```pycon
 
-        >>> import torch
         >>> from karbonn.metric.state import ErrorState
         >>> state = ErrorState()
         >>> state.get_records("error_")
