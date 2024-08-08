@@ -17,6 +17,7 @@ from karbonn.utils import setup_module
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
     from torch import Tensor
 
 logger = logging.getLogger(__name__)
@@ -193,40 +194,41 @@ class TopKAccuracy(BaseMetric):
 
     Args:
         topk: The k values used to evaluate the top-k accuracy metric.
-        name (str, optional): Specifies the name used to log the
-            metric. Default: ``'accuracy'``
 
     Example usage:
 
-    .. code-block:: pycon
+    ```pycon
 
-        >>> import torch
-        >>> from gravitorch.models.metrics import TopKAccuracy
-        >>> metric = TopKAccuracy("eval", topk=(1,))
-        >>> metric
-        TopKAccuracy(
-          (mode): eval
-          (name): acc_top
-          (topk): (1,)
-          (states):
-            (1): AccuracyState(num_predictions=0)
-        )
-        >>> metric(torch.tensor([[0, 2, 1], [2, 1, 0]]), torch.tensor([1, 0]))
-        >>> metric.value()
-        {'eval/acc_top_1_accuracy': 1.0, 'eval/acc_top_1_num_predictions': 2}
-        >>> metric(torch.tensor([[0, 2, 1], [2, 1, 0]]), torch.tensor([1, 2]))
-        >>> metric.value()
-        {'eval/acc_top_1_accuracy': 0.75, 'eval/acc_top_1_num_predictions': 4}
-        >>> metric.reset()
-        >>> metric(torch.tensor([[0, 2, 1], [2, 1, 0]]), torch.tensor([1, 2]))
-        >>> metric.value()
-        {'eval/acc_top_1_accuracy': 0.5, 'eval/acc_top_1_num_predictions': 2}
+    >>> import torch
+    >>> from karbonn.metric import TopKAccuracy
+    >>> metric = TopKAccuracy(topk=(1,))
+    >>> metric
+    TopKAccuracy(
+      (topk): (1,)
+      (states):
+        (1): AccuracyState(
+              (tracker): MeanTensorTracker(count=0, total=0.0)
+              (track_num_predictions): True
+            )
+    )
+    >>> metric(torch.tensor([[0.0, 2.0, 1.0], [2.0, 1.0, 0.0]]), torch.tensor([1, 0]))
+    >>> metric.value()
+    {'top_1_accuracy': 1.0, 'top_1_num_predictions': 2}
+    >>> metric(torch.tensor([[0.0, 2.0, 1.0], [2.0, 1.0, 0.0]]), torch.tensor([1, 2]))
+    >>> metric.value()
+    {'top_1_accuracy': 0.75, 'top_1_num_predictions': 4}
+    >>> metric.reset()
+    >>> metric(torch.tensor([[0.0, 2.0, 1.0], [2.0, 1.0, 0.0]]), torch.tensor([1, 2]))
+    >>> metric.value("acc_")
+    {'acc_top_1_accuracy': 0.5, 'acc_top_1_num_predictions': 2}
+
+    ```
     """
 
     def __init__(
         self,
         topk: Sequence[int] = (1, 5),
-        state: dict | None = None,
+        state: BaseState | dict | None = None,
     ) -> None:
         super().__init__()
         self._topk = topk if isinstance(topk, tuple) else tuple(topk)
@@ -251,26 +253,27 @@ class TopKAccuracy(BaseMetric):
         r"""Update the accuracy metric given a mini-batch of examples.
 
         Args:
-        ----
-            prediction (``torch.Tensor`` of shape
-                ``(d0, d1, ..., dn, num_classes)`` and type float):
-                Specifies the predictions.
-            target (``torch.Tensor`` of shape
-                ``(d0, d1, ..., dn)`` or ``(d0, d1, ..., dn, 1)``
-                and type long or float): Specifies the targets.
-                The values have to be in
-                ``{0, 1, ..., num_classes-1}``.
+            prediction: The predicted labels as a ``torch.Tensor`` of
+                shape ``(d0, d1, ..., dn)`` or
+                ``(d0, d1, ..., dn, num_classes)``
+                and type long or float.
+            target: The categorical targets. The values have to be in
+                ``{0, 1, ..., num_classes-1}``. This input must be a
+                ``torch.Tensor`` of shape ``(d0, d1, ..., dn)`` or
+                ``(d0, d1, ..., dn, 1)`` and type long or float.
 
         Example usage:
 
-        .. code-block:: pycon
+        ```pycon
 
-            >>> import torch
-            >>> from gravitorch.models.metrics import TopKAccuracy
-            >>> metric = TopKAccuracy("eval", topk=(1,))
-            >>> metric(torch.tensor([[0, 2, 1], [2, 1, 0]]), torch.tensor([1, 0]))
-            >>> metric.value()
-            {'eval/acc_top_1_accuracy': 1.0, 'eval/acc_top_1_num_predictions': 2}
+        >>> import torch
+        >>> from karbonn.metric import TopKAccuracy
+        >>> metric = TopKAccuracy(topk=(1,))
+        >>> metric(torch.tensor([[0.0, 2.0, 1.0], [2.0, 1.0, 0.0]]), torch.tensor([1, 0]))
+        >>> metric.value()
+        {'top_1_accuracy': 1.0, 'top_1_num_predictions': 2}
+
+        ```
         """
         pred = prediction.topk(self._maxk, -1, True, True)[1]
         correct = pred.eq(target.view(*pred.shape[:-1], 1).expand_as(pred)).float()
@@ -284,5 +287,5 @@ class TopKAccuracy(BaseMetric):
     def value(self, prefix: str = "", suffix: str = "") -> dict:
         results = {}
         for k, state in self._states.items():
-            results.update(state.value(prefix=f"{prefix}{k}_", suffix=suffix))
+            results.update(state.value(prefix=f"{prefix}top_{k}_", suffix=suffix))
         return results
