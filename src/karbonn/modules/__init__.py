@@ -39,11 +39,11 @@ __all__ = [
     "SquaredReLU",
     "Squeeze",
     "SumFusion",
+    "ToBinaryLabel",
+    "ToCategoricalLabel",
     "ToFloat",
     "ToLong",
     "TransformedLoss",
-    "ToBinaryLabel",
-    "ToCategoricalLabel",
     "binary_focal_loss",
 ]
 
