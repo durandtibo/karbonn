@@ -9,6 +9,7 @@ __all__ = [
     "BaseStateMetric",
     "BinaryAccuracy",
     "CategoricalAccuracy",
+    "CategoricalCrossEntropy",
     "EmptyMetricError",
     "LogCoshError",
     "NormalizedMeanSquaredError",
@@ -25,6 +26,7 @@ from karbonn.metric.base import BaseMetric, EmptyMetricError, setup_metric
 from karbonn.metric.classification import (
     BinaryAccuracy,
     CategoricalAccuracy,
+    CategoricalCrossEntropy,
     TopKAccuracy,
 )
 from karbonn.metric.regression import (
