@@ -38,7 +38,7 @@ def test_binary_confusion_matrix_repr_tabulate() -> None:
         "┣━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━┫\n"
         "┃ actual positive (1) ┃ [FN]  0                ┃ [TP]  0                ┃\n"
         "┗━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┛\n"
-        "num_predictions=0"
+        "count=0"
     )
 
 
@@ -49,13 +49,13 @@ def test_binary_confusion_matrix_str() -> None:
 def test_binary_confusion_matrix_init_default() -> None:
     meter = BinaryConfusionMatrix()
     assert objects_are_equal(meter.matrix, torch.zeros(2, 2, dtype=torch.long))
-    assert meter.num_predictions == 0
+    assert meter.count == 0
 
 
 def test_binary_confusion_matrix_init() -> None:
     meter = BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
     assert objects_are_equal(meter.matrix, torch.tensor([[3, 2], [1, 4]]))
-    assert meter.num_predictions == 10
+    assert meter.count == 10
 
 
 def test_binary_confusion_matrix_init_incorrect_ndim() -> None:
@@ -85,7 +85,7 @@ def test_binary_confusion_matrix_num_classes() -> None:
 def test_binary_confusion_matrix_all_reduce() -> None:
     meter = BinaryConfusionMatrix(torch.ones(2, 2, dtype=torch.long)).all_reduce()
     assert meter.matrix.equal(torch.ones(2, 2, dtype=torch.long))
-    assert meter.num_predictions == 4
+    assert meter.count == 4
 
 
 def test_binary_confusion_matrix_all_reduce_sum_reduce() -> None:
@@ -178,7 +178,7 @@ def test_binary_confusion_matrix_reset() -> None:
     meter = BinaryConfusionMatrix(torch.ones(2, 2, dtype=torch.long))
     meter.reset()
     assert meter.matrix.equal(torch.zeros(2, 2, dtype=torch.long))
-    assert meter.num_predictions == 0
+    assert meter.count == 0
 
 
 def test_binary_confusion_matrix_sync_update_matrix() -> None:
@@ -188,7 +188,7 @@ def test_binary_confusion_matrix_sync_update_matrix() -> None:
     ):
         meter = BinaryConfusionMatrix(torch.ones(2, 2, dtype=torch.long)).all_reduce()
     assert meter.matrix.equal(torch.ones(2, 2, dtype=torch.long).mul(4))
-    assert meter.num_predictions == 16
+    assert meter.count == 16
 
 
 def test_binary_confusion_matrix_update() -> None:
@@ -255,14 +255,14 @@ def test_binary_confusion_matrix_add() -> None:
         BinaryConfusionMatrix(torch.tensor([[1, 0], [7, 2]]))
     )
     assert meter.equal(BinaryConfusionMatrix(torch.tensor([[4, 2], [8, 6]])))
-    assert meter.num_predictions == 20
+    assert meter.count == 20
 
 
 def test_binary_confusion_matrix_add_() -> None:
     meter = BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
     meter.add_(BinaryConfusionMatrix(torch.tensor([[1, 0], [7, 2]])))
     assert meter.equal(BinaryConfusionMatrix(torch.tensor([[4, 2], [8, 6]])))
-    assert meter.num_predictions == 20
+    assert meter.count == 20
 
 
 def test_binary_confusion_matrix_merge() -> None:
@@ -274,9 +274,9 @@ def test_binary_confusion_matrix_merge() -> None:
         ]
     )
     assert meter.equal(BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])))
-    assert meter.num_predictions == 10
+    assert meter.count == 10
     assert meter_merged.equal(BinaryConfusionMatrix(torch.tensor([[5, 2], [8, 7]])))
-    assert meter_merged.num_predictions == 22
+    assert meter_merged.count == 22
 
 
 def test_binary_confusion_matrix_merge_() -> None:
@@ -288,7 +288,7 @@ def test_binary_confusion_matrix_merge_() -> None:
         ]
     )
     assert meter.equal(BinaryConfusionMatrix(torch.tensor([[5, 2], [8, 7]])))
-    assert meter.num_predictions == 22
+    assert meter.count == 22
 
 
 def test_binary_confusion_matrix_sub() -> None:
@@ -296,7 +296,7 @@ def test_binary_confusion_matrix_sub() -> None:
         BinaryConfusionMatrix(torch.tensor([[1, 0], [1, 2]]))
     )
     assert meter.equal(BinaryConfusionMatrix(torch.tensor([[2, 2], [0, 2]])))
-    assert meter.num_predictions == 6
+    assert meter.count == 6
 
 
 # *******************
@@ -546,7 +546,7 @@ def test_binary_confusion_matrix_compute_all_metrics() -> None:
             "false_positive": 2,
             "false_positive_rate": 0.4,
             "jaccard_index": 0.5714285714285714,
-            "num_predictions": 10,
+            "count": 10,
             "precision": 0.6666666666666666,
             "recall": 0.8,
             "true_negative": 3,
@@ -569,7 +569,7 @@ def test_binary_confusion_matrix_compute_all_metrics_betas() -> None:
             "false_positive": 2,
             "false_positive_rate": 0.4,
             "jaccard_index": 0.5714285714285714,
-            "num_predictions": 10,
+            "count": 10,
             "precision": 0.6666666666666666,
             "recall": 0.8,
             "true_negative": 3,
@@ -595,7 +595,7 @@ def test_binary_confusion_matrix_compute_all_metrics_prefix_suffix() -> None:
             "prefix_false_positive_suffix": 2,
             "prefix_false_positive_rate_suffix": 0.4,
             "prefix_jaccard_index_suffix": 0.5714285714285714,
-            "prefix_num_predictions_suffix": 10,
+            "prefix_count_suffix": 10,
             "prefix_precision_suffix": 0.6666666666666666,
             "prefix_recall_suffix": 0.8,
             "prefix_true_negative_suffix": 3,
@@ -665,7 +665,7 @@ def test_multiclass_confusion_matrix_all_reduce() -> None:
         torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]], dtype=torch.long)
     ).all_reduce()
     assert meter.matrix.equal(torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]], dtype=torch.long))
-    assert meter.num_predictions == 6
+    assert meter.count == 6
 
 
 def test_multiclass_confusion_matrix_all_reduce_sum_reduce() -> None:
@@ -700,7 +700,7 @@ def test_multiclass_confusion_matrix_auto_update_resize() -> None:
             dtype=torch.long,
         )
     )
-    assert meter.num_predictions == 8
+    assert meter.count == 8
 
 
 def test_multiclass_confusion_matrix_auto_update_no_resize() -> None:
@@ -709,7 +709,7 @@ def test_multiclass_confusion_matrix_auto_update_no_resize() -> None:
     )
     meter.auto_update(torch.tensor([1, 2]), torch.tensor([1, 2]))
     assert meter.matrix.equal(torch.tensor([[2, 1, 0], [0, 1, 0], [1, 1, 2]], dtype=torch.long))
-    assert meter.num_predictions == 8
+    assert meter.count == 8
 
 
 def test_multiclass_confusion_matrix_clone() -> None:
@@ -802,7 +802,7 @@ def test_multiclass_confusion_matrix_reset() -> None:
     meter = MulticlassConfusionMatrix(torch.ones(3, 3, dtype=torch.long))
     meter.reset()
     assert meter.matrix.equal(torch.zeros(3, 3, dtype=torch.long))
-    assert meter.num_predictions == 0
+    assert meter.count == 0
 
 
 def test_multiclass_confusion_matrix_resize() -> None:
@@ -903,14 +903,14 @@ def test_multiclass_confusion_matrix_add() -> None:
         MulticlassConfusionMatrix(torch.tensor([[1, 0], [7, 2]]))
     )
     assert meter.equal(MulticlassConfusionMatrix(torch.tensor([[4, 2], [8, 6]])))
-    assert meter.num_predictions == 20
+    assert meter.count == 20
 
 
 def test_multiclass_confusion_matrix_add_() -> None:
     meter = MulticlassConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
     meter.add_(MulticlassConfusionMatrix(torch.tensor([[1, 0], [7, 2]])))
     assert meter.equal(MulticlassConfusionMatrix(torch.tensor([[4, 2], [8, 6]])))
-    assert meter.num_predictions == 20
+    assert meter.count == 20
 
 
 def test_multiclass_confusion_matrix_merge() -> None:
@@ -922,9 +922,9 @@ def test_multiclass_confusion_matrix_merge() -> None:
         ]
     )
     assert meter.equal(MulticlassConfusionMatrix(torch.tensor([[3, 2], [1, 4]])))
-    assert meter.num_predictions == 10
+    assert meter.count == 10
     assert meter_merged.equal(MulticlassConfusionMatrix(torch.tensor([[5, 2], [8, 7]])))
-    assert meter_merged.num_predictions == 22
+    assert meter_merged.count == 22
 
 
 def test_multiclass_confusion_matrix_merge_() -> None:
@@ -936,7 +936,7 @@ def test_multiclass_confusion_matrix_merge_() -> None:
         ]
     )
     assert meter.equal(MulticlassConfusionMatrix(torch.tensor([[5, 2], [8, 7]])))
-    assert meter.num_predictions == 22
+    assert meter.count == 22
 
 
 def test_multiclass_confusion_matrix_sub() -> None:
@@ -944,7 +944,7 @@ def test_multiclass_confusion_matrix_sub() -> None:
         MulticlassConfusionMatrix(torch.tensor([[1, 0], [1, 2]]))
     )
     assert meter.equal(MulticlassConfusionMatrix(torch.tensor([[2, 2], [0, 2]])))
-    assert meter.num_predictions == 6
+    assert meter.count == 6
 
 
 # *******************
