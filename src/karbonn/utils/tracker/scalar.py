@@ -6,12 +6,17 @@ from __future__ import annotations
 __all__ = ["ScalarTracker"]
 
 from collections import deque
-from typing import TYPE_CHECKING, Any, Self
+from typing import TYPE_CHECKING, Any
 
 import torch
 from coola.utils import str_indent, str_mapping
 
 from karbonn.utils.tracker.exception import EmptyTrackerError
+
+try:
+    from typing import Self  # Introduced in python 3.11
+except ImportError:  # pragma: no cover
+    from typing_extensions import Self
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence

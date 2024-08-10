@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["ExtremaTensorTracker", "MeanTensorTracker", "ScalableTensorTracker", "TensorTracker"]
 
-from typing import TYPE_CHECKING, Any, Self
+from typing import TYPE_CHECKING, Any
 
 import torch
 from coola import objects_are_equal
@@ -13,6 +13,12 @@ from coola.utils import str_indent, str_mapping
 from karbonn.distributed.ddp import MAX, MIN, SUM, sync_reduce
 from karbonn.utils.tensor import FlattenBuffer, quantile
 from karbonn.utils.tracker.exception import EmptyTrackerError
+
+try:
+    from typing import Self  # Introduced in python 3.11
+except ImportError:  # pragma: no cover
+    from typing_extensions import Self
+
 
 if TYPE_CHECKING:
     from collections.abc import Iterable

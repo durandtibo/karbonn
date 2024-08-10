@@ -6,11 +6,16 @@ from __future__ import annotations
 __all__ = ["ExponentialMovingAverage", "MovingAverage"]
 
 from collections import deque
-from typing import TYPE_CHECKING, Any, Self
+from typing import TYPE_CHECKING, Any
 
 import torch
 
 from karbonn.utils.tracker.exception import EmptyTrackerError
+
+try:
+    from typing import Self  # Introduced in python 3.11
+except ImportError:  # pragma: no cover
+    from typing_extensions import Self
 
 if TYPE_CHECKING:
     from collections.abc import Iterable

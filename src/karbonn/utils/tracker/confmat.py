@@ -14,11 +14,15 @@ from typing import TYPE_CHECKING, Any
 
 import torch
 from torch import Tensor
-from typing_extensions import Self
 
 from karbonn.distributed.ddp import SUM, sync_reduce
 from karbonn.utils.format import str_table
 from karbonn.utils.tracker.exception import EmptyTrackerError
+
+try:
+    from typing import Self  # Introduced in python 3.11
+except ImportError:  # pragma: no cover
+    from typing_extensions import Self
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
