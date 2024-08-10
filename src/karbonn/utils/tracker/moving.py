@@ -6,7 +6,7 @@ from __future__ import annotations
 __all__ = ["ExponentialMovingAverage", "MovingAverage"]
 
 from collections import deque
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Self
 
 import torch
 
@@ -55,7 +55,7 @@ class MovingAverage:
         r"""The moving average window size."""
         return self._deque.maxlen
 
-    def clone(self) -> MovingAverage:
+    def clone(self) -> Self:
         r"""Return a copy of the current tracker.
 
         Returns:
@@ -78,7 +78,7 @@ class MovingAverage:
 
         ```
         """
-        return MovingAverage(values=tuple(self._deque), window_size=self.window_size)
+        return self.__class__(values=tuple(self._deque), window_size=self.window_size)
 
     def equal(self, other: Any) -> bool:
         r"""Indicate if two trackers are equal or not.
@@ -269,7 +269,7 @@ class ExponentialMovingAverage:
         reset."""
         return self._count
 
-    def clone(self) -> ExponentialMovingAverage:
+    def clone(self) -> Self:
         r"""Return a copy of the current tracker.
 
         Returns:
@@ -295,7 +295,7 @@ class ExponentialMovingAverage:
 
         ```
         """
-        return ExponentialMovingAverage(
+        return self.__class__(
             alpha=self._alpha,
             count=self._count,
             smoothed_average=self._smoothed_average,

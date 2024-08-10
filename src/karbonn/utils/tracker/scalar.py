@@ -6,7 +6,7 @@ from __future__ import annotations
 __all__ = ["ScalarTracker"]
 
 from collections import deque
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Self
 
 import torch
 from coola.utils import str_indent, str_mapping
@@ -287,7 +287,7 @@ class ScalarTracker:
             raise EmptyTrackerError(msg)
         return torch.as_tensor(list(self._values)).median().item()
 
-    def merge(self, trackers: Iterable[ScalarTracker]) -> ScalarTracker:
+    def merge(self, trackers: Iterable[Self]) -> Self:
         r"""Merge several trackers with the current tracker and returns a
         new tracker.
 
