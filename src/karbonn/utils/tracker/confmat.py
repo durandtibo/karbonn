@@ -14,11 +14,15 @@ from typing import TYPE_CHECKING, Any
 
 import torch
 from torch import Tensor
-from typing_extensions import Self
 
 from karbonn.distributed.ddp import SUM, sync_reduce
 from karbonn.utils.format import str_table
 from karbonn.utils.tracker.exception import EmptyTrackerError
+
+try:
+    from typing import Self  # Introduced in python 3.11
+except ImportError:  # pragma: no cover
+    from typing_extensions import Self
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
@@ -113,7 +117,7 @@ class BaseConfusionMatrix:
         """
         return self._num_predictions
 
-    def all_reduce(self) -> BaseConfusionMatrix:
+    def all_reduce(self) -> Self:
         r"""Reduce the values across all machines in such a way that all
         get the final result.
 
@@ -326,7 +330,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
             ]
         )
 
-    def clone(self) -> BinaryConfusionMatrix:
+    def clone(self) -> Self:
         r"""Create a copy of the current confusion matrix matrix.
 
         Returns:
@@ -366,7 +370,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        return BinaryConfusionMatrix(self.matrix.clone())
+        return self.__class__(self.matrix.clone())
 
     def equal(self, other: Any) -> bool:
         r"""Indicate if two confusion matrices are equal or not.
@@ -401,7 +405,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         return self.matrix.equal(other.matrix)
 
     @classmethod
-    def from_predictions(cls, prediction: Tensor, target: Tensor) -> BinaryConfusionMatrix:
+    def from_predictions(cls, prediction: Tensor, target: Tensor) -> Self:
         r"""Create a confusion matrix given ground truth and predicted
         labels.
 
@@ -440,17 +444,17 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
     #     Transformation     #
     ##########################
 
-    def __add__(self, other: Any) -> BinaryConfusionMatrix:
+    def __add__(self, other: Any) -> Self:
         return self.add(other)
 
     def __iadd__(self, other: Any) -> Self:
         self.add_(other)
         return self
 
-    def __sub__(self, other: Any) -> BinaryConfusionMatrix:
+    def __sub__(self, other: Any) -> Self:
         return self.sub(other)
 
-    def add(self, other: BinaryConfusionMatrix) -> BinaryConfusionMatrix:
+    def add(self, other: Self) -> Self:
         r"""Add a confusion matrix.
 
         Args:
@@ -487,9 +491,9 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         ```
         """
         check_op_compatibility_binary(self, other, "add")
-        return BinaryConfusionMatrix(self.matrix.add(other.matrix))
+        return self.__class__(self.matrix.add(other.matrix))
 
-    def add_(self, other: BinaryConfusionMatrix) -> None:
+    def add_(self, other: Self) -> None:
         r"""Add a confusion matrix.
 
         In-place version of ``add``.
@@ -527,7 +531,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         self.matrix.add_(other.matrix)
         self._num_predictions = self._compute_num_predictions()
 
-    def merge(self, matrices: Iterable[BinaryConfusionMatrix]) -> BinaryConfusionMatrix:
+    def merge(self, matrices: Iterable[Self]) -> Self:
         r"""Merge several matrices with the current matrix and returns a
         new matrix.
 
@@ -572,7 +576,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
             output.add_(matrix)
         return output
 
-    def merge_(self, matrices: Iterable[BinaryConfusionMatrix]) -> None:
+    def merge_(self, matrices: Iterable[Self]) -> None:
         r"""Merge several matrices into the current matrix.
 
         In-place version of ``merge``.
@@ -613,7 +617,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         for matrix in matrices:
             self.add_(matrix)
 
-    def sub(self, other: BinaryConfusionMatrix) -> BinaryConfusionMatrix:
+    def sub(self, other: Self) -> Self:
         r"""Subtract a confusion matrix.
 
         Args:
@@ -650,7 +654,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         ```
         """
         check_op_compatibility_binary(self, other, "sub")
-        return BinaryConfusionMatrix(self.matrix.sub(other.matrix))
+        return self.__class__(self.matrix.sub(other.matrix))
 
     ###################
     #     Metrics     #
@@ -1285,7 +1289,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
             self.resize(num_classes)
         self.update(prediction, target)
 
-    def clone(self) -> MulticlassConfusionMatrix:
+    def clone(self) -> Self:
         r"""Create a copy of the current confusion matrix matrix.
 
         Returns:
@@ -1392,7 +1396,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         self._matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
 
     @classmethod
-    def from_num_classes(cls, num_classes: int) -> MulticlassConfusionMatrix:
+    def from_num_classes(cls, num_classes: int) -> Self:
         r"""Create a confusion matrix given the number of classes.
 
         Args:
@@ -1426,7 +1430,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         return cls(matrix=torch.zeros(num_classes, num_classes, dtype=torch.long))
 
     @classmethod
-    def from_predictions(cls, prediction: Tensor, target: Tensor) -> MulticlassConfusionMatrix:
+    def from_predictions(cls, prediction: Tensor, target: Tensor) -> Self:
         r"""Create a confusion matrix given ground truth and predicted
         labels.
 
@@ -1467,17 +1471,17 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
     #     Transformation     #
     ##########################
 
-    def __add__(self, other: Any) -> MulticlassConfusionMatrix:
+    def __add__(self, other: Any) -> Self:
         return self.add(other)
 
     def __iadd__(self, other: Any) -> Self:
         self.add_(other)
         return self
 
-    def __sub__(self, other: Any) -> MulticlassConfusionMatrix:
+    def __sub__(self, other: Any) -> Self:
         return self.sub(other)
 
-    def add(self, other: MulticlassConfusionMatrix) -> MulticlassConfusionMatrix:
+    def add(self, other: Self) -> Self:
         r"""Add a confusion matrix.
 
         Args:
@@ -1509,7 +1513,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         ```
         """
         check_op_compatibility_multiclass(self, other, "add")
-        return MulticlassConfusionMatrix(self.matrix.add(other.matrix))
+        return self.__class__(self.matrix.add(other.matrix))
 
     def add_(self, other: MulticlassConfusionMatrix) -> None:
         r"""Add a confusion matrix.
@@ -1544,7 +1548,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         self.matrix.add_(other.matrix)
         self._num_predictions = self._compute_num_predictions()
 
-    def merge(self, matrices: Iterable[MulticlassConfusionMatrix]) -> MulticlassConfusionMatrix:
+    def merge(self, matrices: Iterable[Self]) -> Self:
         r"""Merge several matrices with the current matrix and returns a
         new matrix.
 
@@ -1584,7 +1588,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
             output.add_(matrix)
         return output
 
-    def merge_(self, matrices: Iterable[MulticlassConfusionMatrix]) -> None:
+    def merge_(self, matrices: Iterable[Self]) -> None:
         r"""Merge several matrices into the current matrix.
 
         In-place version of ``merge``.
@@ -1620,7 +1624,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         for matrix in matrices:
             self.add_(matrix)
 
-    def sub(self, other: MulticlassConfusionMatrix) -> MulticlassConfusionMatrix:
+    def sub(self, other: Self) -> Self:
         r"""Subtract a confusion matrix.
 
         Args:
@@ -1652,7 +1656,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         ```
         """
         check_op_compatibility_multiclass(self, other, "sub")
-        return MulticlassConfusionMatrix(self.matrix.sub(other.matrix))
+        return self.__class__(self.matrix.sub(other.matrix))
 
     ###################
     #     Metrics     #

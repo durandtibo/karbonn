@@ -14,6 +14,12 @@ from karbonn.distributed.ddp import MAX, MIN, SUM, sync_reduce
 from karbonn.utils.tensor import FlattenBuffer, quantile
 from karbonn.utils.tracker.exception import EmptyTrackerError
 
+try:
+    from typing import Self  # Introduced in python 3.11
+except ImportError:  # pragma: no cover
+    from typing_extensions import Self
+
+
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
@@ -190,7 +196,7 @@ class MeanTensorTracker:
             raise EmptyTrackerError(msg)
         return self._total
 
-    def all_reduce(self) -> MeanTensorTracker:
+    def all_reduce(self) -> Self:
         r"""Reduce the tracker values across all machines in such a way
         that all get the final result.
 
@@ -217,11 +223,11 @@ class MeanTensorTracker:
 
         ```
         """
-        return MeanTensorTracker(
+        return self.__class__(
             count=int(sync_reduce(self._count, SUM)), total=sync_reduce(self._total, SUM)
         )
 
-    def clone(self) -> MeanTensorTracker:
+    def clone(self) -> Self:
         r"""Create a copy of the current tracker.
 
         Returns:
@@ -244,7 +250,7 @@ class MeanTensorTracker:
 
         ```
         """
-        return MeanTensorTracker(count=self._count, total=self._total)
+        return self.__class__(count=self._count, total=self._total)
 
     def equal(self, other: Any) -> bool:
         r"""Indicate if two trackers are equal or not.
@@ -275,7 +281,7 @@ class MeanTensorTracker:
             return False
         return self.state_dict() == other.state_dict()
 
-    def merge(self, trackers: Iterable[MeanTensorTracker]) -> MeanTensorTracker:
+    def merge(self, trackers: Iterable[Self]) -> Self:
         r"""Merge several trackers with the current tracker and returns a
         new tracker.
 
@@ -305,9 +311,9 @@ class MeanTensorTracker:
         for tracker in trackers:
             count += tracker.count
             total += tracker.total
-        return MeanTensorTracker(total=total, count=count)
+        return self.__class__(total=total, count=count)
 
-    def merge_(self, trackers: Iterable[MeanTensorTracker]) -> None:
+    def merge_(self, trackers: Iterable[Self]) -> None:
         r"""Merge several trackers into the current tracker.
 
         In-place version of ``merge``.
@@ -528,7 +534,7 @@ class ExtremaTensorTracker:
             raise EmptyTrackerError(msg)
         return float(self._min_value)
 
-    def all_reduce(self) -> ExtremaTensorTracker:
+    def all_reduce(self) -> Self:
         r"""Reduce the tracker values across all machines in such a way
         that all get the final result.
 
@@ -552,13 +558,13 @@ class ExtremaTensorTracker:
 
         ```
         """
-        return ExtremaTensorTracker(
+        return self.__class__(
             count=int(sync_reduce(self._count, SUM)),
             min_value=sync_reduce(self._min_value, MIN),
             max_value=sync_reduce(self._max_value, MAX),
         )
 
-    def clone(self) -> ExtremaTensorTracker:
+    def clone(self) -> Self:
         r"""Create a copy of the current tracker.
 
         Returns:
@@ -581,7 +587,7 @@ class ExtremaTensorTracker:
 
         ```
         """
-        return ExtremaTensorTracker(
+        return self.__class__(
             count=self._count, min_value=self._min_value, max_value=self._max_value
         )
 
@@ -614,7 +620,7 @@ class ExtremaTensorTracker:
             return False
         return self.state_dict() == other.state_dict()
 
-    def merge(self, trackers: Iterable[ExtremaTensorTracker]) -> ExtremaTensorTracker:
+    def merge(self, trackers: Iterable[Self]) -> Self:
         r"""Merge several trackers with the current tracker and returns a
         new tracker.
 
@@ -649,7 +655,7 @@ class ExtremaTensorTracker:
             count += tracker.count
             min_value = min(min_value, tracker._min_value)
             max_value = max(max_value, tracker._max_value)
-        return ExtremaTensorTracker(count=count, min_value=min_value, max_value=max_value)
+        return self.__class__(count=count, min_value=min_value, max_value=max_value)
 
     def merge_(self, trackers: Iterable[ExtremaTensorTracker]) -> None:
         r"""Merge several trackers into the current tracker.
@@ -1049,7 +1055,7 @@ class TensorTracker:
             raise EmptyTrackerError(msg)
         return self._values.values().sum().item()
 
-    def all_reduce(self) -> TensorTracker:
+    def all_reduce(self) -> Self:
         r"""Reduce the tracker values across all machines in such a way
         that all get the final result.
 
@@ -1068,9 +1074,9 @@ class TensorTracker:
 
         ```
         """
-        return TensorTracker(self._values.all_reduce().values())
+        return self.__class__(self._values.all_reduce().values())
 
-    def clone(self) -> TensorTracker:
+    def clone(self) -> Self:
         r"""Create a copy of the current tracker.
 
         Returns:
@@ -1092,7 +1098,7 @@ class TensorTracker:
 
         ```
         """
-        return TensorTracker(self._values.clone().values())
+        return self.__class__(self._values.clone().values())
 
     def equal(self, other: Any) -> bool:
         r"""Indicate if two trackers are equal or not.
@@ -1121,7 +1127,7 @@ class TensorTracker:
             return False
         return objects_are_equal(self.state_dict(), other.state_dict())
 
-    def merge(self, trackers: Iterable[TensorTracker]) -> TensorTracker:
+    def merge(self, trackers: Iterable[Self]) -> Self:
         r"""Merge several trackers with the current tracker and returns a
         new tracker.
 
@@ -1154,9 +1160,9 @@ class TensorTracker:
         values = self._values.clone()
         for tracker in trackers:
             values.update(tracker._values.values())
-        return TensorTracker(values.values())
+        return self.__class__(values.values())
 
-    def merge_(self, trackers: Iterable[TensorTracker]) -> None:
+    def merge_(self, trackers: Iterable[Self]) -> None:
         r"""Merge several trackers into the current tracker.
 
         In-place version of ``merge``.
@@ -1310,7 +1316,7 @@ class ScalableTensorTracker:
         r"""The total sum value in the tracker."""
         return self._total
 
-    def all_reduce(self) -> ScalableTensorTracker:
+    def all_reduce(self) -> Self:
         r"""Reduce the tracker values across all machines in such a way
         that all get the final result.
 
@@ -1338,14 +1344,14 @@ class ScalableTensorTracker:
 
         ```
         """
-        return ScalableTensorTracker(
+        return self.__class__(
             count=int(sync_reduce(self._count, SUM)),
             total=sync_reduce(self._total, SUM),
             min_value=sync_reduce(self._min_value, MIN),
             max_value=sync_reduce(self._max_value, MAX),
         )
 
-    def clone(self) -> ScalableTensorTracker:
+    def clone(self) -> Self:
         r"""Create a copy of the current tracker.
 
         Returns:
@@ -1368,7 +1374,7 @@ class ScalableTensorTracker:
 
         ```
         """
-        return ScalableTensorTracker(
+        return self.__class__(
             count=self._count,
             total=self._total,
             min_value=self._min_value,
@@ -1404,7 +1410,7 @@ class ScalableTensorTracker:
             return False
         return self.state_dict() == other.state_dict()
 
-    def merge(self, trackers: Iterable[ScalableTensorTracker]) -> ScalableTensorTracker:
+    def merge(self, trackers: Iterable[Self]) -> Self:
         r"""Merge several trackers with the current tracker and returns a
         new tracker.
 
@@ -1443,11 +1449,9 @@ class ScalableTensorTracker:
             total += tracker.total
             min_value = min(min_value, tracker._min_value)
             max_value = max(max_value, tracker._max_value)
-        return ScalableTensorTracker(
-            total=total, count=count, min_value=min_value, max_value=max_value
-        )
+        return self.__class__(total=total, count=count, min_value=min_value, max_value=max_value)
 
-    def merge_(self, trackers: Iterable[ScalableTensorTracker]) -> None:
+    def merge_(self, trackers: Iterable[Self]) -> None:
         r"""Merge several trackers into the current tracker.
 
         In-place version of ``merge``.
