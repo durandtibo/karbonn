@@ -10,20 +10,19 @@ from typing import TYPE_CHECKING
 
 from coola.utils import repr_mapping
 
-from karbonn.metric.state_ import BaseStateMetric
-from karbonn.utils.tracker import BinaryConfusionMatrix as BinaryConfusionMatrixState
+from karbonn.metric.base import BaseMetric, EmptyMetricError
+from karbonn.utils.tracker import BinaryConfusionMatrix as BinaryConfusionMatrixTracker
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from torch import Tensor
 
-    from karbonn.metric.state import BaseState
 
 logger = logging.getLogger(__name__)
 
 
-class BinaryConfusionMatrix(BaseStateMetric):
+class BinaryConfusionMatrix(BaseMetric):
     r"""Implement a confusion matrix metric for binary labels.
 
     Args:
@@ -101,16 +100,17 @@ class BinaryConfusionMatrix(BaseStateMetric):
     def __init__(
         self,
         betas: Sequence[int | float] = (1,),
-        state: BaseState | dict | None = None,
+        matrix: BinaryConfusionMatrixTracker | None = None,
     ) -> None:
-        super().__init__(state=state or BinaryConfusionMatrixState())
+        super().__init__()
         self._betas = tuple(betas)
+        self._matrix = matrix or BinaryConfusionMatrixTracker()
 
     def extra_repr(self) -> str:
         return repr_mapping(
             {
                 "betas": self._betas,
-                "state": str(self._state),
+                "matrix": str(self._matrix),
             }
         )
 
@@ -155,8 +155,15 @@ class BinaryConfusionMatrix(BaseStateMetric):
 
         ```
         """
-        self._state.update(prediction.flatten(), target.flatten())
-
+        self._matrix.update(prediction.flatten(), target.flatten())
 
     def value(self, prefix: str = "", suffix: str = "") -> dict:
-        return self._state.value(prefix=prefix, suffix=suffix)
+        matrix = self._matrix.all_reduce()
+        if not matrix.count:
+            msg = f"{self.__class__.__qualname__} is empty"
+            raise EmptyMetricError(msg)
+
+        results = matrix.compute_all_metrics(betas=self._betas, prefix=prefix, suffix=suffix)
+        if self._track_num_predictions:
+            results[f"{prefix}num_predictions{suffix}"] = matrix.count
+        return results
