@@ -38,7 +38,7 @@ class SquaredAsinhError(BaseStateMetric):
     SquaredAsinhError(
       (state): ErrorState(
           (tracker): ScalableTensorTracker(count=0, total=0.0, min_value=inf, max_value=-inf)
-          (track_num_predictions): True
+          (track_count): True
         )
     )
     >>> metric(torch.ones(2, 4), torch.ones(2, 4))
@@ -47,14 +47,14 @@ class SquaredAsinhError(BaseStateMetric):
      'min': 0.0,
      'max': 0.0,
      'sum': 0.0,
-     'num_predictions': 8}
+     'count': 8}
     >>> metric(torch.eye(2), torch.ones(2, 2))
     >>> metric.value()
     {'mean': 0.129469...,
      'min': 0.0,
      'max': 0.776819...,
      'sum': 1.553638...,
-     'num_predictions': 12}
+     'count': 12}
     >>> metric.reset()
     >>> metric(torch.eye(2), torch.ones(2, 2))
     >>> metric.value("sq_asinh_err_")
@@ -62,7 +62,7 @@ class SquaredAsinhError(BaseStateMetric):
      'sq_asinh_err_min': 0.0,
      'sq_asinh_err_max': 0.776819...,
      'sq_asinh_err_sum': 1.553638...,
-     'sq_asinh_err_num_predictions': 4}
+     'sq_asinh_err_count': 4}
 
     ```
     """
@@ -94,7 +94,7 @@ class SquaredAsinhError(BaseStateMetric):
          'min': 0.0,
          'max': 0.0,
          'sum': 0.0,
-         'num_predictions': 8}
+         'count': 8}
 
         ```
         """
@@ -126,7 +126,7 @@ class SquaredLogError(BaseStateMetric):
     SquaredLogError(
       (state): ErrorState(
           (tracker): ScalableTensorTracker(count=0, total=0.0, min_value=inf, max_value=-inf)
-          (track_num_predictions): True
+          (track_count): True
         )
     )
     >>> metric(torch.ones(2, 4), torch.ones(2, 4))
@@ -135,14 +135,14 @@ class SquaredLogError(BaseStateMetric):
      'min': 0.0,
      'max': 0.0,
      'sum': 0.0,
-     'num_predictions': 8}
+     'count': 8}
     >>> metric(torch.eye(2), torch.ones(2, 2))
     >>> metric.value()
     {'mean': 0.080075...,
      'min': 0.0,
      'max': 0.480453...,
      'sum': 0.960906...,
-     'num_predictions': 12}
+     'count': 12}
     >>> metric.reset()
     >>> metric(torch.eye(2), torch.ones(2, 2))
     >>> metric.value("sq_log_err_")
@@ -150,7 +150,7 @@ class SquaredLogError(BaseStateMetric):
      'sq_log_err_min': 0.0,
      'sq_log_err_max': 0.480453...,
      'sq_log_err_sum': 0.960906...,
-     'sq_log_err_num_predictions': 4}
+     'sq_log_err_count': 4}
 
     ```
     """
@@ -181,7 +181,7 @@ class SquaredLogError(BaseStateMetric):
          'min': 0.0,
          'max': 0.0,
          'sum': 0.0,
-         'num_predictions': 8}
+         'count': 8}
 
         ```
         """

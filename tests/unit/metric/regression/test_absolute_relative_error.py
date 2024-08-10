@@ -76,7 +76,7 @@ def test_absolute_relative_error_forward_correct(
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": batch_size * feature_size,
+            "count": batch_size * feature_size,
         },
     )
 
@@ -95,7 +95,7 @@ def test_absolute_relative_error_forward_correct_zero(device: str, mode: bool) -
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -121,7 +121,7 @@ def test_absolute_relative_error_forward_incorrect(
             "max": 1.0,
             "min": 1.0,
             "sum": float(batch_size * feature_size),
-            "num_predictions": batch_size * feature_size,
+            "count": batch_size * feature_size,
         },
     )
 
@@ -142,7 +142,7 @@ def test_absolute_relative_error_forward_partially_correct_zero_prediction(
             "max": 1.0,
             "min": 0.0,
             "sum": 2.0,
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -163,7 +163,7 @@ def test_absolute_relative_error_forward_partially_correct_zero_target(
             "max": 1e8,
             "min": 0.0,
             "sum": 2e8,
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -182,7 +182,7 @@ def test_absolute_relative_error_forward_1d(device: str, mode: bool) -> None:
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": 2,
+            "count": 2,
         },
     )
 
@@ -201,7 +201,7 @@ def test_absolute_relative_error_forward_3d(device: str, mode: bool) -> None:
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": 24,
+            "count": 24,
         },
     )
 
@@ -230,7 +230,7 @@ def test_absolute_relative_error_forward_dtype(
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": 6,
+            "count": 6,
         },
     )
 
@@ -251,7 +251,7 @@ def test_absolute_relative_error_forward_state(device: str, mode: bool) -> None:
             "sum": 0.0,
             "std": 0.0,
             "median": 0.0,
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -271,7 +271,7 @@ def test_absolute_relative_error_forward_multiple_batches(device: str, mode: boo
             "max": 0.5,
             "min": 0.0,
             "sum": 1.0,
-            "num_predictions": 8,
+            "count": 8,
         },
     )
 
@@ -294,7 +294,7 @@ def test_absolute_relative_error_forward_multiple_batches_with_reset(
             "max": 0.5,
             "min": 0.0,
             "sum": 1.0,
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -318,7 +318,7 @@ def test_absolute_relative_error_value_prefix_suffix(device: str, prefix: str, s
             f"{prefix}max{suffix}": 0.0,
             f"{prefix}min{suffix}": 0.0,
             f"{prefix}sum{suffix}": 0.0,
-            f"{prefix}num_predictions{suffix}": 2,
+            f"{prefix}count{suffix}": 2,
         },
     )
 
@@ -411,7 +411,7 @@ def test_symmetric_absolute_relative_error_forward_correct(
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": batch_size * feature_size,
+            "count": batch_size * feature_size,
         },
     )
 
@@ -430,7 +430,7 @@ def test_symmetric_absolute_relative_error_forward_correct_zero(device: str, mod
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -456,7 +456,7 @@ def test_symmetric_absolute_relative_error_forward_incorrect(
             "max": 1.0,
             "min": 1.0,
             "sum": float(batch_size * feature_size),
-            "num_predictions": batch_size * feature_size,
+            "count": batch_size * feature_size,
         },
     )
 
@@ -477,7 +477,7 @@ def test_symmetric_absolute_relative_error_forward_partially_correct_zero_predic
             "max": 2.0,
             "min": 0.0,
             "sum": 4.0,
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -498,7 +498,7 @@ def test_symmetric_absolute_relative_error_forward_partially_correct_zero_target
             "max": 2.0,
             "min": 0.0,
             "sum": 4.0,
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -517,7 +517,7 @@ def test_symmetric_absolute_relative_error_forward_1d(device: str, mode: bool) -
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": 2,
+            "count": 2,
         },
     )
 
@@ -536,7 +536,7 @@ def test_symmetric_absolute_relative_error_forward_2d(device: str, mode: bool) -
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": 6,
+            "count": 6,
         },
     )
 
@@ -555,7 +555,7 @@ def test_symmetric_absolute_relative_error_forward_3d(device: str, mode: bool) -
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": 24,
+            "count": 24,
         },
     )
 
@@ -584,7 +584,7 @@ def test_symmetric_absolute_relative_error_forward_dtype(
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": 6,
+            "count": 6,
         },
     )
 
@@ -605,7 +605,7 @@ def test_symmetric_absolute_relative_error_forward_state(device: str, mode: bool
             "sum": 0.0,
             "std": 0.0,
             "median": 0.0,
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -627,7 +627,7 @@ def test_symmetric_absolute_relative_error_forward_multiple_batches(
             "max": 2.0,
             "min": 0.0,
             "sum": 4.0,
-            "num_predictions": 8,
+            "count": 8,
         },
     )
 
@@ -650,7 +650,7 @@ def test_symmetric_absolute_relative_error_forward_multiple_batches_with_reset(
             "max": 2.0,
             "min": 0.0,
             "sum": 4.0,
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -676,7 +676,7 @@ def test_symmetric_absolute_relative_error_value_prefix_suffix(
             f"{prefix}max{suffix}": 0.0,
             f"{prefix}min{suffix}": 0.0,
             f"{prefix}sum{suffix}": 0.0,
-            f"{prefix}num_predictions{suffix}": 2,
+            f"{prefix}count{suffix}": 2,
         },
     )
 

@@ -38,19 +38,19 @@ class NormalizedMeanSquaredError(BaseStateMetric):
       (state): NormalizedMeanSquaredErrorState(
           (squared_errors): MeanTensorTracker(count=0, total=0.0)
           (squared_targets): MeanTensorTracker(count=0, total=0.0)
-          (track_num_predictions): True
+          (track_count): True
         )
     )
     >>> metric(torch.ones(2, 4), torch.ones(2, 4))
     >>> metric.value()
-    {'mean': 0.0, 'num_predictions': 8}
+    {'mean': 0.0, 'count': 8}
     >>> metric(torch.eye(2), torch.ones(2, 2))
     >>> metric.value()
-    {'mean': 0.166666..., 'num_predictions': 12}
+    {'mean': 0.166666..., 'count': 12}
     >>> metric.reset()
     >>> metric(torch.eye(2), torch.ones(2, 2))
     >>> metric.value()
-    {'mean': 0.5, 'num_predictions': 4}
+    {'mean': 0.5, 'count': 4}
 
     ```
     """
@@ -77,7 +77,7 @@ class NormalizedMeanSquaredError(BaseStateMetric):
         >>> metric = NormalizedMeanSquaredError()
         >>> metric(torch.ones(2, 4), torch.ones(2, 4))
         >>> metric.value()
-        {'mean': 0.0, 'num_predictions': 8}
+        {'mean': 0.0, 'count': 8}
 
         ```
         """
