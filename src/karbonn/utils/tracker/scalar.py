@@ -13,6 +13,11 @@ from coola.utils import str_indent, str_mapping
 
 from karbonn.utils.tracker.exception import EmptyTrackerError
 
+try:
+    from typing import Self  # Introduced in python 3.11
+except ImportError:  # pragma: no cover
+    from typing_extensions import Self
+
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
 
@@ -287,7 +292,7 @@ class ScalarTracker:
             raise EmptyTrackerError(msg)
         return torch.as_tensor(list(self._values)).median().item()
 
-    def merge(self, trackers: Iterable[ScalarTracker]) -> ScalarTracker:
+    def merge(self, trackers: Iterable[Self]) -> Self:
         r"""Merge several trackers with the current tracker and returns a
         new tracker.
 

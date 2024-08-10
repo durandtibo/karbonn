@@ -12,6 +12,11 @@ import torch
 
 from karbonn.utils.tracker.exception import EmptyTrackerError
 
+try:
+    from typing import Self  # Introduced in python 3.11
+except ImportError:  # pragma: no cover
+    from typing_extensions import Self
+
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
@@ -55,7 +60,7 @@ class MovingAverage:
         r"""The moving average window size."""
         return self._deque.maxlen
 
-    def clone(self) -> MovingAverage:
+    def clone(self) -> Self:
         r"""Return a copy of the current tracker.
 
         Returns:
@@ -78,7 +83,7 @@ class MovingAverage:
 
         ```
         """
-        return MovingAverage(values=tuple(self._deque), window_size=self.window_size)
+        return self.__class__(values=tuple(self._deque), window_size=self.window_size)
 
     def equal(self, other: Any) -> bool:
         r"""Indicate if two trackers are equal or not.
@@ -269,7 +274,7 @@ class ExponentialMovingAverage:
         reset."""
         return self._count
 
-    def clone(self) -> ExponentialMovingAverage:
+    def clone(self) -> Self:
         r"""Return a copy of the current tracker.
 
         Returns:
@@ -295,7 +300,7 @@ class ExponentialMovingAverage:
 
         ```
         """
-        return ExponentialMovingAverage(
+        return self.__class__(
             alpha=self._alpha,
             count=self._count,
             smoothed_average=self._smoothed_average,

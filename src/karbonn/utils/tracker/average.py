@@ -11,6 +11,11 @@ from coola.utils import str_indent, str_mapping
 from karbonn.distributed.ddp import SUM, sync_reduce
 from karbonn.utils.tracker.exception import EmptyTrackerError
 
+try:
+    from typing import Self  # Introduced in python 3.11
+except ImportError:  # pragma: no cover
+    from typing_extensions import Self
+
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
@@ -72,7 +77,7 @@ class Average:
         reset."""
         return self._total
 
-    def all_reduce(self) -> Average:
+    def all_reduce(self) -> Self:
         r"""Reduce the tracker values across all machines in such a way
         that all get the final result.
 
@@ -95,7 +100,7 @@ class Average:
 
         ```
         """
-        return Average(
+        return self.__class__(
             total=sync_reduce(self._total, SUM),
             count=sync_reduce(self._count, SUM),
         )
@@ -128,7 +133,7 @@ class Average:
             raise EmptyTrackerError(msg)
         return self._total / self._count
 
-    def clone(self) -> Average:
+    def clone(self) -> Self:
         r"""Return a copy of the current tracker.
 
         Returns:
@@ -154,7 +159,7 @@ class Average:
 
         ```
         """
-        return Average(total=self.total, count=self.count)
+        return self.__class__(total=self.total, count=self.count)
 
     def equal(self, other: Any) -> bool:
         r"""Indicate if two trackers are equal or not.
@@ -182,7 +187,7 @@ class Average:
             return False
         return self.state_dict() == other.state_dict()
 
-    def merge(self, trackers: Iterable[Average]) -> Average:
+    def merge(self, trackers: Iterable[Self]) -> Self:
         r"""Merge several trackers with the current tracker and return a
         new tracker.
 
@@ -212,9 +217,9 @@ class Average:
         for meter in trackers:
             count += meter.count
             total += meter.total
-        return Average(total=total, count=count)
+        return self.__class__(total=total, count=count)
 
-    def merge_(self, trackers: Iterable[Average]) -> None:
+    def merge_(self, trackers: Iterable[Self]) -> None:
         r"""Merge several trackers into the current tracker.
 
         In-place version of ``merge``.
