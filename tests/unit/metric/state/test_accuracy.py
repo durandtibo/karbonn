@@ -203,8 +203,8 @@ def test_extended_accuracy_state_get_records() -> None:
         (
             MaxScalarRecord(name="accuracy"),
             MinScalarRecord(name="error"),
-            MaxScalarRecord(name="num_correct_predictions"),
-            MinScalarRecord(name="num_incorrect_predictions"),
+            MaxScalarRecord(name="count_correct"),
+            MinScalarRecord(name="count_incorrect"),
         ),
     )
 
@@ -217,8 +217,8 @@ def test_extended_accuracy_state_get_records_prefix_suffix(prefix: str, suffix: 
         (
             MaxScalarRecord(name=f"{prefix}accuracy{suffix}"),
             MinScalarRecord(name=f"{prefix}error{suffix}"),
-            MaxScalarRecord(name=f"{prefix}num_correct_predictions{suffix}"),
-            MinScalarRecord(name=f"{prefix}num_incorrect_predictions{suffix}"),
+            MaxScalarRecord(name=f"{prefix}count_correct{suffix}"),
+            MinScalarRecord(name=f"{prefix}count_incorrect{suffix}"),
         ),
     )
 
@@ -251,8 +251,8 @@ def test_extended_accuracy_state_value_correct() -> None:
         {
             "accuracy": 1.0,
             "error": 0.0,
-            "num_correct_predictions": 6,
-            "num_incorrect_predictions": 0,
+            "count_correct": 6,
+            "count_incorrect": 0,
             "count": 6,
         },
     )
@@ -266,8 +266,8 @@ def test_extended_accuracy_state_value_partially_correct() -> None:
         {
             "accuracy": 0.5,
             "error": 0.5,
-            "num_correct_predictions": 2,
-            "num_incorrect_predictions": 2,
+            "count_correct": 2,
+            "count_incorrect": 2,
             "count": 4,
         },
     )
@@ -281,8 +281,8 @@ def test_extended_accuracy_state_value_incorrect() -> None:
         {
             "accuracy": 0.0,
             "error": 1.0,
-            "num_correct_predictions": 0,
-            "num_incorrect_predictions": 6,
+            "count_correct": 0,
+            "count_incorrect": 6,
             "count": 6,
         },
     )
@@ -298,8 +298,8 @@ def test_extended_accuracy_state_value_prefix_suffix(prefix: str, suffix: str) -
         {
             f"{prefix}accuracy{suffix}": 0.5,
             f"{prefix}error{suffix}": 0.5,
-            f"{prefix}num_correct_predictions{suffix}": 2,
-            f"{prefix}num_incorrect_predictions{suffix}": 2,
+            f"{prefix}count_correct{suffix}": 2,
+            f"{prefix}count_incorrect{suffix}": 2,
             f"{prefix}count{suffix}": 4,
         },
     )

@@ -73,8 +73,8 @@ def check_extended_accuracy_state(local_rank: int) -> None:
         {
             "accuracy": 0.3,
             "error": 0.7,
-            "num_correct_predictions": 3,
-            "num_incorrect_predictions": 7,
+            "count_correct": 3,
+            "count_incorrect": 7,
             "count": 10,
         },
     )
