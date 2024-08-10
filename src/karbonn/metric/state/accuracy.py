@@ -149,14 +149,14 @@ class ExtendedAccuracyState(BaseState):
     >>> state.get_records()
     (MaxScalarRecord(name=accuracy, max_size=10, size=0),
      MinScalarRecord(name=error, max_size=10, size=0),
-     MaxScalarRecord(name=num_correct_predictions, max_size=10, size=0),
-     MinScalarRecord(name=num_incorrect_predictions, max_size=10, size=0))
+     MaxScalarRecord(name=count_correct, max_size=10, size=0),
+     MinScalarRecord(name=count_incorrect, max_size=10, size=0))
     >>> state.update(torch.eye(4))
     >>> state.value()
     {'accuracy': 0.25,
      'error': 0.75,
-     'num_correct_predictions': 4,
-     'num_incorrect_predictions': 12,
+     'count_correct': 4,
+     'count_incorrect': 12,
      'count': 16}
 
     ```
@@ -200,8 +200,8 @@ class ExtendedAccuracyState(BaseState):
         return (
             MaxScalarRecord(name=f"{prefix}accuracy{suffix}"),
             MinScalarRecord(name=f"{prefix}error{suffix}"),
-            MaxScalarRecord(name=f"{prefix}num_correct_predictions{suffix}"),
-            MinScalarRecord(name=f"{prefix}num_incorrect_predictions{suffix}"),
+            MaxScalarRecord(name=f"{prefix}count_correct{suffix}"),
+            MinScalarRecord(name=f"{prefix}count_incorrect{suffix}"),
         )
 
     def reset(self) -> None:
@@ -226,8 +226,8 @@ class ExtendedAccuracyState(BaseState):
         >>> state.value()
         {'accuracy': 0.25,
          'error': 0.75,
-         'num_correct_predictions': 4,
-         'num_incorrect_predictions': 12,
+         'count_correct': 4,
+         'count_incorrect': 12,
          'count': 16}
 
         ```
@@ -241,7 +241,7 @@ class ExtendedAccuracyState(BaseState):
             raise EmptyMetricError(msg)
 
         accuracy = tracker.mean()
-        num_correct_predictions = int(tracker.sum())
+        count_correct = int(tracker.sum())
         count = tracker.count
         results = {
             f"{prefix}accuracy{suffix}": accuracy,
@@ -250,8 +250,8 @@ class ExtendedAccuracyState(BaseState):
         if self._track_count:
             results.update(
                 {
-                    f"{prefix}num_correct_predictions{suffix}": num_correct_predictions,
-                    f"{prefix}num_incorrect_predictions{suffix}": count - num_correct_predictions,
+                    f"{prefix}count_correct{suffix}": count_correct,
+                    f"{prefix}count_incorrect{suffix}": count - count_correct,
                     f"{prefix}count{suffix}": count,
                 }
             )

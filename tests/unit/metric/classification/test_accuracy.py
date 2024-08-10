@@ -181,8 +181,8 @@ def test_binary_accuracy_forward_state(device: str, mode: bool) -> None:
         {
             "accuracy": 1.0,
             "error": 0.0,
-            "num_correct_predictions": 6,
-            "num_incorrect_predictions": 0,
+            "count_correct": 6,
+            "count_incorrect": 0,
             "count": 6,
         },
     )
@@ -416,8 +416,8 @@ def test_categorical_accuracy_forward_state(device: str, mode: bool) -> None:
         {
             "accuracy": 0.5,
             "error": 0.5,
-            "num_correct_predictions": 1,
-            "num_incorrect_predictions": 1,
+            "count_correct": 1,
+            "count_incorrect": 1,
             "count": 2,
         },
     )
@@ -710,18 +710,18 @@ def test_top_k_accuracy_forward_state(device: str, mode: bool) -> None:
         {
             "top_1_accuracy": 0.5,
             "top_1_error": 0.5,
-            "top_1_num_correct_predictions": 1,
-            "top_1_num_incorrect_predictions": 1,
+            "top_1_count_correct": 1,
+            "top_1_count_incorrect": 1,
             "top_1_count": 2,
             "top_2_accuracy": 0.5,
             "top_2_error": 0.5,
-            "top_2_num_correct_predictions": 1,
-            "top_2_num_incorrect_predictions": 1,
+            "top_2_count_correct": 1,
+            "top_2_count_incorrect": 1,
             "top_2_count": 2,
             "top_3_accuracy": 1.0,
             "top_3_error": 0.0,
-            "top_3_num_correct_predictions": 2,
-            "top_3_num_incorrect_predictions": 0,
+            "top_3_count_correct": 2,
+            "top_3_count_incorrect": 0,
             "top_3_count": 2,
         },
     )
