@@ -45,7 +45,7 @@ class BaseState(ABC, metaclass=AbstractFactory):
     >>> state
     ErrorState(
       (tracker): ScalableTensorTracker(count=0, total=0.0, min_value=inf, max_value=-inf)
-      (track_num_predictions): True
+      (track_count): True
     )
     >>> state.get_records("error_")
     (MinScalarRecord(name=error_mean, max_size=10, size=0),
@@ -58,14 +58,14 @@ class BaseState(ABC, metaclass=AbstractFactory):
      'error_min': 0.0,
      'error_max': 5.0,
      'error_sum': 15.0,
-     'error_num_predictions': 6}
+     'error_count': 6}
 
     ```
     """
 
     @property
     @abstractmethod
-    def num_predictions(self) -> int:
+    def count(self) -> int:
         r"""The number of predictions in the state."""
 
     def clone(self) -> BaseState:
@@ -87,12 +87,12 @@ class BaseState(ABC, metaclass=AbstractFactory):
         >>> state
         ErrorState(
           (tracker): ScalableTensorTracker(count=9, total=18.0, min_value=0, max_value=5)
-          (track_num_predictions): True
+          (track_count): True
         )
         >>> state_cloned
         ErrorState(
           (tracker): ScalableTensorTracker(count=6, total=15.0, min_value=0.0, max_value=5.0)
-          (track_num_predictions): True
+          (track_count): True
         )
 
         ```
@@ -169,13 +169,13 @@ class BaseState(ABC, metaclass=AbstractFactory):
         >>> state
         ErrorState(
           (tracker): ScalableTensorTracker(count=6, total=15.0, min_value=0, max_value=5)
-          (track_num_predictions): True
+          (track_count): True
         )
         >>> state.reset()
         >>> state
         ErrorState(
           (tracker): ScalableTensorTracker(count=0, total=0.0, min_value=inf, max_value=-inf)
-          (track_num_predictions): True
+          (track_count): True
         )
 
         ```
@@ -203,7 +203,7 @@ class BaseState(ABC, metaclass=AbstractFactory):
         >>> state
         ErrorState(
           (tracker): ScalableTensorTracker(count=6, total=15.0, min_value=0, max_value=5)
-          (track_num_predictions): True
+          (track_count): True
         )
 
         ```
@@ -233,7 +233,7 @@ class BaseState(ABC, metaclass=AbstractFactory):
          'error_min': 0.0,
          'error_max': 5.0,
          'error_sum': 15.0,
-         'error_num_predictions': 6}
+         'error_count': 6}
 
         ```
         """
@@ -287,7 +287,7 @@ def setup_state(state: BaseState | dict) -> BaseState:
     >>> state
     ErrorState(
       (tracker): ScalableTensorTracker(count=0, total=0.0, min_value=inf, max_value=-inf)
-      (track_num_predictions): True
+      (track_count): True
     )
 
     ```

@@ -40,7 +40,7 @@ class ErrorState(BaseState):
 
     Args:
         tracker: The value tracker.
-        track_num_predictions: If ``True``, the state tracks and
+        track_count: If ``True``, the state tracks and
             returns the number of predictions.
 
     Example usage:
@@ -53,7 +53,7 @@ class ErrorState(BaseState):
     >>> state
     ErrorState(
       (tracker): ScalableTensorTracker(count=0, total=0.0, min_value=inf, max_value=-inf)
-      (track_num_predictions): True
+      (track_count): True
     )
     >>> state.get_records("error_")
     (MinScalarRecord(name=error_mean, max_size=10, size=0),
@@ -66,22 +66,20 @@ class ErrorState(BaseState):
      'error_min': 0.0,
      'error_max': 5.0,
      'error_sum': 15.0,
-     'error_num_predictions': 6}
+     'error_count': 6}
 
     ```
     """
 
     def __init__(
-        self, tracker: ScalableTensorTracker | None = None, track_num_predictions: bool = True
+        self, tracker: ScalableTensorTracker | None = None, track_count: bool = True
     ) -> None:
         self._tracker = tracker or ScalableTensorTracker()
-        self._track_num_predictions = bool(track_num_predictions)
+        self._track_count = bool(track_count)
 
     def __repr__(self) -> str:
         args = repr_indent(
-            repr_mapping(
-                {"tracker": self._tracker, "track_num_predictions": self._track_num_predictions}
-            )
+            repr_mapping({"tracker": self._tracker, "track_count": self._track_count})
         )
         return f"{self.__class__.__qualname__}(\n  {args}\n)"
 
@@ -90,28 +88,24 @@ class ErrorState(BaseState):
             str_mapping(
                 {
                     "tracker": self._tracker,
-                    "num_predictions": f"{self.num_predictions:,}",
-                    "track_num_predictions": self._track_num_predictions,
+                    "count": f"{self.count:,}",
+                    "track_count": self._track_count,
                 }
             )
         )
         return f"{self.__class__.__qualname__}(\n  {args}\n)"
 
     @property
-    def num_predictions(self) -> int:
+    def count(self) -> int:
         return self._tracker.count
 
     def clone(self) -> ErrorState:
-        return self.__class__(
-            tracker=self._tracker.clone(), track_num_predictions=self._track_num_predictions
-        )
+        return self.__class__(tracker=self._tracker.clone(), track_count=self._track_count)
 
     def equal(self, other: Any) -> bool:
         if not isinstance(other, ErrorState):
             return False
-        return self._track_num_predictions == other._track_num_predictions and self._tracker.equal(
-            other._tracker
-        )
+        return self._track_count == other._track_count and self._tracker.equal(other._tracker)
 
     def get_records(self, prefix: str = "", suffix: str = "") -> tuple[BaseRecord, ...]:
         return (
@@ -143,7 +137,7 @@ class ErrorState(BaseState):
          'error_min': 0.0,
          'error_max': 5.0,
          'error_sum': 15.0,
-         'error_num_predictions': 6}
+         'error_count': 6}
 
         ```
         """
@@ -161,8 +155,8 @@ class ErrorState(BaseState):
             f"{prefix}max{suffix}": tracker.max(),
             f"{prefix}sum{suffix}": tracker.sum(),
         }
-        if self._track_num_predictions:
-            results[f"{prefix}num_predictions{suffix}"] = tracker.count
+        if self._track_count:
+            results[f"{prefix}count{suffix}"] = tracker.count
         return results
 
 
@@ -176,7 +170,7 @@ class ExtendedErrorState(BaseState):
     Args:
         quantiles: The quantile values to evaluate.
         tracker: The value tracker.
-        track_num_predictions: If ``True``, the state tracks and
+        track_count: If ``True``, the state tracks and
             returns the number of predictions.
 
     Example usage:
@@ -190,7 +184,7 @@ class ExtendedErrorState(BaseState):
     ExtendedErrorState(
       (quantiles): tensor([0.5000, 0.9000])
       (tracker): TensorTracker(count=0)
-      (track_num_predictions): True
+      (track_count): True
     )
     >>> state.get_records("error_")
     (MinScalarRecord(name=error_mean, max_size=10, size=0),
@@ -210,7 +204,7 @@ class ExtendedErrorState(BaseState):
      'error_std': 3.316...,
      'error_quantile_0.5': 5.0,
      'error_quantile_0.9': 9.0,
-     'error_num_predictions': 11}
+     'error_count': 11}
 
     ```
     """
@@ -219,11 +213,11 @@ class ExtendedErrorState(BaseState):
         self,
         quantiles: torch.Tensor | Sequence[float] = (),
         tracker: TensorTracker | None = None,
-        track_num_predictions: bool = True,
+        track_count: bool = True,
     ) -> None:
         self._quantiles = to_tensor(quantiles)
         self._tracker = tracker or TensorTracker()
-        self._track_num_predictions = bool(track_num_predictions)
+        self._track_count = bool(track_count)
 
     def __repr__(self) -> str:
         args = repr_indent(
@@ -231,7 +225,7 @@ class ExtendedErrorState(BaseState):
                 {
                     "quantiles": self._quantiles,
                     "tracker": self._tracker,
-                    "track_num_predictions": self._track_num_predictions,
+                    "track_count": self._track_count,
                 }
             )
         )
@@ -243,29 +237,29 @@ class ExtendedErrorState(BaseState):
                 {
                     "quantiles": self._quantiles,
                     "tracker": self._tracker,
-                    "num_predictions": self.num_predictions,
-                    "track_num_predictions": self._track_num_predictions,
+                    "count": self.count,
+                    "track_count": self._track_count,
                 }
             )
         )
         return f"{self.__class__.__qualname__}(\n  {args}\n)"
 
     @property
-    def num_predictions(self) -> int:
+    def count(self) -> int:
         return self._tracker.count
 
     def clone(self) -> ExtendedErrorState:
         return self.__class__(
             quantiles=self._quantiles,
             tracker=self._tracker.clone(),
-            track_num_predictions=self._track_num_predictions,
+            track_count=self._track_count,
         )
 
     def equal(self, other: Any) -> bool:
         if not isinstance(other, ExtendedErrorState):
             return False
         return (
-            self._track_num_predictions == other._track_num_predictions
+            self._track_count == other._track_count
             and self._tracker.equal(other._tracker)
             and objects_are_equal(self._quantiles, other._quantiles)
         )
@@ -309,7 +303,7 @@ class ExtendedErrorState(BaseState):
          'error_std': 3.316...,
          'error_quantile_0.5': 5.0,
          'error_quantile_0.9': 9.0,
-         'error_num_predictions': 11}
+         'error_count': 11}
 
         ```
         """
@@ -333,8 +327,8 @@ class ExtendedErrorState(BaseState):
             values = tracker.quantile(self._quantiles)
             for q, v in zip(self._quantiles, values):
                 results[f"{prefix}quantile_{q:g}{suffix}"] = v.item()
-        if self._track_num_predictions:
-            results[f"{prefix}num_predictions{suffix}"] = tracker.count
+        if self._track_count:
+            results[f"{prefix}count{suffix}"] = tracker.count
         return results
 
 
@@ -345,7 +339,7 @@ class MeanErrorState(BaseState):
 
     Args:
         tracker: The mean value tracker.
-        track_num_predictions: If ``True``, the state tracks and
+        track_count: If ``True``, the state tracks and
             returns the number of predictions.
 
     Example usage:
@@ -358,28 +352,24 @@ class MeanErrorState(BaseState):
     >>> state
     MeanErrorState(
       (tracker): MeanTensorTracker(count=0, total=0.0)
-      (track_num_predictions): True
+      (track_count): True
     )
     >>> state.get_records("error_")
     (MinScalarRecord(name=error_mean, max_size=10, size=0),)
     >>> state.update(torch.arange(6))
     >>> state.value("error_")
-    {'error_mean': 2.5, 'error_num_predictions': 6}
+    {'error_mean': 2.5, 'error_count': 6}
 
     ```
     """
 
-    def __init__(
-        self, tracker: MeanTensorTracker | None = None, track_num_predictions: bool = True
-    ) -> None:
+    def __init__(self, tracker: MeanTensorTracker | None = None, track_count: bool = True) -> None:
         self._tracker = tracker or MeanTensorTracker()
-        self._track_num_predictions = bool(track_num_predictions)
+        self._track_count = bool(track_count)
 
     def __repr__(self) -> str:
         args = repr_indent(
-            repr_mapping(
-                {"tracker": self._tracker, "track_num_predictions": self._track_num_predictions}
-            )
+            repr_mapping({"tracker": self._tracker, "track_count": self._track_count})
         )
         return f"{self.__class__.__qualname__}(\n  {args}\n)"
 
@@ -388,28 +378,24 @@ class MeanErrorState(BaseState):
             str_mapping(
                 {
                     "tracker": self._tracker,
-                    "num_predictions": f"{self.num_predictions:,}",
-                    "track_num_predictions": self._track_num_predictions,
+                    "count": f"{self.count:,}",
+                    "track_count": self._track_count,
                 }
             )
         )
         return f"{self.__class__.__qualname__}(\n  {args}\n)"
 
     @property
-    def num_predictions(self) -> int:
+    def count(self) -> int:
         return self._tracker.count
 
     def clone(self) -> MeanErrorState:
-        return self.__class__(
-            tracker=self._tracker.clone(), track_num_predictions=self._track_num_predictions
-        )
+        return self.__class__(tracker=self._tracker.clone(), track_count=self._track_count)
 
     def equal(self, other: Any) -> bool:
         if not isinstance(other, MeanErrorState):
             return False
-        return self._track_num_predictions == other._track_num_predictions and self._tracker.equal(
-            other._tracker
-        )
+        return self._track_count == other._track_count and self._tracker.equal(other._tracker)
 
     def get_records(self, prefix: str = "", suffix: str = "") -> tuple[BaseRecord, ...]:
         return (MinScalarRecord(name=f"{prefix}mean{suffix}"),)
@@ -433,7 +419,7 @@ class MeanErrorState(BaseState):
         >>> state = MeanErrorState()
         >>> state.update(torch.arange(6))
         >>> state.value("error_")
-        {'error_mean': 2.5, 'error_num_predictions': 6}
+        {'error_mean': 2.5, 'error_count': 6}
 
         ```
         """
@@ -446,8 +432,8 @@ class MeanErrorState(BaseState):
             raise EmptyMetricError(msg)
 
         results = {f"{prefix}mean{suffix}": tracker.mean()}
-        if self._track_num_predictions:
-            results[f"{prefix}num_predictions{suffix}"] = tracker.count
+        if self._track_count:
+            results[f"{prefix}count{suffix}"] = tracker.count
         return results
 
 
@@ -458,7 +444,7 @@ class RootMeanErrorState(BaseState):
 
     Args:
         tracker: The mean value tracker.
-        track_num_predictions: If ``True``, the state tracks and
+        track_count: If ``True``, the state tracks and
             returns the number of predictions.
 
     Example usage:
@@ -471,46 +457,36 @@ class RootMeanErrorState(BaseState):
     >>> state
     RootMeanErrorState(
       (tracker): MeanTensorTracker(count=0, total=0.0)
-      (track_num_predictions): True
+      (track_count): True
     )
     >>> state.get_records("error_")
     (MinScalarRecord(name=error_mean, max_size=10, size=0),)
     >>> state.update(torch.arange(6))
     >>> state.value("error_")
-    {'error_mean': 1.581..., 'error_num_predictions': 6}
+    {'error_mean': 1.581..., 'error_count': 6}
 
     ```
     """
 
-    def __init__(
-        self, tracker: MeanTensorTracker | None = None, track_num_predictions: bool = True
-    ) -> None:
+    def __init__(self, tracker: MeanTensorTracker | None = None, track_count: bool = True) -> None:
         self._tracker = tracker or MeanTensorTracker()
-        self._track_num_predictions = bool(track_num_predictions)
+        self._track_count = bool(track_count)
 
     def __repr__(self) -> str:
-        args = str_indent(
-            str_mapping(
-                {"tracker": self._tracker, "track_num_predictions": self._track_num_predictions}
-            )
-        )
+        args = str_indent(str_mapping({"tracker": self._tracker, "track_count": self._track_count}))
         return f"{self.__class__.__qualname__}(\n  {args}\n)"
 
     @property
-    def num_predictions(self) -> int:
+    def count(self) -> int:
         return self._tracker.count
 
     def clone(self) -> RootMeanErrorState:
-        return self.__class__(
-            tracker=self._tracker.clone(), track_num_predictions=self._track_num_predictions
-        )
+        return self.__class__(tracker=self._tracker.clone(), track_count=self._track_count)
 
     def equal(self, other: Any) -> bool:
         if not isinstance(other, RootMeanErrorState):
             return False
-        return self._track_num_predictions == other._track_num_predictions and self._tracker.equal(
-            other._tracker
-        )
+        return self._track_count == other._track_count and self._tracker.equal(other._tracker)
 
     def get_records(self, prefix: str = "", suffix: str = "") -> tuple[BaseRecord, ...]:
         return (MinScalarRecord(name=f"{prefix}mean{suffix}"),)
@@ -533,7 +509,7 @@ class RootMeanErrorState(BaseState):
         >>> state = RootMeanErrorState()
         >>> state.update(torch.arange(6))
         >>> state.value("error_")
-        {'error_mean': 1.581..., 'error_num_predictions': 6}
+        {'error_mean': 1.581..., 'error_count': 6}
 
         ```
         """
@@ -546,8 +522,8 @@ class RootMeanErrorState(BaseState):
             raise EmptyMetricError(msg)
 
         results = {f"{prefix}mean{suffix}": math.sqrt(tracker.mean())}
-        if self._track_num_predictions:
-            results[f"{prefix}num_predictions{suffix}"] = tracker.count
+        if self._track_count:
+            results[f"{prefix}count{suffix}"] = tracker.count
         return results
 
 
@@ -560,7 +536,7 @@ class NormalizedMeanSquaredErrorState(BaseState):
     Args:
         squared_errors: The value tracker for squared errors.
         squared_targets: The value tracker for squared targets.
-        track_num_predictions: If ``True``, the state tracks and
+        track_count: If ``True``, the state tracks and
             returns the number of predictions.
 
     Example usage:
@@ -574,13 +550,13 @@ class NormalizedMeanSquaredErrorState(BaseState):
     NormalizedMeanSquaredErrorState(
       (squared_errors): MeanTensorTracker(count=0, total=0.0)
       (squared_targets): MeanTensorTracker(count=0, total=0.0)
-      (track_num_predictions): True
+      (track_count): True
     )
     >>> state.get_records("nmse_")
     (MinScalarRecord(name=nmse_mean, max_size=10, size=0),)
     >>> state.update(torch.arange(6), torch.ones(6))
     >>> state.value("nmse_")
-    {'nmse_mean': 9.166..., 'nmse_num_predictions': 6}
+    {'nmse_mean': 9.166..., 'nmse_count': 6}
 
     ```
     """
@@ -589,11 +565,11 @@ class NormalizedMeanSquaredErrorState(BaseState):
         self,
         squared_errors: MeanTensorTracker | None = None,
         squared_targets: MeanTensorTracker | None = None,
-        track_num_predictions: bool = True,
+        track_count: bool = True,
     ) -> None:
         self._squared_errors = squared_errors or MeanTensorTracker()
         self._squared_targets = squared_targets or MeanTensorTracker()
-        self._track_num_predictions = bool(track_num_predictions)
+        self._track_count = bool(track_count)
 
     def __repr__(self) -> str:
         args = str_indent(
@@ -601,28 +577,28 @@ class NormalizedMeanSquaredErrorState(BaseState):
                 {
                     "squared_errors": self._squared_errors,
                     "squared_targets": self._squared_targets,
-                    "track_num_predictions": self._track_num_predictions,
+                    "track_count": self._track_count,
                 }
             )
         )
         return f"{self.__class__.__qualname__}(\n  {args}\n)"
 
     @property
-    def num_predictions(self) -> int:
+    def count(self) -> int:
         return self._squared_errors.count
 
     def clone(self) -> NormalizedMeanSquaredErrorState:
         return self.__class__(
             squared_errors=self._squared_errors.clone(),
             squared_targets=self._squared_targets.clone(),
-            track_num_predictions=self._track_num_predictions,
+            track_count=self._track_count,
         )
 
     def equal(self, other: Any) -> bool:
         if not isinstance(other, NormalizedMeanSquaredErrorState):
             return False
         return (
-            self._track_num_predictions == other._track_num_predictions
+            self._track_count == other._track_count
             and self._squared_errors.equal(other._squared_errors)
             and self._squared_targets.equal(other._squared_targets)
         )
@@ -650,7 +626,7 @@ class NormalizedMeanSquaredErrorState(BaseState):
         >>> state = NormalizedMeanSquaredErrorState()
         >>> state.update(torch.arange(6), torch.ones(6))
         >>> state.value("nmse_")
-        {'nmse_mean': 9.166..., 'nmse_num_predictions': 6}
+        {'nmse_mean': 9.166..., 'nmse_count': 6}
 
         ```
         """
@@ -665,6 +641,6 @@ class NormalizedMeanSquaredErrorState(BaseState):
             raise EmptyMetricError(msg)
 
         results = {f"{prefix}mean{suffix}": squared_errors.sum() / squared_targets.sum()}
-        if self._track_num_predictions:
-            results[f"{prefix}num_predictions{suffix}"] = squared_errors.count
+        if self._track_count:
+            results[f"{prefix}count{suffix}"] = squared_errors.count
         return results

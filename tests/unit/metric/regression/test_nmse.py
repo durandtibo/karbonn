@@ -47,7 +47,7 @@ def test_normalized_mean_squared_error_forward_correct(
         metric.value(),
         {
             "mean": 0.0,
-            "num_predictions": batch_size * feature_size,
+            "count": batch_size * feature_size,
         },
     )
 
@@ -70,7 +70,7 @@ def test_normalized_mean_squared_error_forward_incorrect(
         metric.value(),
         {
             "mean": 4.0,
-            "num_predictions": batch_size * feature_size,
+            "count": batch_size * feature_size,
         },
     )
 
@@ -82,7 +82,7 @@ def test_normalized_mean_squared_error_forward_partially_correct(device: str, mo
     metric = NormalizedMeanSquaredError().to(device=device)
     metric.train(mode)
     metric(torch.eye(2, device=device), -torch.eye(2, device=device))
-    assert objects_are_equal(metric.value(), {"mean": 4.0, "num_predictions": 4})
+    assert objects_are_equal(metric.value(), {"mean": 4.0, "count": 4})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -92,7 +92,7 @@ def test_normalized_mean_squared_error_forward_1d(device: str, mode: bool) -> No
     metric = NormalizedMeanSquaredError().to(device=device)
     metric.train(mode)
     metric(torch.ones(2, device=device), torch.ones(2, device=device))
-    assert objects_are_equal(metric.value(), {"mean": 0.0, "num_predictions": 2})
+    assert objects_are_equal(metric.value(), {"mean": 0.0, "count": 2})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -102,7 +102,7 @@ def test_normalized_mean_squared_error_forward_2d(device: str, mode: bool) -> No
     metric = NormalizedMeanSquaredError().to(device=device)
     metric.train(mode)
     metric(torch.ones(2, 3, device=device), torch.ones(2, 3, device=device))
-    assert objects_are_equal(metric.value(), {"mean": 0.0, "num_predictions": 6})
+    assert objects_are_equal(metric.value(), {"mean": 0.0, "count": 6})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -112,7 +112,7 @@ def test_normalized_mean_squared_error_forward_3d(device: str, mode: bool) -> No
     metric = NormalizedMeanSquaredError().to(device=device)
     metric.train(mode)
     metric(torch.ones(2, 3, 4, device=device), torch.ones(2, 3, 4, device=device))
-    assert objects_are_equal(metric.value(), {"mean": 0.0, "num_predictions": 24})
+    assert objects_are_equal(metric.value(), {"mean": 0.0, "count": 24})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -132,7 +132,7 @@ def test_normalized_mean_squared_error_forward_dtypes(
         torch.ones(2, 3, device=device, dtype=dtype_prediction),
         torch.ones(2, 3, device=device, dtype=dtype_target),
     )
-    assert objects_are_equal(metric.value(), {"mean": 0.0, "num_predictions": 6})
+    assert objects_are_equal(metric.value(), {"mean": 0.0, "count": 6})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -143,7 +143,7 @@ def test_normalized_mean_squared_error_forward_multiple_batches(device: str, mod
     metric.train(mode)
     metric(torch.ones(2, 2, device=device), torch.ones(2, 2, device=device))
     metric(torch.ones(2, 2, device=device), -torch.ones(2, 2, device=device))
-    assert objects_are_equal(metric.value(), {"mean": 2.0, "num_predictions": 8})
+    assert objects_are_equal(metric.value(), {"mean": 2.0, "count": 8})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -157,7 +157,7 @@ def test_normalized_mean_squared_error_forward_multiple_batches_with_reset(
     metric(torch.ones(2, 2, device=device), torch.ones(2, 2, device=device))
     metric.reset()
     metric(torch.eye(2, device=device), -torch.eye(2, device=device))
-    assert objects_are_equal(metric.value(), {"mean": 4.0, "num_predictions": 4})
+    assert objects_are_equal(metric.value(), {"mean": 4.0, "count": 4})
 
 
 def test_normalized_mean_squared_error_value_empty() -> None:
@@ -178,7 +178,7 @@ def test_normalized_mean_squared_error_value_prefix_suffix(
         metric.value(prefix, suffix),
         {
             f"{prefix}mean{suffix}": 0.0,
-            f"{prefix}num_predictions{suffix}": 2,
+            f"{prefix}count{suffix}": 2,
         },
     )
 

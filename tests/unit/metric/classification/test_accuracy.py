@@ -60,7 +60,7 @@ def test_binary_accuracy_forward_correct(device: str, mode: bool, batch_size: in
     metric = BinaryAccuracy().to(device=device)
     metric.train(mode)
     metric(torch.ones(batch_size, device=device), torch.ones(batch_size, device=device))
-    assert objects_are_equal(metric.value(), {"accuracy": 1.0, "num_predictions": batch_size})
+    assert objects_are_equal(metric.value(), {"accuracy": 1.0, "count": batch_size})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -71,7 +71,7 @@ def test_binary_accuracy_forward_incorrect(device: str, mode: bool, batch_size: 
     metric = BinaryAccuracy().to(device=device)
     metric.train(mode)
     metric(torch.zeros(batch_size, device=device), torch.ones(batch_size, device=device))
-    assert objects_are_equal(metric.value(), {"accuracy": 0.0, "num_predictions": batch_size})
+    assert objects_are_equal(metric.value(), {"accuracy": 0.0, "count": batch_size})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -81,7 +81,7 @@ def test_binary_accuracy_forward_partially_correct(device: str, mode: bool) -> N
     metric = BinaryAccuracy().to(device=device)
     metric.train(mode)
     metric(torch.tensor([0, 1, 0, 1], device=device), torch.tensor([1, 1, 0, 0], device=device))
-    assert objects_are_equal(metric.value(), {"accuracy": 0.5, "num_predictions": 4})
+    assert objects_are_equal(metric.value(), {"accuracy": 0.5, "count": 4})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -91,7 +91,7 @@ def test_binary_accuracy_forward_1d(device: str, mode: bool) -> None:
     metric = BinaryAccuracy().to(device=device)
     metric.train(mode)
     metric(torch.ones(2, device=device), torch.ones(2, device=device))
-    assert objects_are_equal(metric.value(), {"accuracy": 1.0, "num_predictions": 2})
+    assert objects_are_equal(metric.value(), {"accuracy": 1.0, "count": 2})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -103,7 +103,7 @@ def test_binary_accuracy_forward_1d_and_2d(device: str, mode: bool) -> None:
     metric(torch.ones(2, device=device), torch.ones(2, 1, device=device))
     assert objects_are_equal(
         metric.value(),
-        {"accuracy": 1.0, "num_predictions": 2},
+        {"accuracy": 1.0, "count": 2},
     )
 
 
@@ -116,7 +116,7 @@ def test_binary_accuracy_forward_2d_and_1d(device: str, mode: bool) -> None:
     metric(torch.ones(2, 1, device=device), torch.ones(2, device=device))
     assert objects_are_equal(
         metric.value(),
-        {"accuracy": 1.0, "num_predictions": 2},
+        {"accuracy": 1.0, "count": 2},
     )
 
 
@@ -129,7 +129,7 @@ def test_binary_accuracy_forward_2d(device: str, mode: bool) -> None:
     metric(torch.ones(2, 3, device=device), torch.ones(2, 3, device=device))
     assert objects_are_equal(
         metric.value(),
-        {"accuracy": 1.0, "num_predictions": 6},
+        {"accuracy": 1.0, "count": 6},
     )
 
 
@@ -142,7 +142,7 @@ def test_binary_accuracy_forward_3d(device: str, mode: bool) -> None:
     metric(torch.ones(2, 3, 4, device=device), torch.ones(2, 3, 4, device=device))
     assert objects_are_equal(
         metric.value(),
-        {"accuracy": 1.0, "num_predictions": 24},
+        {"accuracy": 1.0, "count": 24},
     )
 
 
@@ -165,7 +165,7 @@ def test_binary_accuracy_forward_dtypes(
     )
     assert objects_are_equal(
         metric.value(),
-        {"accuracy": 1.0, "num_predictions": 6},
+        {"accuracy": 1.0, "count": 6},
     )
 
 
@@ -183,7 +183,7 @@ def test_binary_accuracy_forward_state(device: str, mode: bool) -> None:
             "error": 0.0,
             "num_correct_predictions": 6,
             "num_incorrect_predictions": 0,
-            "num_predictions": 6,
+            "count": 6,
         },
     )
 
@@ -197,7 +197,7 @@ def test_binary_accuracy_forward_threshold_0(device: str, mode: bool) -> None:
     metric(torch.tensor([-1, 1, -2, 1], device=device), torch.tensor([1, 1, 0, 0], device=device))
     assert objects_are_equal(
         metric.value(),
-        {"accuracy": 0.5, "num_predictions": 4},
+        {"accuracy": 0.5, "count": 4},
     )
 
 
@@ -211,7 +211,7 @@ def test_binary_accuracy_forward_multiple_batches(device: str, mode: bool) -> No
     metric(torch.ones(4, device=device), torch.ones(4, device=device))
     assert objects_are_equal(
         metric.value(),
-        {"accuracy": 0.5, "num_predictions": 8},
+        {"accuracy": 0.5, "count": 8},
     )
 
 
@@ -226,7 +226,7 @@ def test_binary_accuracy_forward_multiple_batches_with_reset(device: str, mode: 
     metric(torch.ones(4, device=device), torch.ones(4, device=device))
     assert objects_are_equal(
         metric.value(),
-        {"accuracy": 1.0, "num_predictions": 4},
+        {"accuracy": 1.0, "count": 4},
     )
 
 
@@ -244,7 +244,7 @@ def test_binary_accuracy_value_prefix_suffix(device: str, prefix: str, suffix: s
     metric(torch.ones(2, device=device), torch.ones(2, device=device))
     assert objects_are_equal(
         metric.value(prefix, suffix),
-        {f"{prefix}accuracy{suffix}": 1.0, f"{prefix}num_predictions{suffix}": 2},
+        {f"{prefix}accuracy{suffix}": 1.0, f"{prefix}count{suffix}": 2},
     )
 
 
@@ -310,7 +310,7 @@ def test_categorical_accuracy_forward_correct(device: str, mode: bool, batch_siz
     metric = CategoricalAccuracy().to(device=device)
     metric.train(mode)
     metric(torch.arange(batch_size, device=device), torch.arange(batch_size, device=device))
-    assert objects_are_equal(metric.value(), {"accuracy": 1.0, "num_predictions": batch_size})
+    assert objects_are_equal(metric.value(), {"accuracy": 1.0, "count": batch_size})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -321,7 +321,7 @@ def test_categorical_accuracy_forward_incorrect(device: str, mode: bool, batch_s
     metric = CategoricalAccuracy().to(device=device)
     metric.train(mode)
     metric(torch.zeros(batch_size, device=device), torch.ones(batch_size, device=device))
-    assert objects_are_equal(metric.value(), {"accuracy": 0.0, "num_predictions": batch_size})
+    assert objects_are_equal(metric.value(), {"accuracy": 0.0, "count": batch_size})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -331,7 +331,7 @@ def test_categorical_accuracy_forward_partially_correct(device: str, mode: bool)
     metric = CategoricalAccuracy().to(device=device)
     metric.train(mode)
     metric(torch.tensor([0.0, 1.0], device=device), torch.zeros(2, device=device))
-    assert objects_are_equal(metric.value(), {"accuracy": 0.5, "num_predictions": 2})
+    assert objects_are_equal(metric.value(), {"accuracy": 0.5, "count": 2})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -341,7 +341,7 @@ def test_categorical_accuracy_forward_prediction_1d(device: str, mode: bool) -> 
     metric = CategoricalAccuracy().to(device=device)
     metric.train(mode)
     metric(torch.zeros(2, device=device), torch.zeros(2, device=device))
-    assert objects_are_equal(metric.value(), {"accuracy": 1.0, "num_predictions": 2})
+    assert objects_are_equal(metric.value(), {"accuracy": 1.0, "count": 2})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -351,7 +351,7 @@ def test_categorical_accuracy_forward_prediction_1d_target_2d(device: str, mode:
     metric = CategoricalAccuracy().to(device=device)
     metric.train(mode)
     metric(torch.zeros(2, device=device), torch.zeros(2, 1, device=device))
-    assert objects_are_equal(metric.value(), {"accuracy": 1.0, "num_predictions": 2})
+    assert objects_are_equal(metric.value(), {"accuracy": 1.0, "count": 2})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -361,7 +361,7 @@ def test_categorical_accuracy_forward_prediction_2d_target_1d(device: str, mode:
     metric = CategoricalAccuracy().to(device=device)
     metric.train(mode)
     metric(torch.zeros(2, 1, device=device), torch.zeros(2, device=device))
-    assert objects_are_equal(metric.value(), {"accuracy": 1.0, "num_predictions": 2})
+    assert objects_are_equal(metric.value(), {"accuracy": 1.0, "count": 2})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -371,7 +371,7 @@ def test_categorical_accuracy_forward_prediction_2d_target_2d(device: str, mode:
     metric = CategoricalAccuracy().to(device=device)
     metric.train(mode)
     metric(torch.zeros(2, 1, device=device), torch.zeros(2, 1, device=device))
-    assert objects_are_equal(metric.value(), {"accuracy": 1.0, "num_predictions": 2})
+    assert objects_are_equal(metric.value(), {"accuracy": 1.0, "count": 2})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -381,7 +381,7 @@ def test_categorical_accuracy_forward_prediction_3d(device: str, mode: bool) -> 
     metric = CategoricalAccuracy().to(device=device)
     metric.train(mode)
     metric(torch.zeros(2, 3, 4, device=device), torch.zeros(2, 3, 4, device=device))
-    assert objects_are_equal(metric.value(), {"accuracy": 1.0, "num_predictions": 24})
+    assert objects_are_equal(metric.value(), {"accuracy": 1.0, "count": 24})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -401,7 +401,7 @@ def test_categorical_accuracy_forward_dtypes(
         torch.arange(2, device=device, dtype=dtype_prediction),
         torch.arange(2, device=device, dtype=dtype_target),
     )
-    assert objects_are_equal(metric.value(), {"accuracy": 1.0, "num_predictions": 2})
+    assert objects_are_equal(metric.value(), {"accuracy": 1.0, "count": 2})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -418,7 +418,7 @@ def test_categorical_accuracy_forward_state(device: str, mode: bool) -> None:
             "error": 0.5,
             "num_correct_predictions": 1,
             "num_incorrect_predictions": 1,
-            "num_predictions": 2,
+            "count": 2,
         },
     )
 
@@ -431,7 +431,7 @@ def test_categorical_accuracy_forward_multiple_batches(device: str, mode: bool) 
     metric.train(mode)
     metric(torch.zeros(2, device=device), torch.zeros(2, device=device))
     metric(torch.zeros(2, device=device), torch.tensor([0.0, 1.0], device=device))
-    assert objects_are_equal(metric.value(), {"accuracy": 0.75, "num_predictions": 4})
+    assert objects_are_equal(metric.value(), {"accuracy": 0.75, "count": 4})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -443,7 +443,7 @@ def test_categorical_accuracy_forward_multiple_batches_with_reset(device: str, m
     metric(torch.zeros(2, device=device), torch.zeros(2, device=device))
     metric.reset()
     metric(torch.tensor([0.0, 1.0], device=device), torch.tensor([0.0, 1.0], device=device))
-    assert objects_are_equal(metric.value(), {"accuracy": 1.0, "num_predictions": 2})
+    assert objects_are_equal(metric.value(), {"accuracy": 1.0, "count": 2})
 
 
 def test_categorical_accuracy_value_empty() -> None:
@@ -460,7 +460,7 @@ def test_categorical_accuracy_value_prefix_suffix(device: str, prefix: str, suff
     metric(torch.ones(2, device=device), torch.ones(2, device=device))
     assert objects_are_equal(
         metric.value(prefix, suffix),
-        {f"{prefix}accuracy{suffix}": 1.0, f"{prefix}num_predictions{suffix}": 2},
+        {f"{prefix}accuracy{suffix}": 1.0, f"{prefix}count{suffix}": 2},
     )
 
 
@@ -534,9 +534,7 @@ def test_top_k_accuracy_forward_top1_correct(device: str, mode: bool, batch_size
         prediction=torch.eye(batch_size, device=device),
         target=torch.arange(batch_size, device=device),
     )
-    assert objects_are_equal(
-        metric.value(), {"top_1_accuracy": 1.0, "top_1_num_predictions": batch_size}
-    )
+    assert objects_are_equal(metric.value(), {"top_1_accuracy": 1.0, "top_1_count": batch_size})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -550,9 +548,9 @@ def test_top_k_accuracy_forward_top_1_5_correct(device: str, mode: bool) -> None
         metric.value(),
         {
             "top_1_accuracy": 1.0,
-            "top_1_num_predictions": 10,
+            "top_1_count": 10,
             "top_5_accuracy": 1.0,
-            "top_5_num_predictions": 10,
+            "top_5_count": 10,
         },
     )
 
@@ -567,7 +565,7 @@ def test_top_k_accuracy_forward_top_1_partially_correct(device: str, mode: bool)
         prediction=torch.tensor([[0, 2, 1], [2, 1, 0]], device=device),
         target=torch.tensor([1, 2], device=device),
     )
-    assert objects_are_equal(metric.value(), {"top_1_accuracy": 0.5, "top_1_num_predictions": 2})
+    assert objects_are_equal(metric.value(), {"top_1_accuracy": 0.5, "top_1_count": 2})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -584,11 +582,11 @@ def test_top_k_accuracy_forward_top_1_2_3_partially_correct(device: str, mode: b
         metric.value(),
         {
             "top_1_accuracy": 0.5,
-            "top_1_num_predictions": 2,
+            "top_1_count": 2,
             "top_2_accuracy": 0.5,
-            "top_2_num_predictions": 2,
+            "top_2_count": 2,
             "top_3_accuracy": 1.0,
-            "top_3_num_predictions": 2,
+            "top_3_count": 2,
         },
     )
 
@@ -603,7 +601,7 @@ def test_top_k_accuracy_forward_top_1_incorrect(device: str, mode: bool) -> None
         prediction=torch.tensor([[0, 1, 2], [2, 1, 0]], device=device),
         target=torch.tensor([1, 2], device=device),
     )
-    assert objects_are_equal(metric.value(), {"top_1_accuracy": 0.0, "top_1_num_predictions": 2})
+    assert objects_are_equal(metric.value(), {"top_1_accuracy": 0.0, "top_1_count": 2})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -620,11 +618,11 @@ def test_top_k_accuracy_forward_top_1_2_3_incorrect(device: str, mode: bool) -> 
         metric.value(),
         {
             "top_1_accuracy": 0.0,
-            "top_1_num_predictions": 2,
+            "top_1_count": 2,
             "top_2_accuracy": 0.5,
-            "top_2_num_predictions": 2,
+            "top_2_count": 2,
             "top_3_accuracy": 1.0,
-            "top_3_num_predictions": 2,
+            "top_3_count": 2,
         },
     )
 
@@ -638,7 +636,7 @@ def test_top_k_accuracy_forward_prediction_2d(device: str, mode: bool) -> None:
     prediction = torch.rand(2, 3, device=device)
     prediction[..., 0] = 2
     metric(prediction=prediction, target=torch.zeros(2, device=device))
-    assert objects_are_equal(metric.value(), {"top_1_accuracy": 1.0, "top_1_num_predictions": 2})
+    assert objects_are_equal(metric.value(), {"top_1_accuracy": 1.0, "top_1_count": 2})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -650,7 +648,7 @@ def test_top_k_accuracy_forward_prediction_2d_target_2d(device: str, mode: bool)
     prediction = torch.rand(2, 3, device=device)
     prediction[..., 0] = 2
     metric(prediction=prediction, target=torch.zeros(2, 1, device=device))
-    assert objects_are_equal(metric.value(), {"top_1_accuracy": 1.0, "top_1_num_predictions": 2})
+    assert objects_are_equal(metric.value(), {"top_1_accuracy": 1.0, "top_1_count": 2})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -662,7 +660,7 @@ def test_top_k_accuracy_forward_prediction_3d(device: str, mode: bool) -> None:
     prediction = torch.rand(2, 3, 4, device=device)
     prediction[..., 0] = 2
     metric(prediction=prediction, target=torch.zeros(2, 3, device=device))
-    assert objects_are_equal(metric.value(), {"top_1_accuracy": 1.0, "top_1_num_predictions": 6})
+    assert objects_are_equal(metric.value(), {"top_1_accuracy": 1.0, "top_1_count": 6})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -674,7 +672,7 @@ def test_top_k_accuracy_forward_prediction_4d(device: str, mode: bool) -> None:
     prediction = torch.rand(2, 3, 4, 5, device=device)
     prediction[..., 0] = 2
     metric(prediction=prediction, target=torch.zeros(2, 3, 4, device=device))
-    assert objects_are_equal(metric.value(), {"top_1_accuracy": 1.0, "top_1_num_predictions": 24})
+    assert objects_are_equal(metric.value(), {"top_1_accuracy": 1.0, "top_1_count": 24})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -694,7 +692,7 @@ def test_top_k_accuracy_forward_dtypes(
         torch.eye(4, device=device, dtype=dtype_prediction),
         torch.arange(4, device=device, dtype=dtype_target),
     )
-    assert objects_are_equal(metric.value(), {"top_1_accuracy": 1.0, "top_1_num_predictions": 4})
+    assert objects_are_equal(metric.value(), {"top_1_accuracy": 1.0, "top_1_count": 4})
 
 
 @pytest.mark.parametrize("device", get_available_devices())
@@ -714,17 +712,17 @@ def test_top_k_accuracy_forward_state(device: str, mode: bool) -> None:
             "top_1_error": 0.5,
             "top_1_num_correct_predictions": 1,
             "top_1_num_incorrect_predictions": 1,
-            "top_1_num_predictions": 2,
+            "top_1_count": 2,
             "top_2_accuracy": 0.5,
             "top_2_error": 0.5,
             "top_2_num_correct_predictions": 1,
             "top_2_num_incorrect_predictions": 1,
-            "top_2_num_predictions": 2,
+            "top_2_count": 2,
             "top_3_accuracy": 1.0,
             "top_3_error": 0.0,
             "top_3_num_correct_predictions": 2,
             "top_3_num_incorrect_predictions": 0,
-            "top_3_num_predictions": 2,
+            "top_3_count": 2,
         },
     )
 
@@ -745,7 +743,7 @@ def test_top_k_accuracy_forward_top_1_multiple_batches(device: str, mode: bool) 
     )
     assert objects_are_equal(
         metric.value(),
-        {"top_1_accuracy": 0.75, "top_1_num_predictions": 4},
+        {"top_1_accuracy": 0.75, "top_1_count": 4},
     )
 
 
@@ -764,7 +762,7 @@ def test_top_k_accuracy_forward_top_1_multiple_batches_with_reset(device: str, m
         prediction=torch.tensor([[0, 2, 1], [2, 1, 0]], device=device),
         target=torch.tensor([1, 2], device=device),
     )
-    assert objects_are_equal(metric.value(), {"top_1_accuracy": 0.5, "top_1_num_predictions": 2})
+    assert objects_are_equal(metric.value(), {"top_1_accuracy": 0.5, "top_1_count": 2})
 
 
 def test_top_k_accuracy_value_empty() -> None:
@@ -776,8 +774,8 @@ def test_top_k_accuracy_reset() -> None:
     metric = TopKAccuracy(topk=(1, 3))
     metric(prediction=torch.eye(4), target=torch.ones(4))
     metric.reset()
-    assert metric._states[1].num_predictions == 0
-    assert metric._states[3].num_predictions == 0
+    assert metric._states[1].count == 0
+    assert metric._states[3].count == 0
 
 
 def test_top_k_accuracy_get_records() -> None:

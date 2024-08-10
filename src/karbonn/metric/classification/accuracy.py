@@ -47,20 +47,20 @@ class BinaryAccuracy(BaseStateMetric):
     BinaryAccuracy(
       (state): AccuracyState(
           (tracker): MeanTensorTracker(count=0, total=0.0)
-          (track_num_predictions): True
+          (track_count): True
         )
       (transform): Identity()
     )
     >>> metric(torch.zeros(4), torch.ones(4))
     >>> metric.value()
-    {'accuracy': 0.0, 'num_predictions': 4}
+    {'accuracy': 0.0, 'count': 4}
     >>> metric(torch.ones(4), torch.ones(4))
     >>> metric.value()
-    {'accuracy': 0.5, 'num_predictions': 8}
+    {'accuracy': 0.5, 'count': 8}
     >>> metric.reset()
     >>> metric(torch.ones(4), torch.ones(4))
     >>> metric.value("bin_acc_")
-    {'bin_acc_accuracy': 1.0, 'bin_acc_num_predictions': 4}
+    {'bin_acc_accuracy': 1.0, 'bin_acc_count': 4}
 
     ```
     """
@@ -99,7 +99,7 @@ class BinaryAccuracy(BaseStateMetric):
         >>> metric = BinaryAccuracy()
         >>> metric(torch.zeros(4), torch.ones(4))
         >>> metric.value()
-        {'accuracy': 0.0, 'num_predictions': 4}
+        {'accuracy': 0.0, 'count': 4}
 
         ```
         """
@@ -129,20 +129,20 @@ class CategoricalAccuracy(BaseStateMetric):
     CategoricalAccuracy(
       (state): AccuracyState(
           (tracker): MeanTensorTracker(count=0, total=0.0)
-          (track_num_predictions): True
+          (track_count): True
         )
       (transform): Identity()
     )
     >>> metric(torch.tensor([1, 0]), torch.tensor([1, 0]))
     >>> metric.value()
-    {'accuracy': 1.0, 'num_predictions': 2}
+    {'accuracy': 1.0, 'count': 2}
     >>> metric(torch.tensor([[0, 2]]), torch.tensor([1, 2]))
     >>> metric.value()
-    {'accuracy': 0.75, 'num_predictions': 4}
+    {'accuracy': 0.75, 'count': 4}
     >>> metric.reset()
     >>> metric(torch.tensor([[1, 1]]), torch.tensor([1, 2]))
     >>> metric.value()
-    {'accuracy': 0.5, 'num_predictions': 2}
+    {'accuracy': 0.5, 'count': 2}
 
     ```
     """
@@ -182,7 +182,7 @@ class CategoricalAccuracy(BaseStateMetric):
         >>> metric = CategoricalAccuracy()
         >>> metric(torch.tensor([1, 2, 0, 1]), torch.tensor([1, 2, 0, 1]))
         >>> metric.value()
-        {'accuracy': 1.0, 'num_predictions': 4}
+        {'accuracy': 1.0, 'count': 4}
 
         ```
         """
@@ -209,19 +209,19 @@ class TopKAccuracy(BaseMetric):
       (states):
         (1): AccuracyState(
               (tracker): MeanTensorTracker(count=0, total=0.0)
-              (track_num_predictions): True
+              (track_count): True
             )
     )
     >>> metric(torch.tensor([[0.0, 2.0, 1.0], [2.0, 1.0, 0.0]]), torch.tensor([1, 0]))
     >>> metric.value()
-    {'top_1_accuracy': 1.0, 'top_1_num_predictions': 2}
+    {'top_1_accuracy': 1.0, 'top_1_count': 2}
     >>> metric(torch.tensor([[0.0, 2.0, 1.0], [2.0, 1.0, 0.0]]), torch.tensor([1, 2]))
     >>> metric.value()
-    {'top_1_accuracy': 0.75, 'top_1_num_predictions': 4}
+    {'top_1_accuracy': 0.75, 'top_1_count': 4}
     >>> metric.reset()
     >>> metric(torch.tensor([[0.0, 2.0, 1.0], [2.0, 1.0, 0.0]]), torch.tensor([1, 2]))
     >>> metric.value("acc_")
-    {'acc_top_1_accuracy': 0.5, 'acc_top_1_num_predictions': 2}
+    {'acc_top_1_accuracy': 0.5, 'acc_top_1_count': 2}
 
     ```
     """
@@ -272,7 +272,7 @@ class TopKAccuracy(BaseMetric):
         >>> metric = TopKAccuracy(topk=(1,))
         >>> metric(torch.tensor([[0.0, 2.0, 1.0], [2.0, 1.0, 0.0]]), torch.tensor([1, 0]))
         >>> metric.value()
-        {'top_1_accuracy': 1.0, 'top_1_num_predictions': 2}
+        {'top_1_accuracy': 1.0, 'top_1_count': 2}
 
         ```
         """

@@ -52,7 +52,7 @@ def test_categorical_cross_entropy_forward_correct(
     metric(prediction, torch.zeros(batch_size, device=device))
     assert objects_are_allclose(
         metric.value(),
-        {"mean": 0.5514447139320511, "num_predictions": batch_size},
+        {"mean": 0.5514447139320511, "count": batch_size},
         atol=TOLERANCE,
     )
 
@@ -71,7 +71,7 @@ def test_categorical_cross_entropy_forward_incorrect(
     metric(prediction, torch.ones(batch_size, device=device))
     assert objects_are_allclose(
         metric.value(),
-        {"mean": 1.551444713932051, "num_predictions": batch_size},
+        {"mean": 1.551444713932051, "count": batch_size},
         atol=TOLERANCE,
     )
 
@@ -85,7 +85,7 @@ def test_categorical_cross_entropy_forward_partially_correct(device: str, mode: 
     metric(torch.eye(2, device=device), torch.zeros(2, device=device))
     assert objects_are_allclose(
         metric.value(),
-        {"mean": 0.8132616875182228, "num_predictions": 2},
+        {"mean": 0.8132616875182228, "count": 2},
         atol=TOLERANCE,
     )
 
@@ -99,7 +99,7 @@ def test_categorical_cross_entropy_forward_prediction_2d(device: str, mode: bool
     metric(torch.ones(2, 3, device=device), torch.zeros(2, device=device))
     assert objects_are_allclose(
         metric.value(),
-        {"mean": 1.0986122886681098, "num_predictions": 2},
+        {"mean": 1.0986122886681098, "count": 2},
         atol=TOLERANCE,
     )
 
@@ -113,7 +113,7 @@ def test_categorical_cross_entropy_forward_prediction_2d_target_2d(device: str, 
     metric(torch.ones(2, 3, device=device), torch.zeros(2, 1, device=device))
     assert objects_are_allclose(
         metric.value(),
-        {"mean": 1.0986122886681098, "num_predictions": 2},
+        {"mean": 1.0986122886681098, "count": 2},
         atol=TOLERANCE,
     )
 
@@ -127,7 +127,7 @@ def test_categorical_cross_entropy_forward_prediction_3d(device: str, mode: bool
     metric(torch.ones(2, 3, 3, device=device), torch.zeros(2, 3, device=device))
     assert objects_are_allclose(
         metric.value(),
-        {"mean": 1.0986122886681098, "num_predictions": 6},
+        {"mean": 1.0986122886681098, "count": 6},
         atol=TOLERANCE,
     )
 
@@ -141,7 +141,7 @@ def test_categorical_cross_entropy_forward_prediction_4d(device: str, mode: bool
     metric(torch.ones(2, 3, 4, 3, device=device), torch.zeros(2, 3, 4, device=device))
     assert objects_are_allclose(
         metric.value(),
-        {"mean": 1.0986122886681098, "num_predictions": 24},
+        {"mean": 1.0986122886681098, "count": 24},
         atol=TOLERANCE,
     )
 
@@ -160,7 +160,7 @@ def test_categorical_cross_entropy_forward_dtypes(
     metric(torch.eye(4, device=device), torch.arange(4, device=device, dtype=dtype_target))
     assert objects_are_allclose(
         metric.value(),
-        {"mean": 0.7436683806286791, "num_predictions": 4},
+        {"mean": 0.7436683806286791, "count": 4},
         atol=TOLERANCE,
     )
 
@@ -181,7 +181,7 @@ def test_categorical_cross_entropy_forward_state(device: str, mode: bool) -> Non
             "max": 0.7436683806286791,
             "sum": 2.9746735225147165,
             "std": 0.0,
-            "num_predictions": 4,
+            "count": 4,
         },
         atol=TOLERANCE,
     )
@@ -197,7 +197,7 @@ def test_categorical_cross_entropy_forward_multiple_batches(device: str, mode: b
     metric(torch.ones(2, 3, device=device), torch.ones(2, device=device))
     assert objects_are_allclose(
         metric.value(),
-        {"mean": 0.8619830166418226, "num_predictions": 6},
+        {"mean": 0.8619830166418226, "count": 6},
         atol=TOLERANCE,
     )
 
@@ -215,7 +215,7 @@ def test_categorical_cross_entropy_forward_multiple_batches_with_reset(
     metric(torch.ones(2, 3, device=device), torch.ones(2, device=device))
     assert objects_are_allclose(
         metric.value(),
-        {"mean": 1.0986122886681098, "num_predictions": 2},
+        {"mean": 1.0986122886681098, "count": 2},
         atol=TOLERANCE,
     )
 
@@ -236,7 +236,7 @@ def test_categorical_cross_entropy_value_prefix_suffix(
     metric(torch.eye(4, device=device), torch.arange(4, device=device))
     assert objects_are_allclose(
         metric.value(prefix, suffix),
-        {f"{prefix}mean{suffix}": 0.7436683806286791, f"{prefix}num_predictions{suffix}": 4},
+        {f"{prefix}mean{suffix}": 0.7436683806286791, f"{prefix}count{suffix}": 4},
     )
 
 
