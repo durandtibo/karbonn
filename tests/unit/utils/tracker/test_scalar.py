@@ -135,10 +135,10 @@ def test_scalar_tracker_clone_empty() -> None:
     assert tracker is not tracker_cloned
     assert tracker_cloned.equal(ScalarTracker())
     tracker.update(5)
-    assert tracker.equal(ScalarTracker())
-    assert tracker_cloned.equal(
+    assert tracker.equal(
         ScalarTracker(total=5.0, count=1, max_value=5.0, min_value=5.0, values=(5.0,))
     )
+    assert tracker_cloned.equal(ScalarTracker())
 
 
 def test_scalar_tracker_equal_true() -> None:
