@@ -6,6 +6,7 @@ from unittest.mock import Mock, patch
 import pytest
 import torch
 from coola import objects_are_allclose, objects_are_equal
+from minrecord import MaxScalarRecord, MinScalarRecord, Record
 
 from karbonn.distributed.ddp import SUM
 from karbonn.testing import tabulate_available
@@ -618,6 +619,77 @@ def test_binary_confusion_matrix_tracker_compute_all_metrics_empty() -> None:
         match="It is not possible to compute the metrics because the confusion matrix is empty",
     ):
         BinaryConfusionMatrixTracker().compute_all_metrics()
+
+
+def test_binary_confusion_matrix_tracker_get_records() -> None:
+    assert objects_are_equal(
+        BinaryConfusionMatrixTracker().get_records(),
+        (
+            MaxScalarRecord(name="accuracy"),
+            MaxScalarRecord(name="balanced_accuracy"),
+            MaxScalarRecord(name="jaccard_index"),
+            MaxScalarRecord(name="precision"),
+            MaxScalarRecord(name="recall"),
+            MaxScalarRecord(name="true_negative_rate"),
+            MaxScalarRecord(name="true_negative"),
+            MaxScalarRecord(name="true_positive_rate"),
+            MaxScalarRecord(name="true_positive"),
+            MinScalarRecord(name="false_negative_rate"),
+            MinScalarRecord(name="false_negative"),
+            MinScalarRecord(name="false_positive_rate"),
+            MinScalarRecord(name="false_positive"),
+            Record(name="count"),
+            MaxScalarRecord(name="f1_score"),
+        ),
+    )
+
+
+def test_binary_confusion_matrix_tracker_get_records_prefix_suffix() -> None:
+    assert objects_are_equal(
+        BinaryConfusionMatrixTracker().get_records(prefix="prefix_", suffix="_suffix"),
+        (
+            MaxScalarRecord(name="prefix_accuracy_suffix"),
+            MaxScalarRecord(name="prefix_balanced_accuracy_suffix"),
+            MaxScalarRecord(name="prefix_jaccard_index_suffix"),
+            MaxScalarRecord(name="prefix_precision_suffix"),
+            MaxScalarRecord(name="prefix_recall_suffix"),
+            MaxScalarRecord(name="prefix_true_negative_rate_suffix"),
+            MaxScalarRecord(name="prefix_true_negative_suffix"),
+            MaxScalarRecord(name="prefix_true_positive_rate_suffix"),
+            MaxScalarRecord(name="prefix_true_positive_suffix"),
+            MinScalarRecord(name="prefix_false_negative_rate_suffix"),
+            MinScalarRecord(name="prefix_false_negative_suffix"),
+            MinScalarRecord(name="prefix_false_positive_rate_suffix"),
+            MinScalarRecord(name="prefix_false_positive_suffix"),
+            Record(name="prefix_count_suffix"),
+            MaxScalarRecord(name="prefix_f1_score_suffix"),
+        ),
+    )
+
+
+def test_binary_confusion_matrix_tracker_get_records_betas() -> None:
+    assert objects_are_equal(
+        BinaryConfusionMatrixTracker().get_records(betas=(0.5, 1, 2)),
+        (
+            MaxScalarRecord(name="accuracy"),
+            MaxScalarRecord(name="balanced_accuracy"),
+            MaxScalarRecord(name="jaccard_index"),
+            MaxScalarRecord(name="precision"),
+            MaxScalarRecord(name="recall"),
+            MaxScalarRecord(name="true_negative_rate"),
+            MaxScalarRecord(name="true_negative"),
+            MaxScalarRecord(name="true_positive_rate"),
+            MaxScalarRecord(name="true_positive"),
+            MinScalarRecord(name="false_negative_rate"),
+            MinScalarRecord(name="false_negative"),
+            MinScalarRecord(name="false_positive_rate"),
+            MinScalarRecord(name="false_positive"),
+            Record(name="count"),
+            MaxScalarRecord(name="f0.5_score"),
+            MaxScalarRecord(name="f1_score"),
+            MaxScalarRecord(name="f2_score"),
+        ),
+    )
 
 
 ######################################################
