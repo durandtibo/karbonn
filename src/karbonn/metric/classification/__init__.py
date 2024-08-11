@@ -15,5 +15,5 @@ from karbonn.metric.classification.accuracy import (
     CategoricalAccuracy,
     TopKAccuracy,
 )
-from karbonn.metric.classification.confusion_matrix import BinaryConfusionMatrix
-from karbonn.metric.classification.cross_entropy import CategoricalCrossEntropy
+from karbonn.metric.classification.confmat import BinaryConfusionMatrix
+from karbonn.metric.classification.entropy import CategoricalCrossEntropy
