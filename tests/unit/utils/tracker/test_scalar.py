@@ -101,6 +101,46 @@ def test_scalar_tracker_average_empty() -> None:
         tracker.average()
 
 
+def test_scalar_tracker_clone() -> None:
+    tracker = ScalarTracker(
+        total=122.0, count=10, max_value=6.0, min_value=-2.0, values=(1.0, 3.0, 5.0, 4.0, 2.0)
+    )
+    tracker_cloned = tracker.clone()
+    assert tracker is not tracker_cloned
+    assert tracker_cloned.equal(
+        ScalarTracker(
+            total=122.0, count=10, max_value=6.0, min_value=-2.0, values=(1.0, 3.0, 5.0, 4.0, 2.0)
+        )
+    )
+    tracker.update(5)
+    assert tracker.equal(
+        ScalarTracker(
+            total=127.0,
+            count=11,
+            max_value=6.0,
+            min_value=-2.0,
+            values=(1.0, 3.0, 5.0, 4.0, 2.0, 5.0),
+        )
+    )
+    assert tracker_cloned.equal(
+        ScalarTracker(
+            total=122.0, count=10, max_value=6.0, min_value=-2.0, values=(1.0, 3.0, 5.0, 4.0, 2.0)
+        )
+    )
+
+
+def test_scalar_tracker_clone_empty() -> None:
+    tracker = ScalarTracker()
+    tracker_cloned = tracker.clone()
+    assert tracker is not tracker_cloned
+    assert tracker_cloned.equal(ScalarTracker())
+    tracker.update(5)
+    assert tracker.equal(ScalarTracker())
+    assert tracker_cloned.equal(
+        ScalarTracker(total=5.0, count=1, max_value=5.0, min_value=5.0, values=(5.0,))
+    )
+
+
 def test_scalar_tracker_equal_true() -> None:
     assert ScalarTracker(
         total=122.0, count=10, max_value=6.0, min_value=-2.0, values=(1.0, 3.0, 5.0, 4.0, 2.0)
