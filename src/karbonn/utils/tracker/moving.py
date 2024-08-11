@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING, Any
 
 import torch
 
-from karbonn.utils.tracker import BaseTracker
 from karbonn.utils.tracker.exception import EmptyTrackerError
 
 try:
