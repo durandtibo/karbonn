@@ -45,7 +45,7 @@ def test_binary_confusion_matrix_forward_correct(device: str, mode: bool) -> Non
             "true_positive_rate": 1.0,
             "true_positive": 2,
             "f1_score": 1.0,
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -74,7 +74,7 @@ def test_binary_confusion_matrix_forward_incorrect(device: str, mode: bool) -> N
             "true_positive": 0,
             "true_positive_rate": 0.0,
             "f1_score": 0.0,
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -105,7 +105,7 @@ def test_binary_confusion_matrix_forward_betas(device: str, mode: bool) -> None:
             "f0.5_score": 1.0,
             "f1_score": 1.0,
             "f2_score": 1.0,
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -137,7 +137,7 @@ def test_binary_confusion_matrix_forward_2d(device: str, mode: bool) -> None:
             "true_positive": 3,
             "true_positive_rate": 1.0,
             "f1_score": 1.0,
-            "num_predictions": 6,
+            "count": 6,
         },
     )
 
@@ -176,7 +176,7 @@ def test_binary_confusion_matrix_forward_dtypes(
             "true_positive": 3,
             "true_positive_rate": 1.0,
             "f1_score": 1.0,
-            "num_predictions": 6,
+            "count": 6,
         },
     )
 
@@ -206,7 +206,7 @@ def test_binary_confusion_matrix_forward_multiple_batches(device: str, mode: boo
             "true_positive": 3,
             "true_positive_rate": 1.0,
             "f1_score": 1.0,
-            "num_predictions": 6,
+            "count": 6,
         },
     )
 
@@ -239,7 +239,7 @@ def test_binary_confusion_matrix_forward_multiple_batches_with_reset(
             "true_positive": 1,
             "true_positive_rate": 1.0,
             "f1_score": 1.0,
-            "num_predictions": 2,
+            "count": 2,
         },
     )
 
@@ -252,6 +252,6 @@ def test_binary_confusion_matrix_value_empty() -> None:
 def test_binary_confusion_matrix_reset() -> None:
     metric = BinaryConfusionMatrix()
     metric(torch.tensor([0, 1, 0, 1]), torch.tensor([0, 1, 0, 1]))
-    assert metric.state.num_predictions == 4
+    assert metric.state.count == 4
     metric.reset()
-    assert metric.state.num_predictions == 0
+    assert metric.state.count == 0

@@ -1,4 +1,4 @@
-r"""Contain confusion matrix metrics for binary and categorical
+r"""Contain confusion tracker metrics for binary and categorical
 labels."""
 
 from __future__ import annotations
@@ -9,9 +9,10 @@ import logging
 from typing import TYPE_CHECKING
 
 from coola.utils import repr_mapping
+from minrecord import BaseRecord, MaxScalarRecord
 
 from karbonn.metric.base import BaseMetric, EmptyMetricError
-from karbonn.utils.tracker import BinaryConfusionMatrix as BinaryConfusionMatrixTracker
+from karbonn.utils.tracker import BinaryConfusionMatrixTracker
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -23,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 class BinaryConfusionMatrix(BaseMetric):
-    r"""Implement a confusion matrix metric for binary labels.
+    r"""Implement a confusion tracker metric for binary labels.
 
     Args:
         betas (sequence, optional): Specifies the betas used to
@@ -39,7 +40,8 @@ class BinaryConfusionMatrix(BaseMetric):
     >>> metric
     BinaryConfusionMatrix(
       (betas): (1,)
-      (state): BinaryConfusionMatrix(num_classes=2, num_predictions=0)
+      (tracker): BinaryConfusionMatrixTracker(num_classes=2, count=0)
+      (track_count): True
     )
     >>> metric(torch.tensor([0, 1, 0, 1]), torch.tensor([0, 1, 0, 1]))
     >>> metric.value()
@@ -50,7 +52,7 @@ class BinaryConfusionMatrix(BaseMetric):
      'false_positive_rate': 0.0,
      'false_positive': 0,
      'jaccard_index': 1.0,
-     'num_predictions': 4,
+     'count': 4,
      'precision': 1.0,
      'recall': 1.0,
      'true_negative_rate': 1.0,
@@ -67,7 +69,7 @@ class BinaryConfusionMatrix(BaseMetric):
      'false_positive_rate': 0.0,
      'false_positive': 0,
      'jaccard_index': 1.0,
-     'num_predictions': 6,
+     'count': 6,
      'precision': 1.0,
      'recall': 1.0,
      'true_negative_rate': 1.0,
@@ -85,7 +87,7 @@ class BinaryConfusionMatrix(BaseMetric):
      'false_positive_rate': 0.0,
      'false_positive': 0,
      'jaccard_index': 1.0,
-     'num_predictions': 2,
+     'count': 2,
      'precision': 1.0,
      'recall': 1.0,
      'true_negative_rate': 1.0,
@@ -100,22 +102,25 @@ class BinaryConfusionMatrix(BaseMetric):
     def __init__(
         self,
         betas: Sequence[int | float] = (1,),
-        matrix: BinaryConfusionMatrixTracker | None = None,
+        tracker: BinaryConfusionMatrixTracker | None = None,
+        track_count: bool = True,
     ) -> None:
         super().__init__()
         self._betas = tuple(betas)
-        self._matrix = matrix or BinaryConfusionMatrixTracker()
+        self._tracker = tracker or BinaryConfusionMatrixTracker()
+        self._track_count = bool(track_count)
 
     def extra_repr(self) -> str:
         return repr_mapping(
             {
                 "betas": self._betas,
-                "matrix": str(self._matrix),
+                "tracker": str(self._tracker),
+                "track_count": self._track_count,
             }
         )
 
     def forward(self, prediction: Tensor, target: Tensor) -> None:
-        r"""Update the confusion matrix metric given a mini-batch of
+        r"""Update the confusion tracker metric given a mini-batch of
         examples.
 
         Args:
@@ -144,7 +149,7 @@ class BinaryConfusionMatrix(BaseMetric):
          'false_positive_rate': 0.0,
          'false_positive': 0,
          'jaccard_index': 1.0,
-         'num_predictions': 4,
+         'count': 4,
          'precision': 1.0,
          'recall': 1.0,
          'true_negative_rate': 1.0,
@@ -155,15 +160,35 @@ class BinaryConfusionMatrix(BaseMetric):
 
         ```
         """
-        self._matrix.update(prediction.flatten(), target.flatten())
+        self._tracker.update(prediction.flatten(), target.flatten())
+
+    def get_records(self, prefix: str = "", suffix: str = "") -> tuple[BaseRecord, ...]:
+        trackers = [
+            MaxScalarRecord(name=f"{prefix}accuracy{suffix}"),
+            MaxScalarRecord(name=f"{prefix}balanced_accuracy{suffix}"),
+            MaxScalarRecord(name=f"{prefix}macro_precision{suffix}"),
+            MaxScalarRecord(name=f"{prefix}macro_recall{suffix}"),
+            MaxScalarRecord(name=f"{prefix}micro_precision{suffix}"),
+            MaxScalarRecord(name=f"{prefix}micro_recall{suffix}"),
+            MaxScalarRecord(name=f"{prefix}weighted_precision{suffix}"),
+            MaxScalarRecord(name=f"{prefix}weighted_recall{suffix}"),
+        ]
+        for beta in self._betas:
+            trackers.append(MaxScalarRecord(name=f"{prefix}macro_f{beta}_score{suffix}"))
+            trackers.append(MaxScalarRecord(name=f"{prefix}micro_f{beta}_score{suffix}"))
+            trackers.append(MaxScalarRecord(name=f"{prefix}weighted_f{beta}_score{suffix}"))
+        return tuple(trackers)
+
+    def reset(self) -> None:
+        self._tracker.reset()
 
     def value(self, prefix: str = "", suffix: str = "") -> dict:
-        matrix = self._matrix.all_reduce()
-        if not matrix.count:
+        tracker = self._tracker.all_reduce()
+        if not tracker.count:
             msg = f"{self.__class__.__qualname__} is empty"
             raise EmptyMetricError(msg)
 
-        results = matrix.compute_all_metrics(betas=self._betas, prefix=prefix, suffix=suffix)
-        if self._track_num_predictions:
-            results[f"{prefix}num_predictions{suffix}"] = matrix.count
+        results = tracker.compute_all_metrics(betas=self._betas, prefix=prefix, suffix=suffix)
+        if self._track_count:
+            results[f"{prefix}count{suffix}"] = tracker.count
         return results
