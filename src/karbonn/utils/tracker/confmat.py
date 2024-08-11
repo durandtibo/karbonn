@@ -13,6 +13,7 @@ __all__ = [
 from typing import TYPE_CHECKING, Any
 
 import torch
+from minrecord import BaseRecord, MaxScalarRecord, MinScalarRecord, Record
 from torch import Tensor
 
 from karbonn.distributed.ddp import SUM, sync_reduce
@@ -1223,6 +1224,64 @@ class BinaryConfusionMatrixTracker(BaseConfusionMatrixTracker):
         for beta in betas:
             metrics[f"{prefix}f{beta}_score{suffix}"] = self.f_beta_score(beta)
         return metrics
+
+    def get_records(
+        self, betas: Sequence[float] = (1,), prefix: str = "", suffix: str = ""
+    ) -> tuple[BaseRecord, ...]:
+        r"""Get the records associated to each metric.
+
+        Args:
+            betas: The betas used to compute the f-beta score.
+            prefix: The prefix for all the metrics.
+            suffix: The suffix for all the metrics.
+
+        Returns:
+            The records.
+
+        Example usage:
+
+        ```pycon
+
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker()
+        >>> confmat.get_records()
+        (MaxScalarRecord(name=accuracy, max_size=10, size=0),
+         MaxScalarRecord(name=balanced_accuracy, max_size=10, size=0),
+         MaxScalarRecord(name=jaccard_index, max_size=10, size=0),
+         MaxScalarRecord(name=precision, max_size=10, size=0),
+         MaxScalarRecord(name=recall, max_size=10, size=0),
+         MaxScalarRecord(name=true_negative_rate, max_size=10, size=0),
+         MaxScalarRecord(name=true_negative, max_size=10, size=0),
+         MaxScalarRecord(name=true_positive_rate, max_size=10, size=0),
+         MaxScalarRecord(name=true_positive, max_size=10, size=0),
+         MinScalarRecord(name=false_negative_rate, max_size=10, size=0),
+         MinScalarRecord(name=false_negative, max_size=10, size=0),
+         MinScalarRecord(name=false_positive_rate, max_size=10, size=0),
+         MinScalarRecord(name=false_positive, max_size=10, size=0),
+         Record(name=count, max_size=10, size=0),
+         MaxScalarRecord(name=f1_score, max_size=10, size=0))
+
+        ```
+        """
+        trackers = [
+            MaxScalarRecord(name=f"{prefix}accuracy{suffix}"),
+            MaxScalarRecord(name=f"{prefix}balanced_accuracy{suffix}"),
+            MaxScalarRecord(name=f"{prefix}jaccard_index{suffix}"),
+            MaxScalarRecord(name=f"{prefix}precision{suffix}"),
+            MaxScalarRecord(name=f"{prefix}recall{suffix}"),
+            MaxScalarRecord(name=f"{prefix}true_negative_rate{suffix}"),
+            MaxScalarRecord(name=f"{prefix}true_negative{suffix}"),
+            MaxScalarRecord(name=f"{prefix}true_positive_rate{suffix}"),
+            MaxScalarRecord(name=f"{prefix}true_positive{suffix}"),
+            MinScalarRecord(name=f"{prefix}false_negative_rate{suffix}"),
+            MinScalarRecord(name=f"{prefix}false_negative{suffix}"),
+            MinScalarRecord(name=f"{prefix}false_positive_rate{suffix}"),
+            MinScalarRecord(name=f"{prefix}false_positive{suffix}"),
+            Record(name=f"{prefix}count{suffix}"),
+        ]
+        return tuple(
+            trackers + [MaxScalarRecord(name=f"{prefix}f{beta}_score{suffix}") for beta in betas]
+        )
 
 
 class MulticlassConfusionMatrixTracker(BaseConfusionMatrixTracker):
