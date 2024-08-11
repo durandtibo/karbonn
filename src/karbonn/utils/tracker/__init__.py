@@ -5,6 +5,7 @@ from __future__ import annotations
 __all__ = [
     "Average",
     "BaseConfusionMatrix",
+    "BaseTracker",
     "BinaryConfusionMatrix",
     "EmptyTrackerError",
     "ExponentialMovingAverage",
@@ -18,6 +19,7 @@ __all__ = [
 ]
 
 from karbonn.utils.tracker.average import Average
+from karbonn.utils.tracker.base import BaseTracker
 from karbonn.utils.tracker.confmat import (
     BaseConfusionMatrix,
     BinaryConfusionMatrix,

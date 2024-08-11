@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Any
 import torch
 from coola.utils import str_indent, str_mapping
 
+from karbonn.utils.tracker import BaseTracker
 from karbonn.utils.tracker.exception import EmptyTrackerError
 
 try:
@@ -22,7 +23,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
 
 
-class ScalarTracker:
+class ScalarTracker(BaseTracker):
     r"""Implement a tracker to track some statistics about a scalar
     value.
 

@@ -12,6 +12,7 @@ from coola.utils import str_indent, str_mapping
 
 from karbonn.distributed.ddp import MAX, MIN, SUM, sync_reduce
 from karbonn.utils.tensor import FlattenBuffer, quantile
+from karbonn.utils.tracker import BaseTracker
 from karbonn.utils.tracker.exception import EmptyTrackerError
 
 try:
@@ -26,7 +27,7 @@ if TYPE_CHECKING:
     from torch import Tensor
 
 
-class MeanTensorTracker:
+class MeanTensorTracker(BaseTracker):
     r"""Implement a tracker to compute the mean value of
     ``torch.Tensor``s.
 
@@ -385,7 +386,7 @@ class MeanTensorTracker:
         return {"count": self._count, "total": self._total}
 
 
-class ExtremaTensorTracker:
+class ExtremaTensorTracker(BaseTracker):
     r"""Implement a tracker to compute the minimum and maximum values of
     ``torch.Tensor``s.
 
@@ -737,7 +738,7 @@ class ExtremaTensorTracker:
         return {"count": self._count, "max_value": self._max_value, "min_value": self._min_value}
 
 
-class TensorTracker:
+class TensorTracker(BaseTracker):
     r"""Implement a tracker to compute some stats on ``torch.Tensor``s.
 
     This tracker has a linear space complexity as its store all the
@@ -1236,7 +1237,7 @@ class TensorTracker:
         return {"values": self._values.values()}
 
 
-class ScalableTensorTracker:
+class ScalableTensorTracker(BaseTracker):
     r"""Implement a tracker to compute some stats on ``torch.Tensor``s.
 
     This tracker is more scalable than ``TensorTracker`` as it has a

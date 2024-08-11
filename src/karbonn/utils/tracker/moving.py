@@ -51,6 +51,10 @@ class MovingAverage:
         return f"{self.__class__.__qualname__}(window_size={self.window_size:,})"
 
     @property
+    def count(self) -> float:
+        return len(self._deque)
+
+    @property
     def values(self) -> tuple[float, ...]:
         r"""The values in the moving average window."""
         return tuple(self._deque)
