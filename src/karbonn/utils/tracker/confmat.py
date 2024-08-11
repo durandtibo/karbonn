@@ -13,7 +13,7 @@ __all__ = [
 from typing import TYPE_CHECKING, Any
 
 import torch
-from minrecord import BaseRecord, MaxScalarRecord, MinScalarRecord, Record
+from minrecord import BaseRecord, MaxScalarRecord, MinScalarRecord
 from torch import Tensor
 
 from karbonn.distributed.ddp import SUM, sync_reduce
@@ -1258,7 +1258,6 @@ class BinaryConfusionMatrixTracker(BaseConfusionMatrixTracker):
          MinScalarRecord(name=false_negative, max_size=10, size=0),
          MinScalarRecord(name=false_positive_rate, max_size=10, size=0),
          MinScalarRecord(name=false_positive, max_size=10, size=0),
-         Record(name=count, max_size=10, size=0),
          MaxScalarRecord(name=f1_score, max_size=10, size=0))
 
         ```
@@ -1277,7 +1276,6 @@ class BinaryConfusionMatrixTracker(BaseConfusionMatrixTracker):
             MinScalarRecord(name=f"{prefix}false_negative{suffix}"),
             MinScalarRecord(name=f"{prefix}false_positive_rate{suffix}"),
             MinScalarRecord(name=f"{prefix}false_positive{suffix}"),
-            Record(name=f"{prefix}count{suffix}"),
         ]
         return tuple(
             trackers + [MaxScalarRecord(name=f"{prefix}f{beta}_score{suffix}") for beta in betas]

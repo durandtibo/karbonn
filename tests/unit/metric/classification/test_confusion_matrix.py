@@ -4,6 +4,7 @@ import pytest
 import torch
 from coola import objects_are_equal
 from coola.utils.tensor import get_available_devices
+from minrecord import MaxScalarRecord, MinScalarRecord
 
 from karbonn.metric import BinaryConfusionMatrix, EmptyMetricError
 
@@ -244,6 +245,34 @@ def test_binary_confusion_matrix_forward_multiple_batches_with_reset(
     )
 
 
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("mode", MODES)
+def test_binary_confusion_matrix_value_track_count_false(device: str, mode: bool) -> None:
+    device = torch.device(device)
+    metric = BinaryConfusionMatrix(track_count=False).to(device=device)
+    metric.train(mode)
+    metric(torch.tensor([0, 1, 0, 1], device=device), torch.tensor([0, 1, 0, 1], device=device))
+    assert objects_are_equal(
+        metric.value(),
+        {
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "false_negative_rate": 0.0,
+            "false_negative": 0,
+            "false_positive_rate": 0.0,
+            "false_positive": 0,
+            "jaccard_index": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "true_negative_rate": 1.0,
+            "true_negative": 2,
+            "true_positive_rate": 1.0,
+            "true_positive": 2,
+            "f1_score": 1.0,
+        },
+    )
+
+
 def test_binary_confusion_matrix_value_empty() -> None:
     with pytest.raises(EmptyMetricError, match="BinaryConfusionMatrix is empty"):
         BinaryConfusionMatrix().value()
@@ -252,6 +281,79 @@ def test_binary_confusion_matrix_value_empty() -> None:
 def test_binary_confusion_matrix_reset() -> None:
     metric = BinaryConfusionMatrix()
     metric(torch.tensor([0, 1, 0, 1]), torch.tensor([0, 1, 0, 1]))
-    assert metric.state.count == 4
+    assert metric._tracker.count == 4
     metric.reset()
-    assert metric.state.count == 0
+    assert metric._tracker.count == 0
+
+
+def test_top_k_accuracy_get_records() -> None:
+    metric = BinaryConfusionMatrix()
+    assert objects_are_equal(
+        metric.get_records(),
+        (
+            MaxScalarRecord(name="accuracy"),
+            MaxScalarRecord(name="balanced_accuracy"),
+            MaxScalarRecord(name="jaccard_index"),
+            MaxScalarRecord(name="precision"),
+            MaxScalarRecord(name="recall"),
+            MaxScalarRecord(name="true_negative_rate"),
+            MaxScalarRecord(name="true_negative"),
+            MaxScalarRecord(name="true_positive_rate"),
+            MaxScalarRecord(name="true_positive"),
+            MinScalarRecord(name="false_negative_rate"),
+            MinScalarRecord(name="false_negative"),
+            MinScalarRecord(name="false_positive_rate"),
+            MinScalarRecord(name="false_positive"),
+            MaxScalarRecord(name="f1_score"),
+        ),
+    )
+
+
+def test_top_k_accuracy_get_records_betas() -> None:
+    metric = BinaryConfusionMatrix(betas=(0.5, 1, 2))
+    assert objects_are_equal(
+        metric.get_records(),
+        (
+            MaxScalarRecord(name="accuracy"),
+            MaxScalarRecord(name="balanced_accuracy"),
+            MaxScalarRecord(name="jaccard_index"),
+            MaxScalarRecord(name="precision"),
+            MaxScalarRecord(name="recall"),
+            MaxScalarRecord(name="true_negative_rate"),
+            MaxScalarRecord(name="true_negative"),
+            MaxScalarRecord(name="true_positive_rate"),
+            MaxScalarRecord(name="true_positive"),
+            MinScalarRecord(name="false_negative_rate"),
+            MinScalarRecord(name="false_negative"),
+            MinScalarRecord(name="false_positive_rate"),
+            MinScalarRecord(name="false_positive"),
+            MaxScalarRecord(name="f0.5_score"),
+            MaxScalarRecord(name="f1_score"),
+            MaxScalarRecord(name="f2_score"),
+        ),
+    )
+
+
+@pytest.mark.parametrize("prefix", ["prefix_", "suffix/"])
+@pytest.mark.parametrize("suffix", ["_prefix", "/suffix"])
+def test_top_k_accuracy_get_records_prefix_suffix(prefix: str, suffix: str) -> None:
+    metric = BinaryConfusionMatrix()
+    assert objects_are_equal(
+        metric.get_records(prefix, suffix),
+        (
+            MaxScalarRecord(name=f"{prefix}accuracy{suffix}"),
+            MaxScalarRecord(name=f"{prefix}balanced_accuracy{suffix}"),
+            MaxScalarRecord(name=f"{prefix}jaccard_index{suffix}"),
+            MaxScalarRecord(name=f"{prefix}precision{suffix}"),
+            MaxScalarRecord(name=f"{prefix}recall{suffix}"),
+            MaxScalarRecord(name=f"{prefix}true_negative_rate{suffix}"),
+            MaxScalarRecord(name=f"{prefix}true_negative{suffix}"),
+            MaxScalarRecord(name=f"{prefix}true_positive_rate{suffix}"),
+            MaxScalarRecord(name=f"{prefix}true_positive{suffix}"),
+            MinScalarRecord(name=f"{prefix}false_negative_rate{suffix}"),
+            MinScalarRecord(name=f"{prefix}false_negative{suffix}"),
+            MinScalarRecord(name=f"{prefix}false_positive_rate{suffix}"),
+            MinScalarRecord(name=f"{prefix}false_positive{suffix}"),
+            MaxScalarRecord(name=f"{prefix}f1_score{suffix}"),
+        ),
+    )

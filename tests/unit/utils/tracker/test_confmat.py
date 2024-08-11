@@ -6,7 +6,7 @@ from unittest.mock import Mock, patch
 import pytest
 import torch
 from coola import objects_are_allclose, objects_are_equal
-from minrecord import MaxScalarRecord, MinScalarRecord, Record
+from minrecord import MaxScalarRecord, MinScalarRecord
 
 from karbonn.distributed.ddp import SUM
 from karbonn.testing import tabulate_available
@@ -638,7 +638,6 @@ def test_binary_confusion_matrix_tracker_get_records() -> None:
             MinScalarRecord(name="false_negative"),
             MinScalarRecord(name="false_positive_rate"),
             MinScalarRecord(name="false_positive"),
-            Record(name="count"),
             MaxScalarRecord(name="f1_score"),
         ),
     )
@@ -661,7 +660,6 @@ def test_binary_confusion_matrix_tracker_get_records_prefix_suffix() -> None:
             MinScalarRecord(name="prefix_false_negative_suffix"),
             MinScalarRecord(name="prefix_false_positive_rate_suffix"),
             MinScalarRecord(name="prefix_false_positive_suffix"),
-            Record(name="prefix_count_suffix"),
             MaxScalarRecord(name="prefix_f1_score_suffix"),
         ),
     )
@@ -684,7 +682,6 @@ def test_binary_confusion_matrix_tracker_get_records_betas() -> None:
             MinScalarRecord(name="false_negative"),
             MinScalarRecord(name="false_positive_rate"),
             MinScalarRecord(name="false_positive"),
-            Record(name="count"),
             MaxScalarRecord(name="f0.5_score"),
             MaxScalarRecord(name="f1_score"),
             MaxScalarRecord(name="f2_score"),

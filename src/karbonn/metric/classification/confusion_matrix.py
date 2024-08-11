@@ -9,7 +9,6 @@ import logging
 from typing import TYPE_CHECKING
 
 from coola.utils import repr_mapping
-from minrecord import BaseRecord, MaxScalarRecord
 
 from karbonn.metric.base import BaseMetric, EmptyMetricError
 from karbonn.utils.tracker import BinaryConfusionMatrixTracker
@@ -17,6 +16,7 @@ from karbonn.utils.tracker import BinaryConfusionMatrixTracker
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
+    from minrecord import BaseRecord
     from torch import Tensor
 
 
@@ -163,21 +163,7 @@ class BinaryConfusionMatrix(BaseMetric):
         self._tracker.update(prediction.flatten(), target.flatten())
 
     def get_records(self, prefix: str = "", suffix: str = "") -> tuple[BaseRecord, ...]:
-        trackers = [
-            MaxScalarRecord(name=f"{prefix}accuracy{suffix}"),
-            MaxScalarRecord(name=f"{prefix}balanced_accuracy{suffix}"),
-            MaxScalarRecord(name=f"{prefix}macro_precision{suffix}"),
-            MaxScalarRecord(name=f"{prefix}macro_recall{suffix}"),
-            MaxScalarRecord(name=f"{prefix}micro_precision{suffix}"),
-            MaxScalarRecord(name=f"{prefix}micro_recall{suffix}"),
-            MaxScalarRecord(name=f"{prefix}weighted_precision{suffix}"),
-            MaxScalarRecord(name=f"{prefix}weighted_recall{suffix}"),
-        ]
-        for beta in self._betas:
-            trackers.append(MaxScalarRecord(name=f"{prefix}macro_f{beta}_score{suffix}"))
-            trackers.append(MaxScalarRecord(name=f"{prefix}micro_f{beta}_score{suffix}"))
-            trackers.append(MaxScalarRecord(name=f"{prefix}weighted_f{beta}_score{suffix}"))
-        return tuple(trackers)
+        return self._tracker.get_records(betas=self._betas, prefix=prefix, suffix=suffix)
 
     def reset(self) -> None:
         self._tracker.reset()
@@ -189,6 +175,6 @@ class BinaryConfusionMatrix(BaseMetric):
             raise EmptyMetricError(msg)
 
         results = tracker.compute_all_metrics(betas=self._betas, prefix=prefix, suffix=suffix)
-        if self._track_count:
-            results[f"{prefix}count{suffix}"] = tracker.count
+        if not self._track_count:
+            del results[f"{prefix}count{suffix}"]
         return results
