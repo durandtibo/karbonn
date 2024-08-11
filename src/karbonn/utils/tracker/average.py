@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any
 from coola.utils import str_indent, str_mapping
 
 from karbonn.distributed.ddp import SUM, sync_reduce
+from karbonn.utils.tracker.base import BaseTracker
 from karbonn.utils.tracker.exception import EmptyTrackerError
 
 try:
@@ -20,7 +21,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
 
 
-class Average:
+class Average(BaseTracker):
     r"""Implement a tracker to track the average value of float number.
 
     Args:
@@ -67,8 +68,6 @@ class Average:
 
     @property
     def count(self) -> float:
-        r"""The number of examples in the tracker since the last
-        reset."""
         return self._count
 
     @property

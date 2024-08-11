@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Any
 
 import torch
 
+from karbonn.utils.tracker import BaseTracker
 from karbonn.utils.tracker.exception import EmptyTrackerError
 
 try:
@@ -49,6 +50,10 @@ class MovingAverage:
 
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}(window_size={self.window_size:,})"
+
+    @property
+    def count(self) -> float:
+        return len(self._deque)
 
     @property
     def values(self) -> tuple[float, ...]:
