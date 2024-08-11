@@ -36,7 +36,7 @@ class SquaredError(BaseStateMetric):
     SquaredError(
       (state): ErrorState(
           (tracker): ScalableTensorTracker(count=0, total=0.0, min_value=inf, max_value=-inf)
-          (track_num_predictions): True
+          (track_count): True
         )
     )
     >>> metric(torch.ones(2, 4), torch.ones(2, 4))
@@ -45,14 +45,14 @@ class SquaredError(BaseStateMetric):
      'min': 0.0,
      'max': 0.0,
      'sum': 0.0,
-     'num_predictions': 8}
+     'count': 8}
     >>> metric(torch.eye(2), torch.ones(2, 2))
     >>> metric.value()
     {'mean': 0.166666...,
      'min': 0.0,
      'max': 1.0,
      'sum': 2.0,
-     'num_predictions': 12}
+     'count': 12}
     >>> metric.reset()
     >>> metric(torch.eye(2), torch.ones(2, 2))
     >>> metric.value("sq_err_")
@@ -60,7 +60,7 @@ class SquaredError(BaseStateMetric):
      'sq_err_min': 0.0,
      'sq_err_max': 1.0,
      'sq_err_sum': 2.0,
-     'sq_err_num_predictions': 4}
+     'sq_err_count': 4}
 
     ```
     """
@@ -91,7 +91,7 @@ class SquaredError(BaseStateMetric):
          'min': 0.0,
          'max': 0.0,
          'sum': 0.0,
-         'num_predictions': 8}
+         'count': 8}
 
         ```
         """
@@ -116,19 +116,19 @@ class RootMeanSquaredError(SquaredError):
     RootMeanSquaredError(
       (state): RootMeanErrorState(
           (tracker): MeanTensorTracker(count=0, total=0.0)
-          (track_num_predictions): True
+          (track_count): True
         )
     )
     >>> metric(torch.ones(2, 4), torch.ones(2, 4))
     >>> metric.value()
-    {'mean': 0.0, 'num_predictions': 8}
+    {'mean': 0.0, 'count': 8}
     >>> metric(torch.eye(2), torch.ones(2, 2))
     >>> metric.value()
-    {'mean': 0.408248..., 'num_predictions': 12}
+    {'mean': 0.408248..., 'count': 12}
     >>> metric.reset()
     >>> metric(torch.eye(2), torch.ones(2, 2))
     >>> metric.value()
-    {'mean': 0.707106..., 'num_predictions': 4}
+    {'mean': 0.707106..., 'count': 4}
 
     ```
     """

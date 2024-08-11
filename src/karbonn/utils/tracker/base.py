@@ -1,32 +1,23 @@
-r"""Implement a tracker to track the average value of float number."""
+r"""Contain the base class to implement a tracker."""
 
 from __future__ import annotations
 
-__all__ = ["AverageTracker"]
+__all__ = ["BaseTracker"]
 
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any
 
-from coola.utils import str_indent, str_mapping
-
-from karbonn.distributed.ddp import SUM, sync_reduce
-from karbonn.utils.tracker.base import BaseTracker
-from karbonn.utils.tracker.exception import EmptyTrackerError
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 try:
     from typing import Self  # Introduced in python 3.11
 except ImportError:  # pragma: no cover
     from typing_extensions import Self
 
-if TYPE_CHECKING:
-    from collections.abc import Iterable
 
-
-class AverageTracker(BaseTracker):
-    r"""Implement a tracker to track the average value of float number.
-
-    Args:
-        total: The initial total value.
-        count: The initial count value.
+class BaseTracker(ABC):
+    r"""Define the base class to implement a tracker.
 
     Example usage:
 
@@ -47,91 +38,13 @@ class AverageTracker(BaseTracker):
     ```
     """
 
-    def __init__(self, total: float = 0.0, count: float = 0) -> None:
-        self._total = float(total)
-        self._count = float(count)
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__qualname__}(count={self._count:,}, total={self._total})"
-
-    def __str__(self) -> str:
-        stats = str_indent(
-            str_mapping(
-                {
-                    "average": self.average() if self.count else "N/A (empty)",
-                    "count": self.count,
-                    "total": self.total,
-                },
-            )
-        )
-        return f"{self.__class__.__qualname__}(\n  {stats}\n)"
-
     @property
-    def count(self) -> float:
-        return self._count
-
-    @property
-    def total(self) -> float:
-        r"""The total of the values added to the tracker since the last
+    @abstractmethod
+    def count(self) -> float | int:
+        r"""The number of examples in the tracker since the last
         reset."""
-        return self._total
 
-    def all_reduce(self) -> Self:
-        r"""Reduce the tracker values across all machines in such a way
-        that all get the final result.
-
-        The total value is reduced by summing all the sum values
-        (1 total value per distributed process).
-        The count value is reduced by summing all the count values
-        (1 count value per distributed process).
-
-        Returns:
-            The reduced tracker.
-
-        Example usage:
-
-        ```pycon
-
-        >>> from karbonn.utils.tracker import AverageTracker
-        >>> tracker = AverageTracker()
-        >>> tracker.update(6)
-        >>> reduced_meter = tracker.all_reduce()
-
-        ```
-        """
-        return self.__class__(
-            total=sync_reduce(self._total, SUM),
-            count=sync_reduce(self._count, SUM),
-        )
-
-    def average(self) -> float:
-        r"""Return the average value.
-
-        Returns:
-            The average value.
-
-        Raises:
-            EmptyStateError: if the tracker is empty.
-
-        Example usage:
-
-        ```pycon
-
-        >>> from karbonn.utils.tracker import AverageTracker
-        >>> tracker = AverageTracker()
-        >>> for i in range(11):
-        ...     tracker.update(i)
-        ...
-        >>> tracker.average()
-        5.0
-
-        ```
-        """
-        if not self._count:
-            msg = "The tracker is empty"
-            raise EmptyTrackerError(msg)
-        return self._total / self._count
-
+    @abstractmethod
     def clone(self) -> Self:
         r"""Return a copy of the current tracker.
 
@@ -158,8 +71,8 @@ class AverageTracker(BaseTracker):
 
         ```
         """
-        return self.__class__(total=self.total, count=self.count)
 
+    @abstractmethod
     def equal(self, other: Any) -> bool:
         r"""Indicate if two trackers are equal or not.
 
@@ -182,10 +95,8 @@ class AverageTracker(BaseTracker):
 
         ```
         """
-        if not isinstance(other, AverageTracker):
-            return False
-        return self.state_dict() == other.state_dict()
 
+    @abstractmethod
     def merge(self, trackers: Iterable[Self]) -> Self:
         r"""Merge several trackers with the current tracker and return a
         new tracker.
@@ -212,12 +123,8 @@ class AverageTracker(BaseTracker):
 
         ```
         """
-        count, total = self.count, self.total
-        for meter in trackers:
-            count += meter.count
-            total += meter.total
-        return self.__class__(total=total, count=count)
 
+    @abstractmethod
     def merge_(self, trackers: Iterable[Self]) -> None:
         r"""Merge several trackers into the current tracker.
 
@@ -242,10 +149,8 @@ class AverageTracker(BaseTracker):
 
         ```
         """
-        for meter in trackers:
-            self._count += meter.count
-            self._total += meter.total
 
+    @abstractmethod
     def load_state_dict(self, state_dict: dict[str, Any]) -> None:
         r"""Load a tracker to the history tracker.
 
@@ -266,9 +171,8 @@ class AverageTracker(BaseTracker):
 
         ```
         """
-        self._total = float(state_dict["total"])
-        self._count = float(state_dict["count"])
 
+    @abstractmethod
     def reset(self) -> None:
         r"""Reset the tracker.
 
@@ -287,9 +191,8 @@ class AverageTracker(BaseTracker):
 
         ```
         """
-        self._total = 0.0
-        self._count = 0.0
 
+    @abstractmethod
     def state_dict(self) -> dict[str, Any]:
         r"""Return a dictionary containing tracker values.
 
@@ -310,45 +213,17 @@ class AverageTracker(BaseTracker):
 
         ```
         """
-        return {"count": self._count, "total": self._total}
 
-    def sum(self) -> float:
-        r"""Return the sum value.
+    @abstractmethod
+    def update(self, *args: Any, **kwargs: Any) -> None:
+        r"""Update the tracker given new data.
 
-        Returns:
-            The sum value.
-
-        Raises:
-            EmptyStateError: if the tracker is empty.
-
-        Example usage:
-
-        ```pycon
-
-        >>> from karbonn.utils.tracker import AverageTracker
-        >>> tracker = AverageTracker()
-        >>> for i in range(11):
-        ...     tracker.update(i)
-        ...
-        >>> tracker.sum()
-        55.0
-
-        ```
-        """
-        if not self._count:
-            msg = "The tracker is empty"
-            raise EmptyTrackerError(msg)
-        return self._total
-
-    def update(self, value: float, num_examples: float = 1) -> None:
-        r"""Update the tracker given a new value and the number of
-        examples.
+        The exact signature for this method depends on each metric
+        state implementation.
 
         Args:
-            value: The value to add to the tracker.
-            num_examples: The number of examples. This argument is
-                mainly used to deal with mini-batches of different
-                sizes.
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
 
         Example usage:
 
@@ -364,6 +239,3 @@ class AverageTracker(BaseTracker):
 
         ```
         """
-        num_examples = float(num_examples)
-        self._total += float(value) * num_examples
-        self._count += num_examples

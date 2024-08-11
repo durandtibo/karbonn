@@ -41,7 +41,7 @@ class LogCoshError(BaseStateMetric):
       (scale): 1.0
       (state): ErrorState(
           (tracker): ScalableTensorTracker(count=0, total=0.0, min_value=inf, max_value=-inf)
-          (track_num_predictions): True
+          (track_count): True
         )
     )
     >>> metric(torch.ones(2, 4), torch.ones(2, 4))
@@ -50,14 +50,14 @@ class LogCoshError(BaseStateMetric):
      'min': 0.0,
      'max': 0.0,
      'sum': 0.0,
-     'num_predictions': 8}
+     'count': 8}
     >>> metric(torch.eye(2), torch.ones(2, 2))
     >>> metric.value()
     {'mean': 0.072296...,
      'min': 0.0,
      'max': 0.433780...,
      'sum': 0.867561...,
-     'num_predictions': 12}
+     'count': 12}
     >>> metric.reset()
     >>> metric(torch.eye(2), torch.ones(2, 2))
     >>> metric.value("log_cosh_err_")
@@ -65,7 +65,7 @@ class LogCoshError(BaseStateMetric):
      'log_cosh_err_min': 0.0,
      'log_cosh_err_max': 0.433780...,
      'log_cosh_err_sum': 0.867561...,
-     'log_cosh_err_num_predictions': 4}
+     'log_cosh_err_count': 4}
 
     ```
     """
@@ -106,7 +106,7 @@ class LogCoshError(BaseStateMetric):
          'min': 0.0,
          'max': 0.0,
          'sum': 0.0,
-         'num_predictions': 8}
+         'count': 8}
 
         ```
         """

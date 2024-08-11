@@ -71,8 +71,8 @@ def test_error_state_equal_false_different_tracker() -> None:
     ).equal(ErrorState())
 
 
-def test_error_state_equal_false_different_track_num_predictions() -> None:
-    assert not ErrorState().equal(ErrorState(track_num_predictions=False))
+def test_error_state_equal_false_different_track_count() -> None:
+    assert not ErrorState().equal(ErrorState(track_count=False))
 
 
 def test_error_state_equal_false_different_type() -> None:
@@ -108,9 +108,9 @@ def test_error_state_get_records_prefix_suffix(prefix: str, suffix: str) -> None
 def test_error_state_reset() -> None:
     state = ErrorState()
     state.update(torch.arange(6))
-    assert state.num_predictions == 6
+    assert state.count == 6
     state.reset()
-    assert state.num_predictions == 0
+    assert state.count == 0
 
 
 def test_error_state_update_1d() -> None:
@@ -139,13 +139,13 @@ def test_error_state_value() -> None:
             "min": 0.0,
             "max": 5.0,
             "sum": 15.0,
-            "num_predictions": 6,
+            "count": 6,
         },
     )
 
 
-def test_error_state_value_num_predictions_false() -> None:
-    state = ErrorState(track_num_predictions=False)
+def test_error_state_value_count_false() -> None:
+    state = ErrorState(track_count=False)
     state.update(torch.arange(6))
     assert objects_are_equal(state.value(), {"mean": 2.5, "min": 0.0, "max": 5.0, "sum": 15.0})
 
@@ -162,7 +162,7 @@ def test_error_state_value_prefix_suffix(prefix: str, suffix: str) -> None:
             f"{prefix}min{suffix}": 0.0,
             f"{prefix}max{suffix}": 5.0,
             f"{prefix}sum{suffix}": 15.0,
-            f"{prefix}num_predictions{suffix}": 6,
+            f"{prefix}count{suffix}": 6,
         },
     )
 
@@ -231,8 +231,8 @@ def test_extended_error_state_equal_false_different_tracker() -> None:
     )
 
 
-def test_extended_error_state_equal_false_different_track_num_predictions() -> None:
-    assert not ExtendedErrorState().equal(ExtendedErrorState(track_num_predictions=False))
+def test_extended_error_state_equal_false_different_track_count() -> None:
+    assert not ExtendedErrorState().equal(ExtendedErrorState(track_count=False))
 
 
 def test_extended_error_state_equal_false_different_type() -> None:
@@ -270,21 +270,21 @@ def test_extended_error_state_get_records_quantiles() -> None:
 def test_extended_error_state_reset() -> None:
     state = ExtendedErrorState()
     state.update(torch.arange(6))
-    assert state.num_predictions == 6
+    assert state.count == 6
     state.reset()
-    assert state.num_predictions == 0
+    assert state.count == 0
 
 
 def test_extended_error_state_update_1d() -> None:
     state = ExtendedErrorState()
     state.update(torch.arange(6))
-    assert state.num_predictions == 6
+    assert state.count == 6
 
 
 def test_extended_error_state_update_2d() -> None:
     state = ExtendedErrorState()
     state.update(torch.arange(6).view(2, 3))
-    assert state.num_predictions == 6
+    assert state.count == 6
 
 
 def test_extended_error_state_value_no_quantiles() -> None:
@@ -299,7 +299,7 @@ def test_extended_error_state_value_no_quantiles() -> None:
             "max": 5,
             "sum": 15,
             "std": 1.8708287477493286,
-            "num_predictions": 6,
+            "count": 6,
         },
     )
 
@@ -318,13 +318,13 @@ def test_extended_error_state_value_with_quantiles() -> None:
             "std": 3.316624879837036,
             "quantile_0.5": 5.0,
             "quantile_0.9": 9.0,
-            "num_predictions": 11,
+            "count": 11,
         },
     )
 
 
-def test_extended_error_state_value_track_num_predictions_false() -> None:
-    state = ExtendedErrorState(track_num_predictions=False)
+def test_extended_error_state_value_track_count_false() -> None:
+    state = ExtendedErrorState(track_count=False)
     state.update(torch.arange(6))
     assert objects_are_allclose(
         state.value(),
@@ -355,7 +355,7 @@ def test_extended_error_state_value_prefix_suffix(prefix: str, suffix: str) -> N
             f"{prefix}std{suffix}": 3.316624879837036,
             f"{prefix}quantile_0.5{suffix}": 5.0,
             f"{prefix}quantile_0.9{suffix}": 9.0,
-            f"{prefix}num_predictions{suffix}": 11,
+            f"{prefix}count{suffix}": 11,
         },
     )
 
@@ -411,8 +411,8 @@ def test_mean_error_state_equal_false_different_tracker() -> None:
     assert not MeanErrorState(MeanTensorTracker(count=4, total=10.0)).equal(MeanErrorState())
 
 
-def test_mean_error_state_equal_false_different_track_num_predictions() -> None:
-    assert not MeanErrorState().equal(MeanErrorState(track_num_predictions=False))
+def test_mean_error_state_equal_false_different_track_count() -> None:
+    assert not MeanErrorState().equal(MeanErrorState(track_count=False))
 
 
 def test_mean_error_state_equal_false_different_type() -> None:
@@ -438,9 +438,9 @@ def test_mean_error_state_get_records_prefix_suffix(prefix: str, suffix: str) ->
 def test_mean_error_state_reset() -> None:
     state = MeanErrorState()
     state.update(torch.arange(6))
-    assert state.num_predictions == 6
+    assert state.count == 6
     state.reset()
-    assert state.num_predictions == 0
+    assert state.count == 0
 
 
 def test_mean_error_state_update_1d() -> None:
@@ -458,17 +458,17 @@ def test_mean_error_state_update_2d() -> None:
 def test_mean_error_state_value() -> None:
     state = MeanErrorState()
     state.update(torch.arange(6))
-    assert objects_are_equal(state.value(), {"mean": 2.5, "num_predictions": 6})
+    assert objects_are_equal(state.value(), {"mean": 2.5, "count": 6})
 
 
 def test_mean_error_state_value_correct() -> None:
     state = MeanErrorState()
     state.update(torch.zeros(4))
-    assert objects_are_equal(state.value(), {"mean": 0.0, "num_predictions": 4})
+    assert objects_are_equal(state.value(), {"mean": 0.0, "count": 4})
 
 
-def test_mean_error_state_value_track_num_predictions_false() -> None:
-    state = MeanErrorState(track_num_predictions=False)
+def test_mean_error_state_value_track_count_false() -> None:
+    state = MeanErrorState(track_count=False)
     state.update(torch.arange(6))
     assert objects_are_equal(state.value(), {"mean": 2.5})
 
@@ -482,7 +482,7 @@ def test_mean_error_state_value_prefix_suffix(prefix: str, suffix: str) -> None:
         state.value(prefix, suffix),
         {
             f"{prefix}mean{suffix}": 2.5,
-            f"{prefix}num_predictions{suffix}": 6,
+            f"{prefix}count{suffix}": 6,
         },
     )
 
@@ -540,8 +540,8 @@ def test_root_mean_error_state_equal_false_different_tracker() -> None:
     )
 
 
-def test_root_mean_error_state_equal_false_different_track_num_predictions() -> None:
-    assert not RootMeanErrorState().equal(RootMeanErrorState(track_num_predictions=False))
+def test_root_mean_error_state_equal_false_different_track_count() -> None:
+    assert not RootMeanErrorState().equal(RootMeanErrorState(track_count=False))
 
 
 def test_root_mean_error_state_equal_false_different_type() -> None:
@@ -567,9 +567,9 @@ def test_root_mean_error_state_get_records_prefix_suffix(prefix: str, suffix: st
 def test_root_mean_error_state_reset() -> None:
     state = RootMeanErrorState()
     state.update(torch.arange(6))
-    assert state.num_predictions == 6
+    assert state.count == 6
     state.reset()
-    assert state.num_predictions == 0
+    assert state.count == 0
 
 
 def test_root_mean_error_state_update_1d() -> None:
@@ -587,17 +587,17 @@ def test_root_mean_error_state_update_2d() -> None:
 def test_root_mean_error_state_value() -> None:
     state = RootMeanErrorState()
     state.update(torch.tensor([1, 9, 2, 7, 3, 2]))
-    assert objects_are_equal(state.value(), {"mean": 2.0, "num_predictions": 6})
+    assert objects_are_equal(state.value(), {"mean": 2.0, "count": 6})
 
 
 def test_root_mean_error_state_value_correct() -> None:
     state = RootMeanErrorState()
     state.update(torch.zeros(4))
-    assert objects_are_equal(state.value(), {"mean": 0.0, "num_predictions": 4})
+    assert objects_are_equal(state.value(), {"mean": 0.0, "count": 4})
 
 
-def test_root_mean_error_state_value_track_num_predictions_false() -> None:
-    state = RootMeanErrorState(track_num_predictions=False)
+def test_root_mean_error_state_value_track_count_false() -> None:
+    state = RootMeanErrorState(track_count=False)
     state.update(torch.tensor([1, 9, 2, 7, 3, 2]))
     assert objects_are_equal(state.value(), {"mean": 2.0})
 
@@ -611,7 +611,7 @@ def test_root_mean_error_state_value_prefix_suffix(prefix: str, suffix: str) -> 
         state.value(prefix, suffix),
         {
             f"{prefix}mean{suffix}": 2.0,
-            f"{prefix}num_predictions{suffix}": 6,
+            f"{prefix}count{suffix}": 6,
         },
     )
 
@@ -684,9 +684,9 @@ def test_normalized_mean_squared_error_state_equal_false_different_targets() -> 
     ).equal(NormalizedMeanSquaredErrorState())
 
 
-def test_normalized_mean_squared_error_state_equal_false_different_track_num_predictions() -> None:
+def test_normalized_mean_squared_error_state_equal_false_different_track_count() -> None:
     assert not NormalizedMeanSquaredErrorState().equal(
-        NormalizedMeanSquaredErrorState(track_num_predictions=False)
+        NormalizedMeanSquaredErrorState(track_count=False)
     )
 
 
@@ -715,9 +715,9 @@ def test_normalized_mean_squared_error_state_get_records_prefix_suffix(
 def test_normalized_mean_squared_error_state_reset() -> None:
     state = NormalizedMeanSquaredErrorState()
     state.update(torch.arange(6), torch.arange(6))
-    assert state.num_predictions == 6
+    assert state.count == 6
     state.reset()
-    assert state.num_predictions == 0
+    assert state.count == 0
 
 
 def test_normalized_mean_squared_error_state_update_1d() -> None:
@@ -737,17 +737,17 @@ def test_normalized_mean_squared_error_state_update_2d() -> None:
 def test_normalized_mean_squared_error_state_value() -> None:
     state = NormalizedMeanSquaredErrorState()
     state.update(torch.tensor([1, 9, 2, 7, 3, 2]), torch.tensor([1, 2, 3, 4, 5, 6]))
-    assert objects_are_allclose(state.value(), {"mean": 1.6263736486434937, "num_predictions": 6})
+    assert objects_are_allclose(state.value(), {"mean": 1.6263736486434937, "count": 6})
 
 
 def test_normalized_mean_squared_error_state_value_correct() -> None:
     state = NormalizedMeanSquaredErrorState()
     state.update(torch.zeros(4), torch.ones(4))
-    assert objects_are_equal(state.value(), {"mean": 0.0, "num_predictions": 4})
+    assert objects_are_equal(state.value(), {"mean": 0.0, "count": 4})
 
 
-def test_normalized_mean_squared_error_state_value_track_num_predictions_false() -> None:
-    state = NormalizedMeanSquaredErrorState(track_num_predictions=False)
+def test_normalized_mean_squared_error_state_value_track_count_false() -> None:
+    state = NormalizedMeanSquaredErrorState(track_count=False)
     state.update(torch.zeros(4), torch.ones(4))
     assert objects_are_equal(state.value(), {"mean": 0.0})
 
@@ -761,7 +761,7 @@ def test_normalized_mean_squared_error_state_value_prefix_suffix(prefix: str, su
         state.value(prefix, suffix),
         {
             f"{prefix}mean{suffix}": 0.0,
-            f"{prefix}num_predictions{suffix}": 4,
+            f"{prefix}count{suffix}": 4,
         },
     )
 

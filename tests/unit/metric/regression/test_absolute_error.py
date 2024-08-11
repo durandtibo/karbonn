@@ -52,7 +52,7 @@ def test_absolute_error_forward_correct(
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": batch_size * feature_size,
+            "count": batch_size * feature_size,
         },
     )
 
@@ -78,7 +78,7 @@ def test_absolute_error_forward_incorrect(
             "max": 1.0,
             "min": 1.0,
             "sum": float(batch_size * feature_size),
-            "num_predictions": batch_size * feature_size,
+            "count": batch_size * feature_size,
         },
     )
 
@@ -97,7 +97,7 @@ def test_absolute_error_forward_1d(device: str, mode: bool) -> None:
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": 2,
+            "count": 2,
         },
     )
 
@@ -116,7 +116,7 @@ def test_absolute_error_forward_2d(device: str, mode: bool) -> None:
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": 6,
+            "count": 6,
         },
     )
 
@@ -135,7 +135,7 @@ def test_absolute_error_forward_3d(device: str, mode: bool) -> None:
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": 24,
+            "count": 24,
         },
     )
 
@@ -164,7 +164,7 @@ def test_absolute_error_forward_dtype(
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": 6,
+            "count": 6,
         },
     )
 
@@ -180,7 +180,7 @@ def test_absolute_error_forward_state_mean(device: str, mode: bool) -> None:
         metric.value(),
         {
             "mean": 0.0,
-            "num_predictions": 6,
+            "count": 6,
         },
     )
 
@@ -200,7 +200,7 @@ def test_absolute_error_forward_multiple_batches(device: str, mode: bool) -> Non
             "max": 1.0,
             "min": 0.0,
             "sum": 2.0,
-            "num_predictions": 8,
+            "count": 8,
         },
     )
 
@@ -221,7 +221,7 @@ def test_absolute_error_forward_multiple_batches_with_reset(device: str, mode: b
             "max": 1.0,
             "min": 0.0,
             "sum": 2.0,
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -245,7 +245,7 @@ def test_absolute_error_value_prefix_suffix(device: str, prefix: str, suffix: st
             f"{prefix}max{suffix}": 0.0,
             f"{prefix}min{suffix}": 0.0,
             f"{prefix}sum{suffix}": 0.0,
-            f"{prefix}num_predictions{suffix}": 2,
+            f"{prefix}count{suffix}": 2,
         },
     )
 

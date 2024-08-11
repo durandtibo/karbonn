@@ -54,8 +54,8 @@ def test_accuracy_state_equal_false_different_tracker() -> None:
     assert not AccuracyState(MeanTensorTracker(count=4, total=10.0)).equal(AccuracyState())
 
 
-def test_accuracy_state_equal_false_different_track_num_predictions() -> None:
-    assert not AccuracyState().equal(AccuracyState(track_num_predictions=False))
+def test_accuracy_state_equal_false_different_track_count() -> None:
+    assert not AccuracyState().equal(AccuracyState(track_count=False))
 
 
 def test_accuracy_state_equal_false_different_type() -> None:
@@ -81,9 +81,9 @@ def test_accuracy_state_get_records_prefix_suffix(prefix: str, suffix: str) -> N
 def test_accuracy_state_reset() -> None:
     state = AccuracyState()
     state.update(torch.eye(2))
-    assert state.num_predictions == 4
+    assert state.count == 4
     state.reset()
-    assert state.num_predictions == 0
+    assert state.count == 0
 
 
 def test_accuracy_state_update_1d() -> None:
@@ -101,23 +101,23 @@ def test_accuracy_state_update_2d() -> None:
 def test_accuracy_state_value_correct() -> None:
     state = AccuracyState()
     state.update(torch.ones(4))
-    assert objects_are_equal(state.value(), {"accuracy": 1.0, "num_predictions": 4})
+    assert objects_are_equal(state.value(), {"accuracy": 1.0, "count": 4})
 
 
 def test_accuracy_state_value_partially_correct() -> None:
     state = AccuracyState()
     state.update(torch.eye(2))
-    assert objects_are_equal(state.value(), {"accuracy": 0.5, "num_predictions": 4})
+    assert objects_are_equal(state.value(), {"accuracy": 0.5, "count": 4})
 
 
 def test_accuracy_state_value_incorrect() -> None:
     state = AccuracyState()
     state.update(torch.zeros(4))
-    assert objects_are_equal(state.value(), {"accuracy": 0.0, "num_predictions": 4})
+    assert objects_are_equal(state.value(), {"accuracy": 0.0, "count": 4})
 
 
-def test_accuracy_state_value_track_num_predictions_false() -> None:
-    state = AccuracyState(track_num_predictions=False)
+def test_accuracy_state_value_track_count_false() -> None:
+    state = AccuracyState(track_count=False)
     state.update(torch.eye(2))
     assert objects_are_equal(state.value(), {"accuracy": 0.5})
 
@@ -131,7 +131,7 @@ def test_accuracy_state_value_prefix_suffix(prefix: str, suffix: str) -> None:
         state.value(prefix, suffix),
         {
             f"{prefix}accuracy{suffix}": 0.5,
-            f"{prefix}num_predictions{suffix}": 4,
+            f"{prefix}count{suffix}": 4,
         },
     )
 
@@ -189,8 +189,8 @@ def test_extended_accuracy_state_equal_false_different_tracker() -> None:
     )
 
 
-def test_extended_accuracy_state_equal_false_different_track_num_predictions() -> None:
-    assert not ExtendedAccuracyState().equal(ExtendedAccuracyState(track_num_predictions=False))
+def test_extended_accuracy_state_equal_false_different_track_count() -> None:
+    assert not ExtendedAccuracyState().equal(ExtendedAccuracyState(track_count=False))
 
 
 def test_extended_accuracy_state_equal_false_different_type() -> None:
@@ -203,8 +203,8 @@ def test_extended_accuracy_state_get_records() -> None:
         (
             MaxScalarRecord(name="accuracy"),
             MinScalarRecord(name="error"),
-            MaxScalarRecord(name="num_correct_predictions"),
-            MinScalarRecord(name="num_incorrect_predictions"),
+            MaxScalarRecord(name="count_correct"),
+            MinScalarRecord(name="count_incorrect"),
         ),
     )
 
@@ -217,8 +217,8 @@ def test_extended_accuracy_state_get_records_prefix_suffix(prefix: str, suffix: 
         (
             MaxScalarRecord(name=f"{prefix}accuracy{suffix}"),
             MinScalarRecord(name=f"{prefix}error{suffix}"),
-            MaxScalarRecord(name=f"{prefix}num_correct_predictions{suffix}"),
-            MinScalarRecord(name=f"{prefix}num_incorrect_predictions{suffix}"),
+            MaxScalarRecord(name=f"{prefix}count_correct{suffix}"),
+            MinScalarRecord(name=f"{prefix}count_incorrect{suffix}"),
         ),
     )
 
@@ -226,9 +226,9 @@ def test_extended_accuracy_state_get_records_prefix_suffix(prefix: str, suffix: 
 def test_extended_accuracy_state_reset() -> None:
     state = ExtendedAccuracyState()
     state.update(torch.eye(2))
-    assert state.num_predictions == 4
+    assert state.count == 4
     state.reset()
-    assert state.num_predictions == 0
+    assert state.count == 0
 
 
 def test_extended_accuracy_state_update_1d() -> None:
@@ -251,9 +251,9 @@ def test_extended_accuracy_state_value_correct() -> None:
         {
             "accuracy": 1.0,
             "error": 0.0,
-            "num_correct_predictions": 6,
-            "num_incorrect_predictions": 0,
-            "num_predictions": 6,
+            "count_correct": 6,
+            "count_incorrect": 0,
+            "count": 6,
         },
     )
 
@@ -266,9 +266,9 @@ def test_extended_accuracy_state_value_partially_correct() -> None:
         {
             "accuracy": 0.5,
             "error": 0.5,
-            "num_correct_predictions": 2,
-            "num_incorrect_predictions": 2,
-            "num_predictions": 4,
+            "count_correct": 2,
+            "count_incorrect": 2,
+            "count": 4,
         },
     )
 
@@ -281,9 +281,9 @@ def test_extended_accuracy_state_value_incorrect() -> None:
         {
             "accuracy": 0.0,
             "error": 1.0,
-            "num_correct_predictions": 0,
-            "num_incorrect_predictions": 6,
-            "num_predictions": 6,
+            "count_correct": 0,
+            "count_incorrect": 6,
+            "count": 6,
         },
     )
 
@@ -298,15 +298,15 @@ def test_extended_accuracy_state_value_prefix_suffix(prefix: str, suffix: str) -
         {
             f"{prefix}accuracy{suffix}": 0.5,
             f"{prefix}error{suffix}": 0.5,
-            f"{prefix}num_correct_predictions{suffix}": 2,
-            f"{prefix}num_incorrect_predictions{suffix}": 2,
-            f"{prefix}num_predictions{suffix}": 4,
+            f"{prefix}count_correct{suffix}": 2,
+            f"{prefix}count_incorrect{suffix}": 2,
+            f"{prefix}count{suffix}": 4,
         },
     )
 
 
-def test_extended_accuracy_state_value_track_num_predictions_false() -> None:
-    state = ExtendedAccuracyState(track_num_predictions=False)
+def test_extended_accuracy_state_value_track_count_false() -> None:
+    state = ExtendedAccuracyState(track_count=False)
     state.update(torch.eye(2))
     assert objects_are_equal(state.value(), {"accuracy": 0.5, "error": 0.5})
 

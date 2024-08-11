@@ -73,7 +73,7 @@ def test_log_cosh_error_forward_correct(
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": batch_size * feature_size,
+            "count": batch_size * feature_size,
         },
     )
 
@@ -99,7 +99,7 @@ def test_log_cosh_error_forward_incorrect(
             "max": 0.4337808304830271,
             "min": 0.4337808304830271,
             "sum": 0.4337808304830271 * batch_size * feature_size,
-            "num_predictions": batch_size * feature_size,
+            "count": batch_size * feature_size,
         },
     )
 
@@ -118,7 +118,7 @@ def test_log_cosh_error_forward_partially_correct(device: str, mode: bool) -> No
             "max": 0.4337808304830271,
             "min": 0.0,
             "sum": 0.8675616609660542,
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -137,7 +137,7 @@ def test_log_cosh_error_forward_1d(device: str, mode: bool) -> None:
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": 2,
+            "count": 2,
         },
     )
 
@@ -156,7 +156,7 @@ def test_log_cosh_error_forward_2d(device: str, mode: bool) -> None:
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": 6,
+            "count": 6,
         },
     )
 
@@ -175,7 +175,7 @@ def test_log_cosh_error_forward_3d(device: str, mode: bool) -> None:
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": 24,
+            "count": 24,
         },
     )
 
@@ -194,7 +194,7 @@ def test_log_cosh_error_forward_scale_2(device: str, mode: bool) -> None:
             "max": 0.12011450695827745,
             "min": 0.0,
             "sum": 0.2402290139165549,
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -223,7 +223,7 @@ def test_log_cosh_error_forward_dtypes(
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -244,7 +244,7 @@ def test_log_cosh_error_forward_state(device: str, mode: bool) -> None:
             "sum": 0.0,
             "std": 0.0,
             "median": 0.0,
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -264,7 +264,7 @@ def test_log_cosh_error_forward_multiple_batches(device: str, mode: bool) -> Non
             "max": 0.4337808304830271,
             "min": 0.0,
             "sum": 0.8675616609660542,
-            "num_predictions": 8,
+            "count": 8,
         },
     )
 
@@ -285,7 +285,7 @@ def test_log_cosh_error_forward_multiple_batches_with_reset(device: str, mode: b
             "max": 0.4337808304830271,
             "min": 0.0,
             "sum": 0.8675616609660542,
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -309,7 +309,7 @@ def test_log_cosh_error_value_prefix_suffix(device: str, prefix: str, suffix: st
             f"{prefix}max{suffix}": 0.0,
             f"{prefix}min{suffix}": 0.0,
             f"{prefix}sum{suffix}": 0.0,
-            f"{prefix}num_predictions{suffix}": 2,
+            f"{prefix}count{suffix}": 2,
         },
     )
 

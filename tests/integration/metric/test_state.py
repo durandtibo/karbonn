@@ -48,7 +48,7 @@ def check_accuracy_state(local_rank: int) -> None:
     state.update(
         torch.tensor([0, 1, 1, 0, 0, 0]) if local_rank == 0 else torch.tensor([0, 0, 1, 0])
     )
-    assert objects_are_equal(state.value(), {"accuracy": 0.3, "num_predictions": 10})
+    assert objects_are_equal(state.value(), {"accuracy": 0.3, "count": 10})
 
 
 ###########################################
@@ -73,9 +73,9 @@ def check_extended_accuracy_state(local_rank: int) -> None:
         {
             "accuracy": 0.3,
             "error": 0.7,
-            "num_correct_predictions": 3,
-            "num_incorrect_predictions": 7,
-            "num_predictions": 10,
+            "count_correct": 3,
+            "count_incorrect": 7,
+            "count": 10,
         },
     )
 
@@ -106,7 +106,7 @@ def check_error_state(local_rank: int) -> None:
             "min": 0.0,
             "max": 3.0,
             "sum": 10.0,
-            "num_predictions": 10,
+            "count": 10,
         },
     )
 
@@ -139,7 +139,7 @@ def check_extended_error_state(local_rank: int) -> None:
             "max": 5.0,
             "sum": 10.0,
             "std": 1.632993221282959,
-            "num_predictions": 10,
+            "count": 10,
         },
     )
 
@@ -163,7 +163,7 @@ def check_mean_error_state(local_rank: int) -> None:
         if local_rank == 0
         else torch.tensor([0.0, 5.0, 0.0, 0.0])
     )
-    assert objects_are_equal(state.value(), {"mean": 1.0, "num_predictions": 10})
+    assert objects_are_equal(state.value(), {"mean": 1.0, "count": 10})
 
 
 ########################################
@@ -185,7 +185,7 @@ def check_root_mean_error_state(local_rank: int) -> None:
         if local_rank == 0
         else torch.tensor([0.0, 40.0, 0.0, 0.0])
     )
-    assert objects_are_equal(state.value(), {"mean": 4.0, "num_predictions": 10})
+    assert objects_are_equal(state.value(), {"mean": 4.0, "count": 10})
 
 
 #####################################################
@@ -212,7 +212,7 @@ def check_normalized_mean_squared_error_state(local_rank: int) -> None:
             torch.tensor([0.0, 2.0, 4.0, 0.0]),
             torch.full(size=(4,), fill_value=2.0),
         )
-    assert objects_are_equal(state.value(), {"mean": 1.0, "num_predictions": 10})
+    assert objects_are_equal(state.value(), {"mean": 1.0, "count": 10})
 
 
 CHECKS = [

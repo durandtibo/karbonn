@@ -4,9 +4,9 @@ labels."""
 from __future__ import annotations
 
 __all__ = [
-    "BaseConfusionMatrix",
-    "BinaryConfusionMatrix",
-    "MulticlassConfusionMatrix",
+    "BaseConfusionMatrixTracker",
+    "BinaryConfusionMatrixTracker",
+    "MulticlassConfusionMatrixTracker",
     "str_binary_confusion_matrix",
 ]
 
@@ -28,7 +28,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
 
 
-class BaseConfusionMatrix:
+class BaseConfusionMatrixTracker:
     r"""Define the base class to implement confusion matrix.
 
     Args:
@@ -41,19 +41,39 @@ class BaseConfusionMatrix:
     def __init__(self, matrix: Tensor) -> None:
         check_confusion_matrix(matrix)
         self._matrix = matrix
-        self._num_predictions = self._compute_num_predictions()
+        self._count = self._compute_count()
 
     def __repr__(self) -> str:
         return (
-            f"{self.__class__.__qualname__}(num_predictions={self.num_predictions:,}, "
+            f"{self.__class__.__qualname__}(count={self.count:,}, "
             f"shape={self._matrix.shape}, dtype={self._matrix.dtype})"
         )
 
     def __str__(self) -> str:
         return (
             f"{self.__class__.__qualname__}(num_classes={self.num_classes:,}, "
-            f"num_predictions={self.num_predictions:,})"
+            f"count={self.count:,})"
         )
+
+    @property
+    def count(self) -> int:
+        r"""The number of examples in the tracker since the last reset.
+
+        Example usage:
+
+        ```pycon
+
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
+        ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
+        ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
+        ... )
+        >>> confmat.count
+        6
+
+        ```
+        """
+        return self._count
 
     @property
     def matrix(self) -> Tensor:
@@ -64,8 +84,8 @@ class BaseConfusionMatrix:
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -85,8 +105,8 @@ class BaseConfusionMatrix:
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -96,26 +116,6 @@ class BaseConfusionMatrix:
         ```
         """
         return self._matrix.shape[0]
-
-    @property
-    def num_predictions(self) -> int:
-        r"""Get the number of predictions.
-
-        Example usage:
-
-        ```pycon
-
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
-        ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
-        ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
-        ... )
-        >>> confmat.num_predictions
-        6
-
-        ```
-        """
-        return self._num_predictions
 
     def all_reduce(self) -> Self:
         r"""Reduce the values across all machines in such a way that all
@@ -128,8 +128,8 @@ class BaseConfusionMatrix:
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -162,8 +162,8 @@ class BaseConfusionMatrix:
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -201,21 +201,21 @@ class BaseConfusionMatrix:
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
-        >>> confmat.num_predictions
+        >>> confmat.count
         6
         >>> confmat.reset()
-        >>> confmat.num_predictions
+        >>> confmat.count
         0
 
         ```
         """
         self._matrix.zero_()
-        self._num_predictions = 0
+        self._count = 0
 
     def update(self, prediction: Tensor, target: Tensor) -> None:
         r"""Update the confusion matrix with new predictions.
@@ -230,8 +230,8 @@ class BaseConfusionMatrix:
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix()
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker()
         >>> confmat.update(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
@@ -244,7 +244,7 @@ class BaseConfusionMatrix:
         ┣━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━┫
         ┃ actual positive (1) ┃ [FN]  1                ┃ [TP]  3                ┃
         ┗━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┛
-        num_predictions=6
+        count=6
 
         ```
         """
@@ -256,13 +256,13 @@ class BaseConfusionMatrix:
             .reshape(self.num_classes, self.num_classes)
             .to(device=self._matrix.device)
         )
-        self._num_predictions = self._compute_num_predictions()
+        self._count = self._compute_count()
 
-    def _compute_num_predictions(self) -> int:
+    def _compute_count(self) -> int:
         return self._matrix.sum().item()
 
 
-class BinaryConfusionMatrix(BaseConfusionMatrix):
+class BinaryConfusionMatrixTracker(BaseConfusionMatrixTracker):
     r"""Implement a confusion matrix for binary labels.
 
     Args:
@@ -279,8 +279,8 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
     ```pycon
 
-    >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-    >>> confmat = BinaryConfusionMatrix()
+    >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+    >>> confmat = BinaryConfusionMatrixTracker()
     >>> confmat
     ┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
     ┃                     ┃ predicted negative (0) ┃ predicted positive (1) ┃
@@ -289,7 +289,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
     ┣━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━┫
     ┃ actual positive (1) ┃ [FN]  0                ┃ [TP]  0                ┃
     ┗━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┛
-    num_predictions=0
+    count=0
     >>> confmat.update(
     ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
     ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
@@ -302,11 +302,11 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
     ┣━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━┫
     ┃ actual positive (1) ┃ [FN]  1                ┃ [TP]  3                ┃
     ┗━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┛
-    num_predictions=6
+    count=6
     >>> confmat.matrix
     tensor([[2, 0],
             [1, 3]])
-    >>> confmat.num_predictions
+    >>> confmat.count
     6
     >>> confmat.num_classes
     2
@@ -326,7 +326,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         return "\n".join(
             [
                 str_binary_confusion_matrix(self._matrix),
-                f"num_predictions={self.num_predictions:,}",
+                f"count={self.count:,}",
             ]
         )
 
@@ -340,8 +340,8 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -357,7 +357,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         ┣━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━┫
         ┃ actual positive (1) ┃ [FN]  1                ┃ [TP]  6                ┃
         ┗━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┛
-        num_predictions=12
+        count=12
         >>> confmat_cloned
         ┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
         ┃                     ┃ predicted negative (0) ┃ predicted positive (1) ┃
@@ -366,7 +366,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         ┣━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━┫
         ┃ actual positive (1) ┃ [FN]  1                ┃ [TP]  3                ┃
         ┗━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┛
-        num_predictions=6
+        count=6
 
         ```
         """
@@ -386,12 +386,12 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
-        >>> confmat2 = BinaryConfusionMatrix.from_predictions(
+        >>> confmat2 = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([1, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([0, 1, 1, 0, 0, 1]),
         ... )
@@ -400,7 +400,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if not isinstance(other, BinaryConfusionMatrix):
+        if not isinstance(other, BinaryConfusionMatrixTracker):
             return False
         return self.matrix.equal(other.matrix)
 
@@ -419,8 +419,8 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -432,7 +432,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         ┣━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━┫
         ┃ actual positive (1) ┃ [FN]  1                ┃ [TP]  3                ┃
         ┗━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┛
-        num_predictions=6
+        count=6
 
         ```
         """
@@ -468,12 +468,12 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat1 = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat1 = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
-        >>> confmat2 = BinaryConfusionMatrix.from_predictions(
+        >>> confmat2 = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([1, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([0, 1, 1, 0, 0, 1]),
         ... )
@@ -486,7 +486,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         ┣━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━┫
         ┃ actual positive (1) ┃ [FN]  1                ┃ [TP]  6                ┃
         ┗━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┛
-        num_predictions=12
+        count=12
 
         ```
         """
@@ -505,12 +505,12 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
-        >>> confmat2 = BinaryConfusionMatrix.from_predictions(
+        >>> confmat2 = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([1, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([0, 1, 1, 0, 0, 1]),
         ... )
@@ -523,13 +523,13 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         ┣━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━┫
         ┃ actual positive (1) ┃ [FN]  1                ┃ [TP]  6                ┃
         ┗━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┛
-        num_predictions=12
+        count=12
 
         ```
         """
         check_op_compatibility_binary(self, other, "add")
         self.matrix.add_(other.matrix)
-        self._num_predictions = self._compute_num_predictions()
+        self._count = self._compute_count()
 
     def merge(self, matrices: Iterable[Self]) -> Self:
         r"""Merge several matrices with the current matrix and returns a
@@ -545,16 +545,16 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
-        >>> confmat1 = BinaryConfusionMatrix.from_predictions(
+        >>> confmat1 = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
-        >>> confmat2 = BinaryConfusionMatrix.from_predictions(
+        >>> confmat2 = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([1, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([0, 1, 1, 0, 0, 1]),
         ... )
@@ -567,7 +567,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         ┣━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━┫
         ┃ actual positive (1) ┃ [FN]  2                ┃ [TP]  9                ┃
         ┗━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┛
-        num_predictions=18
+        count=18
 
         ```
         """
@@ -588,16 +588,16 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
-        >>> confmat1 = BinaryConfusionMatrix.from_predictions(
+        >>> confmat1 = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
-        >>> confmat2 = BinaryConfusionMatrix.from_predictions(
+        >>> confmat2 = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([1, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([0, 1, 1, 0, 0, 1]),
         ... )
@@ -610,7 +610,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         ┣━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━┫
         ┃ actual positive (1) ┃ [FN]  2                ┃ [TP]  9                ┃
         ┗━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┛
-        num_predictions=18
+        count=18
 
         ```
         """
@@ -631,12 +631,12 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat1 = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat1 = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1]),
         ... )
-        >>> confmat2 = BinaryConfusionMatrix.from_predictions(
+        >>> confmat2 = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([1, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([0, 1, 1, 0, 0, 1]),
         ... )
@@ -649,7 +649,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         ┣━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━┫
         ┃ actual positive (1) ┃ [FN]  1                ┃ [TP]  3                ┃
         ┗━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┛
-        num_predictions=6
+        count=6
 
         ```
         """
@@ -669,8 +669,8 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -690,8 +690,8 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -710,8 +710,8 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -730,8 +730,8 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -750,8 +750,8 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -770,8 +770,8 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -791,8 +791,8 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -812,8 +812,8 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -837,8 +837,8 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -847,10 +847,10 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if self.num_predictions == 0:
+        if self.count == 0:
             msg = "It is not possible to compute the accuracy because the confusion matrix is empty"
             raise EmptyTrackerError(msg)
-        return float(self.true_positive + self.true_negative) / float(self._num_predictions)
+        return float(self.true_positive + self.true_negative) / float(self._count)
 
     def balanced_accuracy(self) -> float:
         r"""Compute the balanced accuracy.
@@ -865,8 +865,8 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -875,7 +875,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if self.num_predictions == 0:
+        if self.count == 0:
             msg = (
                 "It is not possible to compute the balanced accuracy because the confusion matrix "
                 "is empty"
@@ -899,8 +899,8 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -911,7 +911,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if self.num_predictions == 0:
+        if self.count == 0:
             msg = (
                 "It is not possible to compute the F-beta score because the confusion matrix "
                 "is empty"
@@ -937,8 +937,8 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -947,7 +947,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if self.num_predictions == 0:
+        if self.count == 0:
             msg = (
                 "It is not possible to compute the false negative rate because the confusion "
                 "matrix is empty"
@@ -971,8 +971,8 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -981,7 +981,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if self.num_predictions == 0:
+        if self.count == 0:
             msg = (
                 "It is not possible to compute the false positive rate because the confusion "
                 "matrix is empty"
@@ -1004,8 +1004,8 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -1014,7 +1014,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if self.num_predictions == 0:
+        if self.count == 0:
             msg = (
                 "It is not possible to compute the Jaccard index because the confusion "
                 "matrix is empty"
@@ -1039,8 +1039,8 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -1049,7 +1049,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if self.num_predictions == 0:
+        if self.count == 0:
             msg = (
                 "It is not possible to compute the precision because the confusion "
                 "matrix is empty"
@@ -1073,8 +1073,8 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -1083,7 +1083,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if self.num_predictions == 0:
+        if self.count == 0:
             msg = "It is not possible to compute the recall because the confusion matrix is empty"
             raise EmptyTrackerError(msg)
         if self.positive == 0:
@@ -1103,8 +1103,8 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -1113,7 +1113,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if self.num_predictions == 0:
+        if self.count == 0:
             msg = (
                 "It is not possible to compute the true negative rate because the confusion "
                 "matrix is empty"
@@ -1136,8 +1136,8 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -1146,7 +1146,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if self.num_predictions == 0:
+        if self.count == 0:
             msg = (
                 "It is not possible to compute the true positive rate because the confusion "
                 "matrix is empty"
@@ -1177,8 +1177,8 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import BinaryConfusionMatrix
-        >>> confmat = BinaryConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import BinaryConfusionMatrixTracker
+        >>> confmat = BinaryConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
@@ -1190,7 +1190,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
          'false_positive_rate': 0.0,
          'false_positive': 0,
          'jaccard_index': 0.75,
-         'num_predictions': 6,
+         'count': 6,
          'precision': 1.0,
          'recall': 0.75,
          'true_negative_rate': 1.0,
@@ -1201,7 +1201,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if self.num_predictions == 0:
+        if self.count == 0:
             msg = "It is not possible to compute the metrics because the confusion matrix is empty"
             raise EmptyTrackerError(msg)
         metrics = {
@@ -1212,7 +1212,7 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
             f"{prefix}false_positive_rate{suffix}": self.false_positive_rate(),
             f"{prefix}false_positive{suffix}": self.false_positive,
             f"{prefix}jaccard_index{suffix}": self.jaccard_index(),
-            f"{prefix}num_predictions{suffix}": self.num_predictions,
+            f"{prefix}count{suffix}": self.count,
             f"{prefix}precision{suffix}": self.precision(),
             f"{prefix}recall{suffix}": self.recall(),
             f"{prefix}true_negative_rate{suffix}": self.true_negative_rate(),
@@ -1225,15 +1225,15 @@ class BinaryConfusionMatrix(BaseConfusionMatrix):
         return metrics
 
 
-class MulticlassConfusionMatrix(BaseConfusionMatrix):
+class MulticlassConfusionMatrixTracker(BaseConfusionMatrixTracker):
     r"""Implement a confusion matrix for multiclass labels.
 
     Example usage:
 
     ```pycon
 
-    >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-    >>> confmat = MulticlassConfusionMatrix.from_predictions(
+    >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+    >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
     ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
     ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
     ... )
@@ -1241,7 +1241,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
     tensor([[2, 1, 0],
             [0, 0, 0],
             [1, 1, 1]])
-    >>> confmat.num_predictions
+    >>> confmat.count
     6
     >>> confmat.num_classes
     3
@@ -1267,8 +1267,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -1299,8 +1299,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -1336,12 +1336,12 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat1 = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat1 = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
-        >>> confmat2 = MulticlassConfusionMatrix.from_predictions(
+        >>> confmat2 = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([2, 2, 2, 0, 0, 0]),
         ...     target=torch.tensor([0, 1, 2, 0, 0, 1]),
         ... )
@@ -1350,7 +1350,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if not isinstance(other, MulticlassConfusionMatrix):
+        if not isinstance(other, MulticlassConfusionMatrixTracker):
             return False
         return self.matrix.equal(other.matrix)
 
@@ -1365,8 +1365,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -1410,8 +1410,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_num_classes(5)
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_num_classes(5)
         >>> confmat.matrix
         tensor([[0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0],
@@ -1450,8 +1450,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -1495,12 +1495,12 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat1 = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat1 = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
-        >>> confmat2 = MulticlassConfusionMatrix.from_predictions(
+        >>> confmat2 = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([2, 2, 2, 0, 0, 0]),
         ...     target=torch.tensor([0, 1, 2, 0, 0, 1]),
         ... )
@@ -1515,7 +1515,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         check_op_compatibility_multiclass(self, other, "add")
         return self.__class__(self.matrix.add(other.matrix))
 
-    def add_(self, other: MulticlassConfusionMatrix) -> None:
+    def add_(self, other: MulticlassConfusionMatrixTracker) -> None:
         r"""Add a confusion matrix.
 
         In-place version of ``add``.
@@ -1527,12 +1527,12 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
-        >>> confmat2 = MulticlassConfusionMatrix.from_predictions(
+        >>> confmat2 = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([2, 2, 2, 0, 0, 0]),
         ...     target=torch.tensor([0, 1, 2, 0, 0, 1]),
         ... )
@@ -1546,7 +1546,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
         """
         check_op_compatibility_multiclass(self, other, "add")
         self.matrix.add_(other.matrix)
-        self._num_predictions = self._compute_num_predictions()
+        self._count = self._compute_count()
 
     def merge(self, matrices: Iterable[Self]) -> Self:
         r"""Merge several matrices with the current matrix and returns a
@@ -1562,16 +1562,16 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
-        >>> confmat1 = MulticlassConfusionMatrix.from_predictions(
+        >>> confmat1 = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
-        >>> confmat2 = MulticlassConfusionMatrix.from_predictions(
+        >>> confmat2 = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([2, 2, 2, 0, 0, 0]),
         ...     target=torch.tensor([0, 1, 2, 0, 0, 1]),
         ... )
@@ -1600,16 +1600,16 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
-        >>> confmat1 = MulticlassConfusionMatrix.from_predictions(
+        >>> confmat1 = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
-        >>> confmat2 = MulticlassConfusionMatrix.from_predictions(
+        >>> confmat2 = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([2, 2, 2, 0, 0, 0]),
         ...     target=torch.tensor([0, 1, 2, 0, 0, 1]),
         ... )
@@ -1638,12 +1638,12 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat1 = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat1 = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1, 2, 2, 2, 0, 0, 0]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0, 0, 1, 2, 0, 0, 1]),
         ... )
-        >>> confmat2 = MulticlassConfusionMatrix.from_predictions(
+        >>> confmat2 = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([2, 2, 2, 0, 0, 0]),
         ...     target=torch.tensor([0, 1, 2, 0, 0, 1]),
         ... )
@@ -1675,8 +1675,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -1700,8 +1700,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -1724,8 +1724,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -1749,8 +1749,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -1774,8 +1774,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -1784,10 +1784,10 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if self.num_predictions == 0:
+        if self.count == 0:
             msg = "It is not possible to compute the accuracy because the confusion matrix is empty"
             raise EmptyTrackerError(msg)
-        return float(self.true_positive.sum().item()) / float(self._num_predictions)
+        return float(self.true_positive.sum().item()) / float(self._count)
 
     def balanced_accuracy(self) -> float:
         r"""Compute the balanced accuracy.
@@ -1802,8 +1802,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -1812,7 +1812,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if self.num_predictions == 0:
+        if self.count == 0:
             msg = (
                 "It is not possible to compute the balanced accuracy because the confusion "
                 "matrix is empty"
@@ -1837,8 +1837,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -1849,7 +1849,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if self.num_predictions == 0:
+        if self.count == 0:
             msg = (
                 "It is not possible to compute the F-beta score because the confusion matrix "
                 "is empty"
@@ -1878,8 +1878,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -1908,8 +1908,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -1920,7 +1920,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if self.num_predictions == 0:
+        if self.count == 0:
             msg = (
                 "It is not possible to compute the micro F-beta score because the confusion "
                 "matrix is empty"
@@ -1952,8 +1952,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -1964,7 +1964,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        return self.f_beta_score(beta).mul(self.support).sum().item() / float(self._num_predictions)
+        return self.f_beta_score(beta).mul(self.support).sum().item() / float(self._count)
 
     def precision(self) -> Tensor:
         r"""Compute the precision for each class.
@@ -1980,8 +1980,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -1990,7 +1990,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if self.num_predictions == 0:
+        if self.count == 0:
             msg = (
                 "It is not possible to compute the precision because the confusion matrix is empty"
             )
@@ -2010,8 +2010,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -2035,8 +2035,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -2045,7 +2045,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if self.num_predictions == 0:
+        if self.count == 0:
             msg = (
                 "It is not possible to compute the micro precision because the confusion "
                 "matrix is empty"
@@ -2070,8 +2070,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -2080,7 +2080,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        return self.precision().mul(self.support).sum().item() / float(self._num_predictions)
+        return self.precision().mul(self.support).sum().item() / float(self._count)
 
     def recall(self) -> Tensor:
         r"""Compute the recall for each class.
@@ -2096,8 +2096,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -2106,7 +2106,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if self.num_predictions == 0:
+        if self.count == 0:
             msg = "It is not possible to compute the recall because the confusion matrix is empty"
             raise EmptyTrackerError(msg)
         return self.true_positive.float().div(self.support.clamp(min=1e-8))
@@ -2124,8 +2124,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -2149,8 +2149,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -2159,7 +2159,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if self.num_predictions == 0:
+        if self.count == 0:
             msg = "It is not possible to compute the micro recall because the confusion matrix is empty"
             raise EmptyTrackerError(msg)
         return (
@@ -2181,8 +2181,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -2191,7 +2191,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        return self.recall().mul(self.support).sum().item() / float(self._num_predictions)
+        return self.recall().mul(self.support).sum().item() / float(self._count)
 
     def compute_per_class_metrics(
         self,
@@ -2216,8 +2216,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -2228,7 +2228,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if self.num_predictions == 0:
+        if self.count == 0:
             msg = "It is not possible to compute the metrics because the confusion matrix is empty"
             raise EmptyTrackerError(msg)
 
@@ -2263,8 +2263,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -2275,7 +2275,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if self.num_predictions == 0:
+        if self.count == 0:
             msg = (
                 "It is not possible to compute the 'macro' metrics because the confusion "
                 "matrix is empty"
@@ -2312,8 +2312,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -2324,7 +2324,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if self.num_predictions == 0:
+        if self.count == 0:
             msg = (
                 "It is not possible to compute the 'micro' metrics because the confusion "
                 "matrix is empty"
@@ -2361,8 +2361,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -2373,7 +2373,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if self.num_predictions == 0:
+        if self.count == 0:
             msg = (
                 "It is not possible to compute the 'weighted' metrics because the confusion "
                 "matrix is empty"
@@ -2410,8 +2410,8 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import MulticlassConfusionMatrix
-        >>> confmat = MulticlassConfusionMatrix.from_predictions(
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
         ... )
@@ -2430,7 +2430,7 @@ class MulticlassConfusionMatrix(BaseConfusionMatrix):
 
         ```
         """
-        if self.num_predictions == 0:
+        if self.count == 0:
             msg = "It is not possible to compute the metrics because the confusion matrix is empty"
             raise EmptyTrackerError(msg)
         metrics = {
@@ -2486,7 +2486,7 @@ def check_confusion_matrix(matrix: Tensor) -> None:
 
 
 def check_op_compatibility_binary(
-    current: BinaryConfusionMatrix, other: BinaryConfusionMatrix, op_name: str
+    current: BinaryConfusionMatrixTracker, other: BinaryConfusionMatrixTracker, op_name: str
 ) -> None:
     r"""Check if the confusion matrices for binary labels are compatible.
 
@@ -2503,16 +2503,16 @@ def check_op_compatibility_binary(
     ```pycon
 
     >>> from karbonn.utils.tracker.confmat import (
-    ...     BinaryConfusionMatrix,
+    ...     BinaryConfusionMatrixTracker,
     ...     check_op_compatibility_binary,
     ... )
     >>> check_op_compatibility_binary(
-    ...     BinaryConfusionMatrix(), BinaryConfusionMatrix(), op_name="add"
+    ...     BinaryConfusionMatrixTracker(), BinaryConfusionMatrixTracker(), op_name="add"
     ... )
 
     ```
     """
-    if not isinstance(other, BinaryConfusionMatrix):
+    if not isinstance(other, BinaryConfusionMatrixTracker):
         msg = (
             f"Incorrect type {type(other)}. No implementation available to `{op_name}` "
             f"{type(current)} with {type(other)}"
@@ -2521,7 +2521,7 @@ def check_op_compatibility_binary(
 
 
 def check_op_compatibility_multiclass(
-    current: MulticlassConfusionMatrix, other: MulticlassConfusionMatrix, op_name: str
+    current: MulticlassConfusionMatrixTracker, other: MulticlassConfusionMatrixTracker, op_name: str
 ) -> None:
     r"""Check if the confusion matrices for multiclass labels are
     compatible.
@@ -2540,18 +2540,18 @@ def check_op_compatibility_multiclass(
     ```pycon
 
     >>> from karbonn.utils.tracker.confmat import (
-    ...     MulticlassConfusionMatrix,
+    ...     MulticlassConfusionMatrixTracker,
     ...     check_op_compatibility_multiclass,
     ... )
     >>> check_op_compatibility_multiclass(
-    ...     MulticlassConfusionMatrix.from_num_classes(5),
-    ...     MulticlassConfusionMatrix.from_num_classes(5),
+    ...     MulticlassConfusionMatrixTracker.from_num_classes(5),
+    ...     MulticlassConfusionMatrixTracker.from_num_classes(5),
     ...     op_name="add",
     ... )
 
     ```
     """
-    if not isinstance(other, MulticlassConfusionMatrix):
+    if not isinstance(other, MulticlassConfusionMatrixTracker):
         msg = (
             f"Incorrect type: {type(other)}. No implementation available to `{op_name}` "
             f"{type(current)} with {type(other)}"

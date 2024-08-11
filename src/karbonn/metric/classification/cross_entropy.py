@@ -36,19 +36,19 @@ class CategoricalCrossEntropy(BaseStateMetric):
     CategoricalCrossEntropy(
       (state): MeanErrorState(
           (tracker): MeanTensorTracker(count=0, total=0.0)
-          (track_num_predictions): True
+          (track_count): True
         )
     )
     >>> metric(torch.eye(4), torch.arange(4))
     >>> metric.value()
-    {'mean': 0.743668..., 'num_predictions': 4}
+    {'mean': 0.743668..., 'count': 4}
     >>> metric(torch.ones(2, 3), torch.ones(2))
     >>> metric.value()
-    {'mean': 0.861983..., 'num_predictions': 6}
+    {'mean': 0.861983..., 'count': 6}
     >>> metric.reset()
     >>> metric(torch.ones(2, 3), torch.ones(2))
     >>> metric.value()
-    {'mean': 1.098612..., 'num_predictions': 2}
+    {'mean': 1.098612..., 'count': 2}
 
     ```
     """
@@ -78,7 +78,7 @@ class CategoricalCrossEntropy(BaseStateMetric):
         >>> metric = CategoricalCrossEntropy()
         >>> metric(torch.eye(4), torch.arange(4))
         >>> metric.value()
-        {'mean': 0.743668..., 'num_predictions': 4}
+        {'mean': 0.743668..., 'count': 4}
 
         ```
         """

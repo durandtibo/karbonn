@@ -24,7 +24,7 @@ class AccuracyState(BaseState):
 
     Args:
         tracker: The mean value tracker.
-        track_num_predictions: If ``True``, the state tracks and
+        track_count: If ``True``, the state tracks and
             returns the number of predictions.
 
     Example usage:
@@ -37,28 +37,24 @@ class AccuracyState(BaseState):
     >>> state
     AccuracyState(
       (tracker): MeanTensorTracker(count=0, total=0.0)
-      (track_num_predictions): True
+      (track_count): True
     )
     >>> state.get_records()
     (MaxScalarRecord(name=accuracy, max_size=10, size=0),)
     >>> state.update(torch.eye(4))
     >>> state.value()
-    {'accuracy': 0.25, 'num_predictions': 16}
+    {'accuracy': 0.25, 'count': 16}
 
     ```
     """
 
-    def __init__(
-        self, tracker: MeanTensorTracker | None = None, track_num_predictions: bool = True
-    ) -> None:
+    def __init__(self, tracker: MeanTensorTracker | None = None, track_count: bool = True) -> None:
         self._tracker = tracker or MeanTensorTracker()
-        self._track_num_predictions = bool(track_num_predictions)
+        self._track_count = bool(track_count)
 
     def __repr__(self) -> str:
         args = repr_indent(
-            repr_mapping(
-                {"tracker": self._tracker, "track_num_predictions": self._track_num_predictions}
-            )
+            repr_mapping({"tracker": self._tracker, "track_count": self._track_count})
         )
         return f"{self.__class__.__qualname__}(\n  {args}\n)"
 
@@ -67,28 +63,24 @@ class AccuracyState(BaseState):
             str_mapping(
                 {
                     "tracker": self._tracker,
-                    "num_predictions": f"{self.num_predictions:,}",
-                    "track_num_predictions": self._track_num_predictions,
+                    "count": f"{self.count:,}",
+                    "track_count": self._track_count,
                 }
             )
         )
         return f"{self.__class__.__qualname__}(\n  {args}\n)"
 
     @property
-    def num_predictions(self) -> int:
+    def count(self) -> int:
         return self._tracker.count
 
     def clone(self) -> AccuracyState:
-        return self.__class__(
-            tracker=self._tracker.clone(), track_num_predictions=self._track_num_predictions
-        )
+        return self.__class__(tracker=self._tracker.clone(), track_count=self._track_count)
 
     def equal(self, other: Any) -> bool:
         if not isinstance(other, AccuracyState):
             return False
-        return self._track_num_predictions == other._track_num_predictions and self._tracker.equal(
-            other._tracker
-        )
+        return self._track_count == other._track_count and self._tracker.equal(other._tracker)
 
     def get_records(self, prefix: str = "", suffix: str = "") -> tuple[BaseRecord, ...]:
         return (MaxScalarRecord(name=f"{prefix}accuracy{suffix}"),)
@@ -113,7 +105,7 @@ class AccuracyState(BaseState):
         >>> state = AccuracyState()
         >>> state.update(torch.eye(4))
         >>> state.value()
-        {'accuracy': 0.25, 'num_predictions': 16}
+        {'accuracy': 0.25, 'count': 16}
 
         ```
         """
@@ -126,8 +118,8 @@ class AccuracyState(BaseState):
             raise EmptyMetricError(msg)
 
         results = {f"{prefix}accuracy{suffix}": tracker.mean()}
-        if self._track_num_predictions:
-            results[f"{prefix}num_predictions{suffix}"] = tracker.count
+        if self._track_count:
+            results[f"{prefix}count{suffix}"] = tracker.count
         return results
 
 
@@ -139,7 +131,7 @@ class ExtendedAccuracyState(BaseState):
 
     Args:
         tracker: The mean value tracker.
-        track_num_predictions: If ``True``, the state tracks and
+        track_count: If ``True``, the state tracks and
             returns the number of predictions.
 
     Example usage:
@@ -152,35 +144,31 @@ class ExtendedAccuracyState(BaseState):
     >>> state
     ExtendedAccuracyState(
       (tracker): MeanTensorTracker(count=0, total=0.0)
-      (track_num_predictions): True
+      (track_count): True
     )
     >>> state.get_records()
     (MaxScalarRecord(name=accuracy, max_size=10, size=0),
      MinScalarRecord(name=error, max_size=10, size=0),
-     MaxScalarRecord(name=num_correct_predictions, max_size=10, size=0),
-     MinScalarRecord(name=num_incorrect_predictions, max_size=10, size=0))
+     MaxScalarRecord(name=count_correct, max_size=10, size=0),
+     MinScalarRecord(name=count_incorrect, max_size=10, size=0))
     >>> state.update(torch.eye(4))
     >>> state.value()
     {'accuracy': 0.25,
      'error': 0.75,
-     'num_correct_predictions': 4,
-     'num_incorrect_predictions': 12,
-     'num_predictions': 16}
+     'count_correct': 4,
+     'count_incorrect': 12,
+     'count': 16}
 
     ```
     """
 
-    def __init__(
-        self, tracker: MeanTensorTracker | None = None, track_num_predictions: bool = True
-    ) -> None:
+    def __init__(self, tracker: MeanTensorTracker | None = None, track_count: bool = True) -> None:
         self._tracker = tracker or MeanTensorTracker()
-        self._track_num_predictions = bool(track_num_predictions)
+        self._track_count = bool(track_count)
 
     def __repr__(self) -> str:
         args = repr_indent(
-            repr_mapping(
-                {"tracker": self._tracker, "track_num_predictions": self._track_num_predictions}
-            )
+            repr_mapping({"tracker": self._tracker, "track_count": self._track_count})
         )
         return f"{self.__class__.__qualname__}(\n  {args}\n)"
 
@@ -189,35 +177,31 @@ class ExtendedAccuracyState(BaseState):
             str_mapping(
                 {
                     "tracker": self._tracker,
-                    "num_predictions": f"{self.num_predictions:,}",
-                    "track_num_predictions": self._track_num_predictions,
+                    "count": f"{self.count:,}",
+                    "track_count": self._track_count,
                 }
             )
         )
         return f"{self.__class__.__qualname__}(\n  {args}\n)"
 
     @property
-    def num_predictions(self) -> int:
+    def count(self) -> int:
         return self._tracker.count
 
     def clone(self) -> ExtendedAccuracyState:
-        return self.__class__(
-            tracker=self._tracker.clone(), track_num_predictions=self._track_num_predictions
-        )
+        return self.__class__(tracker=self._tracker.clone(), track_count=self._track_count)
 
     def equal(self, other: Any) -> bool:
         if not isinstance(other, ExtendedAccuracyState):
             return False
-        return self._track_num_predictions == other._track_num_predictions and self._tracker.equal(
-            other._tracker
-        )
+        return self._track_count == other._track_count and self._tracker.equal(other._tracker)
 
     def get_records(self, prefix: str = "", suffix: str = "") -> tuple[BaseRecord, ...]:
         return (
             MaxScalarRecord(name=f"{prefix}accuracy{suffix}"),
             MinScalarRecord(name=f"{prefix}error{suffix}"),
-            MaxScalarRecord(name=f"{prefix}num_correct_predictions{suffix}"),
-            MinScalarRecord(name=f"{prefix}num_incorrect_predictions{suffix}"),
+            MaxScalarRecord(name=f"{prefix}count_correct{suffix}"),
+            MinScalarRecord(name=f"{prefix}count_incorrect{suffix}"),
         )
 
     def reset(self) -> None:
@@ -242,9 +226,9 @@ class ExtendedAccuracyState(BaseState):
         >>> state.value()
         {'accuracy': 0.25,
          'error': 0.75,
-         'num_correct_predictions': 4,
-         'num_incorrect_predictions': 12,
-         'num_predictions': 16}
+         'count_correct': 4,
+         'count_incorrect': 12,
+         'count': 16}
 
         ```
         """
@@ -257,19 +241,18 @@ class ExtendedAccuracyState(BaseState):
             raise EmptyMetricError(msg)
 
         accuracy = tracker.mean()
-        num_correct_predictions = int(tracker.sum())
-        num_predictions = tracker.count
+        count_correct = int(tracker.sum())
+        count = tracker.count
         results = {
             f"{prefix}accuracy{suffix}": accuracy,
             f"{prefix}error{suffix}": 1.0 - accuracy,
         }
-        if self._track_num_predictions:
+        if self._track_count:
             results.update(
                 {
-                    f"{prefix}num_correct_predictions{suffix}": num_correct_predictions,
-                    f"{prefix}num_incorrect_predictions{suffix}": num_predictions
-                    - num_correct_predictions,
-                    f"{prefix}num_predictions{suffix}": num_predictions,
+                    f"{prefix}count_correct{suffix}": count_correct,
+                    f"{prefix}count_incorrect{suffix}": count - count_correct,
+                    f"{prefix}count{suffix}": count,
                 }
             )
         return results

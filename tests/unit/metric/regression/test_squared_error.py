@@ -60,7 +60,7 @@ def test_squared_error_forward_correct(
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": batch_size * feature_size,
+            "count": batch_size * feature_size,
         },
     )
 
@@ -86,7 +86,7 @@ def test_squared_error_forward_incorrect(
             "max": 4.0,
             "min": 4.0,
             "sum": 4.0 * batch_size * feature_size,
-            "num_predictions": batch_size * feature_size,
+            "count": batch_size * feature_size,
         },
     )
 
@@ -105,7 +105,7 @@ def test_squared_error_forward_partially_correct(device: str, mode: bool) -> Non
             "max": 4.0,
             "min": 0.0,
             "sum": 8.0,
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -124,7 +124,7 @@ def test_squared_error_forward_1d(device: str, mode: bool) -> None:
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": 2,
+            "count": 2,
         },
     )
 
@@ -143,7 +143,7 @@ def test_squared_error_forward_2d(device: str, mode: bool) -> None:
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": 6,
+            "count": 6,
         },
     )
 
@@ -162,7 +162,7 @@ def test_squared_error_forward_3d(device: str, mode: bool) -> None:
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": 24,
+            "count": 24,
         },
     )
 
@@ -191,7 +191,7 @@ def test_squared_error_forward_dtypes(
             "max": 0.0,
             "min": 0.0,
             "sum": 0.0,
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -212,7 +212,7 @@ def test_squared_error_forward_state(device: str, mode: bool) -> None:
             "sum": 0.0,
             "std": 0.0,
             "median": 0.0,
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -232,7 +232,7 @@ def test_squared_error_forward_multiple_batches(device: str, mode: bool) -> None
             "max": 4.0,
             "min": 0.0,
             "sum": 8.0,
-            "num_predictions": 8,
+            "count": 8,
         },
     )
 
@@ -253,7 +253,7 @@ def test_squared_error_forward_multiple_batches_with_reset(device: str, mode: bo
             "max": 4.0,
             "min": 0.0,
             "sum": 8.0,
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -277,7 +277,7 @@ def test_squared_error_value_prefix_suffix(device: str, prefix: str, suffix: str
             f"{prefix}max{suffix}": 0.0,
             f"{prefix}min{suffix}": 0.0,
             f"{prefix}sum{suffix}": 0.0,
-            f"{prefix}num_predictions{suffix}": 2,
+            f"{prefix}count{suffix}": 2,
         },
     )
 
@@ -344,7 +344,7 @@ def test_root_mean_squared_error_forward_correct(
         metric.value(),
         {
             "mean": 0.0,
-            "num_predictions": batch_size * feature_size,
+            "count": batch_size * feature_size,
         },
     )
 
@@ -367,7 +367,7 @@ def test_root_mean_squared_error_forward_incorrect(
         metric.value(),
         {
             "mean": 2.0,
-            "num_predictions": batch_size * feature_size,
+            "count": batch_size * feature_size,
         },
     )
 
@@ -383,7 +383,7 @@ def test_root_mean_squared_error_forward_partially_correct(device: str, mode: bo
         metric.value(),
         {
             "mean": math.sqrt(2.0),
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -399,7 +399,7 @@ def test_root_mean_squared_error_forward_1d(device: str, mode: bool) -> None:
         metric.value(),
         {
             "mean": 0.0,
-            "num_predictions": 2,
+            "count": 2,
         },
     )
 
@@ -415,7 +415,7 @@ def test_root_mean_squared_error_forward_2d(device: str, mode: bool) -> None:
         metric.value(),
         {
             "mean": 0.0,
-            "num_predictions": 6,
+            "count": 6,
         },
     )
 
@@ -431,7 +431,7 @@ def test_root_mean_squared_error_forward_3d(device: str, mode: bool) -> None:
         metric.value(),
         {
             "mean": 0.0,
-            "num_predictions": 24,
+            "count": 24,
         },
     )
 
@@ -457,7 +457,7 @@ def test_root_mean_squared_error_forward_dtypes(
         metric.value(),
         {
             "mean": 0.0,
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -474,7 +474,7 @@ def test_root_mean_squared_error_forward_multiple_batches(device: str, mode: boo
         metric.value(),
         {
             "mean": 1.0,
-            "num_predictions": 8,
+            "count": 8,
         },
     )
 
@@ -494,7 +494,7 @@ def test_root_mean_squared_error_forward_multiple_batches_with_reset(
         metric.value(),
         {
             "mean": math.sqrt(2.0),
-            "num_predictions": 4,
+            "count": 4,
         },
     )
 
@@ -515,7 +515,7 @@ def test_root_mean_squared_error_value_prefix_suffix(device: str, prefix: str, s
         metric.value(prefix, suffix),
         {
             f"{prefix}mean{suffix}": 0.0,
-            f"{prefix}num_predictions{suffix}": 2,
+            f"{prefix}count{suffix}": 2,
         },
     )
 
