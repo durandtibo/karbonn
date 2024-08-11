@@ -70,7 +70,6 @@ class MovingAverage:
 
         ```pycon
 
-        >>> import torch
         >>> from karbonn.utils.tracker import MovingAverage
         >>> tracker = MovingAverage(values=(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
         >>> tracker_cloned = tracker.clone()
@@ -98,7 +97,6 @@ class MovingAverage:
 
         ```pycon
 
-        >>> import torch
         >>> from karbonn.utils.tracker import MovingAverage
         >>> tracker1 = MovingAverage(values=(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
         >>> tracker2 = MovingAverage(values=(1.0, 1.0, 1.0))
@@ -284,7 +282,6 @@ class ExponentialMovingAverage:
 
         ```pycon
 
-        >>> import torch
         >>> from karbonn.utils.tracker import ExponentialMovingAverage
         >>> tracker = ExponentialMovingAverage(smoothed_average=42.0, count=11)
         >>> tracker_cloned = tracker.clone()
@@ -319,7 +316,6 @@ class ExponentialMovingAverage:
 
         ```pycon
 
-        >>> import torch
         >>> from karbonn.utils.tracker import ExponentialMovingAverage
         >>> tracker1 = ExponentialMovingAverage(count=10, smoothed_average=42.0)
         >>> tracker2 = ExponentialMovingAverage()
