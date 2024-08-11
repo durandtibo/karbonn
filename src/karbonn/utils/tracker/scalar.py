@@ -168,6 +168,37 @@ class ScalarTracker(BaseTracker):
             raise EmptyTrackerError(msg)
         return self._total / float(self._count)
 
+    def clone(self) -> Self:
+        r"""Return a copy of the current tracker.
+
+        Returns:
+            A copy of the current tracker.
+
+        Example usage:
+
+        ```pycon
+
+        >>> from karbonn.utils.tracker import ScalarTracker
+        >>> tracker = ScalarTracker()
+        >>> tracker.update_sequence([1, 2, 3, 4, 5, 0])
+        >>> tracker_cloned = tracker.clone()
+        >>> tracker.update(11)
+        >>> tracker.total
+        26.0
+        >>> tracker_cloned.total
+        15.0
+
+        ```
+        """
+        return self.__class__(
+            total=self._total,
+            count=self._count,
+            min_value=self._min_value,
+            max_value=self._max_value,
+            values=self._values,
+            max_size=self._values.maxlen,
+        )
+
     def equal(self, other: Any) -> bool:
         r"""Indicate if two trackers are equal or not.
 
