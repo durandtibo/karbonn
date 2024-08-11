@@ -11,26 +11,26 @@ from karbonn.distributed.ddp import SUM
 from karbonn.testing import tabulate_available
 from karbonn.utils.tracker import EmptyTrackerError
 from karbonn.utils.tracker.confmat import (
-    BinaryConfusionMatrix,
-    MulticlassConfusionMatrix,
+    BinaryConfusionMatrixTracker,
+    MulticlassConfusionMatrixTracker,
     check_confusion_matrix,
     check_op_compatibility_binary,
     check_op_compatibility_multiclass,
     str_binary_confusion_matrix,
 )
 
-###########################################
-#     Tests for BinaryConfusionMatrix     #
-###########################################
+##################################################
+#     Tests for BinaryConfusionMatrixTracker     #
+##################################################
 
 
-def test_binary_confusion_matrix_repr() -> None:
-    assert isinstance(repr(BinaryConfusionMatrix()), str)
+def test_binary_confusion_matrix_tracker_repr() -> None:
+    assert isinstance(repr(BinaryConfusionMatrixTracker()), str)
 
 
 @tabulate_available
-def test_binary_confusion_matrix_repr_tabulate() -> None:
-    assert repr(BinaryConfusionMatrix()) == (
+def test_binary_confusion_matrix_tracker_repr_tabulate() -> None:
+    assert repr(BinaryConfusionMatrixTracker()) == (
         "┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓\n"
         "┃                     ┃ predicted negative (0) ┃ predicted positive (1) ┃\n"
         "┣━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━┫\n"
@@ -42,54 +42,54 @@ def test_binary_confusion_matrix_repr_tabulate() -> None:
     )
 
 
-def test_binary_confusion_matrix_str() -> None:
-    assert str(BinaryConfusionMatrix()).startswith("BinaryConfusionMatrix(")
+def test_binary_confusion_matrix_tracker_str() -> None:
+    assert str(BinaryConfusionMatrixTracker()).startswith("BinaryConfusionMatrixTracker(")
 
 
-def test_binary_confusion_matrix_init_default() -> None:
-    meter = BinaryConfusionMatrix()
+def test_binary_confusion_matrix_tracker_init_default() -> None:
+    meter = BinaryConfusionMatrixTracker()
     assert objects_are_equal(meter.matrix, torch.zeros(2, 2, dtype=torch.long))
     assert meter.count == 0
 
 
-def test_binary_confusion_matrix_init() -> None:
-    meter = BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
+def test_binary_confusion_matrix_tracker_init() -> None:
+    meter = BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]]))
     assert objects_are_equal(meter.matrix, torch.tensor([[3, 2], [1, 4]]))
     assert meter.count == 10
 
 
-def test_binary_confusion_matrix_init_incorrect_ndim() -> None:
+def test_binary_confusion_matrix_tracker_init_incorrect_ndim() -> None:
     with pytest.raises(ValueError, match="Incorrect shape."):
-        BinaryConfusionMatrix(torch.zeros(3))
+        BinaryConfusionMatrixTracker(torch.zeros(3))
 
 
-def test_binary_confusion_matrix_init_incorrect_shape() -> None:
+def test_binary_confusion_matrix_tracker_init_incorrect_shape() -> None:
     with pytest.raises(ValueError, match="Incorrect shape."):
-        BinaryConfusionMatrix(torch.zeros(3, 5))
+        BinaryConfusionMatrixTracker(torch.zeros(3, 5))
 
 
-def test_binary_confusion_matrix_init_incorrect_dtype() -> None:
+def test_binary_confusion_matrix_tracker_init_incorrect_dtype() -> None:
     with pytest.raises(ValueError, match="Incorrect matrix data type."):
-        BinaryConfusionMatrix(torch.zeros(2, 2, dtype=torch.float))
+        BinaryConfusionMatrixTracker(torch.zeros(2, 2, dtype=torch.float))
 
 
-def test_binary_confusion_matrix_init_negative_value() -> None:
+def test_binary_confusion_matrix_tracker_init_negative_value() -> None:
     with pytest.raises(ValueError, match="Incorrect matrix values."):
-        BinaryConfusionMatrix(torch.tensor([[0, 0], [-1, 0]]))
+        BinaryConfusionMatrixTracker(torch.tensor([[0, 0], [-1, 0]]))
 
 
-def test_binary_confusion_matrix_num_classes() -> None:
-    assert BinaryConfusionMatrix().num_classes == 2
+def test_binary_confusion_matrix_tracker_num_classes() -> None:
+    assert BinaryConfusionMatrixTracker().num_classes == 2
 
 
-def test_binary_confusion_matrix_all_reduce() -> None:
-    meter = BinaryConfusionMatrix(torch.ones(2, 2, dtype=torch.long)).all_reduce()
+def test_binary_confusion_matrix_tracker_all_reduce() -> None:
+    meter = BinaryConfusionMatrixTracker(torch.ones(2, 2, dtype=torch.long)).all_reduce()
     assert meter.matrix.equal(torch.ones(2, 2, dtype=torch.long))
     assert meter.count == 4
 
 
-def test_binary_confusion_matrix_all_reduce_sum_reduce() -> None:
-    meter = BinaryConfusionMatrix(torch.ones(2, 2, dtype=torch.long))
+def test_binary_confusion_matrix_tracker_all_reduce_sum_reduce() -> None:
+    meter = BinaryConfusionMatrixTracker(torch.ones(2, 2, dtype=torch.long))
     reduce_mock = Mock(return_value=torch.ones(2, 2, dtype=torch.long))
     with patch("karbonn.utils.tracker.confmat.sync_reduce", reduce_mock):
         meter.all_reduce()
@@ -98,101 +98,101 @@ def test_binary_confusion_matrix_all_reduce_sum_reduce() -> None:
         )
 
 
-def test_binary_confusion_matrix_clone() -> None:
-    meter = BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]], dtype=torch.long))
+def test_binary_confusion_matrix_tracker_clone() -> None:
+    meter = BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]], dtype=torch.long))
     meter_cloned = meter.clone()
     assert meter is not meter_cloned
     assert meter.equal(meter_cloned)
 
 
-def test_binary_confusion_matrix_equal_true() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).equal(
-        BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
+def test_binary_confusion_matrix_tracker_equal_true() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).equal(
+        BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]]))
     )
 
 
-def test_binary_confusion_matrix_equal_false_different_values() -> None:
-    assert not BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).equal(
-        BinaryConfusionMatrix(torch.tensor([[3, 2], [0, 4]]))
+def test_binary_confusion_matrix_tracker_equal_false_different_values() -> None:
+    assert not BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).equal(
+        BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [0, 4]]))
     )
 
 
-def test_binary_confusion_matrix_equal_false_different_type() -> None:
-    assert not BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).equal(42)
+def test_binary_confusion_matrix_tracker_equal_false_different_type() -> None:
+    assert not BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).equal(42)
 
 
-def test_binary_confusion_matrix_get_normalized_matrix_normalization_true() -> None:
+def test_binary_confusion_matrix_tracker_get_normalized_matrix_normalization_true() -> None:
     assert (
-        BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
+        BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]]))
         .get_normalized_matrix(normalization="true")
         .equal(torch.tensor([[0.6, 0.4], [0.2, 0.8]], dtype=torch.float))
     )
 
 
-def test_binary_confusion_matrix_get_normalized_matrix_normalization_true_empty() -> None:
+def test_binary_confusion_matrix_tracker_get_normalized_matrix_normalization_true_empty() -> None:
     assert (
-        BinaryConfusionMatrix()
+        BinaryConfusionMatrixTracker()
         .get_normalized_matrix(normalization="true")
         .equal(torch.zeros(2, 2, dtype=torch.float))
     )
 
 
-def test_binary_confusion_matrix_get_normalized_matrix_normalization_pred() -> None:
+def test_binary_confusion_matrix_tracker_get_normalized_matrix_normalization_pred() -> None:
     assert (
-        BinaryConfusionMatrix(torch.tensor([[3, 6], [1, 4]]))
+        BinaryConfusionMatrixTracker(torch.tensor([[3, 6], [1, 4]]))
         .get_normalized_matrix(normalization="pred")
         .equal(torch.tensor([[0.75, 0.6], [0.25, 0.4]], dtype=torch.float))
     )
 
 
-def test_binary_confusion_matrix_get_normalized_matrix_normalization_pred_empty() -> None:
+def test_binary_confusion_matrix_tracker_get_normalized_matrix_normalization_pred_empty() -> None:
     assert (
-        BinaryConfusionMatrix()
+        BinaryConfusionMatrixTracker()
         .get_normalized_matrix(normalization="pred")
         .equal(torch.zeros(2, 2, dtype=torch.float))
     )
 
 
-def test_binary_confusion_matrix_get_normalized_matrix_normalization_all() -> None:
+def test_binary_confusion_matrix_tracker_get_normalized_matrix_normalization_all() -> None:
     assert (
-        BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
+        BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]]))
         .get_normalized_matrix(normalization="all")
         .equal(torch.tensor([[0.3, 0.2], [0.1, 0.4]], dtype=torch.float))
     )
 
 
-def test_binary_confusion_matrix_get_normalized_matrix_normalization_all_empty() -> None:
+def test_binary_confusion_matrix_tracker_get_normalized_matrix_normalization_all_empty() -> None:
     assert (
-        BinaryConfusionMatrix()
+        BinaryConfusionMatrixTracker()
         .get_normalized_matrix(normalization="all")
         .equal(torch.zeros(2, 2, dtype=torch.float))
     )
 
 
-def test_binary_confusion_matrix_get_normalized_matrix_incorrect_normalization() -> None:
+def test_binary_confusion_matrix_tracker_get_normalized_matrix_incorrect_normalization() -> None:
     with pytest.raises(ValueError, match="Incorrect normalization: incorrect"):
-        BinaryConfusionMatrix().get_normalized_matrix(normalization="incorrect")
+        BinaryConfusionMatrixTracker().get_normalized_matrix(normalization="incorrect")
 
 
-def test_binary_confusion_matrix_reset() -> None:
-    meter = BinaryConfusionMatrix(torch.ones(2, 2, dtype=torch.long))
+def test_binary_confusion_matrix_tracker_reset() -> None:
+    meter = BinaryConfusionMatrixTracker(torch.ones(2, 2, dtype=torch.long))
     meter.reset()
     assert meter.matrix.equal(torch.zeros(2, 2, dtype=torch.long))
     assert meter.count == 0
 
 
-def test_binary_confusion_matrix_sync_update_matrix() -> None:
+def test_binary_confusion_matrix_tracker_sync_update_matrix() -> None:
     with patch(
         "karbonn.utils.tracker.confmat.sync_reduce",
         lambda variable, op: variable.mul_(4),  # noqa: ARG005
     ):
-        meter = BinaryConfusionMatrix(torch.ones(2, 2, dtype=torch.long)).all_reduce()
+        meter = BinaryConfusionMatrixTracker(torch.ones(2, 2, dtype=torch.long)).all_reduce()
     assert meter.matrix.equal(torch.ones(2, 2, dtype=torch.long).mul(4))
     assert meter.count == 16
 
 
-def test_binary_confusion_matrix_update() -> None:
-    meter = BinaryConfusionMatrix()
+def test_binary_confusion_matrix_tracker_update() -> None:
+    meter = BinaryConfusionMatrixTracker()
     meter.update(
         prediction=torch.tensor([0, 1, 1, 0, 0, 1], dtype=torch.long),
         target=torch.tensor([1, 1, 1, 0, 0, 1], dtype=torch.long),
@@ -200,8 +200,8 @@ def test_binary_confusion_matrix_update() -> None:
     assert meter.matrix.equal(torch.tensor([[2, 0], [1, 3]], dtype=torch.long))
 
 
-def test_binary_confusion_matrix_update_2() -> None:
-    meter = BinaryConfusionMatrix()
+def test_binary_confusion_matrix_tracker_update_2() -> None:
+    meter = BinaryConfusionMatrixTracker()
     meter.update(
         prediction=torch.tensor([0, 1, 1, 0, 0, 1], dtype=torch.long),
         target=torch.tensor([1, 1, 1, 0, 0, 1], dtype=torch.long),
@@ -213,8 +213,8 @@ def test_binary_confusion_matrix_update_2() -> None:
     assert meter.matrix.equal(torch.tensor([[2, 2], [1, 3]], dtype=torch.long))
 
 
-def test_binary_confusion_matrix_from_predictions() -> None:
-    meter = BinaryConfusionMatrix.from_predictions(
+def test_binary_confusion_matrix_tracker_from_predictions() -> None:
+    meter = BinaryConfusionMatrixTracker.from_predictions(
         prediction=torch.tensor([0, 1, 1, 0, 0, 1], dtype=torch.long),
         target=torch.tensor([1, 1, 1, 0, 0, 1], dtype=torch.long),
     )
@@ -230,72 +230,72 @@ def test_binary_confusion_matrix_from_predictions() -> None:
 # **************************
 
 
-def test_binary_confusion_matrix__add__() -> None:
+def test_binary_confusion_matrix_tracker__add__() -> None:
     assert (
-        BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
-        + BinaryConfusionMatrix(torch.tensor([[1, 0], [7, 2]]))
-    ).equal(BinaryConfusionMatrix(torch.tensor([[4, 2], [8, 6]])))
+        BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]]))
+        + BinaryConfusionMatrixTracker(torch.tensor([[1, 0], [7, 2]]))
+    ).equal(BinaryConfusionMatrixTracker(torch.tensor([[4, 2], [8, 6]])))
 
 
-def test_binary_confusion_matrix__iadd__() -> None:
-    meter = BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
-    meter += BinaryConfusionMatrix(torch.tensor([[1, 0], [7, 2]]))
-    assert meter.equal(BinaryConfusionMatrix(torch.tensor([[4, 2], [8, 6]])))
+def test_binary_confusion_matrix_tracker__iadd__() -> None:
+    meter = BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]]))
+    meter += BinaryConfusionMatrixTracker(torch.tensor([[1, 0], [7, 2]]))
+    assert meter.equal(BinaryConfusionMatrixTracker(torch.tensor([[4, 2], [8, 6]])))
 
 
-def test_binary_confusion_matrix__sub__() -> None:
+def test_binary_confusion_matrix_tracker__sub__() -> None:
     assert (
-        BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
-        - BinaryConfusionMatrix(torch.tensor([[1, 0], [1, 2]]))
-    ).equal(BinaryConfusionMatrix(torch.tensor([[2, 2], [0, 2]])))
+        BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]]))
+        - BinaryConfusionMatrixTracker(torch.tensor([[1, 0], [1, 2]]))
+    ).equal(BinaryConfusionMatrixTracker(torch.tensor([[2, 2], [0, 2]])))
 
 
-def test_binary_confusion_matrix_add() -> None:
-    meter = BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).add(
-        BinaryConfusionMatrix(torch.tensor([[1, 0], [7, 2]]))
+def test_binary_confusion_matrix_tracker_add() -> None:
+    meter = BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).add(
+        BinaryConfusionMatrixTracker(torch.tensor([[1, 0], [7, 2]]))
     )
-    assert meter.equal(BinaryConfusionMatrix(torch.tensor([[4, 2], [8, 6]])))
+    assert meter.equal(BinaryConfusionMatrixTracker(torch.tensor([[4, 2], [8, 6]])))
     assert meter.count == 20
 
 
-def test_binary_confusion_matrix_add_() -> None:
-    meter = BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
-    meter.add_(BinaryConfusionMatrix(torch.tensor([[1, 0], [7, 2]])))
-    assert meter.equal(BinaryConfusionMatrix(torch.tensor([[4, 2], [8, 6]])))
+def test_binary_confusion_matrix_tracker_add_() -> None:
+    meter = BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]]))
+    meter.add_(BinaryConfusionMatrixTracker(torch.tensor([[1, 0], [7, 2]])))
+    assert meter.equal(BinaryConfusionMatrixTracker(torch.tensor([[4, 2], [8, 6]])))
     assert meter.count == 20
 
 
-def test_binary_confusion_matrix_merge() -> None:
-    meter = BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
+def test_binary_confusion_matrix_tracker_merge() -> None:
+    meter = BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]]))
     meter_merged = meter.merge(
         [
-            BinaryConfusionMatrix(torch.tensor([[1, 0], [7, 2]])),
-            BinaryConfusionMatrix(torch.tensor([[1, 0], [0, 1]])),
+            BinaryConfusionMatrixTracker(torch.tensor([[1, 0], [7, 2]])),
+            BinaryConfusionMatrixTracker(torch.tensor([[1, 0], [0, 1]])),
         ]
     )
-    assert meter.equal(BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])))
+    assert meter.equal(BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])))
     assert meter.count == 10
-    assert meter_merged.equal(BinaryConfusionMatrix(torch.tensor([[5, 2], [8, 7]])))
+    assert meter_merged.equal(BinaryConfusionMatrixTracker(torch.tensor([[5, 2], [8, 7]])))
     assert meter_merged.count == 22
 
 
-def test_binary_confusion_matrix_merge_() -> None:
-    meter = BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
+def test_binary_confusion_matrix_tracker_merge_() -> None:
+    meter = BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]]))
     meter.merge_(
         [
-            BinaryConfusionMatrix(torch.tensor([[1, 0], [7, 2]])),
-            BinaryConfusionMatrix(torch.tensor([[1, 0], [0, 1]])),
+            BinaryConfusionMatrixTracker(torch.tensor([[1, 0], [7, 2]])),
+            BinaryConfusionMatrixTracker(torch.tensor([[1, 0], [0, 1]])),
         ]
     )
-    assert meter.equal(BinaryConfusionMatrix(torch.tensor([[5, 2], [8, 7]])))
+    assert meter.equal(BinaryConfusionMatrixTracker(torch.tensor([[5, 2], [8, 7]])))
     assert meter.count == 22
 
 
-def test_binary_confusion_matrix_sub() -> None:
-    meter = BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).sub(
-        BinaryConfusionMatrix(torch.tensor([[1, 0], [1, 2]]))
+def test_binary_confusion_matrix_tracker_sub() -> None:
+    meter = BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).sub(
+        BinaryConfusionMatrixTracker(torch.tensor([[1, 0], [1, 2]]))
     )
-    assert meter.equal(BinaryConfusionMatrix(torch.tensor([[2, 2], [0, 2]])))
+    assert meter.equal(BinaryConfusionMatrixTracker(torch.tensor([[2, 2], [0, 2]])))
     assert meter.count == 6
 
 
@@ -304,65 +304,67 @@ def test_binary_confusion_matrix_sub() -> None:
 # *******************
 
 
-def test_binary_confusion_matrix_false_negative() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).false_negative == 1
+def test_binary_confusion_matrix_tracker_false_negative() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).false_negative == 1
 
 
-def test_binary_confusion_matrix_false_positive() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).false_positive == 2
+def test_binary_confusion_matrix_tracker_false_positive() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).false_positive == 2
 
 
-def test_binary_confusion_matrix_negative() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[3, 5], [1, 4]])).negative == 8
+def test_binary_confusion_matrix_tracker_negative() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[3, 5], [1, 4]])).negative == 8
 
 
-def test_binary_confusion_matrix_positive() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[3, 5], [1, 4]])).positive == 5
+def test_binary_confusion_matrix_tracker_positive() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[3, 5], [1, 4]])).positive == 5
 
 
-def test_binary_confusion_matrix_predictive_negative() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).predictive_negative == 4
+def test_binary_confusion_matrix_tracker_predictive_negative() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).predictive_negative == 4
 
 
-def test_binary_confusion_matrix_predictive_positive() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).predictive_positive == 6
+def test_binary_confusion_matrix_tracker_predictive_positive() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).predictive_positive == 6
 
 
-def test_binary_confusion_matrix_true_negative() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).true_negative == 3
+def test_binary_confusion_matrix_tracker_true_negative() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).true_negative == 3
 
 
-def test_binary_confusion_matrix_true_positive() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).true_positive == 4
+def test_binary_confusion_matrix_tracker_true_positive() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).true_positive == 4
 
 
-def test_binary_confusion_matrix_accuracy() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).accuracy() == 0.7
+def test_binary_confusion_matrix_tracker_accuracy() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).accuracy() == 0.7
 
 
-def test_binary_confusion_matrix_accuracy_imbalanced() -> None:
+def test_binary_confusion_matrix_tracker_accuracy_imbalanced() -> None:
     assert math.isclose(
-        BinaryConfusionMatrix(torch.tensor([[30, 2], [1, 4]])).accuracy(), 0.918918918918919
+        BinaryConfusionMatrixTracker(torch.tensor([[30, 2], [1, 4]])).accuracy(), 0.918918918918919
     )
 
 
-def test_binary_confusion_matrix_accuracy_empty() -> None:
+def test_binary_confusion_matrix_tracker_accuracy_empty() -> None:
     with pytest.raises(
         EmptyTrackerError,
         match="It is not possible to compute the accuracy because the confusion matrix is empty",
     ):
-        BinaryConfusionMatrix().accuracy()
+        BinaryConfusionMatrixTracker().accuracy()
 
 
-def test_binary_confusion_matrix_balanced_accuracy() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).balanced_accuracy() == 0.7
+def test_binary_confusion_matrix_tracker_balanced_accuracy() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).balanced_accuracy() == 0.7
 
 
-def test_binary_confusion_matrix_balanced_accuracy_imbalanced() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[30, 2], [1, 4]])).balanced_accuracy() == 0.86875
+def test_binary_confusion_matrix_tracker_balanced_accuracy_imbalanced() -> None:
+    assert (
+        BinaryConfusionMatrixTracker(torch.tensor([[30, 2], [1, 4]])).balanced_accuracy() == 0.86875
+    )
 
 
-def test_binary_confusion_matrix_balanced_accuracy_empty() -> None:
+def test_binary_confusion_matrix_tracker_balanced_accuracy_empty() -> None:
     with pytest.raises(
         EmptyTrackerError,
         match=(
@@ -370,34 +372,35 @@ def test_binary_confusion_matrix_balanced_accuracy_empty() -> None:
             "the confusion matrix is empty"
         ),
     ):
-        BinaryConfusionMatrix().balanced_accuracy()
+        BinaryConfusionMatrixTracker().balanced_accuracy()
 
 
-def test_binary_confusion_matrix_f_beta_score_1() -> None:
+def test_binary_confusion_matrix_tracker_f_beta_score_1() -> None:
     assert math.isclose(
-        BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).f_beta_score(), 0.7272727272727273
+        BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).f_beta_score(),
+        0.7272727272727273,
     )
 
 
-def test_binary_confusion_matrix_f_beta_score_2() -> None:
+def test_binary_confusion_matrix_tracker_f_beta_score_2() -> None:
     assert math.isclose(
-        BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).f_beta_score(beta=2),
+        BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).f_beta_score(beta=2),
         0.7692307692307693,
     )
 
 
-def test_binary_confusion_matrix_f_beta_score_0_5() -> None:
+def test_binary_confusion_matrix_tracker_f_beta_score_0_5() -> None:
     assert math.isclose(
-        BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).f_beta_score(beta=0.5),
+        BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).f_beta_score(beta=0.5),
         0.6896551724137931,
     )
 
 
-def test_binary_confusion_matrix_f_beta_score_1_true_negative_only() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[3, 0], [0, 0]])).f_beta_score() == 0.0
+def test_binary_confusion_matrix_tracker_f_beta_score_1_true_negative_only() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[3, 0], [0, 0]])).f_beta_score() == 0.0
 
 
-def test_binary_confusion_matrix_f_beta_score_empty() -> None:
+def test_binary_confusion_matrix_tracker_f_beta_score_empty() -> None:
     with pytest.raises(
         EmptyTrackerError,
         match=(
@@ -405,18 +408,18 @@ def test_binary_confusion_matrix_f_beta_score_empty() -> None:
             "the confusion matrix is empty"
         ),
     ):
-        BinaryConfusionMatrix().f_beta_score()
+        BinaryConfusionMatrixTracker().f_beta_score()
 
 
-def test_binary_confusion_matrix_false_negative_rate() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).false_negative_rate() == 0.2
+def test_binary_confusion_matrix_tracker_false_negative_rate() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).false_negative_rate() == 0.2
 
 
-def test_binary_confusion_matrix_false_negative_rate_zero_positive() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[3, 2], [0, 0]])).false_negative_rate() == 0.0
+def test_binary_confusion_matrix_tracker_false_negative_rate_zero_positive() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [0, 0]])).false_negative_rate() == 0.0
 
 
-def test_binary_confusion_matrix_false_negative_rate_empty() -> None:
+def test_binary_confusion_matrix_tracker_false_negative_rate_empty() -> None:
     with pytest.raises(
         EmptyTrackerError,
         match=(
@@ -424,18 +427,18 @@ def test_binary_confusion_matrix_false_negative_rate_empty() -> None:
             "the confusion matrix is empty"
         ),
     ):
-        BinaryConfusionMatrix().false_negative_rate()
+        BinaryConfusionMatrixTracker().false_negative_rate()
 
 
-def test_binary_confusion_matrix_false_positive_rate() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).false_positive_rate() == 0.4
+def test_binary_confusion_matrix_tracker_false_positive_rate() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).false_positive_rate() == 0.4
 
 
-def test_binary_confusion_matrix_false_positive_rate_zero_negative() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[0, 0], [1, 4]])).false_positive_rate() == 0.0
+def test_binary_confusion_matrix_tracker_false_positive_rate_zero_negative() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[0, 0], [1, 4]])).false_positive_rate() == 0.0
 
 
-def test_binary_confusion_matrix_false_positive_rate_empty() -> None:
+def test_binary_confusion_matrix_tracker_false_positive_rate_empty() -> None:
     with pytest.raises(
         EmptyTrackerError,
         match=(
@@ -443,18 +446,18 @@ def test_binary_confusion_matrix_false_positive_rate_empty() -> None:
             "the confusion matrix is empty"
         ),
     ):
-        BinaryConfusionMatrix().false_positive_rate()
+        BinaryConfusionMatrixTracker().false_positive_rate()
 
 
-def test_binary_confusion_matrix_jaccard_index() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[3, 3], [1, 4]])).jaccard_index() == 0.5
+def test_binary_confusion_matrix_tracker_jaccard_index() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[3, 3], [1, 4]])).jaccard_index() == 0.5
 
 
-def test_binary_confusion_matrix_jaccard_index_zero_true_positive() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[3, 0], [0, 0]])).jaccard_index() == 0.0
+def test_binary_confusion_matrix_tracker_jaccard_index_zero_true_positive() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[3, 0], [0, 0]])).jaccard_index() == 0.0
 
 
-def test_binary_confusion_matrix_jaccard_index_empty() -> None:
+def test_binary_confusion_matrix_tracker_jaccard_index_empty() -> None:
     with pytest.raises(
         EmptyTrackerError,
         match=(
@@ -462,50 +465,50 @@ def test_binary_confusion_matrix_jaccard_index_empty() -> None:
             "the confusion matrix is empty"
         ),
     ):
-        BinaryConfusionMatrix().jaccard_index()
+        BinaryConfusionMatrixTracker().jaccard_index()
 
 
-def test_binary_confusion_matrix_precision() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[3, 4], [1, 4]])).precision() == 0.5
+def test_binary_confusion_matrix_tracker_precision() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[3, 4], [1, 4]])).precision() == 0.5
 
 
-def test_binary_confusion_matrix_precision_zero_predictive_positive() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[3, 0], [1, 0]])).precision() == 0.0
+def test_binary_confusion_matrix_tracker_precision_zero_predictive_positive() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[3, 0], [1, 0]])).precision() == 0.0
 
 
-def test_binary_confusion_matrix_precision_empty() -> None:
+def test_binary_confusion_matrix_tracker_precision_empty() -> None:
     with pytest.raises(
         EmptyTrackerError,
         match="It is not possible to compute the precision because the confusion matrix is empty",
     ):
-        BinaryConfusionMatrix().precision()
+        BinaryConfusionMatrixTracker().precision()
 
 
-def test_binary_confusion_matrix_recall() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).recall() == 0.8
+def test_binary_confusion_matrix_tracker_recall() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).recall() == 0.8
 
 
-def test_binary_confusion_matrix_recall_zero_positive() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[3, 2], [0, 0]])).recall() == 0.0
+def test_binary_confusion_matrix_tracker_recall_zero_positive() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [0, 0]])).recall() == 0.0
 
 
-def test_binary_confusion_matrix_recall_empty() -> None:
+def test_binary_confusion_matrix_tracker_recall_empty() -> None:
     with pytest.raises(
         EmptyTrackerError,
         match="It is not possible to compute the recall because the confusion matrix is empty",
     ):
-        BinaryConfusionMatrix().recall()
+        BinaryConfusionMatrixTracker().recall()
 
 
-def test_binary_confusion_matrix_true_negative_rate() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).true_negative_rate() == 0.6
+def test_binary_confusion_matrix_tracker_true_negative_rate() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).true_negative_rate() == 0.6
 
 
-def test_binary_confusion_matrix_true_negative_rate_zero_negative() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[0, 0], [1, 4]])).true_negative_rate() == 0.0
+def test_binary_confusion_matrix_tracker_true_negative_rate_zero_negative() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[0, 0], [1, 4]])).true_negative_rate() == 0.0
 
 
-def test_binary_confusion_matrix_true_negative_rate_empty() -> None:
+def test_binary_confusion_matrix_tracker_true_negative_rate_empty() -> None:
     with pytest.raises(
         EmptyTrackerError,
         match=(
@@ -513,18 +516,18 @@ def test_binary_confusion_matrix_true_negative_rate_empty() -> None:
             "the confusion matrix is empty"
         ),
     ):
-        BinaryConfusionMatrix().true_negative_rate()
+        BinaryConfusionMatrixTracker().true_negative_rate()
 
 
-def test_binary_confusion_matrix_true_positive_rate() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).true_positive_rate() == 0.8
+def test_binary_confusion_matrix_tracker_true_positive_rate() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).true_positive_rate() == 0.8
 
 
-def test_binary_confusion_matrix_true_positive_rate_zero_positive() -> None:
-    assert BinaryConfusionMatrix(torch.tensor([[3, 2], [0, 0]])).true_positive_rate() == 0.0
+def test_binary_confusion_matrix_tracker_true_positive_rate_zero_positive() -> None:
+    assert BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [0, 0]])).true_positive_rate() == 0.0
 
 
-def test_binary_confusion_matrix_true_positive_rate_empty() -> None:
+def test_binary_confusion_matrix_tracker_true_positive_rate_empty() -> None:
     with pytest.raises(
         EmptyTrackerError,
         match=(
@@ -532,12 +535,12 @@ def test_binary_confusion_matrix_true_positive_rate_empty() -> None:
             "the confusion matrix is empty"
         ),
     ):
-        BinaryConfusionMatrix().true_positive_rate()
+        BinaryConfusionMatrixTracker().true_positive_rate()
 
 
-def test_binary_confusion_matrix_compute_all_metrics() -> None:
+def test_binary_confusion_matrix_tracker_compute_all_metrics() -> None:
     assert objects_are_allclose(
-        BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).compute_all_metrics(),
+        BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).compute_all_metrics(),
         {
             "accuracy": 0.7,
             "balanced_accuracy": 0.7,
@@ -558,9 +561,11 @@ def test_binary_confusion_matrix_compute_all_metrics() -> None:
     )
 
 
-def test_binary_confusion_matrix_compute_all_metrics_betas() -> None:
+def test_binary_confusion_matrix_tracker_compute_all_metrics_betas() -> None:
     assert objects_are_allclose(
-        BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).compute_all_metrics(betas=(1, 2)),
+        BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).compute_all_metrics(
+            betas=(1, 2)
+        ),
         {
             "accuracy": 0.7,
             "balanced_accuracy": 0.7,
@@ -582,9 +587,9 @@ def test_binary_confusion_matrix_compute_all_metrics_betas() -> None:
     )
 
 
-def test_binary_confusion_matrix_compute_all_metrics_prefix_suffix() -> None:
+def test_binary_confusion_matrix_tracker_compute_all_metrics_prefix_suffix() -> None:
     assert objects_are_allclose(
-        BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).compute_all_metrics(
+        BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).compute_all_metrics(
             prefix="prefix_", suffix="_suffix"
         ),
         {
@@ -607,61 +612,61 @@ def test_binary_confusion_matrix_compute_all_metrics_prefix_suffix() -> None:
     )
 
 
-def test_binary_confusion_matrix_compute_all_metrics_empty() -> None:
+def test_binary_confusion_matrix_tracker_compute_all_metrics_empty() -> None:
     with pytest.raises(
         EmptyTrackerError,
         match="It is not possible to compute the metrics because the confusion matrix is empty",
     ):
-        BinaryConfusionMatrix().compute_all_metrics()
+        BinaryConfusionMatrixTracker().compute_all_metrics()
 
 
-###############################################
-#     Tests for MulticlassConfusionMatrix     #
-###############################################
+######################################################
+#     Tests for MulticlassConfusionMatrixTracker     #
+######################################################
 
 
 def test_multiclass_confusion_matrix_repr() -> None:
-    assert repr(MulticlassConfusionMatrix.from_num_classes(num_classes=5)).startswith(
-        "MulticlassConfusionMatrix("
+    assert repr(MulticlassConfusionMatrixTracker.from_num_classes(num_classes=5)).startswith(
+        "MulticlassConfusionMatrixTracker("
     )
 
 
 def test_multiclass_confusion_matrix_str() -> None:
-    assert str(MulticlassConfusionMatrix.from_num_classes(num_classes=5)).startswith(
-        "MulticlassConfusionMatrix("
+    assert str(MulticlassConfusionMatrixTracker.from_num_classes(num_classes=5)).startswith(
+        "MulticlassConfusionMatrixTracker("
     )
 
 
 def test_multiclass_confusion_matrix_init_incorrect_ndim() -> None:
     with pytest.raises(ValueError, match="Incorrect matrix dimensions."):
-        MulticlassConfusionMatrix(torch.zeros(3))
+        MulticlassConfusionMatrixTracker(torch.zeros(3))
 
 
 def test_multiclass_confusion_matrix_init_incorrect_shape() -> None:
     with pytest.raises(ValueError, match="Incorrect matrix shape."):
-        MulticlassConfusionMatrix(torch.zeros(3, 5))
+        MulticlassConfusionMatrixTracker(torch.zeros(3, 5))
 
 
 def test_multiclass_confusion_matrix_init_incorrect_dtype() -> None:
     with pytest.raises(ValueError, match="Incorrect matrix data type."):
-        MulticlassConfusionMatrix(torch.zeros(3, 3, dtype=torch.float))
+        MulticlassConfusionMatrixTracker(torch.zeros(3, 3, dtype=torch.float))
 
 
 def test_multiclass_confusion_matrix_init_negative_value() -> None:
     with pytest.raises(ValueError, match="Incorrect matrix values."):
-        MulticlassConfusionMatrix(torch.tensor([[0, 0], [-1, 0]]))
+        MulticlassConfusionMatrixTracker(torch.tensor([[0, 0], [-1, 0]]))
 
 
 @pytest.mark.parametrize("num_classes", [2, 5])
 def test_multiclass_confusion_matrix_num_classes(num_classes: int) -> None:
     assert (
-        MulticlassConfusionMatrix.from_num_classes(num_classes=num_classes).num_classes
+        MulticlassConfusionMatrixTracker.from_num_classes(num_classes=num_classes).num_classes
         == num_classes
     )
 
 
 def test_multiclass_confusion_matrix_all_reduce() -> None:
-    meter = MulticlassConfusionMatrix(
+    meter = MulticlassConfusionMatrixTracker(
         torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]], dtype=torch.long)
     ).all_reduce()
     assert meter.matrix.equal(torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]], dtype=torch.long))
@@ -669,7 +674,7 @@ def test_multiclass_confusion_matrix_all_reduce() -> None:
 
 
 def test_multiclass_confusion_matrix_all_reduce_sum_reduce() -> None:
-    meter = MulticlassConfusionMatrix(
+    meter = MulticlassConfusionMatrixTracker(
         torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]], dtype=torch.long)
     )
     reduce_mock = Mock(
@@ -684,7 +689,7 @@ def test_multiclass_confusion_matrix_all_reduce_sum_reduce() -> None:
 
 
 def test_multiclass_confusion_matrix_auto_update_resize() -> None:
-    meter = MulticlassConfusionMatrix(
+    meter = MulticlassConfusionMatrixTracker(
         torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]], dtype=torch.long)
     )
     meter.auto_update(torch.tensor([4, 2]), torch.tensor([4, 2]))
@@ -704,7 +709,7 @@ def test_multiclass_confusion_matrix_auto_update_resize() -> None:
 
 
 def test_multiclass_confusion_matrix_auto_update_no_resize() -> None:
-    meter = MulticlassConfusionMatrix(
+    meter = MulticlassConfusionMatrixTracker(
         torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]], dtype=torch.long)
     )
     meter.auto_update(torch.tensor([1, 2]), torch.tensor([1, 2]))
@@ -713,31 +718,33 @@ def test_multiclass_confusion_matrix_auto_update_no_resize() -> None:
 
 
 def test_multiclass_confusion_matrix_clone() -> None:
-    meter = MulticlassConfusionMatrix(torch.tensor([[3, 2], [1, 4]], dtype=torch.long))
+    meter = MulticlassConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]], dtype=torch.long))
     meter_cloned = meter.clone()
     assert meter is not meter_cloned
     assert meter.equal(meter_cloned)
 
 
 def test_multiclass_confusion_matrix_equal_true() -> None:
-    assert MulticlassConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).equal(
-        MulticlassConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
+    assert MulticlassConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).equal(
+        MulticlassConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]]))
     )
 
 
 def test_multiclass_confusion_matrix_equal_false_different_values() -> None:
-    assert not MulticlassConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).equal(
-        MulticlassConfusionMatrix(torch.tensor([[3, 2], [0, 4]]))
+    assert not MulticlassConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).equal(
+        MulticlassConfusionMatrixTracker(torch.tensor([[3, 2], [0, 4]]))
     )
 
 
 def test_multiclass_confusion_matrix_equal_false_different_type() -> None:
-    assert not MulticlassConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).equal(42)
+    assert not MulticlassConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).equal(42)
 
 
 def test_multiclass_confusion_matrix_get_normalized_matrix_normalization_true() -> None:
     assert (
-        MulticlassConfusionMatrix(torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long))
+        MulticlassConfusionMatrixTracker(
+            torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
+        )
         .get_normalized_matrix(normalization="true")
         .equal(torch.tensor([[0.3, 0.2, 0.5], [0.2, 0.8, 0.0], [0.4, 0.2, 0.4]], dtype=torch.float))
     )
@@ -745,7 +752,7 @@ def test_multiclass_confusion_matrix_get_normalized_matrix_normalization_true() 
 
 def test_multiclass_confusion_matrix_get_normalized_matrix_normalization_true_empty() -> None:
     assert (
-        MulticlassConfusionMatrix(torch.zeros(3, 3, dtype=torch.long))
+        MulticlassConfusionMatrixTracker(torch.zeros(3, 3, dtype=torch.long))
         .get_normalized_matrix(normalization="true")
         .equal(torch.zeros(3, 3, dtype=torch.float))
     )
@@ -753,7 +760,9 @@ def test_multiclass_confusion_matrix_get_normalized_matrix_normalization_true_em
 
 def test_multiclass_confusion_matrix_get_normalized_matrix_normalization_pred() -> None:
     assert (
-        MulticlassConfusionMatrix(torch.tensor([[3, 2, 5], [1, 4, 1], [4, 2, 4]], dtype=torch.long))
+        MulticlassConfusionMatrixTracker(
+            torch.tensor([[3, 2, 5], [1, 4, 1], [4, 2, 4]], dtype=torch.long)
+        )
         .get_normalized_matrix(normalization="pred")
         .equal(
             torch.tensor(
@@ -765,7 +774,7 @@ def test_multiclass_confusion_matrix_get_normalized_matrix_normalization_pred() 
 
 def test_multiclass_confusion_matrix_get_normalized_matrix_normalization_pred_empty() -> None:
     assert (
-        MulticlassConfusionMatrix(torch.zeros(3, 3, dtype=torch.long))
+        MulticlassConfusionMatrixTracker(torch.zeros(3, 3, dtype=torch.long))
         .get_normalized_matrix(normalization="pred")
         .equal(torch.zeros(3, 3, dtype=torch.float))
     )
@@ -773,7 +782,9 @@ def test_multiclass_confusion_matrix_get_normalized_matrix_normalization_pred_em
 
 def test_multiclass_confusion_matrix_get_normalized_matrix_normalization_all() -> None:
     assert (
-        MulticlassConfusionMatrix(torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long))
+        MulticlassConfusionMatrixTracker(
+            torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
+        )
         .get_normalized_matrix(normalization="all")
         .equal(
             torch.tensor(
@@ -785,7 +796,7 @@ def test_multiclass_confusion_matrix_get_normalized_matrix_normalization_all() -
 
 def test_multiclass_confusion_matrix_get_normalized_matrix_normalization_all_empty() -> None:
     assert (
-        MulticlassConfusionMatrix(torch.zeros(3, 3, dtype=torch.long))
+        MulticlassConfusionMatrixTracker(torch.zeros(3, 3, dtype=torch.long))
         .get_normalized_matrix(normalization="all")
         .equal(torch.zeros(3, 3, dtype=torch.float))
     )
@@ -793,20 +804,20 @@ def test_multiclass_confusion_matrix_get_normalized_matrix_normalization_all_emp
 
 def test_multiclass_confusion_matrix_get_normalized_matrix_incorrect_normalization() -> None:
     with pytest.raises(ValueError, match="Incorrect normalization: incorrect."):
-        MulticlassConfusionMatrix(torch.zeros(3, 3, dtype=torch.long)).get_normalized_matrix(
+        MulticlassConfusionMatrixTracker(torch.zeros(3, 3, dtype=torch.long)).get_normalized_matrix(
             normalization="incorrect"
         )
 
 
 def test_multiclass_confusion_matrix_reset() -> None:
-    meter = MulticlassConfusionMatrix(torch.ones(3, 3, dtype=torch.long))
+    meter = MulticlassConfusionMatrixTracker(torch.ones(3, 3, dtype=torch.long))
     meter.reset()
     assert meter.matrix.equal(torch.zeros(3, 3, dtype=torch.long))
     assert meter.count == 0
 
 
 def test_multiclass_confusion_matrix_resize() -> None:
-    meter = MulticlassConfusionMatrix(
+    meter = MulticlassConfusionMatrixTracker(
         torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]], dtype=torch.long)
     )
     meter.resize(num_classes=5)
@@ -825,7 +836,7 @@ def test_multiclass_confusion_matrix_resize() -> None:
 
 
 def test_multiclass_confusion_matrix_resize_incorrect_num_classes() -> None:
-    meter = MulticlassConfusionMatrix(
+    meter = MulticlassConfusionMatrixTracker(
         torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]], dtype=torch.long)
     )
     with pytest.raises(ValueError, match="Incorrect number of classes: 2."):
@@ -833,7 +844,7 @@ def test_multiclass_confusion_matrix_resize_incorrect_num_classes() -> None:
 
 
 def test_multiclass_confusion_matrix_update() -> None:
-    meter = MulticlassConfusionMatrix.from_num_classes(num_classes=3)
+    meter = MulticlassConfusionMatrixTracker.from_num_classes(num_classes=3)
     meter.update(
         prediction=torch.tensor([0, 1, 2, 0, 0, 1], dtype=torch.long),
         target=torch.tensor([2, 2, 2, 0, 0, 0], dtype=torch.long),
@@ -842,7 +853,7 @@ def test_multiclass_confusion_matrix_update() -> None:
 
 
 def test_multiclass_confusion_matrix_update_2() -> None:
-    meter = MulticlassConfusionMatrix.from_num_classes(num_classes=3)
+    meter = MulticlassConfusionMatrixTracker.from_num_classes(num_classes=3)
     meter.update(
         prediction=torch.tensor([0, 1, 2, 0, 0, 1], dtype=torch.long),
         target=torch.tensor([2, 2, 2, 0, 0, 0], dtype=torch.long),
@@ -856,18 +867,18 @@ def test_multiclass_confusion_matrix_update_2() -> None:
 
 @pytest.mark.parametrize("num_classes", [2, 5])
 def test_multiclass_confusion_matrix_from_num_classes(num_classes: int) -> None:
-    assert MulticlassConfusionMatrix.from_num_classes(num_classes=num_classes).matrix.equal(
+    assert MulticlassConfusionMatrixTracker.from_num_classes(num_classes=num_classes).matrix.equal(
         torch.zeros(num_classes, num_classes, dtype=torch.long)
     )
 
 
 def test_multiclass_confusion_matrix_from_num_classes_incorrect() -> None:
     with pytest.raises(ValueError, match="Incorrect number of classes."):
-        MulticlassConfusionMatrix.from_num_classes(num_classes=0)
+        MulticlassConfusionMatrixTracker.from_num_classes(num_classes=0)
 
 
 def test_multiclass_confusion_matrix_from_predictions() -> None:
-    assert MulticlassConfusionMatrix.from_predictions(
+    assert MulticlassConfusionMatrixTracker.from_predictions(
         prediction=torch.tensor([0, 1, 2, 0, 0, 1], dtype=torch.long),
         target=torch.tensor([2, 2, 2, 0, 0, 0], dtype=torch.long),
     ).matrix.equal(torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]], dtype=torch.long))
@@ -880,70 +891,70 @@ def test_multiclass_confusion_matrix_from_predictions() -> None:
 
 def test_multiclass_confusion_matrix__add__() -> None:
     assert (
-        MulticlassConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
-        + MulticlassConfusionMatrix(torch.tensor([[1, 0], [7, 2]]))
-    ).equal(MulticlassConfusionMatrix(torch.tensor([[4, 2], [8, 6]])))
+        MulticlassConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]]))
+        + MulticlassConfusionMatrixTracker(torch.tensor([[1, 0], [7, 2]]))
+    ).equal(MulticlassConfusionMatrixTracker(torch.tensor([[4, 2], [8, 6]])))
 
 
 def test_multiclass_confusion_matrix__iadd__() -> None:
-    meter = MulticlassConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
-    meter += MulticlassConfusionMatrix(torch.tensor([[1, 0], [7, 2]]))
-    assert meter.equal(MulticlassConfusionMatrix(torch.tensor([[4, 2], [8, 6]])))
+    meter = MulticlassConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]]))
+    meter += MulticlassConfusionMatrixTracker(torch.tensor([[1, 0], [7, 2]]))
+    assert meter.equal(MulticlassConfusionMatrixTracker(torch.tensor([[4, 2], [8, 6]])))
 
 
 def test_multiclass_confusion_matrix__sub__() -> None:
     assert (
-        MulticlassConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
-        - MulticlassConfusionMatrix(torch.tensor([[1, 0], [1, 2]]))
-    ).equal(MulticlassConfusionMatrix(torch.tensor([[2, 2], [0, 2]])))
+        MulticlassConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]]))
+        - MulticlassConfusionMatrixTracker(torch.tensor([[1, 0], [1, 2]]))
+    ).equal(MulticlassConfusionMatrixTracker(torch.tensor([[2, 2], [0, 2]])))
 
 
 def test_multiclass_confusion_matrix_add() -> None:
-    meter = MulticlassConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).add(
-        MulticlassConfusionMatrix(torch.tensor([[1, 0], [7, 2]]))
+    meter = MulticlassConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).add(
+        MulticlassConfusionMatrixTracker(torch.tensor([[1, 0], [7, 2]]))
     )
-    assert meter.equal(MulticlassConfusionMatrix(torch.tensor([[4, 2], [8, 6]])))
+    assert meter.equal(MulticlassConfusionMatrixTracker(torch.tensor([[4, 2], [8, 6]])))
     assert meter.count == 20
 
 
 def test_multiclass_confusion_matrix_add_() -> None:
-    meter = MulticlassConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
-    meter.add_(MulticlassConfusionMatrix(torch.tensor([[1, 0], [7, 2]])))
-    assert meter.equal(MulticlassConfusionMatrix(torch.tensor([[4, 2], [8, 6]])))
+    meter = MulticlassConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]]))
+    meter.add_(MulticlassConfusionMatrixTracker(torch.tensor([[1, 0], [7, 2]])))
+    assert meter.equal(MulticlassConfusionMatrixTracker(torch.tensor([[4, 2], [8, 6]])))
     assert meter.count == 20
 
 
 def test_multiclass_confusion_matrix_merge() -> None:
-    meter = MulticlassConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
+    meter = MulticlassConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]]))
     meter_merged = meter.merge(
         [
-            MulticlassConfusionMatrix(torch.tensor([[1, 0], [7, 2]])),
-            MulticlassConfusionMatrix(torch.tensor([[1, 0], [0, 1]])),
+            MulticlassConfusionMatrixTracker(torch.tensor([[1, 0], [7, 2]])),
+            MulticlassConfusionMatrixTracker(torch.tensor([[1, 0], [0, 1]])),
         ]
     )
-    assert meter.equal(MulticlassConfusionMatrix(torch.tensor([[3, 2], [1, 4]])))
+    assert meter.equal(MulticlassConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])))
     assert meter.count == 10
-    assert meter_merged.equal(MulticlassConfusionMatrix(torch.tensor([[5, 2], [8, 7]])))
+    assert meter_merged.equal(MulticlassConfusionMatrixTracker(torch.tensor([[5, 2], [8, 7]])))
     assert meter_merged.count == 22
 
 
 def test_multiclass_confusion_matrix_merge_() -> None:
-    meter = MulticlassConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
+    meter = MulticlassConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]]))
     meter.merge_(
         [
-            MulticlassConfusionMatrix(torch.tensor([[1, 0], [7, 2]])),
-            MulticlassConfusionMatrix(torch.tensor([[1, 0], [0, 1]])),
+            MulticlassConfusionMatrixTracker(torch.tensor([[1, 0], [7, 2]])),
+            MulticlassConfusionMatrixTracker(torch.tensor([[1, 0], [0, 1]])),
         ]
     )
-    assert meter.equal(MulticlassConfusionMatrix(torch.tensor([[5, 2], [8, 7]])))
+    assert meter.equal(MulticlassConfusionMatrixTracker(torch.tensor([[5, 2], [8, 7]])))
     assert meter.count == 22
 
 
 def test_multiclass_confusion_matrix_sub() -> None:
-    meter = MulticlassConfusionMatrix(torch.tensor([[3, 2], [1, 4]])).sub(
-        MulticlassConfusionMatrix(torch.tensor([[1, 0], [1, 2]]))
+    meter = MulticlassConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).sub(
+        MulticlassConfusionMatrixTracker(torch.tensor([[1, 0], [1, 2]]))
     )
-    assert meter.equal(MulticlassConfusionMatrix(torch.tensor([[2, 2], [0, 2]])))
+    assert meter.equal(MulticlassConfusionMatrixTracker(torch.tensor([[2, 2], [0, 2]])))
     assert meter.count == 6
 
 
@@ -953,32 +964,32 @@ def test_multiclass_confusion_matrix_sub() -> None:
 
 
 def test_multiclass_confusion_matrix_false_negative() -> None:
-    assert MulticlassConfusionMatrix(
+    assert MulticlassConfusionMatrixTracker(
         torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
     ).false_negative.equal(torch.tensor([7, 1, 6], dtype=torch.long))
 
 
 def test_multiclass_confusion_matrix_false_positive() -> None:
-    assert MulticlassConfusionMatrix(
+    assert MulticlassConfusionMatrixTracker(
         torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
     ).false_positive.equal(torch.tensor([5, 4, 5], dtype=torch.long))
 
 
 def test_multiclass_confusion_matrix_support() -> None:
-    assert MulticlassConfusionMatrix(
+    assert MulticlassConfusionMatrixTracker(
         torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
     ).support.equal(torch.tensor([10, 5, 10], dtype=torch.long))
 
 
 def test_multiclass_confusion_matrix_true_positive() -> None:
-    assert MulticlassConfusionMatrix(
+    assert MulticlassConfusionMatrixTracker(
         torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
     ).true_positive.equal(torch.tensor([3, 4, 4], dtype=torch.long))
 
 
 def test_multiclass_confusion_matrix_accuracy() -> None:
     assert (
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).accuracy()
         == 0.44
@@ -990,12 +1001,12 @@ def test_multiclass_confusion_matrix_accuracy_empty() -> None:
         EmptyTrackerError,
         match="It is not possible to compute the accuracy because the confusion matrix is empty",
     ):
-        MulticlassConfusionMatrix.from_num_classes(3).accuracy()
+        MulticlassConfusionMatrixTracker.from_num_classes(3).accuracy()
 
 
 def test_multiclass_confusion_matrix_balanced_accuracy() -> None:
     assert (
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).balanced_accuracy()
         == 0.5
@@ -1010,12 +1021,14 @@ def test_multiclass_confusion_matrix_balanced_accuracy_empty() -> None:
             "the confusion matrix is empty"
         ),
     ):
-        MulticlassConfusionMatrix.from_num_classes(3).balanced_accuracy()
+        MulticlassConfusionMatrixTracker.from_num_classes(3).balanced_accuracy()
 
 
 def test_multiclass_confusion_matrix_f_beta_score_1() -> None:
     assert (
-        MulticlassConfusionMatrix(torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long))
+        MulticlassConfusionMatrixTracker(
+            torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
+        )
         .f_beta_score()
         .allclose(
             torch.tensor(
@@ -1027,7 +1040,9 @@ def test_multiclass_confusion_matrix_f_beta_score_1() -> None:
 
 def test_multiclass_confusion_matrix_f_beta_score_2() -> None:
     assert (
-        MulticlassConfusionMatrix(torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long))
+        MulticlassConfusionMatrixTracker(
+            torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
+        )
         .f_beta_score(beta=2)
         .allclose(
             torch.tensor([0.3125, 0.7142857142857143, 0.40816326530612246], dtype=torch.float)
@@ -1037,7 +1052,9 @@ def test_multiclass_confusion_matrix_f_beta_score_2() -> None:
 
 def test_multiclass_confusion_matrix_f_beta_score_0_5() -> None:
     assert (
-        MulticlassConfusionMatrix(torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long))
+        MulticlassConfusionMatrixTracker(
+            torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
+        )
         .f_beta_score(beta=0.5)
         .allclose(
             torch.tensor(
@@ -1055,12 +1072,12 @@ def test_multiclass_confusion_matrix_f_beta_score_empty() -> None:
             "the confusion matrix is empty"
         ),
     ):
-        MulticlassConfusionMatrix.from_num_classes(3).f_beta_score()
+        MulticlassConfusionMatrixTracker.from_num_classes(3).f_beta_score()
 
 
 def test_multiclass_confusion_matrix_macro_f_beta_score_1() -> None:
     assert math.isclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).macro_f_beta_score(),
         0.4565901756286621,
@@ -1069,7 +1086,7 @@ def test_multiclass_confusion_matrix_macro_f_beta_score_1() -> None:
 
 def test_multiclass_confusion_matrix_macro_f_beta_score_2() -> None:
     assert math.isclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).macro_f_beta_score(beta=2),
         0.4783163368701935,
@@ -1078,7 +1095,7 @@ def test_multiclass_confusion_matrix_macro_f_beta_score_2() -> None:
 
 def test_multiclass_confusion_matrix_macro_f_beta_score_0_5() -> None:
     assert math.isclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).macro_f_beta_score(beta=0.5),
         0.44415533542633057,
@@ -1093,12 +1110,12 @@ def test_multiclass_confusion_matrix_macro_f_beta_score_empty() -> None:
             "the confusion matrix is empty"
         ),
     ):
-        MulticlassConfusionMatrix.from_num_classes(3).macro_f_beta_score()
+        MulticlassConfusionMatrixTracker.from_num_classes(3).macro_f_beta_score()
 
 
 def test_multiclass_confusion_matrix_micro_f_beta_score_1() -> None:
     assert math.isclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).micro_f_beta_score(),
         0.44,
@@ -1108,7 +1125,7 @@ def test_multiclass_confusion_matrix_micro_f_beta_score_1() -> None:
 
 def test_multiclass_confusion_matrix_micro_f_beta_score_2() -> None:
     assert math.isclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).micro_f_beta_score(beta=2),
         0.44,
@@ -1118,7 +1135,7 @@ def test_multiclass_confusion_matrix_micro_f_beta_score_2() -> None:
 
 def test_multiclass_confusion_matrix_micro_f_beta_score_0_5() -> None:
     assert math.isclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).micro_f_beta_score(beta=0.5),
         0.44,
@@ -1134,12 +1151,12 @@ def test_multiclass_confusion_matrix_micro_f_beta_score_empty() -> None:
             "the confusion matrix is empty"
         ),
     ):
-        MulticlassConfusionMatrix.from_num_classes(3).micro_f_beta_score()
+        MulticlassConfusionMatrixTracker.from_num_classes(3).micro_f_beta_score()
 
 
 def test_multiclass_confusion_matrix_weighted_f_beta_score_1() -> None:
     assert math.isclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).weighted_f_beta_score(),
         0.42483131408691405,
@@ -1149,7 +1166,7 @@ def test_multiclass_confusion_matrix_weighted_f_beta_score_1() -> None:
 
 def test_multiclass_confusion_matrix_weighted_f_beta_score_2() -> None:
     assert math.isclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).weighted_f_beta_score(beta=2),
         0.4311224365234375,
@@ -1159,7 +1176,7 @@ def test_multiclass_confusion_matrix_weighted_f_beta_score_2() -> None:
 
 def test_multiclass_confusion_matrix_weighted_f_beta_score_0_5() -> None:
     assert math.isclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).weighted_f_beta_score(beta=0.5),
         0.4248783111572266,
@@ -1175,12 +1192,14 @@ def test_multiclass_confusion_matrix_weighted_f_beta_score_empty() -> None:
             "the confusion matrix is empty"
         ),
     ):
-        MulticlassConfusionMatrix.from_num_classes(3).weighted_f_beta_score()
+        MulticlassConfusionMatrixTracker.from_num_classes(3).weighted_f_beta_score()
 
 
 def test_multiclass_confusion_matrix_precision() -> None:
     assert (
-        MulticlassConfusionMatrix(torch.tensor([[3, 2, 5], [1, 4, 1], [4, 2, 4]], dtype=torch.long))
+        MulticlassConfusionMatrixTracker(
+            torch.tensor([[3, 2, 5], [1, 4, 1], [4, 2, 4]], dtype=torch.long)
+        )
         .precision()
         .equal(torch.tensor([0.375, 0.5, 0.4], dtype=torch.float))
     )
@@ -1188,7 +1207,9 @@ def test_multiclass_confusion_matrix_precision() -> None:
 
 def test_multiclass_confusion_matrix_precision_zero() -> None:
     assert (
-        MulticlassConfusionMatrix(torch.tensor([[3, 0, 5], [3, 0, 1], [4, 0, 4]], dtype=torch.long))
+        MulticlassConfusionMatrixTracker(
+            torch.tensor([[3, 0, 5], [3, 0, 1], [4, 0, 4]], dtype=torch.long)
+        )
         .precision()
         .equal(torch.tensor([0.3, 0.0, 0.4], dtype=torch.float))
     )
@@ -1199,12 +1220,12 @@ def test_multiclass_confusion_matrix_precision_empty() -> None:
         EmptyTrackerError,
         match="It is not possible to compute the precision because the confusion matrix is empty",
     ):
-        MulticlassConfusionMatrix.from_num_classes(3).precision()
+        MulticlassConfusionMatrixTracker.from_num_classes(3).precision()
 
 
 def test_multiclass_confusion_matrix_macro_precision() -> None:
     assert math.isclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).macro_precision(),
         0.43981480598449707,
@@ -1217,12 +1238,12 @@ def test_multiclass_confusion_matrix_macro_precision_empty() -> None:
         EmptyTrackerError,
         match="It is not possible to compute the precision because the confusion matrix is empty",
     ):
-        MulticlassConfusionMatrix.from_num_classes(3).macro_precision()
+        MulticlassConfusionMatrixTracker.from_num_classes(3).macro_precision()
 
 
 def test_multiclass_confusion_matrix_micro_precision() -> None:
     assert math.isclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).micro_precision(),
         0.44,
@@ -1238,12 +1259,12 @@ def test_multiclass_confusion_matrix_micro_precision_empty() -> None:
             "the confusion matrix is empty"
         ),
     ):
-        MulticlassConfusionMatrix.from_num_classes(3).micro_precision()
+        MulticlassConfusionMatrixTracker.from_num_classes(3).micro_precision()
 
 
 def test_multiclass_confusion_matrix_weighted_precision() -> None:
     assert (
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).weighted_precision()
         == 0.42777778625488283
@@ -1255,12 +1276,14 @@ def test_multiclass_confusion_matrix_weighted_precision_empty() -> None:
         EmptyTrackerError,
         match=("It is not possible to compute the precision because the confusion matrix is empty"),
     ):
-        MulticlassConfusionMatrix.from_num_classes(3).weighted_precision()
+        MulticlassConfusionMatrixTracker.from_num_classes(3).weighted_precision()
 
 
 def test_multiclass_confusion_matrix_recall() -> None:
     assert (
-        MulticlassConfusionMatrix(torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long))
+        MulticlassConfusionMatrixTracker(
+            torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
+        )
         .recall()
         .equal(torch.tensor([0.3, 0.8, 0.4], dtype=torch.float))
     )
@@ -1268,7 +1291,9 @@ def test_multiclass_confusion_matrix_recall() -> None:
 
 def test_multiclass_confusion_matrix_recall_zero() -> None:
     assert (
-        MulticlassConfusionMatrix(torch.tensor([[3, 2, 5], [0, 0, 0], [4, 2, 4]], dtype=torch.long))
+        MulticlassConfusionMatrixTracker(
+            torch.tensor([[3, 2, 5], [0, 0, 0], [4, 2, 4]], dtype=torch.long)
+        )
         .recall()
         .equal(torch.tensor([0.3, 0.0, 0.4], dtype=torch.float))
     )
@@ -1279,12 +1304,12 @@ def test_multiclass_confusion_matrix_recall_empty() -> None:
         EmptyTrackerError,
         match="It is not possible to compute the recall because the confusion matrix is empty",
     ):
-        MulticlassConfusionMatrix.from_num_classes(3).recall()
+        MulticlassConfusionMatrixTracker.from_num_classes(3).recall()
 
 
 def test_multiclass_confusion_matrix_macro_recall() -> None:
     assert (
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).macro_recall()
         == 0.5
@@ -1296,12 +1321,12 @@ def test_multiclass_confusion_matrix_macro_recall_empty() -> None:
         EmptyTrackerError,
         match="It is not possible to compute the recall because the confusion matrix is empty",
     ):
-        MulticlassConfusionMatrix.from_num_classes(3).macro_recall()
+        MulticlassConfusionMatrixTracker.from_num_classes(3).macro_recall()
 
 
 def test_multiclass_confusion_matrix_micro_recall() -> None:
     assert math.isclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).micro_recall(),
         0.44,
@@ -1317,12 +1342,12 @@ def test_multiclass_confusion_matrix_micro_recall_empty() -> None:
             "the confusion matrix is empty"
         ),
     ):
-        MulticlassConfusionMatrix.from_num_classes(3).micro_recall()
+        MulticlassConfusionMatrixTracker.from_num_classes(3).micro_recall()
 
 
 def test_multiclass_confusion_matrix_weighted_recall() -> None:
     assert math.isclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).weighted_recall(),
         0.44,
@@ -1335,12 +1360,12 @@ def test_multiclass_confusion_matrix_weighted_recall_empty() -> None:
         EmptyTrackerError,
         match="It is not possible to compute the recall because the confusion matrix is empty",
     ):
-        MulticlassConfusionMatrix.from_num_classes(3).weighted_recall()
+        MulticlassConfusionMatrixTracker.from_num_classes(3).weighted_recall()
 
 
 def test_multiclass_confusion_matrix_compute_per_class_metrics() -> None:
     assert objects_are_allclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).compute_per_class_metrics(),
         {
@@ -1353,7 +1378,7 @@ def test_multiclass_confusion_matrix_compute_per_class_metrics() -> None:
 
 def test_multiclass_confusion_matrix_compute_per_class_metrics_betas() -> None:
     assert objects_are_allclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).compute_per_class_metrics(betas=(1, 2)),
         {
@@ -1367,7 +1392,7 @@ def test_multiclass_confusion_matrix_compute_per_class_metrics_betas() -> None:
 
 def test_multiclass_confusion_matrix_compute_per_class_metrics_prefix_suffix() -> None:
     assert objects_are_allclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).compute_per_class_metrics(prefix="prefix_", suffix="_suffix"),
         {
@@ -1385,12 +1410,12 @@ def test_multiclass_confusion_matrix_compute_per_class_metrics_empty() -> None:
         EmptyTrackerError,
         match="It is not possible to compute the metrics because the confusion matrix is empty",
     ):
-        MulticlassConfusionMatrix.from_num_classes(3).compute_per_class_metrics()
+        MulticlassConfusionMatrixTracker.from_num_classes(3).compute_per_class_metrics()
 
 
 def test_multiclass_confusion_matrix_compute_macro_metrics() -> None:
     assert objects_are_allclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).compute_macro_metrics(),
         {
@@ -1403,7 +1428,7 @@ def test_multiclass_confusion_matrix_compute_macro_metrics() -> None:
 
 def test_multiclass_confusion_matrix_compute_macro_metrics_betas() -> None:
     assert objects_are_allclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).compute_macro_metrics(betas=(1, 2)),
         {
@@ -1417,7 +1442,7 @@ def test_multiclass_confusion_matrix_compute_macro_metrics_betas() -> None:
 
 def test_multiclass_confusion_matrix_compute_macro_metrics_prefix_suffix() -> None:
     assert objects_are_allclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).compute_macro_metrics(prefix="prefix_", suffix="_suffix"),
         {
@@ -1436,12 +1461,12 @@ def test_multiclass_confusion_matrix_compute_macro_metrics_empty() -> None:
             "the confusion matrix is empty"
         ),
     ):
-        MulticlassConfusionMatrix.from_num_classes(3).compute_macro_metrics()
+        MulticlassConfusionMatrixTracker.from_num_classes(3).compute_macro_metrics()
 
 
 def test_multiclass_confusion_matrix_compute_micro_metrics() -> None:
     assert objects_are_allclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).compute_micro_metrics(),
         {
@@ -1454,7 +1479,7 @@ def test_multiclass_confusion_matrix_compute_micro_metrics() -> None:
 
 def test_multiclass_confusion_matrix_compute_micro_metrics_betas() -> None:
     assert objects_are_allclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).compute_micro_metrics(betas=(1, 2)),
         {
@@ -1468,7 +1493,7 @@ def test_multiclass_confusion_matrix_compute_micro_metrics_betas() -> None:
 
 def test_multiclass_confusion_matrix_compute_micro_metrics_prefix_suffix() -> None:
     assert objects_are_allclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).compute_micro_metrics(prefix="prefix_", suffix="_suffix"),
         {
@@ -1487,12 +1512,12 @@ def test_multiclass_confusion_matrix_compute_micro_metrics_empty() -> None:
             "the confusion matrix is empty"
         ),
     ):
-        MulticlassConfusionMatrix.from_num_classes(3).compute_micro_metrics()
+        MulticlassConfusionMatrixTracker.from_num_classes(3).compute_micro_metrics()
 
 
 def test_multiclass_confusion_matrix_compute_weighted_metrics() -> None:
     assert objects_are_allclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).compute_weighted_metrics(),
         {
@@ -1505,7 +1530,7 @@ def test_multiclass_confusion_matrix_compute_weighted_metrics() -> None:
 
 def test_multiclass_confusion_matrix_compute_weighted_metrics_betas() -> None:
     assert objects_are_allclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).compute_weighted_metrics(betas=(1, 2)),
         {
@@ -1519,7 +1544,7 @@ def test_multiclass_confusion_matrix_compute_weighted_metrics_betas() -> None:
 
 def test_multiclass_confusion_matrix_compute_weighted_metrics_prefix_suffix() -> None:
     assert objects_are_allclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).compute_weighted_metrics(prefix="prefix_", suffix="_suffix"),
         {
@@ -1538,12 +1563,12 @@ def test_multiclass_confusion_matrix_compute_weighted_metrics_empty() -> None:
             "the confusion matrix is empty"
         ),
     ):
-        MulticlassConfusionMatrix.from_num_classes(3).compute_weighted_metrics()
+        MulticlassConfusionMatrixTracker.from_num_classes(3).compute_weighted_metrics()
 
 
 def test_multiclass_confusion_matrix_compute_scalar_metrics() -> None:
     assert objects_are_allclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).compute_scalar_metrics(),
         {
@@ -1564,7 +1589,7 @@ def test_multiclass_confusion_matrix_compute_scalar_metrics() -> None:
 
 def test_multiclass_confusion_matrix_compute_scalar_metrics_betas() -> None:
     assert objects_are_allclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).compute_scalar_metrics(betas=(1, 2)),
         {
@@ -1588,7 +1613,7 @@ def test_multiclass_confusion_matrix_compute_scalar_metrics_betas() -> None:
 
 def test_multiclass_confusion_matrix_compute_scalar_metrics_prefix_suffix() -> None:
     assert objects_are_allclose(
-        MulticlassConfusionMatrix(
+        MulticlassConfusionMatrixTracker(
             torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
         ).compute_scalar_metrics(prefix="prefix_", suffix="_suffix"),
         {
@@ -1612,7 +1637,7 @@ def test_multiclass_confusion_matrix_compute_scalar_metrics_empty() -> None:
         EmptyTrackerError,
         match="It is not possible to compute the metrics because the confusion matrix is empty",
     ):
-        MulticlassConfusionMatrix.from_num_classes(3).compute_scalar_metrics()
+        MulticlassConfusionMatrixTracker.from_num_classes(3).compute_scalar_metrics()
 
 
 ############################################
@@ -1646,13 +1671,15 @@ def test_check_confusion_matrix_negative_value() -> None:
 
 
 def test_check_op_compatibility_binary_correct() -> None:
-    check_op_compatibility_binary(BinaryConfusionMatrix(), BinaryConfusionMatrix(), "op")
+    check_op_compatibility_binary(
+        BinaryConfusionMatrixTracker(), BinaryConfusionMatrixTracker(), "op"
+    )
     # will fail if an exception is raised
 
 
 def test_check_op_compatibility_binary_incorrect_type() -> None:
     with pytest.raises(TypeError, match="Incorrect type .*Mock.*"):
-        check_op_compatibility_binary(BinaryConfusionMatrix(), Mock(), "op")
+        check_op_compatibility_binary(BinaryConfusionMatrixTracker(), Mock(), "op")
 
 
 #######################################################
@@ -1662,8 +1689,8 @@ def test_check_op_compatibility_binary_incorrect_type() -> None:
 
 def test_check_op_compatibility_multiclass_correct() -> None:
     check_op_compatibility_multiclass(
-        MulticlassConfusionMatrix.from_num_classes(3),
-        MulticlassConfusionMatrix.from_num_classes(3),
+        MulticlassConfusionMatrixTracker.from_num_classes(3),
+        MulticlassConfusionMatrixTracker.from_num_classes(3),
         "op",
     )
     # will fail if an exception is raised
@@ -1672,7 +1699,7 @@ def test_check_op_compatibility_multiclass_correct() -> None:
 def test_check_op_compatibility_multiclass_incorrect_type() -> None:
     with pytest.raises(TypeError, match="Incorrect type: .*Mock.*"):
         check_op_compatibility_multiclass(
-            MulticlassConfusionMatrix.from_num_classes(3),
+            MulticlassConfusionMatrixTracker.from_num_classes(3),
             Mock(),
             "op",
         )
@@ -1681,8 +1708,8 @@ def test_check_op_compatibility_multiclass_incorrect_type() -> None:
 def test_check_op_compatibility_multiclass_incorrect_shape() -> None:
     with pytest.raises(ValueError, match="Incorrect shape:"):
         check_op_compatibility_multiclass(
-            MulticlassConfusionMatrix.from_num_classes(3),
-            MulticlassConfusionMatrix.from_num_classes(4),
+            MulticlassConfusionMatrixTracker.from_num_classes(3),
+            MulticlassConfusionMatrixTracker.from_num_classes(4),
             "op",
         )
 
