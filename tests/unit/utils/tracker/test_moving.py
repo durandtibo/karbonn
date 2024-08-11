@@ -21,6 +21,14 @@ def test_moving_average_str() -> None:
     assert str(MovingAverage()).startswith("MovingAverage(")
 
 
+def test_moving_average_count() -> None:
+    assert MovingAverage(values=(4, 2, 1)).count == 3
+
+
+def test_moving_average_count_empty() -> None:
+    assert MovingAverage().count == 0
+
+
 def test_moving_average_values() -> None:
     assert MovingAverage(values=(4, 2, 1)).values == (4, 2, 1)
 
