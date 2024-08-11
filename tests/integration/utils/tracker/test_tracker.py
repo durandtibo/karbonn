@@ -15,11 +15,11 @@ from karbonn.testing import (
 )
 from karbonn.utils.imports import is_ignite_available
 from karbonn.utils.tracker import (
-    Average,
-    BinaryConfusionMatrix,
+    AverageTracker,
+    BinaryConfusionMatrixTracker,
     ExtremaTensorTracker,
     MeanTensorTracker,
-    MulticlassConfusionMatrix,
+    MulticlassConfusionMatrixTracker,
     ScalableTensorTracker,
     TensorTracker,
 )
@@ -43,11 +43,15 @@ def check_average(local_rank: int) -> None:
     """
     assert idist.get_world_size() == 2  # This test is valid only for 2 processes.
 
-    tracker = Average(count=8, total=20.0) if local_rank == 0 else Average(count=2, total=12.0)
-    assert tracker.all_reduce().equal(Average(count=10, total=32.0))
+    tracker = (
+        AverageTracker(count=8, total=20.0)
+        if local_rank == 0
+        else AverageTracker(count=2, total=12.0)
+    )
+    assert tracker.all_reduce().equal(AverageTracker(count=10, total=32.0))
 
-    tracker = Average(count=8, total=20.0) if local_rank == 0 else Average()
-    assert tracker.all_reduce().equal(Average(count=8, total=20.0))
+    tracker = AverageTracker(count=8, total=20.0) if local_rank == 0 else AverageTracker()
+    assert tracker.all_reduce().equal(AverageTracker(count=8, total=20.0))
 
 
 ###################################
@@ -181,18 +185,18 @@ def check_binary_confusion_matrix(local_rank: int) -> None:
     assert idist.get_world_size() == 2  # This test is valid only for 2 processes.
 
     tracker = (
-        BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
+        BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]]))
         if local_rank == 0
-        else BinaryConfusionMatrix(torch.tensor([[1, 1], [1, 1]]))
+        else BinaryConfusionMatrixTracker(torch.tensor([[1, 1], [1, 1]]))
     )
-    assert tracker.all_reduce().equal(BinaryConfusionMatrix(torch.tensor([[4, 3], [2, 5]])))
+    assert tracker.all_reduce().equal(BinaryConfusionMatrixTracker(torch.tensor([[4, 3], [2, 5]])))
 
     tracker = (
-        BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]]))
+        BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]]))
         if local_rank == 0
-        else BinaryConfusionMatrix()
+        else BinaryConfusionMatrixTracker()
     )
-    assert tracker.all_reduce().equal(BinaryConfusionMatrix(torch.tensor([[3, 2], [1, 4]])))
+    assert tracker.all_reduce().equal(BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])))
 
 
 ###############################################
@@ -209,21 +213,21 @@ def check_multiclass_confusion_matrix(local_rank: int) -> None:
     assert idist.get_world_size() == 2  # This test is valid only for 2 processes.
 
     tracker = (
-        MulticlassConfusionMatrix(torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]]))
+        MulticlassConfusionMatrixTracker(torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]]))
         if local_rank == 0
-        else MulticlassConfusionMatrix(torch.tensor([[1, 1, 1], [0, 1, 0], [1, 1, 1]]))
+        else MulticlassConfusionMatrixTracker(torch.tensor([[1, 1, 1], [0, 1, 0], [1, 1, 1]]))
     )
     assert tracker.all_reduce().equal(
-        MulticlassConfusionMatrix(torch.tensor([[3, 2, 1], [0, 1, 0], [2, 2, 2]]))
+        MulticlassConfusionMatrixTracker(torch.tensor([[3, 2, 1], [0, 1, 0], [2, 2, 2]]))
     )
 
     tracker = (
-        MulticlassConfusionMatrix(torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]]))
+        MulticlassConfusionMatrixTracker(torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]]))
         if local_rank == 0
-        else MulticlassConfusionMatrix(torch.zeros(3, 3, dtype=torch.long))
+        else MulticlassConfusionMatrixTracker(torch.zeros(3, 3, dtype=torch.long))
     )
     assert tracker.all_reduce().equal(
-        MulticlassConfusionMatrix(torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]]))
+        MulticlassConfusionMatrixTracker(torch.tensor([[2, 1, 0], [0, 0, 0], [1, 1, 1]]))
     )
 
 

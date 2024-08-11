@@ -23,8 +23,8 @@ class BaseTracker(ABC):
 
     ```pycon
 
-    >>> from karbonn.utils.tracker import Average
-    >>> tracker = Average()
+    >>> from karbonn.utils.tracker import AverageTracker
+    >>> tracker = AverageTracker()
     >>> for i in range(11):
     ...     tracker.update(i)
     ...
@@ -56,8 +56,8 @@ class BaseTracker(ABC):
         ```pycon
 
         >>> import torch
-        >>> from karbonn.utils.tracker import Average
-        >>> tracker = Average(total=55.0, count=11)
+        >>> from karbonn.utils.tracker import AverageTracker
+        >>> tracker = AverageTracker(total=55.0, count=11)
         >>> meter_cloned = tracker.clone()
         >>> tracker.update(1)
         >>> tracker.sum()
@@ -87,9 +87,9 @@ class BaseTracker(ABC):
         ```pycon
 
         >>> import torch
-        >>> from karbonn.utils.tracker import Average
-        >>> meter1 = Average(total=55.0, count=11)
-        >>> meter2 = Average(total=3.0, count=3)
+        >>> from karbonn.utils.tracker import AverageTracker
+        >>> meter1 = AverageTracker(total=55.0, count=11)
+        >>> meter2 = AverageTracker(total=3.0, count=3)
         >>> meter1.equal(meter2)
         False
 
@@ -112,9 +112,9 @@ class BaseTracker(ABC):
         ```pycon
 
         >>> import torch
-        >>> from karbonn.utils.tracker import Average
-        >>> meter1 = Average(total=55.0, count=10)
-        >>> meter2 = Average(total=3.0, count=3)
+        >>> from karbonn.utils.tracker import AverageTracker
+        >>> meter1 = AverageTracker(total=55.0, count=10)
+        >>> meter2 = AverageTracker(total=3.0, count=3)
         >>> meter3 = meter1.merge([meter2])
         >>> meter3.count
         13.0
@@ -138,9 +138,9 @@ class BaseTracker(ABC):
         ```pycon
 
         >>> import torch
-        >>> from karbonn.utils.tracker import Average
-        >>> meter1 = Average(total=55.0, count=10)
-        >>> meter2 = Average(total=3.0, count=3)
+        >>> from karbonn.utils.tracker import AverageTracker
+        >>> meter1 = AverageTracker(total=55.0, count=10)
+        >>> meter2 = AverageTracker(total=3.0, count=3)
         >>> meter1.merge_([meter2])
         >>> meter1.count
         13.0
@@ -161,8 +161,8 @@ class BaseTracker(ABC):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import Average
-        >>> tracker = Average()
+        >>> from karbonn.utils.tracker import AverageTracker
+        >>> tracker = AverageTracker()
         >>> tracker.load_state_dict({"count": 11.0, "total": 55.0})
         >>> tracker.count
         11.0
@@ -180,8 +180,8 @@ class BaseTracker(ABC):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import Average
-        >>> tracker = Average()
+        >>> from karbonn.utils.tracker import AverageTracker
+        >>> tracker = AverageTracker()
         >>> for i in range(11):
         ...     tracker.update(i)
         ...
@@ -203,8 +203,8 @@ class BaseTracker(ABC):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import Average
-        >>> tracker = Average()
+        >>> from karbonn.utils.tracker import AverageTracker
+        >>> tracker = AverageTracker()
         >>> for i in range(11):
         ...     tracker.update(i)
         ...
@@ -229,8 +229,8 @@ class BaseTracker(ABC):
 
         ```pycon
 
-        >>> from karbonn.utils.tracker import Average
-        >>> tracker = Average()
+        >>> from karbonn.utils.tracker import AverageTracker
+        >>> tracker = AverageTracker()
         >>> for i in range(11):
         ...     tracker.update(i)
         ...
