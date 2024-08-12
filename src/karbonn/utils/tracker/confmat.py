@@ -1155,7 +1155,7 @@ class BinaryConfusionMatrixTracker(BaseConfusionMatrixTracker):
             raise EmptyTrackerError(msg)
         return self.recall()
 
-    def compute_all_metrics(
+    def compute_metrics(
         self,
         betas: Sequence[float] = (1,),
         prefix: str = "",
@@ -1183,7 +1183,7 @@ class BinaryConfusionMatrixTracker(BaseConfusionMatrixTracker):
         ...     prediction=torch.tensor([0, 1, 1, 0, 0, 1]),
         ...     target=torch.tensor([1, 1, 1, 0, 0, 1]),
         ... )
-        >>> confmat.compute_all_metrics()
+        >>> confmat.compute_metrics()
         {'accuracy': 0.833333...,
          'balanced_accuracy': 0.875,
          'false_negative_rate': 0.25,
@@ -2499,6 +2499,56 @@ class MulticlassConfusionMatrixTracker(BaseConfusionMatrixTracker):
         metrics.update(self.compute_weighted_metrics(betas, prefix, suffix))
         return metrics
 
+    def compute_metrics(
+        self,
+        betas: Sequence[float] = (1,),
+        prefix: str = "",
+        suffix: str = "",
+    ) -> dict[str, float | Tensor]:
+        r"""Compute all the metrics.
+
+        Args:
+            betas: The betas used to compute the f-beta score.
+            prefix: The prefix for all the metrics.
+            suffix: The suffix for all the metrics.
+
+        Returns:
+            All the metrics.
+
+        Raises:
+            EmptyTrackerError: if the confusion matrix is empty.
+
+        Example usage:
+
+        ```pycon
+
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_predictions(
+        ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
+        ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),
+        ... )
+        >>> confmat.compute_metrics()
+        {'accuracy': 0.5,
+         'balanced_accuracy': 0.333333...,
+         'macro_precision': 0.555555...,
+         'macro_recall': 0.333333...,
+         'macro_f1_score': 0.388888...,
+         'micro_precision': 0.5,
+         'micro_recall': 0.5,
+         'micro_f1_score': 0.5,
+         'weighted_precision': 0.833333...,
+         'weighted_recall': 0.5,
+         'weighted_f1_score': 0.583333...,
+         'precision': tensor([0.6667, 0.0000, 1.0000]),
+         'recall': tensor([0.6667, 0.0000, 0.3333]),
+         'f1_score': tensor([0.6667, 0.0000, 0.5000])}
+
+        ```
+        """
+        return self.compute_scalar_metrics(
+            betas=betas, prefix=prefix, suffix=suffix
+        ) | self.compute_per_class_metrics(betas=betas, prefix=prefix, suffix=suffix)
+
     def get_records(
         self, betas: Sequence[float] = (1,), prefix: str = "", suffix: str = ""
     ) -> tuple[BaseRecord, ...]:
@@ -2510,7 +2560,7 @@ class MulticlassConfusionMatrixTracker(BaseConfusionMatrixTracker):
             suffix: The suffix for all the metrics.
 
         Returns:
-            The records.
+            The records for the metrics that are easily comparable.
 
         Example usage:
 
