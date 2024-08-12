@@ -1709,6 +1709,71 @@ def test_multiclass_confusion_matrix_compute_scalar_metrics_empty() -> None:
         MulticlassConfusionMatrixTracker.from_num_classes(3).compute_scalar_metrics()
 
 
+def test_multiclass_confusion_matrix_get_records() -> None:
+    assert objects_are_allclose(
+        MulticlassConfusionMatrixTracker.from_num_classes(5).get_records(),
+        (
+            MaxScalarRecord(name="accuracy"),
+            MaxScalarRecord(name="balanced_accuracy"),
+            MaxScalarRecord(name="macro_precision"),
+            MaxScalarRecord(name="macro_recall"),
+            MaxScalarRecord(name="micro_precision"),
+            MaxScalarRecord(name="micro_recall"),
+            MaxScalarRecord(name="weighted_precision"),
+            MaxScalarRecord(name="weighted_recall"),
+            MaxScalarRecord(name="macro_f1_score"),
+            MaxScalarRecord(name="micro_f1_score"),
+            MaxScalarRecord(name="weighted_f1_score"),
+        ),
+    )
+
+
+def test_multiclass_confusion_matrix_get_records_betas() -> None:
+    assert objects_are_allclose(
+        MulticlassConfusionMatrixTracker.from_num_classes(5).get_records(betas=[0.5, 1, 2]),
+        (
+            MaxScalarRecord(name="accuracy"),
+            MaxScalarRecord(name="balanced_accuracy"),
+            MaxScalarRecord(name="macro_precision"),
+            MaxScalarRecord(name="macro_recall"),
+            MaxScalarRecord(name="micro_precision"),
+            MaxScalarRecord(name="micro_recall"),
+            MaxScalarRecord(name="weighted_precision"),
+            MaxScalarRecord(name="weighted_recall"),
+            MaxScalarRecord(name="macro_f0.5_score"),
+            MaxScalarRecord(name="micro_f0.5_score"),
+            MaxScalarRecord(name="weighted_f0.5_score"),
+            MaxScalarRecord(name="macro_f1_score"),
+            MaxScalarRecord(name="micro_f1_score"),
+            MaxScalarRecord(name="weighted_f1_score"),
+            MaxScalarRecord(name="macro_f2_score"),
+            MaxScalarRecord(name="micro_f2_score"),
+            MaxScalarRecord(name="weighted_f2_score"),
+        ),
+    )
+
+
+def test_multiclass_confusion_matrix_get_records_prefix_suffix() -> None:
+    assert objects_are_allclose(
+        MulticlassConfusionMatrixTracker.from_num_classes(5).get_records(
+            prefix="prefix_", suffix="_suffix"
+        ),
+        (
+            MaxScalarRecord(name="prefix_accuracy_suffix"),
+            MaxScalarRecord(name="prefix_balanced_accuracy_suffix"),
+            MaxScalarRecord(name="prefix_macro_precision_suffix"),
+            MaxScalarRecord(name="prefix_macro_recall_suffix"),
+            MaxScalarRecord(name="prefix_micro_precision_suffix"),
+            MaxScalarRecord(name="prefix_micro_recall_suffix"),
+            MaxScalarRecord(name="prefix_weighted_precision_suffix"),
+            MaxScalarRecord(name="prefix_weighted_recall_suffix"),
+            MaxScalarRecord(name="prefix_macro_f1_score_suffix"),
+            MaxScalarRecord(name="prefix_micro_f1_score_suffix"),
+            MaxScalarRecord(name="prefix_weighted_f1_score_suffix"),
+        ),
+    )
+
+
 ############################################
 #     Tests for check_confusion_matrix     #
 ############################################
