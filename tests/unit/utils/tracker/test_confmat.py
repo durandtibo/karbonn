@@ -539,9 +539,9 @@ def test_binary_confusion_matrix_tracker_true_positive_rate_empty() -> None:
         BinaryConfusionMatrixTracker().true_positive_rate()
 
 
-def test_binary_confusion_matrix_tracker_compute_all_metrics() -> None:
+def test_binary_confusion_matrix_tracker_compute_metrics() -> None:
     assert objects_are_allclose(
-        BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).compute_all_metrics(),
+        BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).compute_metrics(),
         {
             "accuracy": 0.7,
             "balanced_accuracy": 0.7,
@@ -562,11 +562,9 @@ def test_binary_confusion_matrix_tracker_compute_all_metrics() -> None:
     )
 
 
-def test_binary_confusion_matrix_tracker_compute_all_metrics_betas() -> None:
+def test_binary_confusion_matrix_tracker_compute_metrics_betas() -> None:
     assert objects_are_allclose(
-        BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).compute_all_metrics(
-            betas=(1, 2)
-        ),
+        BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).compute_metrics(betas=(1, 2)),
         {
             "accuracy": 0.7,
             "balanced_accuracy": 0.7,
@@ -588,9 +586,9 @@ def test_binary_confusion_matrix_tracker_compute_all_metrics_betas() -> None:
     )
 
 
-def test_binary_confusion_matrix_tracker_compute_all_metrics_prefix_suffix() -> None:
+def test_binary_confusion_matrix_tracker_compute_metrics_prefix_suffix() -> None:
     assert objects_are_allclose(
-        BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).compute_all_metrics(
+        BinaryConfusionMatrixTracker(torch.tensor([[3, 2], [1, 4]])).compute_metrics(
             prefix="prefix_", suffix="_suffix"
         ),
         {
@@ -613,12 +611,12 @@ def test_binary_confusion_matrix_tracker_compute_all_metrics_prefix_suffix() -> 
     )
 
 
-def test_binary_confusion_matrix_tracker_compute_all_metrics_empty() -> None:
+def test_binary_confusion_matrix_tracker_compute_metrics_empty() -> None:
     with pytest.raises(
         EmptyTrackerError,
         match="It is not possible to compute the metrics because the confusion matrix is empty",
     ):
-        BinaryConfusionMatrixTracker().compute_all_metrics()
+        BinaryConfusionMatrixTracker().compute_metrics()
 
 
 def test_binary_confusion_matrix_tracker_get_records() -> None:
@@ -1707,6 +1705,94 @@ def test_multiclass_confusion_matrix_compute_scalar_metrics_empty() -> None:
         match="It is not possible to compute the metrics because the confusion matrix is empty",
     ):
         MulticlassConfusionMatrixTracker.from_num_classes(3).compute_scalar_metrics()
+
+
+def test_multiclass_confusion_matrix_compute_metrics() -> None:
+    assert objects_are_allclose(
+        MulticlassConfusionMatrixTracker(
+            torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
+        ).compute_metrics(),
+        {
+            "accuracy": 0.44,
+            "balanced_accuracy": 0.5,
+            "macro_f1_score": 0.4565901756286621,
+            "macro_precision": 0.43981480598449707,
+            "macro_recall": 0.5,
+            "micro_f1_score": 0.44,
+            "micro_precision": 0.44,
+            "micro_recall": 0.44,
+            "weighted_f1_score": 0.42483131408691405,
+            "weighted_precision": 0.42777778625488283,
+            "weighted_recall": 0.44,
+            "precision": torch.tensor([0.375, 0.5, 0.4444444477558136]),
+            "recall": torch.tensor([0.30000001192092896, 0.800000011920929, 0.4000000059604645]),
+            "f1_score": torch.tensor([0.3333333432674408, 0.6153846383094788, 0.42105263471603394]),
+        },
+    )
+
+
+def test_multiclass_confusion_matrix_compute_metrics_betas() -> None:
+    assert objects_are_allclose(
+        MulticlassConfusionMatrixTracker(
+            torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
+        ).compute_metrics(betas=(1, 2)),
+        {
+            "accuracy": 0.44,
+            "balanced_accuracy": 0.5,
+            "macro_f1_score": 0.4565901756286621,
+            "macro_f2_score": 0.4783163368701935,
+            "macro_precision": 0.43981480598449707,
+            "macro_recall": 0.5,
+            "micro_f1_score": 0.44,
+            "micro_f2_score": 0.44,
+            "micro_precision": 0.44,
+            "micro_recall": 0.44,
+            "weighted_f1_score": 0.42483131408691405,
+            "weighted_f2_score": 0.4311224365234375,
+            "weighted_precision": 0.42777778625488283,
+            "weighted_recall": 0.44,
+            "precision": torch.tensor([0.375, 0.5, 0.4444444477558136]),
+            "recall": torch.tensor([0.30000001192092896, 0.800000011920929, 0.4000000059604645]),
+            "f1_score": torch.tensor([0.3333333432674408, 0.6153846383094788, 0.42105263471603394]),
+            "f2_score": torch.tensor([0.3125, 0.7142857313156128, 0.40816327929496765]),
+        },
+    )
+
+
+def test_multiclass_confusion_matrix_compute_metrics_prefix_suffix() -> None:
+    assert objects_are_allclose(
+        MulticlassConfusionMatrixTracker(
+            torch.tensor([[3, 2, 5], [1, 4, 0], [4, 2, 4]], dtype=torch.long)
+        ).compute_metrics(prefix="prefix_", suffix="_suffix"),
+        {
+            "prefix_accuracy_suffix": 0.44,
+            "prefix_balanced_accuracy_suffix": 0.5,
+            "prefix_macro_f1_score_suffix": 0.4565901756286621,
+            "prefix_macro_precision_suffix": 0.43981480598449707,
+            "prefix_macro_recall_suffix": 0.5,
+            "prefix_micro_f1_score_suffix": 0.44,
+            "prefix_micro_precision_suffix": 0.44,
+            "prefix_micro_recall_suffix": 0.44,
+            "prefix_weighted_f1_score_suffix": 0.42483131408691405,
+            "prefix_weighted_precision_suffix": 0.42777778625488283,
+            "prefix_weighted_recall_suffix": 0.44,
+            "prefix_precision_suffix": torch.tensor([0.375, 0.5, 0.4444444477558136]),
+            "prefix_recall_suffix": torch.tensor(
+                [0.30000001192092896, 0.800000011920929, 0.4000000059604645]
+            ),
+            "prefix_f1_score_suffix": torch.tensor(
+                [0.3333333432674408, 0.6153846383094788, 0.42105263471603394]
+            ),
+        },
+    )
+
+
+def test_multiclass_confusion_matrix_compute_metrics_empty() -> None:
+    with pytest.raises(
+        EmptyTrackerError,
+        match="It is not possible to compute the metrics because the confusion matrix is empty",
+    ):
+        MulticlassConfusionMatrixTracker.from_num_classes(3).compute_metrics()
 
 
 def test_multiclass_confusion_matrix_get_records() -> None:
