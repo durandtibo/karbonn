@@ -326,7 +326,7 @@ class MulticlassConfusionMatrix(BaseMetric):
             msg = f"{self.__class__.__qualname__} is empty"
             raise EmptyMetricError(msg)
 
-        results = tracker.compute_scalar_metrics(betas=self._betas, prefix=prefix, suffix=suffix)
+        results = tracker.compute_metrics(betas=self._betas, prefix=prefix, suffix=suffix)
         if not self._track_count:
             del results[f"{prefix}count{suffix}"]
         return results
