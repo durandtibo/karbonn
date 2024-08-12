@@ -13,6 +13,7 @@ __all__ = [
     "CategoricalCrossEntropy",
     "EmptyMetricError",
     "LogCoshError",
+    "MulticlassConfusionMatrix",
     "NormalizedMeanSquaredError",
     "RootMeanSquaredError",
     "SquaredAsinhError",
@@ -29,6 +30,7 @@ from karbonn.metric.classification import (
     BinaryConfusionMatrix,
     CategoricalAccuracy,
     CategoricalCrossEntropy,
+    MulticlassConfusionMatrix,
     TopKAccuracy,
 )
 from karbonn.metric.regression import (
