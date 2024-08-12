@@ -2499,6 +2499,56 @@ class MulticlassConfusionMatrixTracker(BaseConfusionMatrixTracker):
         metrics.update(self.compute_weighted_metrics(betas, prefix, suffix))
         return metrics
 
+    def get_records(
+        self, betas: Sequence[float] = (1,), prefix: str = "", suffix: str = ""
+    ) -> tuple[BaseRecord, ...]:
+        r"""Get the records associated the metrics.
+
+        Args:
+            betas: The betas used to compute the f-beta score.
+            prefix: The prefix for all the metrics.
+            suffix: The suffix for all the metrics.
+
+        Returns:
+            The records.
+
+        Example usage:
+
+        ```pycon
+
+        >>> from karbonn.utils.tracker import MulticlassConfusionMatrixTracker
+        >>> confmat = MulticlassConfusionMatrixTracker.from_num_classes(5)
+        >>> confmat.get_records()
+        (MaxScalarRecord(name=accuracy, max_size=10, size=0),
+         MaxScalarRecord(name=balanced_accuracy, max_size=10, size=0),
+         MaxScalarRecord(name=macro_precision, max_size=10, size=0),
+         MaxScalarRecord(name=macro_recall, max_size=10, size=0),
+         MaxScalarRecord(name=micro_precision, max_size=10, size=0),
+         MaxScalarRecord(name=micro_recall, max_size=10, size=0),
+         MaxScalarRecord(name=weighted_precision, max_size=10, size=0),
+         MaxScalarRecord(name=weighted_recall, max_size=10, size=0),
+         MaxScalarRecord(name=macro_f1_score, max_size=10, size=0),
+         MaxScalarRecord(name=micro_f1_score, max_size=10, size=0),
+         MaxScalarRecord(name=weighted_f1_score, max_size=10, size=0))
+
+        ```
+        """
+        trackers = [
+            MaxScalarRecord(name=f"{prefix}accuracy{suffix}"),
+            MaxScalarRecord(name=f"{prefix}balanced_accuracy{suffix}"),
+            MaxScalarRecord(name=f"{prefix}macro_precision{suffix}"),
+            MaxScalarRecord(name=f"{prefix}macro_recall{suffix}"),
+            MaxScalarRecord(name=f"{prefix}micro_precision{suffix}"),
+            MaxScalarRecord(name=f"{prefix}micro_recall{suffix}"),
+            MaxScalarRecord(name=f"{prefix}weighted_precision{suffix}"),
+            MaxScalarRecord(name=f"{prefix}weighted_recall{suffix}"),
+        ]
+        for beta in betas:
+            trackers.append(MaxScalarRecord(name=f"{prefix}macro_f{beta}_score{suffix}"))
+            trackers.append(MaxScalarRecord(name=f"{prefix}micro_f{beta}_score{suffix}"))
+            trackers.append(MaxScalarRecord(name=f"{prefix}weighted_f{beta}_score{suffix}"))
+        return tuple(trackers)
+
 
 def check_confusion_matrix(matrix: Tensor) -> None:
     r"""Check if the input matrix is a valid confusion matrix.
