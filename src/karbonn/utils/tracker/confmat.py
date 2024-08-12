@@ -2475,6 +2475,7 @@ class MulticlassConfusionMatrixTracker(BaseConfusionMatrixTracker):
         >>> confmat.compute_scalar_metrics()
         {'accuracy': 0.5,
          'balanced_accuracy': 0.333333...,
+         'count': 6,
          'macro_precision': 0.555555...,
          'macro_recall': 0.333333...,
          'macro_f1_score': 0.388888...,
@@ -2493,6 +2494,7 @@ class MulticlassConfusionMatrixTracker(BaseConfusionMatrixTracker):
         metrics = {
             f"{prefix}accuracy{suffix}": self.accuracy(),
             f"{prefix}balanced_accuracy{suffix}": self.balanced_accuracy(),
+            f"{prefix}count{suffix}": self.count,
         }
         metrics.update(self.compute_macro_metrics(betas, prefix, suffix))
         metrics.update(self.compute_micro_metrics(betas, prefix, suffix))
@@ -2530,6 +2532,7 @@ class MulticlassConfusionMatrixTracker(BaseConfusionMatrixTracker):
         >>> confmat.compute_metrics()
         {'accuracy': 0.5,
          'balanced_accuracy': 0.333333...,
+         'count': 6,
          'macro_precision': 0.555555...,
          'macro_recall': 0.333333...,
          'macro_f1_score': 0.388888...,

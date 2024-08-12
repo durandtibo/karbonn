@@ -1641,6 +1641,7 @@ def test_multiclass_confusion_matrix_compute_scalar_metrics() -> None:
         {
             "accuracy": 0.44,
             "balanced_accuracy": 0.5,
+            "count": 25,
             "macro_f1_score": 0.4565901756286621,
             "macro_precision": 0.43981480598449707,
             "macro_recall": 0.5,
@@ -1662,6 +1663,7 @@ def test_multiclass_confusion_matrix_compute_scalar_metrics_betas() -> None:
         {
             "accuracy": 0.44,
             "balanced_accuracy": 0.5,
+            "count": 25,
             "macro_f1_score": 0.4565901756286621,
             "macro_f2_score": 0.4783163368701935,
             "macro_precision": 0.43981480598449707,
@@ -1686,6 +1688,7 @@ def test_multiclass_confusion_matrix_compute_scalar_metrics_prefix_suffix() -> N
         {
             "prefix_accuracy_suffix": 0.44,
             "prefix_balanced_accuracy_suffix": 0.5,
+            "prefix_count_suffix": 25,
             "prefix_macro_f1_score_suffix": 0.4565901756286621,
             "prefix_macro_precision_suffix": 0.43981480598449707,
             "prefix_macro_recall_suffix": 0.5,
@@ -1715,6 +1718,7 @@ def test_multiclass_confusion_matrix_compute_metrics() -> None:
         {
             "accuracy": 0.44,
             "balanced_accuracy": 0.5,
+            "count": 25,
             "macro_f1_score": 0.4565901756286621,
             "macro_precision": 0.43981480598449707,
             "macro_recall": 0.5,
@@ -1739,6 +1743,7 @@ def test_multiclass_confusion_matrix_compute_metrics_betas() -> None:
         {
             "accuracy": 0.44,
             "balanced_accuracy": 0.5,
+            "count": 25,
             "macro_f1_score": 0.4565901756286621,
             "macro_f2_score": 0.4783163368701935,
             "macro_precision": 0.43981480598449707,
@@ -1767,6 +1772,7 @@ def test_multiclass_confusion_matrix_compute_metrics_prefix_suffix() -> None:
         {
             "prefix_accuracy_suffix": 0.44,
             "prefix_balanced_accuracy_suffix": 0.5,
+            "prefix_count_suffix": 25,
             "prefix_macro_f1_score_suffix": 0.4565901756286621,
             "prefix_macro_precision_suffix": 0.43981480598449707,
             "prefix_macro_recall_suffix": 0.5,
