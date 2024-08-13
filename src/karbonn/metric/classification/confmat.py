@@ -3,7 +3,7 @@ labels."""
 
 from __future__ import annotations
 
-__all__ = ["BinaryConfusionMatrix", "MulticlassConfusionMatrix"]
+__all__ = ["BinaryConfusionMatrix", "CategoricalConfusionMatrix"]
 
 import logging
 from typing import TYPE_CHECKING
@@ -30,8 +30,11 @@ class BinaryConfusionMatrix(BaseMetric):
     r"""Implement a confusion tracker metric for binary labels.
 
     Args:
-        betas (sequence, optional): Specifies the betas used to
-            compute the f-beta score. Default: ``(1,)``
+        betas: The betas used to compute the f-beta scores.
+        tracker: The value tracker. If ``None``,
+            a ``BinaryConfusionMatrixTracker`` object is initialized.
+        track_count: If ``True``, the state tracks and
+            returns the number of predictions.
 
     Example usage:
 
@@ -183,20 +186,24 @@ class BinaryConfusionMatrix(BaseMetric):
         return results
 
 
-class MulticlassConfusionMatrix(BaseMetric):
-    r"""Implement a confusion tracker metric for binary labels.
+class CategoricalConfusionMatrix(BaseMetric):
+    r"""Implement a confusion tracker metric for multi-class labels.
 
     Args:
-        betas (sequence, optional): Specifies the betas used to
-            compute the f-beta score. Default: ``(1,)``
+        num_classes: The number of classes.
+        betas: The betas used to compute the f-beta scores.
+        tracker: The value tracker. If ``None``,
+            a ``BinaryConfusionMatrixTracker`` object is initialized.
+        track_count: If ``True``, the state tracks and
+            returns the number of predictions.
 
     Example usage:
 
     ```pycon
 
     >>> import torch
-    >>> from karbonn.metric import MulticlassConfusionMatrix
-    >>> metric = MulticlassConfusionMatrix(num_classes=3)
+    >>> from karbonn.metric import CategoricalConfusionMatrix
+    >>> metric = CategoricalConfusionMatrix(num_classes=3)
     >>> metric
     MulticlassConfusionMatrix(
       (betas): (1,)
@@ -291,8 +298,8 @@ class MulticlassConfusionMatrix(BaseMetric):
         ```pycon
 
         >>> import torch
-        >>> from karbonn.metric import MulticlassConfusionMatrix
-        >>> metric = MulticlassConfusionMatrix(num_classes=3)
+        >>> from karbonn.metric import CategoricalConfusionMatrix
+        >>> metric = CategoricalConfusionMatrix(num_classes=3)
         >>> metric(
         ...     prediction=torch.tensor([0, 1, 2, 0, 0, 1]),
         ...     target=torch.tensor([2, 2, 2, 0, 0, 0]),

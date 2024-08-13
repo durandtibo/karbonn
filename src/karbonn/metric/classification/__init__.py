@@ -7,7 +7,7 @@ __all__ = [
     "BinaryConfusionMatrix",
     "CategoricalAccuracy",
     "CategoricalCrossEntropy",
-    "MulticlassConfusionMatrix",
+    "CategoricalConfusionMatrix",
     "TopKAccuracy",
 ]
 
@@ -18,6 +18,6 @@ from karbonn.metric.classification.accuracy import (
 )
 from karbonn.metric.classification.confmat import (
     BinaryConfusionMatrix,
-    MulticlassConfusionMatrix,
+    CategoricalConfusionMatrix,
 )
 from karbonn.metric.classification.entropy import CategoricalCrossEntropy
