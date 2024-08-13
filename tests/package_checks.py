@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 def check_imports() -> None:
     logger.info("Checking imports...")
     objects_to_import = [
-        "karbonn.ResidualBlock",
+        "karbonn.modules.ResidualBlock",
         "karbonn.utils.setup_module",
     ]
     for a in objects_to_import:
