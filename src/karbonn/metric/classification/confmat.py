@@ -205,7 +205,7 @@ class CategoricalConfusionMatrix(BaseMetric):
     >>> from karbonn.metric import CategoricalConfusionMatrix
     >>> metric = CategoricalConfusionMatrix(num_classes=3)
     >>> metric
-    MulticlassConfusionMatrix(
+    CategoricalConfusionMatrix(
       (betas): (1,)
       (tracker): MulticlassConfusionMatrixTracker(num_classes=3, count=0)
       (track_count): True
@@ -217,6 +217,7 @@ class CategoricalConfusionMatrix(BaseMetric):
     >>> metric.value()
     {'accuracy': 0.5,
      'balanced_accuracy': 0.333333...,
+     'count': 6,
      'macro_precision': 0.555555...,
      'macro_recall': 0.333333...,
      'macro_f1_score': 0.388888...,
@@ -225,11 +226,15 @@ class CategoricalConfusionMatrix(BaseMetric):
      'micro_f1_score': 0.5,
      'weighted_precision': 0.833333...,
      'weighted_recall': 0.5,
-     'weighted_f1_score': 0.583333...}
+     'weighted_f1_score': 0.583333...,
+     'precision': tensor([0.6667, 0.0000, 1.0000]),
+     'recall': tensor([0.6667, 0.0000, 0.3333]),
+     'f1_score': tensor([0.6667, 0.0000, 0.5000])}
     >>> metric(prediction=torch.tensor([1, 0]), target=torch.tensor([1, 0]))
     >>> metric.value()
     {'accuracy': 0.625,
      'balanced_accuracy': 0.694444...,
+     'count': 8,
      'macro_precision': 0.694444...,
      'macro_recall': 0.694444...,
      'macro_f1_score': 0.583333...,
@@ -238,12 +243,16 @@ class CategoricalConfusionMatrix(BaseMetric):
      'micro_f1_score': 0.625,
      'weighted_precision': 0.791666...,
      'weighted_recall': 0.625,
-     'weighted_f1_score': 0.625}
+     'weighted_f1_score': 0.625,
+     'precision': tensor([0.7500, 0.3333, 1.0000]),
+     'recall': tensor([0.7500, 1.0000, 0.3333]),
+     'f1_score': tensor([0.7500, 0.5000, 0.5000])}
     >>> metric.reset()
     >>> metric(prediction=torch.tensor([1, 0, 2]), target=torch.tensor([1, 0, 2]))
     >>> metric.value()
     {'accuracy': 1.0,
      'balanced_accuracy': 1.0,
+     'count': 3,
      'macro_precision': 1.0,
      'macro_recall': 1.0,
      'macro_f1_score': 1.0,
@@ -252,7 +261,10 @@ class CategoricalConfusionMatrix(BaseMetric):
      'micro_f1_score': 1.0,
      'weighted_precision': 1.0,
      'weighted_recall': 1.0,
-     'weighted_f1_score': 1.0}
+     'weighted_f1_score': 1.0,
+     'precision': tensor([1., 1., 1.]),
+     'recall': tensor([1., 1., 1.]),
+     'f1_score': tensor([1., 1., 1.])}
 
     ```
     """
@@ -307,6 +319,7 @@ class CategoricalConfusionMatrix(BaseMetric):
         >>> metric.value()
         {'accuracy': 0.5,
          'balanced_accuracy': 0.333333...,
+         'count': 6,
          'macro_precision': 0.555555...,
          'macro_recall': 0.333333...,
          'macro_f1_score': 0.388888...,
@@ -315,7 +328,10 @@ class CategoricalConfusionMatrix(BaseMetric):
          'micro_f1_score': 0.5,
          'weighted_precision': 0.833333...,
          'weighted_recall': 0.5,
-         'weighted_f1_score': 0.583333...}
+         'weighted_f1_score': 0.583333...,
+         'precision': tensor([0.6667, 0.0000, 1.0000]),
+         'recall': tensor([0.6667, 0.0000, 0.3333]),
+         'f1_score': tensor([0.6667, 0.0000, 0.5000])}
 
         ```
         """
