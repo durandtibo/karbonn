@@ -310,7 +310,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ '3.12', '3.11', '3.10', '3.9' ]
-        pytorch-ignite-version: [ 0.5.0.post2, 0.4.13 ]
+        pytorch-ignite-version: [ 0.5.1, 0.4.13 ]
 
     steps:
       - name: Checkout

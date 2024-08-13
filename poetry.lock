@@ -653,13 +653,13 @@ files = [
 
 [[package]]
 name = "mike"
-version = "2.1.2"
+version = "2.1.3"
 description = "Manage multiple versions of your MkDocs-powered documentation"
 optional = false
 python-versions = "*"
 files = [
-    {file = "mike-2.1.2-py3-none-any.whl", hash = "sha256:d61d9b423ab412d634ca2bd520136d5114e3cc73f4bbd1aa6a0c6625c04918c0"},
-    {file = "mike-2.1.2.tar.gz", hash = "sha256:d59cc8054c50f9c8a046cfd47f9b700cf9ff1b2b19f420bd8812ca6f94fa8bd3"},
+    {file = "mike-2.1.3-py3-none-any.whl", hash = "sha256:d90c64077e84f06272437b464735130d380703a76a5738b152932884c60c062a"},
+    {file = "mike-2.1.3.tar.gz", hash = "sha256:abd79b8ea483fb0275b7972825d3082e5ae67a41820f8d8a0dc7a3f49944e810"},
 ]
 
 [package.dependencies]
@@ -1148,7 +1148,6 @@ description = "Nvidia JIT LTO Library"
 optional = false
 python-versions = ">=3"
 files = [
-    {file = "nvidia_nvjitlink_cu12-12.6.20-py3-none-manylinux2014_aarch64.whl", hash = "sha256:84fb38465a5bc7c70cbc320cfd0963eb302ee25a5e939e9f512bbba55b6072fb"},
     {file = "nvidia_nvjitlink_cu12-12.6.20-py3-none-manylinux2014_x86_64.whl", hash = "sha256:562ab97ea2c23164823b2a89cb328d01d45cb99634b8c65fe7cd60d14562bd79"},
     {file = "nvidia_nvjitlink_cu12-12.6.20-py3-none-win_amd64.whl", hash = "sha256:ed3c43a17f37b0c922a919203d2d36cbef24d41cc3e6b625182f8b58203644f6"},
 ]
@@ -1375,13 +1374,13 @@ six = ">=1.5"
 
 [[package]]
 name = "pytorch-ignite"
-version = "0.5.0.post2"
+version = "0.5.1"
 description = "A lightweight library to help with training neural networks in PyTorch."
 optional = true
 python-versions = "*"
 files = [
-    {file = "pytorch-ignite-0.5.0.post2.tar.gz", hash = "sha256:052510ec92fa3e4b3a0ba2296b09b3465ad12eadf657ba58e0760dbde0f3200d"},
-    {file = "pytorch_ignite-0.5.0.post2-py3-none-any.whl", hash = "sha256:d1f60c6ed17fa0f03920f20297de6614c8ed5cb6ad6054160d22de248ccd761f"},
+    {file = "pytorch_ignite-0.5.1-py3-none-any.whl", hash = "sha256:08c289f59c4185448cf0d97c0ef35f409f640fe1e7355f8fa13e504dcbe47b6d"},
+    {file = "pytorch_ignite-0.5.1.tar.gz", hash = "sha256:f41050bb0f85da6a4e5483cbc584ddf300382f537cd2f31cbb05ad62b8a6682e"},
 ]
 
 [package.dependencies]
