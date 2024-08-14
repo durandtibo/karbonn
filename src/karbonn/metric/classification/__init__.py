@@ -4,13 +4,13 @@ from __future__ import annotations
 
 __all__ = [
     "BinaryConfusionMatrix",
-    "CategoricalAccuracy",
+    "Accuracy",
     "CategoricalCrossEntropy",
     "CategoricalConfusionMatrix",
     "TopKAccuracy",
 ]
 
-from karbonn.metric.classification.accuracy import CategoricalAccuracy, TopKAccuracy
+from karbonn.metric.classification.accuracy import Accuracy, TopKAccuracy
 from karbonn.metric.classification.confmat import (
     BinaryConfusionMatrix,
     CategoricalConfusionMatrix,

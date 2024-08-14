@@ -2,7 +2,7 @@ r"""Contain accuracy metrics."""
 
 from __future__ import annotations
 
-__all__ = ["CategoricalAccuracy", "TopKAccuracy"]
+__all__ = ["Accuracy", "TopKAccuracy"]
 
 import logging
 from typing import TYPE_CHECKING
@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class CategoricalAccuracy(BaseStateMetric):
+class Accuracy(BaseStateMetric):
     r"""Implement a categorical accuracy metric.
 
     Args:
@@ -40,10 +40,10 @@ class CategoricalAccuracy(BaseStateMetric):
     ```pycon
 
     >>> import torch
-    >>> from karbonn.metric import CategoricalAccuracy
-    >>> metric = CategoricalAccuracy()
+    >>> from karbonn.metric import Accuracy
+    >>> metric = Accuracy()
     >>> metric
-    CategoricalAccuracy(
+    Accuracy(
       (state): AccuracyState(
           (tracker): MeanTensorTracker(count=0, total=0.0)
           (track_count): True
@@ -95,8 +95,8 @@ class CategoricalAccuracy(BaseStateMetric):
         ```pycon
 
         >>> import torch
-        >>> from karbonn.metric import CategoricalAccuracy
-        >>> metric = CategoricalAccuracy()
+        >>> from karbonn.metric import Accuracy
+        >>> metric = Accuracy()
         >>> metric(torch.tensor([1, 2, 0, 1]), torch.tensor([1, 2, 0, 1]))
         >>> metric.value()
         {'accuracy': 1.0, 'count': 4}
