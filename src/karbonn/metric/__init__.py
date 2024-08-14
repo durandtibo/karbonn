@@ -7,7 +7,6 @@ __all__ = [
     "AbsoluteRelativeError",
     "BaseMetric",
     "BaseStateMetric",
-    "BinaryAccuracy",
     "BinaryConfusionMatrix",
     "CategoricalAccuracy",
     "CategoricalCrossEntropy",
@@ -26,7 +25,6 @@ __all__ = [
 
 from karbonn.metric.base import BaseMetric, EmptyMetricError, setup_metric
 from karbonn.metric.classification import (
-    BinaryAccuracy,
     BinaryConfusionMatrix,
     CategoricalAccuracy,
     CategoricalConfusionMatrix,
