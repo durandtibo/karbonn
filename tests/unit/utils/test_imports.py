@@ -7,12 +7,15 @@ import pytest
 from karbonn.utils.imports import (
     check_ignite,
     check_objectory,
+    check_sklearn,
     check_tabulate,
     ignite_available,
     is_ignite_available,
     is_objectory_available,
+    is_sklearn_available,
     is_tabulate_available,
     objectory_available,
+    sklearn_available,
     tabulate_available,
 )
 
@@ -123,6 +126,60 @@ def test_objectory_available_decorator_without_package() -> None:
     with patch("karbonn.utils.imports.is_objectory_available", lambda: False):
 
         @objectory_available
+        def fn(n: int = 0) -> int:
+            return 42 + n
+
+        assert fn(2) is None
+
+
+###################
+#     sklearn     #
+###################
+
+
+def test_check_sklearn_with_package() -> None:
+    with patch("karbonn.utils.imports.is_sklearn_available", lambda: True):
+        check_sklearn()
+
+
+def test_check_sklearn_without_package() -> None:
+    with (
+        patch("karbonn.utils.imports.is_sklearn_available", lambda: False),
+        pytest.raises(RuntimeError, match="'sklearn' package is required but not installed."),
+    ):
+        check_sklearn()
+
+
+def test_is_sklearn_available() -> None:
+    assert isinstance(is_sklearn_available(), bool)
+
+
+def test_sklearn_available_with_package() -> None:
+    with patch("karbonn.utils.imports.is_sklearn_available", lambda: True):
+        fn = sklearn_available(my_function)
+        assert fn(2) == 44
+
+
+def test_sklearn_available_without_package() -> None:
+    with patch("karbonn.utils.imports.is_sklearn_available", lambda: False):
+        fn = sklearn_available(my_function)
+        assert fn(2) is None
+
+
+def test_sklearn_available_decorator_with_package() -> None:
+    with patch("karbonn.utils.imports.is_sklearn_available", lambda: True):
+
+        @sklearn_available
+        def fn(n: int = 0) -> int:
+            return 42 + n
+
+        assert fn(2) == 44
+
+
+def test_sklearn_available_decorator_without_package() -> None:
+    with patch("karbonn.utils.imports.is_sklearn_available", lambda: False):
+
+        @sklearn_available
         def fn(n: int = 0) -> int:
             return 42 + n
 
