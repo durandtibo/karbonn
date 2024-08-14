@@ -10,7 +10,7 @@ from coola.utils.tensor import get_available_devices
 from minrecord import MaxScalarRecord
 from torch.nn import Identity
 
-from karbonn.metric import CategoricalAccuracy, EmptyMetricError, TopKAccuracy
+from karbonn.metric import Accuracy, EmptyMetricError, TopKAccuracy
 from karbonn.metric.state import AccuracyState, BaseState, ExtendedAccuracyState
 from karbonn.modules import ToBinaryLabel, ToCategoricalLabel
 from karbonn.testing import sklearn_available
@@ -29,40 +29,36 @@ DTYPES = (torch.long, torch.float)
 
 
 #########################################
-#     Tests for CategoricalAccuracy     #
+#     Tests for Accuracy     #
 #########################################
 
 
-def test_categorical_accuracy_str() -> None:
-    assert str(CategoricalAccuracy()).startswith("CategoricalAccuracy(")
+def test_accuracy_str() -> None:
+    assert str(Accuracy()).startswith("Accuracy(")
 
 
-def test_categorical_accuracy_state_default() -> None:
-    assert isinstance(CategoricalAccuracy().state, AccuracyState)
+def test_accuracy_state_default() -> None:
+    assert isinstance(Accuracy().state, AccuracyState)
 
 
-def test_categorical_accuracy_state_extended() -> None:
-    assert isinstance(
-        CategoricalAccuracy(state=ExtendedAccuracyState()).state, ExtendedAccuracyState
-    )
+def test_accuracy_state_extended() -> None:
+    assert isinstance(Accuracy(state=ExtendedAccuracyState()).state, ExtendedAccuracyState)
 
 
-def test_categorical_accuracy_transform() -> None:
-    assert isinstance(
-        CategoricalAccuracy(transform=ToCategoricalLabel()).transform, ToCategoricalLabel
-    )
+def test_accuracy_transform() -> None:
+    assert isinstance(Accuracy(transform=ToCategoricalLabel()).transform, ToCategoricalLabel)
 
 
-def test_categorical_accuracy_transform_default() -> None:
-    assert isinstance(CategoricalAccuracy().transform, Identity)
+def test_accuracy_transform_default() -> None:
+    assert isinstance(Accuracy().transform, Identity)
 
 
 @pytest.mark.parametrize("device", get_available_devices())
 @pytest.mark.parametrize("mode", MODES)
 @pytest.mark.parametrize("batch_size", SIZES)
-def test_categorical_accuracy_forward_correct(device: str, mode: bool, batch_size: int) -> None:
+def test_accuracy_forward_correct(device: str, mode: bool, batch_size: int) -> None:
     device = torch.device(device)
-    metric = CategoricalAccuracy().to(device=device)
+    metric = Accuracy().to(device=device)
     metric.train(mode)
     metric(torch.arange(batch_size, device=device), torch.arange(batch_size, device=device))
     assert objects_are_equal(metric.value(), {"accuracy": 1.0, "count": batch_size})
@@ -71,9 +67,9 @@ def test_categorical_accuracy_forward_correct(device: str, mode: bool, batch_siz
 @pytest.mark.parametrize("device", get_available_devices())
 @pytest.mark.parametrize("mode", MODES)
 @pytest.mark.parametrize("batch_size", SIZES)
-def test_categorical_accuracy_forward_incorrect(device: str, mode: bool, batch_size: int) -> None:
+def test_accuracy_forward_incorrect(device: str, mode: bool, batch_size: int) -> None:
     device = torch.device(device)
-    metric = CategoricalAccuracy().to(device=device)
+    metric = Accuracy().to(device=device)
     metric.train(mode)
     metric(torch.zeros(batch_size, device=device), torch.ones(batch_size, device=device))
     assert objects_are_equal(metric.value(), {"accuracy": 0.0, "count": batch_size})
@@ -81,9 +77,9 @@ def test_categorical_accuracy_forward_incorrect(device: str, mode: bool, batch_s
 
 @pytest.mark.parametrize("device", get_available_devices())
 @pytest.mark.parametrize("mode", MODES)
-def test_categorical_accuracy_forward_partially_correct(device: str, mode: bool) -> None:
+def test_accuracy_forward_partially_correct(device: str, mode: bool) -> None:
     device = torch.device(device)
-    metric = CategoricalAccuracy().to(device=device)
+    metric = Accuracy().to(device=device)
     metric.train(mode)
     metric(torch.tensor([0.0, 1.0], device=device), torch.zeros(2, device=device))
     assert objects_are_equal(metric.value(), {"accuracy": 0.5, "count": 2})
@@ -91,9 +87,9 @@ def test_categorical_accuracy_forward_partially_correct(device: str, mode: bool)
 
 @pytest.mark.parametrize("device", get_available_devices())
 @pytest.mark.parametrize("mode", MODES)
-def test_categorical_accuracy_forward_prediction_1d(device: str, mode: bool) -> None:
+def test_accuracy_forward_prediction_1d(device: str, mode: bool) -> None:
     device = torch.device(device)
-    metric = CategoricalAccuracy().to(device=device)
+    metric = Accuracy().to(device=device)
     metric.train(mode)
     metric(torch.zeros(2, device=device), torch.zeros(2, device=device))
     assert objects_are_equal(metric.value(), {"accuracy": 1.0, "count": 2})
@@ -101,9 +97,9 @@ def test_categorical_accuracy_forward_prediction_1d(device: str, mode: bool) -> 
 
 @pytest.mark.parametrize("device", get_available_devices())
 @pytest.mark.parametrize("mode", MODES)
-def test_categorical_accuracy_forward_prediction_1d_target_2d(device: str, mode: bool) -> None:
+def test_accuracy_forward_prediction_1d_target_2d(device: str, mode: bool) -> None:
     device = torch.device(device)
-    metric = CategoricalAccuracy().to(device=device)
+    metric = Accuracy().to(device=device)
     metric.train(mode)
     metric(torch.zeros(2, device=device), torch.zeros(2, 1, device=device))
     assert objects_are_equal(metric.value(), {"accuracy": 1.0, "count": 2})
@@ -111,9 +107,9 @@ def test_categorical_accuracy_forward_prediction_1d_target_2d(device: str, mode:
 
 @pytest.mark.parametrize("device", get_available_devices())
 @pytest.mark.parametrize("mode", MODES)
-def test_categorical_accuracy_forward_prediction_2d_target_1d(device: str, mode: bool) -> None:
+def test_accuracy_forward_prediction_2d_target_1d(device: str, mode: bool) -> None:
     device = torch.device(device)
-    metric = CategoricalAccuracy().to(device=device)
+    metric = Accuracy().to(device=device)
     metric.train(mode)
     metric(torch.zeros(2, 1, device=device), torch.zeros(2, device=device))
     assert objects_are_equal(metric.value(), {"accuracy": 1.0, "count": 2})
@@ -121,9 +117,9 @@ def test_categorical_accuracy_forward_prediction_2d_target_1d(device: str, mode:
 
 @pytest.mark.parametrize("device", get_available_devices())
 @pytest.mark.parametrize("mode", MODES)
-def test_categorical_accuracy_forward_prediction_2d_target_2d(device: str, mode: bool) -> None:
+def test_accuracy_forward_prediction_2d_target_2d(device: str, mode: bool) -> None:
     device = torch.device(device)
-    metric = CategoricalAccuracy().to(device=device)
+    metric = Accuracy().to(device=device)
     metric.train(mode)
     metric(torch.zeros(2, 1, device=device), torch.zeros(2, 1, device=device))
     assert objects_are_equal(metric.value(), {"accuracy": 1.0, "count": 2})
@@ -131,9 +127,9 @@ def test_categorical_accuracy_forward_prediction_2d_target_2d(device: str, mode:
 
 @pytest.mark.parametrize("device", get_available_devices())
 @pytest.mark.parametrize("mode", MODES)
-def test_categorical_accuracy_forward_prediction_3d(device: str, mode: bool) -> None:
+def test_accuracy_forward_prediction_3d(device: str, mode: bool) -> None:
     device = torch.device(device)
-    metric = CategoricalAccuracy().to(device=device)
+    metric = Accuracy().to(device=device)
     metric.train(mode)
     metric(torch.zeros(2, 3, 4, device=device), torch.zeros(2, 3, 4, device=device))
     assert objects_are_equal(metric.value(), {"accuracy": 1.0, "count": 24})
@@ -143,7 +139,7 @@ def test_categorical_accuracy_forward_prediction_3d(device: str, mode: bool) -> 
 @pytest.mark.parametrize("mode", MODES)
 def test_accuracy_forward_transform_binary(device: str, mode: bool) -> None:
     device = torch.device(device)
-    metric = CategoricalAccuracy(transform=ToBinaryLabel()).to(device=device)
+    metric = Accuracy(transform=ToBinaryLabel()).to(device=device)
     metric.train(mode)
     metric(torch.tensor([-1, 1, -2, 1], device=device), torch.tensor([1, 1, 0, 0], device=device))
     assert objects_are_equal(
@@ -156,7 +152,7 @@ def test_accuracy_forward_transform_binary(device: str, mode: bool) -> None:
 @pytest.mark.parametrize("mode", MODES)
 def test_accuracy_forward_transform_categorical(device: str, mode: bool) -> None:
     device = torch.device(device)
-    metric = CategoricalAccuracy(transform=ToCategoricalLabel()).to(device=device)
+    metric = Accuracy(transform=ToCategoricalLabel()).to(device=device)
     metric.train(mode)
     metric(
         torch.tensor([[1.0, 2.0, 3.0, 4.0], [5.0, 3.0, 2.0, 2.0]], device=device),
@@ -169,14 +165,14 @@ def test_accuracy_forward_transform_categorical(device: str, mode: bool) -> None
 @pytest.mark.parametrize("mode", MODES)
 @pytest.mark.parametrize("dtype_prediction", DTYPES)
 @pytest.mark.parametrize("dtype_target", DTYPES)
-def test_categorical_accuracy_forward_dtypes(
+def test_accuracy_forward_dtypes(
     device: str,
     mode: bool,
     dtype_prediction: torch.dtype,
     dtype_target: torch.dtype,
 ) -> None:
     device = torch.device(device)
-    metric = CategoricalAccuracy().to(device=device)
+    metric = Accuracy().to(device=device)
     metric.train(mode)
     metric(
         torch.arange(2, device=device, dtype=dtype_prediction),
@@ -187,9 +183,9 @@ def test_categorical_accuracy_forward_dtypes(
 
 @pytest.mark.parametrize("device", get_available_devices())
 @pytest.mark.parametrize("mode", MODES)
-def test_categorical_accuracy_forward_state(device: str, mode: bool) -> None:
+def test_accuracy_forward_state(device: str, mode: bool) -> None:
     device = torch.device(device)
-    metric = CategoricalAccuracy(state=ExtendedAccuracyState()).to(device=device)
+    metric = Accuracy(state=ExtendedAccuracyState()).to(device=device)
     metric.train(mode)
     metric(torch.tensor([0.0, 1.0], device=device), torch.zeros(2, device=device))
     assert objects_are_equal(
@@ -206,9 +202,9 @@ def test_categorical_accuracy_forward_state(device: str, mode: bool) -> None:
 
 @pytest.mark.parametrize("device", get_available_devices())
 @pytest.mark.parametrize("mode", MODES)
-def test_categorical_accuracy_forward_multiple_batches(device: str, mode: bool) -> None:
+def test_accuracy_forward_multiple_batches(device: str, mode: bool) -> None:
     device = torch.device(device)
-    metric = CategoricalAccuracy().to(device=device)
+    metric = Accuracy().to(device=device)
     metric.train(mode)
     metric(torch.zeros(2, device=device), torch.zeros(2, device=device))
     metric(torch.zeros(2, device=device), torch.tensor([0.0, 1.0], device=device))
@@ -217,9 +213,9 @@ def test_categorical_accuracy_forward_multiple_batches(device: str, mode: bool) 
 
 @pytest.mark.parametrize("device", get_available_devices())
 @pytest.mark.parametrize("mode", MODES)
-def test_categorical_accuracy_forward_multiple_batches_with_reset(device: str, mode: bool) -> None:
+def test_accuracy_forward_multiple_batches_with_reset(device: str, mode: bool) -> None:
     device = torch.device(device)
-    metric = CategoricalAccuracy().to(device=device)
+    metric = Accuracy().to(device=device)
     metric.train(mode)
     metric(torch.zeros(2, device=device), torch.zeros(2, device=device))
     metric.reset()
@@ -227,17 +223,17 @@ def test_categorical_accuracy_forward_multiple_batches_with_reset(device: str, m
     assert objects_are_equal(metric.value(), {"accuracy": 1.0, "count": 2})
 
 
-def test_categorical_accuracy_value_empty() -> None:
+def test_accuracy_value_empty() -> None:
     with pytest.raises(EmptyMetricError, match="AccuracyState is empty"):
-        CategoricalAccuracy().value()
+        Accuracy().value()
 
 
 @pytest.mark.parametrize("device", get_available_devices())
 @pytest.mark.parametrize("prefix", ["prefix_", "suffix/"])
 @pytest.mark.parametrize("suffix", ["_prefix", "/suffix"])
-def test_categorical_accuracy_value_prefix_suffix(device: str, prefix: str, suffix: str) -> None:
+def test_accuracy_value_prefix_suffix(device: str, prefix: str, suffix: str) -> None:
     device = torch.device(device)
-    metric = CategoricalAccuracy().to(device=device)
+    metric = Accuracy().to(device=device)
     metric(torch.ones(2, device=device), torch.ones(2, device=device))
     assert objects_are_equal(
         metric.value(prefix, suffix),
@@ -245,15 +241,15 @@ def test_categorical_accuracy_value_prefix_suffix(device: str, prefix: str, suff
     )
 
 
-def test_categorical_accuracy_reset() -> None:
+def test_accuracy_reset() -> None:
     state = Mock(spec=BaseState)
-    metric = CategoricalAccuracy(state=state)
+    metric = Accuracy(state=state)
     metric.reset()
     state.reset.assert_called_once_with()
 
 
-def test_categorical_accuracy_get_records() -> None:
-    metric = CategoricalAccuracy()
+def test_accuracy_get_records() -> None:
+    metric = Accuracy()
     assert objects_are_equal(
         metric.get_records(),
         (MaxScalarRecord(name="accuracy"),),
@@ -262,8 +258,8 @@ def test_categorical_accuracy_get_records() -> None:
 
 @pytest.mark.parametrize("prefix", ["prefix_", "suffix/"])
 @pytest.mark.parametrize("suffix", ["_prefix", "/suffix"])
-def test_categorical_accuracy_get_records_prefix_suffix(prefix: str, suffix: str) -> None:
-    metric = CategoricalAccuracy()
+def test_accuracy_get_records_prefix_suffix(prefix: str, suffix: str) -> None:
+    metric = Accuracy()
     assert objects_are_equal(
         metric.get_records(prefix, suffix),
         (MaxScalarRecord(name=f"{prefix}accuracy{suffix}"),),
@@ -272,7 +268,7 @@ def test_categorical_accuracy_get_records_prefix_suffix(prefix: str, suffix: str
 
 @sklearn_available
 def test_accuracy_value_binary_sklearn() -> None:
-    metric = CategoricalAccuracy()
+    metric = Accuracy()
     prediction = torch.randint(0, 2, size=(100,))
     target = torch.randint(0, 2, size=(100,))
     metric(prediction=prediction, target=target)
@@ -287,7 +283,7 @@ def test_accuracy_value_binary_sklearn() -> None:
 
 @sklearn_available
 def test_accuracy_value_categorical_sklearn() -> None:
-    metric = CategoricalAccuracy()
+    metric = Accuracy()
     prediction = torch.randint(0, 10, size=(100,))
     target = torch.randint(0, 10, size=(100,))
     metric(prediction=prediction, target=target)
