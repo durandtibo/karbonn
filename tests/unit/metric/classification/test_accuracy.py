@@ -28,9 +28,9 @@ SIZES = (1, 2)
 DTYPES = (torch.long, torch.float)
 
 
-#########################################
+##############################
 #     Tests for Accuracy     #
-#########################################
+##############################
 
 
 def test_accuracy_str() -> None:
@@ -267,10 +267,10 @@ def test_accuracy_get_records_prefix_suffix(prefix: str, suffix: str) -> None:
 
 
 @sklearn_available
-def test_accuracy_value_binary_sklearn() -> None:
+def test_accuracy_value_sklearn() -> None:
     metric = Accuracy()
-    prediction = torch.randint(0, 2, size=(100,))
-    target = torch.randint(0, 2, size=(100,))
+    prediction = torch.randint(0, 10, size=(100,))
+    target = torch.randint(0, 10, size=(100,))
     metric(prediction=prediction, target=target)
     assert objects_are_allclose(
         metric.value(),
@@ -282,8 +282,8 @@ def test_accuracy_value_binary_sklearn() -> None:
 
 
 @sklearn_available
-def test_accuracy_value_categorical_sklearn() -> None:
-    metric = Accuracy()
+def test_accuracy_value_sklearn_extended() -> None:
+    metric = Accuracy(state=ExtendedAccuracyState())
     prediction = torch.randint(0, 10, size=(100,))
     target = torch.randint(0, 10, size=(100,))
     metric(prediction=prediction, target=target)
@@ -292,6 +292,18 @@ def test_accuracy_value_categorical_sklearn() -> None:
         {
             "accuracy": metrics.accuracy_score(y_true=target.numpy(), y_pred=prediction.numpy()),
             "count": 100,
+            "count_correct": int(
+                metrics.accuracy_score(
+                    y_true=target.numpy(), y_pred=prediction.numpy(), normalize=False
+                )
+            ),
+            "count_incorrect": 100
+            - int(
+                metrics.accuracy_score(
+                    y_true=target.numpy(), y_pred=prediction.numpy(), normalize=False
+                )
+            ),
+            "error": 1.0 - metrics.accuracy_score(y_true=target.numpy(), y_pred=prediction.numpy()),
         },
     )
 
@@ -606,4 +618,76 @@ def test_top_k_accuracy_get_records_prefix_suffix(prefix: str, suffix: str) -> N
             MaxScalarRecord(name=f"{prefix}top_1_accuracy{suffix}"),
             MaxScalarRecord(name=f"{prefix}top_3_accuracy{suffix}"),
         ),
+    )
+
+
+@sklearn_available
+def test_top_k_accuracy_value_sklearn() -> None:
+    metric = TopKAccuracy(topk=(1, 3))
+    prediction = torch.randn(size=(100, 10))
+    target = torch.randint(0, 10, size=(100,))
+    metric(prediction=prediction, target=target)
+    assert objects_are_allclose(
+        metric.value(),
+        {
+            "top_1_accuracy": float(
+                metrics.top_k_accuracy_score(y_true=target.numpy(), y_score=prediction.numpy(), k=1)
+            ),
+            "top_1_count": 100,
+            "top_3_accuracy": float(
+                metrics.top_k_accuracy_score(y_true=target.numpy(), y_score=prediction.numpy(), k=3)
+            ),
+            "top_3_count": 100,
+        },
+    )
+
+
+@sklearn_available
+def test_top_k_accuracy_value_sklearn_extended() -> None:
+    metric = TopKAccuracy(topk=(1, 3), state=ExtendedAccuracyState())
+    prediction = torch.randn(size=(100, 10))
+    target = torch.randint(0, 10, size=(100,))
+    metric(prediction=prediction, target=target)
+    assert objects_are_allclose(
+        metric.value(),
+        {
+            "top_1_accuracy": float(
+                metrics.top_k_accuracy_score(y_true=target.numpy(), y_score=prediction.numpy(), k=1)
+            ),
+            "top_1_error": 1.0
+            - float(
+                metrics.top_k_accuracy_score(y_true=target.numpy(), y_score=prediction.numpy(), k=1)
+            ),
+            "top_1_count": 100,
+            "top_1_count_correct": int(
+                metrics.top_k_accuracy_score(
+                    y_true=target.numpy(), y_score=prediction.numpy(), k=1, normalize=False
+                )
+            ),
+            "top_1_count_incorrect": 100
+            - int(
+                metrics.top_k_accuracy_score(
+                    y_true=target.numpy(), y_score=prediction.numpy(), k=1, normalize=False
+                )
+            ),
+            "top_3_accuracy": float(
+                metrics.top_k_accuracy_score(y_true=target.numpy(), y_score=prediction.numpy(), k=3)
+            ),
+            "top_3_error": 1.0
+            - float(
+                metrics.top_k_accuracy_score(y_true=target.numpy(), y_score=prediction.numpy(), k=3)
+            ),
+            "top_3_count": 100,
+            "top_3_count_correct": int(
+                metrics.top_k_accuracy_score(
+                    y_true=target.numpy(), y_score=prediction.numpy(), k=3, normalize=False
+                )
+            ),
+            "top_3_count_incorrect": 100
+            - int(
+                metrics.top_k_accuracy_score(
+                    y_true=target.numpy(), y_score=prediction.numpy(), k=3, normalize=False
+                )
+            ),
+        },
     )
