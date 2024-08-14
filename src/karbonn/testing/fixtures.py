@@ -9,6 +9,7 @@ __all__ = [
     "ignite_available",
     "nccl_available",
     "objectory_available",
+    "sklearn_available",
     "tabulate_available",
     "two_gpus_available",
 ]
@@ -19,6 +20,7 @@ import torch
 from karbonn.utils.imports import (
     is_ignite_available,
     is_objectory_available,
+    is_sklearn_available,
     is_tabulate_available,
 )
 
@@ -42,4 +44,5 @@ nccl_available = pytest.mark.skipif(
 
 ignite_available = pytest.mark.skipif(not is_ignite_available(), reason="Require pytorch-ignite")
 objectory_available = pytest.mark.skipif(not is_objectory_available(), reason="Require objectory")
+sklearn_available = pytest.mark.skipif(not is_sklearn_available(), reason="Require sklearn")
 tabulate_available = pytest.mark.skipif(not is_tabulate_available(), reason="Require tabulate")

@@ -9,6 +9,7 @@ __all__ = [
     "ignite_available",
     "nccl_available",
     "objectory_available",
+    "sklearn_available",
     "tabulate_available",
     "two_gpus_available",
 ]
@@ -20,6 +21,7 @@ from karbonn.testing.fixtures import (
     ignite_available,
     nccl_available,
     objectory_available,
+    sklearn_available,
     tabulate_available,
     two_gpus_available,
 )
