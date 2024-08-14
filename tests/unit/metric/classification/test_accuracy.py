@@ -5,7 +5,7 @@ from unittest.mock import Mock
 
 import pytest
 import torch
-from coola import objects_are_equal
+from coola import objects_are_allclose, objects_are_equal
 from coola.utils.tensor import get_available_devices
 from minrecord import MaxScalarRecord
 from torch.nn import Identity
@@ -18,9 +18,15 @@ from karbonn.metric import (
 )
 from karbonn.metric.state import AccuracyState, BaseState, ExtendedAccuracyState
 from karbonn.modules import ToBinaryLabel, ToCategoricalLabel
+from karbonn.testing import sklearn_available
+from karbonn.utils.imports import is_sklearn_available
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
+if is_sklearn_available():
+    from sklearn import metrics
+
 
 MODES = (True, False)
 SIZES = (1, 2)
@@ -270,6 +276,36 @@ def test_binary_accuracy_get_records_prefix_suffix(prefix: str, suffix: str) -> 
     assert objects_are_equal(
         metric.get_records(prefix, suffix),
         (MaxScalarRecord(name=f"{prefix}accuracy{suffix}"),),
+    )
+
+
+@sklearn_available
+def test_binary_accuracy_value_binary_sklearn() -> None:
+    metric = BinaryAccuracy()
+    prediction = torch.randint(0, 2, size=(100,))
+    target = torch.randint(0, 2, size=(100,))
+    metric(prediction=prediction, target=target)
+    assert objects_are_allclose(
+        metric.value(),
+        {
+            "accuracy": metrics.accuracy_score(y_true=target.numpy(), y_pred=prediction.numpy()),
+            "count": 100,
+        },
+    )
+
+
+@sklearn_available
+def test_binary_accuracy_value_multiclass_sklearn() -> None:
+    metric = BinaryAccuracy()
+    prediction = torch.randint(0, 10, size=(100,))
+    target = torch.randint(0, 10, size=(100,))
+    metric(prediction=prediction, target=target)
+    assert objects_are_allclose(
+        metric.value(),
+        {
+            "accuracy": metrics.accuracy_score(y_true=target.numpy(), y_pred=prediction.numpy()),
+            "count": 100,
+        },
     )
 
 
