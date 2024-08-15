@@ -275,7 +275,9 @@ def test_accuracy_value_sklearn() -> None:
     assert objects_are_allclose(
         metric.value(),
         {
-            "accuracy": metrics.accuracy_score(y_true=target.numpy(), y_pred=prediction.numpy()),
+            "accuracy": float(
+                metrics.accuracy_score(y_true=target.numpy(), y_pred=prediction.numpy())
+            ),
             "count": 100,
         },
     )
@@ -290,7 +292,9 @@ def test_accuracy_value_sklearn_extended() -> None:
     assert objects_are_allclose(
         metric.value(),
         {
-            "accuracy": metrics.accuracy_score(y_true=target.numpy(), y_pred=prediction.numpy()),
+            "accuracy": float(
+                metrics.accuracy_score(y_true=target.numpy(), y_pred=prediction.numpy())
+            ),
             "count": 100,
             "count_correct": int(
                 metrics.accuracy_score(
@@ -303,7 +307,8 @@ def test_accuracy_value_sklearn_extended() -> None:
                     y_true=target.numpy(), y_pred=prediction.numpy(), normalize=False
                 )
             ),
-            "error": 1.0 - metrics.accuracy_score(y_true=target.numpy(), y_pred=prediction.numpy()),
+            "error": 1.0
+            - float(metrics.accuracy_score(y_true=target.numpy(), y_pred=prediction.numpy())),
         },
     )
 
