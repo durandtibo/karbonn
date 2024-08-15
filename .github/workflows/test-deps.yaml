@@ -324,7 +324,7 @@ jobs:
 
       - name: Install scikit-learn
         run: |
-          poetry run pip install scikit-learn==${{ matrix.scikit-learn-version }}
+          poetry run python -c "from feu import install_package; install_package('scikit-learn', '${{ matrix.scikit-learn-version }}')"
 
       - name: Show installed packages
         run: |

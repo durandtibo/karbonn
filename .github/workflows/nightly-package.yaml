@@ -352,7 +352,8 @@ jobs:
 
       - name: Install package
         run: |
-          pip install karbonn scikit-learn==${{ matrix.scikit-learn-version }}
+          pip install karbonn feu
+          python -c "from feu import install_package; install_package('scikit-learn', '${{ matrix.scikit-learn-version }}')"
 
       - name: Run some checks
         run: |

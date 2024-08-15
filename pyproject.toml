@@ -70,7 +70,7 @@ mkdocstrings = { extras = ["python"], version = "^0.25" }
 black = ">=24.8"
 coverage = { extras = ["toml"], version = "^7.6" }
 docformatter = { extras = ["tomli"], version = "^1.7" }
-feu = ">=0.0.5,<1.0"
+feu = ">=0.0.7,<1.0"
 pre-commit = "^3.8"
 pygments = "^2.18"
 pytest = "^8.3"
