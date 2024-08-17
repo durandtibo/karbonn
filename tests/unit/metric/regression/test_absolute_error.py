@@ -2,12 +2,18 @@ from unittest.mock import Mock
 
 import pytest
 import torch
-from coola import objects_are_equal
+from coola import objects_are_allclose, objects_are_equal
 from coola.utils.tensor import get_available_devices
 from minrecord import MinScalarRecord
 
 from karbonn.metric import AbsoluteError, EmptyMetricError
 from karbonn.metric.state import BaseState, ErrorState, MeanErrorState
+from karbonn.testing import sklearn_available
+from karbonn.utils.imports import is_sklearn_available
+
+if is_sklearn_available():
+    import numpy as np
+    from sklearn import metrics
 
 DTYPES = (torch.long, torch.float)
 MODES = (True, False)
@@ -282,4 +288,27 @@ def test_absolute_error_get_records_prefix_suffix(prefix: str, suffix: str) -> N
             MinScalarRecord(name=f"{prefix}max{suffix}"),
             MinScalarRecord(name=f"{prefix}sum{suffix}"),
         ),
+    )
+
+
+@sklearn_available
+def test_categorical_confusion_matrix_value_sklearn() -> None:
+    metric = AbsoluteError()
+    prediction = torch.randn(size=(100,))
+    target = torch.randn(size=(100,))
+    metric(prediction=prediction, target=target)
+    assert objects_are_allclose(
+        metric.value(),
+        {
+            "mean": float(
+                metrics.mean_absolute_error(y_pred=prediction.numpy(), y_true=target.numpy())
+            ),
+            "max": float(metrics.max_error(y_pred=prediction.numpy(), y_true=target.numpy())),
+            "min": np.min(np.abs(prediction.numpy() - target.numpy())).item(),
+            "sum": float(
+                metrics.mean_absolute_error(y_pred=prediction.numpy(), y_true=target.numpy())
+            )
+            * 100,
+            "count": 100,
+        },
     )
