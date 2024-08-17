@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 import torch
-from coola import objects_are_equal
+from coola import objects_are_allclose, objects_are_equal
 from coola.utils.tensor import get_available_devices
 from minrecord import MaxScalarRecord, MinScalarRecord
 
@@ -11,6 +11,11 @@ from karbonn.metric import (
     CategoricalConfusionMatrix,
     EmptyMetricError,
 )
+from karbonn.testing import sklearn_available
+from karbonn.utils.imports import is_sklearn_available
+
+if is_sklearn_available():
+    from sklearn import metrics
 
 MODES = (True, False)
 SIZES = (1, 2)
@@ -360,6 +365,48 @@ def test_binary_confusion_get_records_prefix_suffix(prefix: str, suffix: str) ->
             MinScalarRecord(name=f"{prefix}false_positive{suffix}"),
             MaxScalarRecord(name=f"{prefix}f1_score{suffix}"),
         ),
+    )
+
+
+@sklearn_available
+def test_binary_confusion_matrix_value_sklearn() -> None:
+    metric = BinaryConfusionMatrix()
+    prediction = torch.randint(0, 2, size=(100,))
+    target = torch.randint(0, 2, size=(100,))
+    metric(prediction=prediction, target=target)
+    assert objects_are_allclose(
+        metric.value(),
+        {
+            "accuracy": float(
+                metrics.accuracy_score(y_pred=prediction.numpy(), y_true=target.numpy())
+            ),
+            "balanced_accuracy": float(
+                metrics.balanced_accuracy_score(y_pred=prediction.numpy(), y_true=target.numpy())
+            ),
+            "false_negative": torch.logical_and(prediction == 0, target == 1).sum().item(),
+            "false_negative_rate": torch.logical_and(prediction == 0, target == 1).sum().item()
+            / (target == 1).sum().item(),
+            "false_positive": torch.logical_and(prediction == 1, target == 0).sum().item(),
+            "false_positive_rate": torch.logical_and(prediction == 1, target == 0).sum().item()
+            / (target == 0).sum().item(),
+            "jaccard_index": float(
+                metrics.jaccard_score(y_pred=prediction.numpy(), y_true=target.numpy())
+            ),
+            "precision": float(
+                metrics.precision_score(y_pred=prediction.numpy(), y_true=target.numpy())
+            ),
+            "recall": float(metrics.recall_score(y_pred=prediction.numpy(), y_true=target.numpy())),
+            "true_negative": torch.logical_and(prediction == target, target == 0).sum().item(),
+            "true_negative_rate": torch.logical_and(prediction == target, target == 0).sum().item()
+            / (target == 0).sum().item(),
+            "true_positive": torch.logical_and(prediction == target, target == 1).sum().item(),
+            "true_positive_rate": torch.logical_and(prediction == target, target == 1).sum().item()
+            / (target == 1).sum().item(),
+            "f1_score": float(
+                metrics.fbeta_score(beta=1, y_pred=prediction.numpy(), y_true=target.numpy())
+            ),
+            "count": 100,
+        },
     )
 
 
@@ -728,4 +775,76 @@ def test_categorical_confusion_get_records_prefix_suffix(prefix: str, suffix: st
             MaxScalarRecord(name=f"{prefix}micro_f1_score{suffix}"),
             MaxScalarRecord(name=f"{prefix}weighted_f1_score{suffix}"),
         ),
+    )
+
+
+@sklearn_available
+def test_categorical_confusion_matrix_value_sklearn() -> None:
+    metric = CategoricalConfusionMatrix(num_classes=5)
+    prediction = torch.randint(0, 5, size=(100,))
+    target = torch.randint(0, 5, size=(100,))
+    metric(prediction=prediction, target=target)
+    assert objects_are_allclose(
+        metric.value(),
+        {
+            "accuracy": float(
+                metrics.accuracy_score(y_pred=prediction.numpy(), y_true=target.numpy())
+            ),
+            "balanced_accuracy": float(
+                metrics.balanced_accuracy_score(y_pred=prediction.numpy(), y_true=target.numpy())
+            ),
+            "macro_precision": float(
+                metrics.precision_score(
+                    y_pred=prediction.numpy(), y_true=target.numpy(), average="macro"
+                )
+            ),
+            "macro_recall": float(
+                metrics.recall_score(
+                    y_pred=prediction.numpy(), y_true=target.numpy(), average="macro"
+                )
+            ),
+            "macro_f1_score": float(
+                metrics.f1_score(y_pred=prediction.numpy(), y_true=target.numpy(), average="macro")
+            ),
+            "micro_precision": float(
+                metrics.precision_score(
+                    y_pred=prediction.numpy(), y_true=target.numpy(), average="micro"
+                )
+            ),
+            "micro_recall": float(
+                metrics.recall_score(
+                    y_pred=prediction.numpy(), y_true=target.numpy(), average="micro"
+                )
+            ),
+            "micro_f1_score": float(
+                metrics.f1_score(y_pred=prediction.numpy(), y_true=target.numpy(), average="micro")
+            ),
+            "weighted_precision": float(
+                metrics.precision_score(
+                    y_pred=prediction.numpy(), y_true=target.numpy(), average="weighted"
+                )
+            ),
+            "weighted_recall": float(
+                metrics.recall_score(
+                    y_pred=prediction.numpy(), y_true=target.numpy(), average="weighted"
+                )
+            ),
+            "weighted_f1_score": float(
+                metrics.f1_score(
+                    y_pred=prediction.numpy(), y_true=target.numpy(), average="weighted"
+                )
+            ),
+            "count": 100,
+            "precision": torch.from_numpy(
+                metrics.precision_score(
+                    y_pred=prediction.numpy(), y_true=target.numpy(), average=None
+                )
+            ).float(),
+            "recall": torch.from_numpy(
+                metrics.recall_score(y_pred=prediction.numpy(), y_true=target.numpy(), average=None)
+            ).float(),
+            "f1_score": torch.from_numpy(
+                metrics.f1_score(y_pred=prediction.numpy(), y_true=target.numpy(), average=None)
+            ).float(),
+        },
     )
