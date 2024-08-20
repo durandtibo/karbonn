@@ -4,7 +4,7 @@ from torch import nn
 from karbonn.utils.iterator import get_named_modules
 
 
-@pytest.fixture()
+@pytest.fixture
 def nested_module() -> nn.Module:
     return nn.Sequential(
         nn.Linear(4, 6),
