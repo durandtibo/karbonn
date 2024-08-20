@@ -29,7 +29,7 @@ else:  # pragma: no cover
     OBJECT_TARGET = "_target_"
 
 
-@pytest.fixture()
+@pytest.fixture
 def config() -> EqualityConfig:
     return EqualityConfig(tester=EqualityTester())
 
