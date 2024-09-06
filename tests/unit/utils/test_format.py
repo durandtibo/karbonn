@@ -9,7 +9,7 @@ from karbonn.testing import tabulate_available
 from karbonn.utils.format import str_table
 
 
-@pytest.fixture()
+@pytest.fixture
 def tabular_data() -> list:
     return [["col1", "col2", "col3"], [10, 20, 30], [11, 21, 31], [12, 22, 32], [13, 23, 33]]
 
