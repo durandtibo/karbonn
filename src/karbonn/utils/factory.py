@@ -78,11 +78,11 @@ def setup_module(module: nn.Module | dict) -> nn.Module:
     ```
     """
     if isinstance(module, dict):
-        logger.info("Initializing a `torch.nn.Module` from its configuration... ")
+        logger.info("Initializing a 'torch.nn.Module' from its configuration... ")
         check_objectory()
         module = objectory.factory(**module)
     if not isinstance(module, nn.Module):
-        logger.warning(f"module is not a `torch.nn.Module` (received: {type(module)})")
+        logger.warning(f"module is not a 'torch.nn.Module' (received: {type(module)})")
     return module
 
 
