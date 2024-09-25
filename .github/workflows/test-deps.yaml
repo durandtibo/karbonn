@@ -33,9 +33,12 @@ jobs:
           poetry run make config-poetry
           poetry run make install
 
-      - name: Install PyTorch
-        run: |
-          poetry run pip install coola==${{ matrix.coola-version }}
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.2.1
+        with:
+          package-name: 'coola'
+          package-version: ${{ matrix.coola-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Show installed packages
         run: |
@@ -75,9 +78,12 @@ jobs:
           poetry run make config-poetry
           poetry run make install
 
-      - name: Install PyTorch
-        run: |
-          poetry run pip install minrecord==${{ matrix.minrecord-version }}
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.2.1
+        with:
+          package-name: 'minrecord'
+          package-version: ${{ matrix.minrecord-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Show installed packages
         run: |
@@ -98,20 +104,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ '3.12', '3.11', '3.10', '3.9' ]
-        torch-version: [ 2.4.0, 2.3.1, 2.2.2, 2.1.2, 2.0.1, 1.13.1, 1.12.1 ]
-        exclude:
-          # python 3.11
-          - torch-version: 1.12.1
-            python-version: 3.11
-          # python 3.12
-          - torch-version: 1.12.1
-            python-version: 3.12
-          - torch-version: 1.13.1
-            python-version: 3.12
-          - torch-version: 2.0.1
-            python-version: 3.12
-          - torch-version: 2.1.2
-            python-version: 3.12
+        torch-version: [ 2.4.1, 2.3.1, 2.2.2, 2.1.2, 2.0.1, 1.13.1, 1.12.1 ]
 
     steps:
       - name: Checkout
@@ -130,9 +123,12 @@ jobs:
           poetry run make config-poetry
           poetry run make install
 
-      - name: Install torch
-        run: |
-          poetry run pip install torch==${{ matrix.torch-version }}
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.2.1
+        with:
+          package-name: 'torch'
+          package-version: ${{ matrix.torch-version }}
+          python-version: ${{ matrix.python-version }}
 
       # The following step is needed for torch 2.2.2 because an experimental module in
       # torch.distributed requires numpy
@@ -164,20 +160,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ '3.12', '3.11', '3.10', '3.9' ]
-        numpy-version: [ 2.0.1, 1.26.4, 1.25.2, 1.24.3, 1.23.5, 1.22.4 ]
-        exclude:
-          # python 3.11
-          - numpy-version: 1.22.4
-            python-version: '3.11'
-          # python 3.12
-          - numpy-version: 1.22.4
-            python-version: '3.12'
-          - numpy-version: 1.23.5
-            python-version: '3.12'
-          - numpy-version: 1.24.3
-            python-version: '3.12'
-          - numpy-version: 1.25.2
-            python-version: '3.12'
+        numpy-version: [ 2.1.1, 2.0.1, 1.26.4, 1.25.2, 1.24.3, 1.23.5, 1.22.4 ]
 
     steps:
       - name: Checkout
@@ -196,9 +179,12 @@ jobs:
           poetry run make config-poetry
           poetry run make install
 
-      - name: Install NumPy
-        run: |
-          poetry run pip install numpy==${{ matrix.numpy-version }}
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.2.1
+        with:
+          package-name: 'numpy'
+          package-version: ${{ matrix.numpy-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Show installed packages
         run: |
@@ -238,9 +224,12 @@ jobs:
           poetry run make config-poetry
           poetry run make install
 
-      - name: Install NumPy
-        run: |
-          poetry run pip install objectory==${{ matrix.objectory-version }}
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.2.1
+        with:
+          package-name: 'objectory'
+          package-version: ${{ matrix.objectory-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Show installed packages
         run: |
@@ -280,9 +269,12 @@ jobs:
           poetry run make config-poetry
           poetry run make install
 
-      - name: Install pytorch-ignite
-        run: |
-          poetry run pip install pytorch-ignite==${{ matrix.pytorch-ignite-version }}
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.2.1
+        with:
+          package-name: 'pytorch-ignite'
+          package-version: ${{ matrix.pytorch-ignite-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Show installed packages
         run: |
@@ -303,18 +295,8 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ '3.12', '3.11', '3.10', '3.9' ]
-        scikit-learn-version: [ 1.5.1, 1.4.2, 1.3.2, 1.2.2, 1.1.3, 1.0.2 ]
+        scikit-learn-version: [ 1.5.2, 1.4.2, 1.3.2, 1.2.2, 1.1.3, 1.0.2 ]
         exclude:
-          # python 3.11
-          - scikit-learn-version: 1.0.2
-            python-version: '3.11'
-          # python 3.12
-          - scikit-learn-version: 1.0.2
-            python-version: '3.12'
-          - scikit-learn-version: 1.1.3
-            python-version: '3.12'
-          - scikit-learn-version: 1.2.2
-            python-version: '3.12'
 
     steps:
       - name: Checkout
@@ -333,9 +315,12 @@ jobs:
           poetry run make config-poetry
           poetry run make install
 
-      - name: Install scikit-learn
-        run: |
-          poetry run python -c "from feu import install_package; install_package('scikit-learn', '${{ matrix.scikit-learn-version }}')"
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.2.1
+        with:
+          package-name: 'scikit-learn'
+          package-version: ${{ matrix.scikit-learn-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Show installed packages
         run: |
