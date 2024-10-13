@@ -146,6 +146,7 @@ class AsinhScalarEncoder(Module):
         Example usage:
 
         ```pycon
+
         >>> import torch
         >>> from karbonn.modules import AsinhScalarEncoder
         >>> m = AsinhScalarEncoder.create_linspace_scale(dim=5, min_scale=1, max_scale=10)
@@ -196,6 +197,7 @@ class AsinhScalarEncoder(Module):
         Example usage:
 
         ```pycon
+
         >>> import torch
         >>> from karbonn.modules import AsinhScalarEncoder
         >>> m = AsinhScalarEncoder.create_logspace_scale(dim=5, min_scale=1, max_scale=10)
