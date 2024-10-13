@@ -21,6 +21,9 @@ class CosSinScalarEncoder(nn.Module):
     r"""Implement a frequency/phase-shift scalar encoder where the
     periodic functions are cosine and sine.
 
+    This module maps scalar values of numerical features to
+    high-dimensional embedding vectors.
+
     Args:
         frequency: The initial frequency values.
         phase_shift: The initial phase-shift values.
@@ -36,6 +39,7 @@ class CosSinScalarEncoder(nn.Module):
     Example usage:
 
     ```pycon
+
     >>> import torch
     >>> from karbonn.modules import CosSinScalarEncoder
     >>> m = CosSinScalarEncoder(
@@ -124,6 +128,7 @@ class CosSinScalarEncoder(nn.Module):
         Example usage:
 
         ```pycon
+
         >>> import torch
         >>> from karbonn.modules import CosSinScalarEncoder
         >>> m = CosSinScalarEncoder.create_rand_frequency(
@@ -181,6 +186,7 @@ class CosSinScalarEncoder(nn.Module):
         Example usage:
 
         ```pycon
+
         >>> import torch
         >>> from karbonn.modules import CosSinScalarEncoder
         >>> m = CosSinScalarEncoder.create_rand_value_range(
@@ -223,6 +229,7 @@ class CosSinScalarEncoder(nn.Module):
         Example usage:
 
         ```pycon
+
         >>> import torch
         >>> from karbonn.modules import CosSinScalarEncoder
         >>> m = CosSinScalarEncoder.create_linspace_frequency(
@@ -278,6 +285,7 @@ class CosSinScalarEncoder(nn.Module):
         Example usage:
 
         ```pycon
+
         >>> import torch
         >>> from karbonn.modules import CosSinScalarEncoder
         >>> m = CosSinScalarEncoder.create_linspace_value_range(
@@ -321,6 +329,7 @@ class CosSinScalarEncoder(nn.Module):
         Example usage:
 
         ```pycon
+
         >>> import torch
         >>> from karbonn.modules import CosSinScalarEncoder
         >>> m = CosSinScalarEncoder.create_logspace_frequency(
@@ -378,6 +387,7 @@ class CosSinScalarEncoder(nn.Module):
         Example usage:
 
         ```pycon
+
         >>> import torch
         >>> from karbonn.modules import CosSinScalarEncoder
         >>> m = CosSinScalarEncoder.create_logspace_value_range(
@@ -400,9 +410,13 @@ class AsinhCosSinScalarEncoder(CosSinScalarEncoder):
     r"""Extension of ``CosSinScalarEncoder`` with an additional feature
     built using the inverse hyperbolic sine (arcsinh).
 
+    This module maps scalar values of numerical features to
+    high-dimensional embedding vectors.
+
     Example usage:
 
     ```pycon
+
     >>> import torch
     >>> from karbonn.modules import AsinhCosSinScalarEncoder
     >>> m = AsinhCosSinScalarEncoder(
