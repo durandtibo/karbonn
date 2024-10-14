@@ -133,28 +133,6 @@ def test_asinh_numerical_encoder_learnable(learnable: bool) -> None:
     )
 
 
-# @patch(
-#     "karbonn.modules.numerical.asinh.torch.rand",
-#     lambda *args, **kwargs: torch.tensor([0.0, 0.5, 1.0]),
-# )
-# def test_asinh_numerical_encoder_create_rand_scale() -> None:
-#     assert AsinhNumericalEncoder.create_rand_scale(dim=3, min_scale=0.2, max_scale=1).scale.data.equal(
-#         torch.tensor([0.2, 0.6, 1.0])
-#     )
-#
-#
-# def test_asinh_numerical_encoder_create_linspace_scale() -> None:
-#     assert AsinhNumericalEncoder.create_linspace_scale(
-#         dim=3, min_scale=0.2, max_scale=1
-#     ).scale.data.equal(torch.tensor([0.2, 0.6, 1.0]))
-#
-#
-# def test_asinh_numerical_encoder_create_logspace_scale() -> None:
-#     assert AsinhNumericalEncoder.create_logspace_scale(
-#         dim=3, min_scale=0.01, max_scale=1
-#     ).scale.data.equal(torch.tensor([0.01, 0.1, 1.0]))
-
-
 def test_asinh_numerical_encoder_forward_scale_1_feature() -> None:
     module = AsinhNumericalEncoder(scale=torch.tensor([[1.0, 2.0, 3.0]]))
     assert module(torch.tensor([[-1.0], [0.0], [1.0]])).allclose(
@@ -169,7 +147,7 @@ def test_asinh_numerical_encoder_forward_scale_1_feature() -> None:
     )
 
 
-def test_asinh_numerical_encoder_forward_scale_2_feature() -> None:
+def test_asinh_numerical_encoder_forward_scale_2_features() -> None:
     module = AsinhNumericalEncoder(scale=torch.tensor([[1.0, 2.0, 3.0], [1.0, 2.0, 4.0]]))
     assert module(torch.tensor([[-1.0, 0.0], [0.0, 1.0], [1.0, -1.0]])).allclose(
         torch.tensor(
@@ -185,6 +163,29 @@ def test_asinh_numerical_encoder_forward_scale_2_feature() -> None:
                 [
                     [0.8813735842704773, 1.4436354637145996, 1.8184465169906616],
                     [-0.8813735842704773, -1.4436354637145996, -2.094712495803833],
+                ],
+            ],
+            dtype=torch.float,
+        ),
+    )
+
+
+def test_asinh_numerical_encoder_forward_scale_2_features_same_scale() -> None:
+    module = AsinhNumericalEncoder(scale=torch.tensor([[1.0, 2.0, 3.0]]))
+    assert module(torch.tensor([[-1.0, 0.0], [0.0, 1.0], [1.0, -1.0]])).allclose(
+        torch.tensor(
+            [
+                [
+                    [-0.8813735842704773, -1.4436354637145996, -1.8184465169906616],
+                    [0.0, 0.0, 0.0],
+                ],
+                [
+                    [0.0, 0.0, 0.0],
+                    [0.8813735842704773, 1.4436354637145996, 1.8184465169906616],
+                ],
+                [
+                    [0.8813735842704773, 1.4436354637145996, 1.8184465169906616],
+                    [-0.8813735842704773, -1.4436354637145996, -1.8184465169906616],
                 ],
             ],
             dtype=torch.float,
