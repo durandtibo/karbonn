@@ -45,6 +45,7 @@ __all__ = [
     "ToLong",
     "TransformedLoss",
     "binary_focal_loss",
+    "AsinhNumericalEncoder",
 ]
 
 from karbonn.modules.activations import (
@@ -87,6 +88,7 @@ from karbonn.modules.loss import (
     TransformedLoss,
     binary_focal_loss,
 )
+from karbonn.modules.numerical import AsinhNumericalEncoder
 from karbonn.modules.residual import ResidualBlock
 from karbonn.modules.scalar import (
     AsinhCosSinScalarEncoder,
