@@ -134,7 +134,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ '3.12', '3.11', '3.10', '3.9' ]
-        coola-version: [ 0.8.3, 0.8.2 ]
+        coola-version: [ 0.8.4, 0.8.2 ]
 
     steps:
       - name: Checkout
@@ -206,7 +206,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ '3.12', '3.11', '3.10', '3.9' ]
-        torch-version: [ 2.4.1, 2.3.1, 2.2.2, 2.1.2, 2.0.1, 1.13.1, 1.12.1 ]
+        torch-version: [ 2.5.0, 2.4.1, 2.3.1, 2.2.2, 2.1.2, 2.0.1, 1.13.1, 1.12.1 ]
 
     steps:
       - name: Checkout
