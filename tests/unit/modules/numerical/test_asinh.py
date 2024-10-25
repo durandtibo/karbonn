@@ -19,27 +19,19 @@ def test_asinh_numerical_encoder_str() -> None:
     ).startswith("AsinhNumericalEncoder(")
 
 
-@pytest.mark.parametrize(
-    "scale",
-    [
-        torch.tensor([1.0, 2.0, 4.0], dtype=torch.float),
-        torch.tensor([[1.0, 2.0, 4.0]], dtype=torch.float),
-    ],
-)
+@pytest.mark.parametrize("scale", [torch.tensor([1.0, 2.0, 4.0]), torch.tensor([[1.0, 2.0, 4.0]])])
 def test_asinh_numerical_encoder_scale_1_feature(scale: torch.Tensor) -> None:
-    assert AsinhNumericalEncoder(scale).scale.equal(
-        torch.tensor([[1.0, 2.0, 4.0]], dtype=torch.float)
-    )
+    assert AsinhNumericalEncoder(scale).scale.equal(torch.tensor([[1.0, 2.0, 4.0]]))
 
 
 def test_asinh_numerical_encoder_scale_2_features() -> None:
     assert AsinhNumericalEncoder(torch.tensor([[1.0, 2.0, 4.0], [2.0, 3.0, 4.0]])).scale.equal(
-        torch.tensor([[1.0, 2.0, 4.0], [2.0, 3.0, 4.0]], dtype=torch.float)
+        torch.tensor([[1.0, 2.0, 4.0], [2.0, 3.0, 4.0]])
     )
 
 
 def test_asinh_numerical_encoder_scale_incorrect_shape() -> None:
-    with pytest.raises(ValueError, match="Incorrect shape for scale:"):
+    with pytest.raises(RuntimeError, match="Incorrect shape for 'scale':"):
         AsinhNumericalEncoder(torch.ones(2, 3, 4))
 
 
@@ -138,7 +130,6 @@ def test_asinh_numerical_encoder_forward_scale_1_feature() -> None:
                 [[0.0, 0.0, 0.0]],
                 [[0.881373587019543, 1.4436354751788103, 1.8184464592320668]],
             ],
-            dtype=torch.float,
         ),
     )
 
@@ -161,7 +152,6 @@ def test_asinh_numerical_encoder_forward_scale_2_features() -> None:
                     [-0.8813735842704773, -1.4436354637145996, -2.094712495803833],
                 ],
             ],
-            dtype=torch.float,
         ),
     )
 
@@ -184,6 +174,5 @@ def test_asinh_numerical_encoder_forward_scale_2_features_same_scale() -> None:
                     [-0.8813735842704773, -1.4436354637145996, -1.8184465169906616],
                 ],
             ],
-            dtype=torch.float,
         ),
     )
