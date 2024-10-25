@@ -3,7 +3,12 @@ functions."""
 
 from __future__ import annotations
 
-__all__ = ["CosSinNumericalEncoder", "prepare_tensor_param"]
+__all__ = [
+    "CosSinNumericalEncoder",
+    "prepare_tensor_param",
+    "check_frequency",
+    "check_abs_range",
+]
 
 from typing import TYPE_CHECKING
 
@@ -114,6 +119,101 @@ class CosSinNumericalEncoder(Module):
             dim=-1,
         )
 
+    @classmethod
+    def create_rand_frequency(
+        cls,
+        num_frequencies: int,
+        min_frequency: float,
+        max_frequency: float,
+        learnable: bool = False,
+    ) -> CosSinNumericalEncoder:
+        r"""Create a ``CosSinNumericalEncoder`` where the frequencies are
+        uniformly initialized in a frequency range.
+
+        Args:
+            num_frequencies: The number of frequencies.
+            min_frequency: The minimum frequency.
+            max_frequency: The maximum frequency.
+            learnable: If ``True`` the parameters are learnable,
+                otherwise they are frozen.
+
+        Returns:
+            An instantiated ``CosSinNumericalEncoder`` where the
+                frequencies are uniformly initialized in a frequency
+                range.
+
+        Example usage:
+
+        ```pycon
+
+        >>> import torch
+        >>> from karbonn.modules import CosSinNumericalEncoder
+        >>> m = CosSinNumericalEncoder.create_rand_frequency(
+        ...     num_frequencies=5, min_frequency=0.1, max_frequency=1.0
+        ... )
+        >>> m
+        CosSinNumericalEncoder(frequency=(1, 10), phase_shift=(1, 10), learnable=False)
+
+        ```
+        """
+        check_frequency(
+            num_frequencies=num_frequencies,
+            min_frequency=min_frequency,
+            max_frequency=max_frequency,
+        )
+        return cls(
+            frequency=torch.rand(1, num_frequencies)
+            .mul(max_frequency - min_frequency)
+            .add(min_frequency),
+            phase_shift=torch.zeros(1, num_frequencies),
+            learnable=learnable,
+        )
+
+    @classmethod
+    def create_rand_value_range(
+        cls,
+        num_frequencies: int,
+        min_abs_value: float,
+        max_abs_value: float,
+        learnable: bool = True,
+    ) -> CosSinNumericalEncoder:
+        r"""Create a ``CosSinNumericalEncoder`` where the frequencies are
+        uniformly initialized for a given value range.
+
+        Args:
+            num_frequencies: The number of frequencies.
+            min_abs_value: The minimum absolute value to encode.
+            max_abs_value: The maximum absolute value to encode.
+            learnable: If ``True`` the parameters are learnable,
+                otherwise they are frozen.
+
+        Returns:
+            An instantiated ``CosSinNumericalEncoder`` where the
+                frequencies are uniformly initialized for a given
+                value range.
+
+        Example usage:
+
+        ```pycon
+
+        >>> import torch
+        >>> from karbonn.modules import CosSinNumericalEncoder
+        >>> m = CosSinNumericalEncoder.create_rand_value_range(
+        ...     num_frequencies=5, min_abs_value=0.1, max_abs_value=1.0
+        ... )
+        >>> m
+        CosSinNumericalEncoder(frequency=(1, 10), phase_shift=(1, 10), learnable=False)
+
+        ```
+        """
+        check_abs_range(min_abs_value=min_abs_value, max_abs_value=max_abs_value)
+        return cls.create_rand_frequency(
+            num_frequencies=num_frequencies,
+            min_frequency=1 / max_abs_value,
+            max_frequency=1 / min_abs_value,
+            learnable=learnable,
+        )
+
 
 def prepare_tensor_param(tensor: Tensor, name: str) -> Tensor:
     r"""Prepare a tensor parameter to be a 2d tensor.
@@ -134,3 +234,53 @@ def prepare_tensor_param(tensor: Tensor, name: str) -> Tensor:
         msg = f"Incorrect shape for '{name}': {tensor.shape}"
         raise RuntimeError(msg)
     return tensor
+
+
+def check_abs_range(min_abs_value: float, max_abs_value: float) -> None:
+    r"""Check the frequency parameters.
+
+    Args:
+        min_abs_value: The minimum absolute value to encode.
+        max_abs_value: The maximum absolute value to encode.
+
+    Raises:
+        RuntimeError: if one of the parameters is invalid.
+    """
+    if min_abs_value <= 0:
+        msg = f"'min_abs_value' has to be greater than 0 (received: {min_abs_value})"
+        raise RuntimeError(msg)
+    if max_abs_value < min_abs_value:
+        msg = (
+            f"'max_abs_value' (received: {max_abs_value}) has to be greater than "
+            f"'min_abs_value' (received: {min_abs_value})"
+        )
+        raise RuntimeError(msg)
+
+
+def check_frequency(
+    num_frequencies: int,
+    min_frequency: float,
+    max_frequency: float,
+) -> None:
+    r"""Check the frequency parameters.
+
+    Args:
+        num_frequencies: The number of frequencies.
+        min_frequency: The minimum frequency.
+        max_frequency: The maximum frequency.
+
+    Raises:
+        RuntimeError: if one of the parameters is invalid.
+    """
+    if num_frequencies < 1:
+        msg = f"'num_frequencies' has to be greater or equal to 1 (received: {num_frequencies})"
+        raise RuntimeError(msg)
+    if min_frequency <= 0:
+        msg = f"'min_frequency' has to be greater than 0 (received: {min_frequency})"
+        raise RuntimeError(msg)
+    if max_frequency < min_frequency:
+        msg = (
+            f"'max_frequency' (received: {max_frequency}) has to be greater than "
+            f"'min_frequency' (received: {min_frequency})"
+        )
+        raise RuntimeError(msg)
