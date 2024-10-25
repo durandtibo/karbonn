@@ -4,6 +4,7 @@ functions."""
 from __future__ import annotations
 
 __all__ = [
+    "AsinhCosSinNumericalEncoder",
     "CosSinNumericalEncoder",
     "prepare_tensor_param",
     "check_frequency",
@@ -400,6 +401,79 @@ class CosSinNumericalEncoder(Module):
             min_frequency=1 / max_abs_value,
             max_frequency=1 / min_abs_value,
             learnable=learnable,
+        )
+
+
+class AsinhCosSinNumericalEncoder(CosSinNumericalEncoder):
+    r"""Extension of ``CosSinNumericalEncoder`` with an additional
+    feature built using the inverse hyperbolic sine (arcsinh).
+
+    Args:
+        frequency: The initial frequency values. This input should be
+            a tensor of shape ``(n_features, feature_size // 2)`` or
+            ``(feature_size // 2,)``.
+        phase_shift: The initial phase-shift values. This input should
+            be a tensor of shape ``(n_features, feature_size // 2)`` or
+            ``(feature_size // 2,)``.
+        learnable: If ``True`` the frequencies and phase-shift
+            parameters are learnable, otherwise they are frozen.
+
+    Shape:
+        - Input: ``(*, n_features)``, where ``*`` means any number of
+            dimensions.
+        - Output: ``(*, n_features, feature_size + 1)``,  where ``*``
+            has the same shape as the input.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.modules import AsinhCosSinNumericalEncoder
+    >>> # Example with 1 feature
+    >>> m = AsinhCosSinNumericalEncoder(
+    ...     frequency=torch.tensor([[1.0, 2.0, 4.0]]),
+    ...     phase_shift=torch.zeros(1, 3),
+    ... )
+    >>> m
+    AsinhCosSinNumericalEncoder(frequency=(1, 6), phase_shift=(1, 6), learnable=False)
+    >>> out = m(torch.tensor([[0.0], [1.0], [2.0], [3.0]]))
+    >>> out
+    tensor([[[ 0.0000,  0.0000,  0.0000,  1.0000,  1.0000,  1.0000,  0.0000]],
+            [[ 0.8415,  0.9093, -0.7568,  0.5403, -0.4161, -0.6536,  0.8814]],
+            [[ 0.9093, -0.7568,  0.9894, -0.4161, -0.6536, -0.1455,  1.4436]],
+            [[ 0.1411, -0.2794, -0.5366, -0.9900,  0.9602,  0.8439,  1.8184]]])
+    >>> # Example with 2 features
+    >>> m = AsinhCosSinNumericalEncoder(
+    ...     frequency=torch.tensor([[1.0, 2.0, 4.0], [2.0, 4.0, 6.0]]),
+    ...     phase_shift=torch.zeros(2, 3),
+    ... )
+    >>> m
+    AsinhCosSinNumericalEncoder(frequency=(2, 6), phase_shift=(2, 6), learnable=False)
+    >>> out = m(torch.tensor([[0.0, 3.0], [1.0, 2.0], [2.0, 1.0], [3.0, 0.0]]))
+    >>> out
+    tensor([[[ 0.0000,  0.0000,  0.0000,  1.0000,  1.0000,  1.0000,  0.0000],
+             [-0.2794, -0.5366, -0.7510,  0.9602,  0.8439,  0.6603,  1.8184]],
+            [[ 0.8415,  0.9093, -0.7568,  0.5403, -0.4161, -0.6536,  0.8814],
+             [-0.7568,  0.9894, -0.5366, -0.6536, -0.1455,  0.8439,  1.4436]],
+            [[ 0.9093, -0.7568,  0.9894, -0.4161, -0.6536, -0.1455,  1.4436],
+             [ 0.9093, -0.7568, -0.2794, -0.4161, -0.6536,  0.9602,  0.8814]],
+            [[ 0.1411, -0.2794, -0.5366, -0.9900,  0.9602,  0.8439,  1.8184],
+             [ 0.0000,  0.0000,  0.0000,  1.0000,  1.0000,  1.0000,  0.0000]]])
+
+    ```
+    """
+
+    @property
+    def output_size(self) -> int:
+        r"""Return the output feature size."""
+        return self.frequency.shape[1] + 1
+
+    def forward(self, scalar: Tensor) -> Tensor:
+        features = super().forward(scalar)
+        return torch.cat(
+            (features, scalar.unsqueeze(dim=-1).asinh()),
+            dim=-1,
         )
 
 
