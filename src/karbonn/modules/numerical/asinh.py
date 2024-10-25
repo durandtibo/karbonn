@@ -69,6 +69,16 @@ class AsinhNumericalEncoder(Module):
             raise ValueError(msg)
         self.scale = Parameter(scale, requires_grad=learnable)
 
+    @property
+    def input_size(self) -> int:
+        r"""Return the input feature size."""
+        return self.scale.shape[0]
+
+    @property
+    def output_size(self) -> int:
+        r"""Return the output feature size."""
+        return self.scale.shape[1]
+
     def extra_repr(self) -> str:
         return f"shape={tuple(self.scale.shape)}, learnable={self.scale.requires_grad}"
 
