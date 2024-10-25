@@ -383,6 +383,74 @@ def test_cos_sin_scalar_encoder_create_rand_value_range_learnable(learnable: boo
     assert module.phase_shift.requires_grad == learnable
 
 
+def test_cos_sin_numerical_encoder_create_linspace_frequency() -> None:
+    module = CosSinNumericalEncoder.create_linspace_frequency(
+        num_frequencies=3, min_frequency=0.2, max_frequency=1
+    )
+    assert module.frequency.data.equal(torch.tensor([[0.2, 0.6, 1.0, 0.2, 0.6, 1.0]]))
+    assert module.phase_shift.data.equal(torch.tensor([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]))
+
+
+@pytest.mark.parametrize("learnable", [True, False])
+def test_cos_sin_scalar_encoder_create_linspace_frequency_learnable(learnable: bool) -> None:
+    module = CosSinNumericalEncoder.create_linspace_frequency(
+        num_frequencies=3, min_frequency=0.2, max_frequency=1, learnable=learnable
+    )
+    assert module.frequency.requires_grad == learnable
+    assert module.phase_shift.requires_grad == learnable
+
+
+def test_cos_sin_numerical_encoder_create_linspace_value_range() -> None:
+    module = CosSinNumericalEncoder.create_linspace_value_range(
+        num_frequencies=3, min_abs_value=0.2, max_abs_value=1
+    )
+    assert module.frequency.data.equal(torch.tensor([[1.0, 3.0, 5.0, 1.0, 3.0, 5.0]]))
+    assert module.phase_shift.data.equal(torch.tensor([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]))
+
+
+@pytest.mark.parametrize("learnable", [True, False])
+def test_cos_sin_scalar_encoder_create_linspace_value_range_learnable(learnable: bool) -> None:
+    module = CosSinNumericalEncoder.create_linspace_value_range(
+        num_frequencies=3, min_abs_value=0.2, max_abs_value=1, learnable=learnable
+    )
+    assert module.frequency.requires_grad == learnable
+    assert module.phase_shift.requires_grad == learnable
+
+
+def test_cos_sin_numerical_encoder_create_logspace_frequency() -> None:
+    module = CosSinNumericalEncoder.create_logspace_frequency(
+        num_frequencies=3, min_frequency=0.01, max_frequency=1
+    )
+    assert module.frequency.data.equal(torch.tensor([[0.01, 0.1, 1.0, 0.01, 0.1, 1.0]]))
+    assert module.phase_shift.data.equal(torch.tensor([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]))
+
+
+@pytest.mark.parametrize("learnable", [True, False])
+def test_cos_sin_scalar_encoder_create_logspace_frequency_learnable(learnable: bool) -> None:
+    module = CosSinNumericalEncoder.create_logspace_frequency(
+        num_frequencies=3, min_frequency=0.01, max_frequency=1, learnable=learnable
+    )
+    assert module.frequency.requires_grad == learnable
+    assert module.phase_shift.requires_grad == learnable
+
+
+def test_cos_sin_numerical_encoder_create_logspace_value_range() -> None:
+    module = CosSinNumericalEncoder.create_logspace_value_range(
+        num_frequencies=3, min_abs_value=0.01, max_abs_value=1.0
+    )
+    assert module.frequency.data.equal(torch.tensor([[1.0, 10.0, 100.0, 1.0, 10.0, 100.0]]))
+    assert module.phase_shift.data.equal(torch.tensor([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]))
+
+
+@pytest.mark.parametrize("learnable", [True, False])
+def test_cos_sin_scalar_encoder_create_logspace_value_range_learnable(learnable: bool) -> None:
+    module = CosSinNumericalEncoder.create_logspace_value_range(
+        num_frequencies=3, min_abs_value=0.01, max_abs_value=1.0, learnable=learnable
+    )
+    assert module.frequency.requires_grad == learnable
+    assert module.phase_shift.requires_grad == learnable
+
+
 ##########################################
 #     Tests for prepare_tensor_param     #
 ##########################################
