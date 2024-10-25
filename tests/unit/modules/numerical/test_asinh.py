@@ -43,18 +43,6 @@ def test_asinh_numerical_encoder_scale_incorrect_shape() -> None:
         AsinhNumericalEncoder(torch.ones(2, 3, 4))
 
 
-# def test_asinh_numerical_encoder_input_size() -> None:
-#     assert (
-#         AsinhNumericalEncoder.create_rand_scale(dim=5, min_scale=0.1, max_scale=10.0).input_size == 1
-#     )
-#
-#
-# def test_asinh_numerical_encoder_output_size() -> None:
-#     assert (
-#         AsinhNumericalEncoder.create_rand_scale(dim=5, min_scale=0.1, max_scale=10.0).output_size == 5
-#     )
-
-
 @pytest.mark.parametrize("device", get_available_devices())
 @pytest.mark.parametrize("batch_size", SIZES)
 @pytest.mark.parametrize("n_features", SIZES)

@@ -36,6 +36,7 @@ class AsinhNumericalEncoder(Module):
 
     >>> import torch
     >>> from karbonn.modules import AsinhNumericalEncoder
+    >>> # Example with 1 feature
     >>> m = AsinhNumericalEncoder(scale=torch.tensor([[1.0, 2.0, 4.0]]))
     >>> m
     AsinhNumericalEncoder(shape=(1, 3), learnable=False)
@@ -45,6 +46,16 @@ class AsinhNumericalEncoder(Module):
             [[0.8814, 1.4436, 2.0947]],
             [[1.4436, 2.0947, 2.7765]],
             [[1.8184, 2.4918, 3.1798]]])
+    >>> # Example with 2 features
+    >>> m = AsinhNumericalEncoder(scale=torch.tensor([[1.0, 2.0, 4.0], [1.0, 3.0, 6.0]]))
+    >>> m
+    AsinhNumericalEncoder(shape=(2, 3), learnable=False)
+    >>> out = m(torch.tensor([[0.0, 0.0], [1.0, 1.0], [2.0, 2.0], [3.0, 3.0]]))
+    >>> out
+    tensor([[[0.0000, 0.0000, 0.0000], [0.0000, 0.0000, 0.0000]],
+            [[0.8814, 1.4436, 2.0947], [0.8814, 1.8184, 2.4918]],
+            [[1.4436, 2.0947, 2.7765], [1.4436, 2.4918, 3.1798]],
+            [[1.8184, 2.4918, 3.1798], [1.8184, 2.8934, 3.5843]]])
 
     ```
     """
