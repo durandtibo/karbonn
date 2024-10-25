@@ -1,12 +1,18 @@
 from __future__ import annotations
 
+from unittest.mock import patch
+
 import pytest
 import torch
 from coola import objects_are_allclose, objects_are_equal
 from coola.utils.tensor import get_available_devices
 
 from karbonn.modules import CosSinNumericalEncoder
-from karbonn.modules.numerical.sine import prepare_tensor_param
+from karbonn.modules.numerical.sine import (
+    check_abs_range,
+    check_frequency,
+    prepare_tensor_param,
+)
 
 SIZES = (1, 2, 3)
 
@@ -14,12 +20,6 @@ SIZES = (1, 2, 3)
 ############################################
 #     Tests for CosSinNumericalEncoder     #
 ############################################
-
-# COSSIN_MODULE_CONSTRUCTORS: tuple[Callable, ...] = (
-#     CosSinNumericalEncoder.create_rand_frequency,
-#     CosSinNumericalEncoder.create_linspace_frequency,
-#     CosSinNumericalEncoder.create_logspace_frequency,
-# )
 
 
 def test_cos_sin_numerical_encoder_str() -> None:
@@ -341,6 +341,48 @@ def test_cos_sin_numerical_encoder_forward_2_features_same() -> None:
     )
 
 
+@patch(
+    "karbonn.modules.numerical.sine.torch.rand",
+    lambda *args, **kwargs: torch.tensor([0.0, 0.5, 1.0]),  # noqa: ARG005
+)
+def test_cos_sin_numerical_encoder_create_rand_frequency() -> None:
+    module = CosSinNumericalEncoder.create_rand_frequency(
+        num_frequencies=3, min_frequency=0.2, max_frequency=1
+    )
+    assert module.frequency.data.equal(torch.tensor([[0.2, 0.6, 1.0, 0.2, 0.6, 1.0]]))
+    assert module.phase_shift.data.equal(torch.tensor([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]))
+
+
+@pytest.mark.parametrize("learnable", [True, False])
+def test_cos_sin_scalar_encoder_create_rand_frequency_learnable(learnable: bool) -> None:
+    module = CosSinNumericalEncoder.create_rand_frequency(
+        num_frequencies=3, min_frequency=0.2, max_frequency=1, learnable=learnable
+    )
+    assert module.frequency.requires_grad == learnable
+    assert module.phase_shift.requires_grad == learnable
+
+
+@patch(
+    "karbonn.modules.numerical.sine.torch.rand",
+    lambda *args, **kwargs: torch.tensor([0.0, 0.5, 1.0]),  # noqa: ARG005
+)
+def test_cos_sin_numerical_encoder_create_rand_value_range() -> None:
+    module = CosSinNumericalEncoder.create_rand_value_range(
+        num_frequencies=3, min_abs_value=0.2, max_abs_value=1
+    )
+    assert module.frequency.data.equal(torch.tensor([[1.0, 3.0, 5.0, 1.0, 3.0, 5.0]]))
+    assert module.phase_shift.data.equal(torch.tensor([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]))
+
+
+@pytest.mark.parametrize("learnable", [True, False])
+def test_cos_sin_scalar_encoder_create_rand_value_range_learnable(learnable: bool) -> None:
+    module = CosSinNumericalEncoder.create_rand_value_range(
+        num_frequencies=3, min_abs_value=0.2, max_abs_value=1, learnable=learnable
+    )
+    assert module.frequency.requires_grad == learnable
+    assert module.phase_shift.requires_grad == learnable
+
+
 ##########################################
 #     Tests for prepare_tensor_param     #
 ##########################################
@@ -363,3 +405,50 @@ def test_prepare_tensor_param_2d() -> None:
 def test_prepare_tensor_param_incorrect_shape() -> None:
     with pytest.raises(RuntimeError, match="Incorrect shape for 'scale':"):
         prepare_tensor_param(torch.ones(2, 3, 4), name="scale")
+
+
+#####################################
+#     Tests for check_abs_range     #
+#####################################
+
+
+def test_check_abs_range_valid() -> None:
+    check_abs_range(min_abs_value=1, max_abs_value=5)
+
+
+def test_check_abs_range_invalid_min_abs_value() -> None:
+    with pytest.raises(RuntimeError, match="'min_abs_value' has to be greater than 0"):
+        check_abs_range(min_abs_value=-1, max_abs_value=5)
+
+
+def test_check_abs_range_invalid_max_abs_value() -> None:
+    with pytest.raises(
+        RuntimeError, match="'max_abs_value' .* has to be greater than 'min_abs_value'"
+    ):
+        check_abs_range(min_abs_value=5, max_abs_value=1)
+
+
+#####################################
+#     Tests for check_frequency     #
+#####################################
+
+
+def test_check_frequency_valid() -> None:
+    check_frequency(num_frequencies=3, min_frequency=0.2, max_frequency=1)
+
+
+def test_check_frequency_invalid_num_frequencies() -> None:
+    with pytest.raises(RuntimeError, match="'num_frequencies' has to be greater or equal to 1"):
+        check_frequency(num_frequencies=0, min_frequency=0.2, max_frequency=1)
+
+
+def test_check_frequency_invalid_min_frequency() -> None:
+    with pytest.raises(RuntimeError, match="'min_frequency' has to be greater than 0"):
+        check_frequency(num_frequencies=3, min_frequency=-2, max_frequency=1)
+
+
+def test_check_frequency_invalid_max_frequency() -> None:
+    with pytest.raises(
+        RuntimeError, match="'max_frequency' .* has to be greater than 'min_frequency'"
+    ):
+        check_frequency(num_frequencies=3, min_frequency=2, max_frequency=1)
