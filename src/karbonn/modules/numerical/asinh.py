@@ -9,6 +9,8 @@ from typing import TYPE_CHECKING
 
 from torch.nn import Module, Parameter
 
+from karbonn.modules.numerical.sine import prepare_tensor_param
+
 if TYPE_CHECKING:
     from torch import Tensor
 
@@ -27,8 +29,8 @@ class AsinhNumericalEncoder(Module):
     Shape:
         - Input: ``(*, n_features)``, where ``*`` means any number of
             dimensions.
-        - Output: ``(*, n_features, feature_size)``,  where ``*`` has the same
-            shape as the input.
+        - Output: ``(*, n_features, feature_size)``,  where ``*`` has
+            the same shape as the input.
 
     Example usage:
 
@@ -39,7 +41,7 @@ class AsinhNumericalEncoder(Module):
     >>> # Example with 1 feature
     >>> m = AsinhNumericalEncoder(scale=torch.tensor([[1.0, 2.0, 4.0]]))
     >>> m
-    AsinhNumericalEncoder(shape=(1, 3), learnable=False)
+    AsinhNumericalEncoder(scale=(1, 3), learnable=False)
     >>> out = m(torch.tensor([[0.0], [1.0], [2.0], [3.0]]))
     >>> out
     tensor([[[0.0000, 0.0000, 0.0000]],
@@ -49,7 +51,7 @@ class AsinhNumericalEncoder(Module):
     >>> # Example with 2 features
     >>> m = AsinhNumericalEncoder(scale=torch.tensor([[1.0, 2.0, 4.0], [1.0, 3.0, 6.0]]))
     >>> m
-    AsinhNumericalEncoder(shape=(2, 3), learnable=False)
+    AsinhNumericalEncoder(scale=(2, 3), learnable=False)
     >>> out = m(torch.tensor([[0.0, 0.0], [1.0, 1.0], [2.0, 2.0], [3.0, 3.0]]))
     >>> out
     tensor([[[0.0000, 0.0000, 0.0000], [0.0000, 0.0000, 0.0000]],
@@ -62,11 +64,7 @@ class AsinhNumericalEncoder(Module):
 
     def __init__(self, scale: Tensor, learnable: bool = False) -> None:
         super().__init__()
-        if scale.ndim == 1:
-            scale = scale.view(1, -1)
-        if scale.ndim != 2:
-            msg = f"Incorrect shape for scale: {scale.shape}"
-            raise ValueError(msg)
+        scale = prepare_tensor_param(scale, name="scale")
         self.scale = Parameter(scale, requires_grad=learnable)
 
     @property
@@ -80,7 +78,7 @@ class AsinhNumericalEncoder(Module):
         return self.scale.shape[1]
 
     def extra_repr(self) -> str:
-        return f"shape={tuple(self.scale.shape)}, learnable={self.scale.requires_grad}"
+        return f"scale={tuple(self.scale.shape)}, learnable={self.scale.requires_grad}"
 
     def forward(self, scalar: Tensor) -> Tensor:
         return scalar.unsqueeze(dim=-1).mul(self.scale).asinh()
