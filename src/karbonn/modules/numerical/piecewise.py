@@ -79,7 +79,9 @@ class PiecewiseLinearNumericalEncoder(Module):
         bins = prepare_tensor_param(bins, name="bins").sort(dim=1)[0]
         n_bins = bins.shape[1]
         self.register_buffer("boundary", bins[:, :-1] if n_bins > 1 else bins)
-        self.register_buffer("width", bins.diff() if n_bins > 1 else torch.ones_like(bins))
+        width = bins.diff() if n_bins > 1 else torch.ones_like(bins)
+        width[width == 0] = 1.0
+        self.register_buffer("width", width)
 
     @property
     def input_size(self) -> int:

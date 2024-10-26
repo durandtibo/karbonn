@@ -273,3 +273,63 @@ def test_piecewise_linear_numerical_encoder_forward_1_bin() -> None:
             ]
         ),
     )
+
+
+def test_piecewise_linear_numerical_encoder_forward_same_bin() -> None:
+    module = PiecewiseLinearNumericalEncoder(bins=torch.tensor([[0.0, 0.0]]))
+    assert objects_are_equal(
+        module(
+            torch.tensor(
+                [
+                    [-1.0, 5.0],
+                    [0.0, 4.0],
+                    [0.5, 3.0],
+                    [1.0, 2.0],
+                    [1.5, 1.5],
+                    [2.0, 1.0],
+                    [3.0, 0.5],
+                    [4.0, 0.0],
+                    [5.0, -1.0],
+                ]
+            )
+        ),
+        torch.tensor(
+            [
+                [[-1.0], [5.0]],
+                [[0.0], [4.0]],
+                [[0.5], [3.0]],
+                [[1.0], [2.0]],
+                [[1.5], [1.5]],
+                [[2.0], [1.0]],
+                [[3.0], [0.5]],
+                [[4.0], [0.0]],
+                [[5.0], [-1.0]],
+            ]
+        ),
+    )
+
+
+def test_piecewise_linear_numerical_encoder_forward_same_bins() -> None:
+    module = PiecewiseLinearNumericalEncoder(bins=torch.tensor([[0.0, 0.0, 1.0, 1.0]]))
+    assert objects_are_equal(
+        module(
+            torch.tensor(
+                [
+                    [-1.0, 2.0],
+                    [0.0, 1.0],
+                    [0.5, 0.5],
+                    [1.0, 0.0],
+                    [2.0, -1.0],
+                ]
+            )
+        ),
+        torch.tensor(
+            [
+                [[-1.0, 0.0, 0.0], [1.0, 1.0, 1.0]],
+                [[0.0, 0.0, 0.0], [1.0, 1.0, 0.0]],
+                [[0.5, 0.5, 0.0], [0.5, 0.5, 0.0]],
+                [[1.0, 1.0, 0.0], [0.0, 0.0, 0.0]],
+                [[1.0, 1.0, 1.0], [-1.0, 0.0, 0.0]],
+            ]
+        ),
+    )
