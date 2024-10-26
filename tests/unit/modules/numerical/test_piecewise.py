@@ -45,6 +45,14 @@ def test_piecewise_linear_numerical_encoder_bins_1() -> None:
     assert module.width.equal(torch.tensor([[1.0]]))
 
 
+def test_piecewise_linear_numerical_encoder_bins_sort() -> None:
+    module = PiecewiseLinearNumericalEncoder(
+        bins=torch.tensor([[4.0, 2.0, 1.0, 0.0], [6.0, 4.0, 2.0, 8.0]])
+    )
+    assert module.boundary.equal(torch.tensor([[0.0, 1.0, 2.0], [2.0, 4.0, 6.0]]))
+    assert module.width.equal(torch.tensor([[1.0, 1.0, 2.0], [2.0, 2.0, 2.0]]))
+
+
 def test_piecewise_linear_numerical_encoder_bins_incorrect_shape() -> None:
     with pytest.raises(RuntimeError, match="Incorrect shape for 'bins':"):
         PiecewiseLinearNumericalEncoder(torch.ones(2, 3, 4))
@@ -77,9 +85,9 @@ def test_piecewise_linear_numerical_encoder_forward_2d(
     device: str, batch_size: int, n_features: int, feature_size: int, mode: bool
 ) -> None:
     device = torch.device(device)
-    module = PiecewiseLinearNumericalEncoder(
-        bins=torch.rand(n_features, feature_size + 1).sort(dim=1)[0]
-    ).to(device=device)
+    module = PiecewiseLinearNumericalEncoder(bins=torch.rand(n_features, feature_size + 1)).to(
+        device=device
+    )
     module.train(mode)
     out = module(torch.rand(batch_size, n_features, device=device))
     assert out.shape == (batch_size, n_features, feature_size)
@@ -97,9 +105,9 @@ def test_piecewise_linear_numerical_encoder_forward_3d_batch_first(
     device: str, batch_size: int, seq_len: int, n_features: int, feature_size: int, mode: bool
 ) -> None:
     device = torch.device(device)
-    module = PiecewiseLinearNumericalEncoder(
-        bins=torch.rand(n_features, feature_size + 1).sort(dim=1)[0]
-    ).to(device=device)
+    module = PiecewiseLinearNumericalEncoder(bins=torch.rand(n_features, feature_size + 1)).to(
+        device=device
+    )
     module.train(mode)
     out = module(torch.rand(batch_size, seq_len, n_features, device=device))
     assert out.shape == (batch_size, seq_len, n_features, feature_size)
@@ -117,9 +125,9 @@ def test_piecewise_linear_numerical_encoder_forward_3d_seq_first(
     device: str, batch_size: int, seq_len: int, n_features: int, feature_size: int, mode: bool
 ) -> None:
     device = torch.device(device)
-    module = PiecewiseLinearNumericalEncoder(
-        bins=torch.rand(n_features, feature_size + 1).sort(dim=1)[0]
-    ).to(device=device)
+    module = PiecewiseLinearNumericalEncoder(bins=torch.rand(n_features, feature_size + 1)).to(
+        device=device
+    )
     module.train(mode)
     out = module(torch.rand(seq_len, batch_size, n_features, device=device))
     assert out.shape == (seq_len, batch_size, n_features, feature_size)
@@ -134,7 +142,7 @@ def test_piecewise_linear_numerical_encoder_backward(
     device: str, batch_size: int, mode: bool
 ) -> None:
     device = torch.device(device)
-    module = PiecewiseLinearNumericalEncoder(bins=torch.rand(3, 6).sort(dim=1)[0]).to(device=device)
+    module = PiecewiseLinearNumericalEncoder(bins=torch.rand(3, 6)).to(device=device)
     module.train(mode)
     out = module(torch.rand(batch_size, 3, device=device, requires_grad=True))
     out.mean().backward()
