@@ -28,6 +28,7 @@ __all__ = [
     "MultiQuadratic",
     "MulticlassFlatten",
     "MultiplicationFusion",
+    "PiecewiseLinearNumericalEncoder",
     "Quadratic",
     "ReLUn",
     "RelativeLoss",
@@ -94,6 +95,7 @@ from karbonn.modules.numerical import (
     AsinhCosSinNumericalEncoder,
     AsinhNumericalEncoder,
     CosSinNumericalEncoder,
+    PiecewiseLinearNumericalEncoder,
 )
 from karbonn.modules.residual import ResidualBlock
 from karbonn.modules.scalar import (
