@@ -2597,9 +2597,13 @@ class MulticlassConfusionMatrixTracker(BaseConfusionMatrixTracker):
             MaxScalarRecord(name=f"{prefix}weighted_recall{suffix}"),
         ]
         for beta in betas:
-            trackers.append(MaxScalarRecord(name=f"{prefix}macro_f{beta}_score{suffix}"))
-            trackers.append(MaxScalarRecord(name=f"{prefix}micro_f{beta}_score{suffix}"))
-            trackers.append(MaxScalarRecord(name=f"{prefix}weighted_f{beta}_score{suffix}"))
+            trackers.extend(
+                (
+                    MaxScalarRecord(name=f"{prefix}macro_f{beta}_score{suffix}"),
+                    MaxScalarRecord(name=f"{prefix}micro_f{beta}_score{suffix}"),
+                    MaxScalarRecord(name=f"{prefix}weighted_f{beta}_score{suffix}"),
+                )
+            )
         return tuple(trackers)
 
 
