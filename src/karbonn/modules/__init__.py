@@ -5,17 +5,14 @@ from __future__ import annotations
 __all__ = [
     "Asinh",
     "AsinhCosSinNumericalEncoder",
-    "AsinhCosSinScalarEncoder",
     "AsinhMSELoss",
     "AsinhNumericalEncoder",
-    "AsinhScalarEncoder",
     "AsinhSmoothL1Loss",
     "AverageFusion",
     "BinaryFocalLoss",
     "Clamp",
     "ConcatFusion",
     "CosSinNumericalEncoder",
-    "CosSinScalarEncoder",
     "ExU",
     "Exp",
     "ExpSin",
@@ -98,9 +95,4 @@ from karbonn.modules.numerical import (
     PiecewiseLinearNumericalEncoder,
 )
 from karbonn.modules.residual import ResidualBlock
-from karbonn.modules.scalar import (
-    AsinhCosSinScalarEncoder,
-    AsinhScalarEncoder,
-    CosSinScalarEncoder,
-)
 from karbonn.modules.shape import MulticlassFlatten, Squeeze
