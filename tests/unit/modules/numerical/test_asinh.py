@@ -4,7 +4,7 @@ import pytest
 import torch
 from coola.utils.tensor import get_available_devices
 
-from karbonn.modules.numerical.asinh import AsinhNumericalEncoder
+from karbonn.modules import AsinhNumericalEncoder
 
 SIZES = (1, 2, 3)
 

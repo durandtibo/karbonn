@@ -7,9 +7,8 @@ import torch
 from coola import objects_are_allclose, objects_are_equal
 from coola.utils.tensor import get_available_devices
 
-from karbonn.modules import CosSinNumericalEncoder
+from karbonn.modules import AsinhCosSinNumericalEncoder, CosSinNumericalEncoder
 from karbonn.modules.numerical.sine import (
-    AsinhCosSinNumericalEncoder,
     check_abs_range,
     check_frequency,
     prepare_tensor_param,
