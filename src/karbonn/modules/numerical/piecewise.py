@@ -29,7 +29,8 @@ class PiecewiseLinearNumericalEncoder(Module):
     Args:
         bins: The bins used to compute the piecewise linear
             representations. This input should be a tensor of shape
-            ``(n_features, n_bins)`` or ``(n_bins,)``.
+            ``(n_features, n_bins)`` or ``(n_bins,)``. The bin values
+            are sorted by ascending order for each feature.
 
     Shape:
         - Input: ``(*, n_features)``, where ``*`` means any number of
@@ -75,10 +76,12 @@ class PiecewiseLinearNumericalEncoder(Module):
 
     def __init__(self, bins: Tensor) -> None:
         super().__init__()
-        bins = prepare_tensor_param(bins, name="bins")
+        bins = prepare_tensor_param(bins, name="bins").sort(dim=1)[0]
         n_bins = bins.shape[1]
         self.register_buffer("boundary", bins[:, :-1] if n_bins > 1 else bins)
-        self.register_buffer("width", bins.diff() if n_bins > 1 else torch.ones_like(bins))
+        width = bins.diff() if n_bins > 1 else torch.ones_like(bins)
+        width[width == 0] = 1.0
+        self.register_buffer("width", width)
 
     @property
     def input_size(self) -> int:
