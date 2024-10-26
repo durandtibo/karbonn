@@ -3,10 +3,10 @@ r"""Contain classification metrics."""
 from __future__ import annotations
 
 __all__ = [
-    "BinaryConfusionMatrix",
     "Accuracy",
-    "CategoricalCrossEntropy",
+    "BinaryConfusionMatrix",
     "CategoricalConfusionMatrix",
+    "CategoricalCrossEntropy",
     "TopKAccuracy",
 ]
 

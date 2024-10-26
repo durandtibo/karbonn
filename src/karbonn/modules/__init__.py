@@ -4,14 +4,17 @@ from __future__ import annotations
 
 __all__ = [
     "Asinh",
+    "AsinhCosSinNumericalEncoder",
     "AsinhCosSinScalarEncoder",
     "AsinhMSELoss",
+    "AsinhNumericalEncoder",
     "AsinhScalarEncoder",
     "AsinhSmoothL1Loss",
     "AverageFusion",
     "BinaryFocalLoss",
     "Clamp",
     "ConcatFusion",
+    "CosSinNumericalEncoder",
     "CosSinScalarEncoder",
     "ExU",
     "Exp",
@@ -45,9 +48,6 @@ __all__ = [
     "ToLong",
     "TransformedLoss",
     "binary_focal_loss",
-    "AsinhNumericalEncoder",
-    "CosSinNumericalEncoder",
-    "AsinhCosSinNumericalEncoder",
 ]
 
 from karbonn.modules.activations import (
