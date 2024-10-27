@@ -78,7 +78,7 @@ class PiecewiseLinearNumericalEncoder(Module):
         super().__init__()
         bins = prepare_tensor_param(bins, name="bins").sort(dim=1)[0]
         n_bins = bins.shape[1]
-        self.register_buffer("boundary", bins[:, :-1] if n_bins > 1 else bins)
+        self.register_buffer("edges", bins[:, :-1] if n_bins > 1 else bins)
         width = bins.diff() if n_bins > 1 else torch.ones_like(bins)
         width[width == 0] = 1.0
         self.register_buffer("width", width)
@@ -87,19 +87,19 @@ class PiecewiseLinearNumericalEncoder(Module):
     def input_size(self) -> int:
         r"""Return the input feature size i.e. the number of scalar
         values."""
-        return self.boundary.shape[0]
+        return self.edges.shape[0]
 
     @property
     def output_size(self) -> int:
         r"""Return the output feature size i.e. the number of bins minus
         one."""
-        return self.boundary.shape[1]
+        return self.edges.shape[1]
 
     def extra_repr(self) -> str:
         return f"n_features={self.input_size}, feature_size={self.output_size}"
 
     def forward(self, scalar: Tensor) -> Tensor:
-        x = (scalar[..., None] - self.boundary) / self.width
+        x = (scalar[..., None] - self.edges) / self.width
         n_bins = x.shape[-1]
         if n_bins == 1:
             return x

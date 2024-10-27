@@ -27,7 +27,7 @@ def test_piecewise_linear_numerical_encoder_str() -> None:
 )
 def test_piecewise_linear_numerical_encoder_bins_1_feature(bins: torch.Tensor) -> None:
     module = PiecewiseLinearNumericalEncoder(bins)
-    assert module.boundary.equal(torch.tensor([[1.0, 2.0, 4.0]]))
+    assert module.edges.equal(torch.tensor([[1.0, 2.0, 4.0]]))
     assert module.width.equal(torch.tensor([[1.0, 2.0, 2.0]]))
 
 
@@ -35,13 +35,13 @@ def test_piecewise_linear_numerical_encoder_bins_2_features() -> None:
     module = PiecewiseLinearNumericalEncoder(
         bins=torch.tensor([[0.0, 1.0, 2.0, 4.0], [2.0, 4.0, 6.0, 8.0]])
     )
-    assert module.boundary.equal(torch.tensor([[0.0, 1.0, 2.0], [2.0, 4.0, 6.0]]))
+    assert module.edges.equal(torch.tensor([[0.0, 1.0, 2.0], [2.0, 4.0, 6.0]]))
     assert module.width.equal(torch.tensor([[1.0, 1.0, 2.0], [2.0, 2.0, 2.0]]))
 
 
 def test_piecewise_linear_numerical_encoder_bins_1() -> None:
     module = PiecewiseLinearNumericalEncoder(bins=torch.tensor([[0.0]]))
-    assert module.boundary.equal(torch.tensor([[0.0]]))
+    assert module.edges.equal(torch.tensor([[0.0]]))
     assert module.width.equal(torch.tensor([[1.0]]))
 
 
@@ -49,7 +49,7 @@ def test_piecewise_linear_numerical_encoder_bins_sort() -> None:
     module = PiecewiseLinearNumericalEncoder(
         bins=torch.tensor([[4.0, 2.0, 1.0, 0.0], [6.0, 4.0, 2.0, 8.0]])
     )
-    assert module.boundary.equal(torch.tensor([[0.0, 1.0, 2.0], [2.0, 4.0, 6.0]]))
+    assert module.edges.equal(torch.tensor([[0.0, 1.0, 2.0], [2.0, 4.0, 6.0]]))
     assert module.width.equal(torch.tensor([[1.0, 1.0, 2.0], [2.0, 2.0, 2.0]]))
 
 
