@@ -8,7 +8,7 @@ from coola import objects_are_allclose, objects_are_equal
 from coola.utils.tensor import get_available_devices
 from torch import nn
 
-from karbonn.modules import MulticlassFlatten, Squeeze
+from karbonn.modules import MulticlassFlatten, Squeeze, View
 
 #######################################
 #     Tests for MulticlassFlatten     #
@@ -72,4 +72,31 @@ def test_squeeze_forward_dim_1(device: str) -> None:
     assert objects_are_equal(
         module(torch.ones(2, 1, 3, 1, 4, device=device)),
         torch.ones(2, 3, 1, 4, device=device),
+    )
+
+
+##########################
+#     Tests for View     #
+##########################
+
+
+def test_view_str() -> None:
+    assert str(View(shape=(-1, 3))).startswith("View(")
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+def test_view_forward_2d(device: str) -> None:
+    device = torch.device(device)
+    module = View(shape=(-1, 3)).to(device=device)
+    assert objects_are_equal(
+        module(torch.ones(2, 3, device=device)), torch.ones(2, 3, device=device)
+    )
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+def test_view_forward_3d(device: str) -> None:
+    device = torch.device(device)
+    module = View(shape=(-1, 3)).to(device=device)
+    assert objects_are_equal(
+        module(torch.ones(4, 2, 3, device=device)), torch.ones(8, 3, device=device)
     )

@@ -47,6 +47,7 @@ __all__ = [
     "TransformedLoss",
     "binary_focal_loss",
     "NLinear",
+    "View",
 ]
 
 from karbonn.modules.activations import (
@@ -97,4 +98,4 @@ from karbonn.modules.numerical import (
     PiecewiseLinearNumericalEncoder,
 )
 from karbonn.modules.residual import ResidualBlock
-from karbonn.modules.shape import MulticlassFlatten, Squeeze
+from karbonn.modules.shape import MulticlassFlatten, Squeeze, View
