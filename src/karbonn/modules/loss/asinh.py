@@ -79,7 +79,6 @@ class AsinhSmoothL1Loss(nn.Module):
     ```pycon
 
     >>> import torch
-    >>> from karbonn.functional import asinh_smooth_l1_loss
     >>> from karbonn.modules import AsinhSmoothL1Loss
     >>> criterion = AsinhSmoothL1Loss()
     >>> criterion
