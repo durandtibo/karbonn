@@ -18,6 +18,7 @@ def quantile_regression_loss(
 ) -> torch.Tensor:
     r"""Compute the quantile regression loss.
 
+    Loss Functions and Metrics in Deep Learning
     https://arxiv.org/pdf/2307.02694
 
     Args:
