@@ -21,6 +21,7 @@ __all__ = [
     "TransformedLoss",
     "QuantileRegressionLoss",
     "binary_focal_loss",
+    "PoissonRegressionLoss",
 ]
 
 from karbonn.modules.loss.asinh import AsinhMSELoss, AsinhSmoothL1Loss
@@ -36,6 +37,7 @@ from karbonn.modules.loss.indicators import (
     MomentMeanIndicator,
     ReversedRelativeIndicator,
 )
+from karbonn.modules.loss.poisson import PoissonRegressionLoss
 from karbonn.modules.loss.quantile import QuantileRegressionLoss
 from karbonn.modules.loss.relative import (
     RelativeLoss,
