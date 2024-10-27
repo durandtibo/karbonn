@@ -61,37 +61,19 @@ def test_asinh_numerical_encoder_forward_2d(
 
 
 @pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("batch_size", SIZES)
-@pytest.mark.parametrize("seq_len", SIZES)
+@pytest.mark.parametrize("d1", SIZES)
+@pytest.mark.parametrize("d2", SIZES)
 @pytest.mark.parametrize("n_features", SIZES)
 @pytest.mark.parametrize("feature_size", SIZES)
 @pytest.mark.parametrize("mode", [True, False])
-def test_asinh_numerical_encoder_forward_3d_batch_first(
-    device: str, batch_size: int, seq_len: int, n_features: int, feature_size: int, mode: bool
+def test_asinh_numerical_encoder_forward_4d(
+    device: str, d1: int, d2: int, n_features: int, feature_size: int, mode: bool
 ) -> None:
     device = torch.device(device)
     module = AsinhNumericalEncoder(scale=torch.rand(n_features, feature_size)).to(device=device)
     module.train(mode)
-    out = module(torch.rand(batch_size, seq_len, n_features, device=device))
-    assert out.shape == (batch_size, seq_len, n_features, feature_size)
-    assert out.device == device
-    assert out.dtype == torch.float
-
-
-@pytest.mark.parametrize("device", get_available_devices())
-@pytest.mark.parametrize("batch_size", SIZES)
-@pytest.mark.parametrize("seq_len", SIZES)
-@pytest.mark.parametrize("n_features", SIZES)
-@pytest.mark.parametrize("feature_size", SIZES)
-@pytest.mark.parametrize("mode", [True, False])
-def test_asinh_numerical_encoder_forward_3d_seq_first(
-    device: str, batch_size: int, seq_len: int, n_features: int, feature_size: int, mode: bool
-) -> None:
-    device = torch.device(device)
-    module = AsinhNumericalEncoder(scale=torch.rand(n_features, feature_size)).to(device=device)
-    module.train(mode)
-    out = module(torch.rand(seq_len, batch_size, n_features, device=device))
-    assert out.shape == (seq_len, batch_size, n_features, feature_size)
+    out = module(torch.rand(d1, d2, n_features, device=device))
+    assert out.shape == (d1, d2, n_features, feature_size)
     assert out.device == device
     assert out.dtype == torch.float
 
