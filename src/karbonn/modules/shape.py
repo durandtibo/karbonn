@@ -2,7 +2,7 @@ r"""Contain ``torch.nn.Module``s to change tensor's shape."""
 
 from __future__ import annotations
 
-__all__ = ["MulticlassFlatten", "Squeeze"]
+__all__ = ["MulticlassFlatten", "Squeeze", "View"]
 
 from typing import Any
 
@@ -24,6 +24,7 @@ class MulticlassFlatten(nn.Module):
     Example usage:
 
     ```pycon
+
     >>> import torch
     >>> from karbonn.modules import MulticlassFlatten
     >>> m = MulticlassFlatten(torch.nn.CrossEntropyLoss())
@@ -58,6 +59,7 @@ class Squeeze(nn.Module):
     Example usage:
 
     ```pycon
+
     >>> import torch
     >>> from karbonn.modules import Squeeze
     >>> m = Squeeze()
@@ -81,3 +83,37 @@ class Squeeze(nn.Module):
         if self._dim is None:
             return input.squeeze()
         return input.squeeze(self._dim)
+
+
+class View(nn.Module):
+    r"""Implement a ``torch.nn.Module`` to return a new tensor with the
+    same data as the input tensor but of a different shape.
+
+    Args:
+        shape: The desired shape.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.modules import View
+    >>> m = View(shape=(-1, 2, 3))
+    >>> m
+    View(shape=(-1, 2, 3))
+    >>> out = m(torch.ones(4, 5, 2, 3))
+    >>> out.shape
+    torch.Size([20, 2, 3])
+
+    ```
+    """
+
+    def __init__(self, shape: tuple[int, ...] | list[int]) -> None:
+        super().__init__()
+        self._shape = tuple(shape)
+
+    def extra_repr(self) -> str:
+        return f"shape={self._shape}"
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return x.view(*self._shape)
