@@ -16,6 +16,9 @@ class QuantileRegressionLoss(nn.Module):
     r"""Implement a loss module that computes the quantile regression
     loss.
 
+    Loss Functions and Metrics in Deep Learning
+    https://arxiv.org/pdf/2307.02694
+
     Args:
         reduction: The reduction strategy. The valid values are
             ``'mean'``, ``'none'``,  and ``'sum'``.
