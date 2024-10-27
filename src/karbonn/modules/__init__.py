@@ -49,6 +49,7 @@ __all__ = [
     "NLinear",
     "View",
     "binary_focal_loss",
+    "PoissonRegressionLoss",
 ]
 
 from karbonn.modules.activations import (
@@ -85,6 +86,7 @@ from karbonn.modules.loss import (
     AsinhSmoothL1Loss,
     BinaryFocalLoss,
     GeneralRobustRegressionLoss,
+    PoissonRegressionLoss,
     QuantileRegressionLoss,
     RelativeLoss,
     RelativeMSELoss,
