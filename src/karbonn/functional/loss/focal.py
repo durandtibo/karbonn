@@ -52,7 +52,7 @@ def sigmoid_focal_loss(
     >>> from karbonn.functional import sigmoid_focal_loss
     >>> loss = sigmoid_focal_loss(
     ...     torch.randn(2, 4, requires_grad=True),
-    ...     torch.tenosr([[1.0, 0.0, 0.0, 1.0], [1.0, 0.0, 1.0, 0.0]]),
+    ...     torch.tensor([[1.0, 0.0, 0.0, 1.0], [1.0, 0.0, 1.0, 0.0]]),
     ... )
     >>> loss
     tensor(..., grad_fn=<MeanBackward0>)
