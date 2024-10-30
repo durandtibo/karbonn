@@ -18,6 +18,7 @@ __all__ = [
     "symmetric_absolute_relative_error",
     "quantile_regression_loss",
     "poisson_regression_loss",
+    "sigmoid_focal_loss",
 ]
 
 from karbonn.functional.activations import safe_exp, safe_log
@@ -35,5 +36,6 @@ from karbonn.functional.loss import (
     poisson_regression_loss,
     quantile_regression_loss,
     relative_loss,
+    sigmoid_focal_loss,
 )
 from karbonn.functional.reduction import check_loss_reduction_strategy, reduce_loss
