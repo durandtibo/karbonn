@@ -14,14 +14,14 @@ __all__ = [
     "MaximumMeanIndicator",
     "MinimumMeanIndicator",
     "MomentMeanIndicator",
+    "PoissonRegressionLoss",
+    "QuantileRegressionLoss",
     "RelativeLoss",
     "RelativeMSELoss",
     "RelativeSmoothL1Loss",
     "ReversedRelativeIndicator",
     "TransformedLoss",
-    "QuantileRegressionLoss",
     "binary_focal_loss",
-    "PoissonRegressionLoss",
 ]
 
 from karbonn.modules.loss.asinh import AsinhMSELoss, AsinhSmoothL1Loss
