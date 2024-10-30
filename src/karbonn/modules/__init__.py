@@ -25,8 +25,11 @@ __all__ = [
     "MultiQuadratic",
     "MulticlassFlatten",
     "MultiplicationFusion",
+    "NLinear",
     "PiecewiseLinearNumericalEncoder",
+    "PoissonRegressionLoss",
     "Quadratic",
+    "QuantileRegressionLoss",
     "ReLUn",
     "RelativeLoss",
     "RelativeMSELoss",
@@ -45,11 +48,8 @@ __all__ = [
     "ToFloat",
     "ToLong",
     "TransformedLoss",
-    "QuantileRegressionLoss",
-    "NLinear",
     "View",
     "binary_focal_loss",
-    "PoissonRegressionLoss",
 ]
 
 from karbonn.modules.activations import (

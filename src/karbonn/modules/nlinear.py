@@ -96,10 +96,10 @@ class NLinear(Module):
     def forward(self, x: Tensor) -> Tensor:
         shape = x.shape
         x = x.view(-1, shape[-2], shape[-1]).transpose(0, 1)
-        x = x @ self.weight
+        x @= self.weight
         x = x.transpose(0, 1).view(*shape[:-1], self.out_features)
         if self.bias is not None:
-            x = x + self.bias
+            x += self.bias
         return x
 
     def extra_repr(self) -> str:
