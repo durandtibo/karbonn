@@ -2,7 +2,7 @@ r"""Contain the implementation of the PolyLoss function."""
 
 from __future__ import annotations
 
-__all__ = ["sigmoid_bce_poly1_loss"]
+__all__ = ["sigmoid_poly1_loss"]
 
 
 import torch
@@ -11,7 +11,7 @@ from torch.nn.functional import binary_cross_entropy_with_logits
 from karbonn.functional.reduction import reduce_loss
 
 
-def sigmoid_bce_poly1_loss(
+def sigmoid_poly1_loss(
     prediction: torch.Tensor,
     target: torch.Tensor,
     alpha: float = 1.0,
@@ -20,7 +20,7 @@ def sigmoid_bce_poly1_loss(
     r"""Compute the Poly-1 loss.
 
     Based on "PolyLoss: A Polynomial Expansion Perspective of
-    Classification Loss Functions "
+    Classification Loss Functions"
     (https://arxiv.org/pdf/2204.12511)
 
     Args:
@@ -45,8 +45,8 @@ def sigmoid_bce_poly1_loss(
     ```pycon
 
     >>> import torch
-    >>> from karbonn.functional import sigmoid_bce_poly1_loss
-    >>> loss = sigmoid_bce_poly1_loss(
+    >>> from karbonn.functional import sigmoid_poly1_loss
+    >>> loss = sigmoid_poly1_loss(
     ...     torch.randn(2, 4, requires_grad=True),
     ...     torch.tensor([[1.0, 0.0, 0.0, 1.0], [1.0, 0.0, 1.0, 0.0]]),
     ... )
