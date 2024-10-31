@@ -2,7 +2,7 @@ r"""Contain the implementation of the focal loss function."""
 
 from __future__ import annotations
 
-__all__ = ["sigmoid_focal_loss"]
+__all__ = ["binary_focal_loss_with_logits"]
 
 
 import torch
@@ -11,7 +11,7 @@ from torch.nn.functional import binary_cross_entropy_with_logits
 from karbonn.functional.reduction import reduce_loss
 
 
-def sigmoid_focal_loss(
+def binary_focal_loss_with_logits(
     prediction: torch.Tensor,
     target: torch.Tensor,
     alpha: float = 0.25,
@@ -26,7 +26,8 @@ def sigmoid_focal_loss(
     https://pytorch.org/vision/main/_modules/torchvision/ops/focal_loss.html
 
     Args:
-        prediction: The float tensor with predictions for each example.
+        prediction: The float tensor with predictions as unnormalized
+            scores (often referred to as logits) for each example.
         target: A float tensor with the same shape as inputs. It stores
             the binary classification label for each element in inputs
             (0 for the negative class and 1 for the positive class).
@@ -49,8 +50,8 @@ def sigmoid_focal_loss(
     ```pycon
 
     >>> import torch
-    >>> from karbonn.functional import sigmoid_focal_loss
-    >>> loss = sigmoid_focal_loss(
+    >>> from karbonn.functional import binary_focal_loss_with_logits
+    >>> loss = binary_focal_loss_with_logits(
     ...     torch.randn(2, 4, requires_grad=True),
     ...     torch.tensor([[1.0, 0.0, 0.0, 1.0], [1.0, 0.0, 1.0, 0.0]]),
     ... )
