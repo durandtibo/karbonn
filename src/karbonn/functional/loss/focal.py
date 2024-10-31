@@ -52,7 +52,7 @@ def binary_focal_loss(
     >>> import torch
     >>> from karbonn.functional import binary_focal_loss
     >>> loss = binary_focal_loss(
-    ...     torch.randn(2, 4, requires_grad=True),
+    ...     torch.rand(2, 4, requires_grad=True),
     ...     torch.tensor([[1.0, 0.0, 0.0, 1.0], [1.0, 0.0, 1.0, 0.0]]),
     ... )
     >>> loss
