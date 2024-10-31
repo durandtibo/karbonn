@@ -7,6 +7,8 @@ __all__ = [
     "absolute_relative_error",
     "asinh_mse_loss",
     "asinh_smooth_l1_loss",
+    "binary_poly1_loss",
+    "binary_poly1_loss_with_logits",
     "check_loss_reduction_strategy",
     "general_robust_regression_loss",
     "log_cosh_loss",
@@ -18,9 +20,7 @@ __all__ = [
     "safe_exp",
     "safe_log",
     "sigmoid_focal_loss",
-    "sigmoid_poly1_loss",
     "symmetric_absolute_relative_error",
-    "binary_poly1_loss",
 ]
 
 from karbonn.functional.activations import safe_exp, safe_log
@@ -33,6 +33,7 @@ from karbonn.functional.loss import (
     asinh_mse_loss,
     asinh_smooth_l1_loss,
     binary_poly1_loss,
+    binary_poly1_loss_with_logits,
     general_robust_regression_loss,
     log_cosh_loss,
     msle_loss,
@@ -40,6 +41,5 @@ from karbonn.functional.loss import (
     quantile_regression_loss,
     relative_loss,
     sigmoid_focal_loss,
-    sigmoid_poly1_loss,
 )
 from karbonn.functional.reduction import check_loss_reduction_strategy, reduce_loss
