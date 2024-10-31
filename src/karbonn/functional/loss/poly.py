@@ -2,7 +2,7 @@ r"""Contain the implementation of the PolyLoss function."""
 
 from __future__ import annotations
 
-__all__ = ["binary_poly1_loss", "sigmoid_poly1_loss"]
+__all__ = ["binary_poly1_loss", "binary_poly1_loss_with_logits"]
 
 
 import torch
@@ -63,7 +63,7 @@ def binary_poly1_loss(
     return reduce_loss(loss, reduction)
 
 
-def sigmoid_poly1_loss(
+def binary_poly1_loss_with_logits(
     prediction: torch.Tensor,
     target: torch.Tensor,
     alpha: float = 1.0,
@@ -98,8 +98,8 @@ def sigmoid_poly1_loss(
     ```pycon
 
     >>> import torch
-    >>> from karbonn.functional import sigmoid_poly1_loss
-    >>> loss = sigmoid_poly1_loss(
+    >>> from karbonn.functional import binary_poly1_loss_with_logits
+    >>> loss = binary_poly1_loss_with_logits(
     ...     torch.randn(2, 4, requires_grad=True),
     ...     torch.tensor([[1.0, 0.0, 0.0, 1.0], [1.0, 0.0, 1.0, 0.0]]),
     ... )

@@ -4,7 +4,7 @@ import pytest
 import torch
 from coola.utils.tensor import get_available_devices
 
-from karbonn.functional import binary_poly1_loss, sigmoid_poly1_loss
+from karbonn.functional import binary_poly1_loss, binary_poly1_loss_with_logits
 
 SHAPES = [(2,), (2, 3), (2, 3, 4)]
 
@@ -105,41 +105,41 @@ def test_binary_poly1_loss_backward(device: str) -> None:
 
 
 ########################################
-#     Tests for sigmoid_poly1_loss     #
+#     Tests for binary_poly1_loss_with_logits_loss     #
 ########################################
 
 
 @pytest.mark.parametrize("device", get_available_devices())
-def test_sigmoid_poly1_loss_correct(device: str) -> None:
+def test_binary_poly1_loss_with_logits_loss_correct(device: str) -> None:
     device = torch.device(device)
-    assert sigmoid_poly1_loss(
+    assert binary_poly1_loss_with_logits(
         torch.tensor([[1.0, -1.0, 1.0], [-1.0, 1.0, -1.0]], device=device),
         torch.tensor([[1.0, 0.0, 1.0], [0.0, 1.0, 0.0]], device=device),
     ).allclose(torch.tensor(0.5822031346214558, device=device))
 
 
 @pytest.mark.parametrize("device", get_available_devices())
-def test_sigmoid_poly1_loss_incorrect(device: str) -> None:
+def test_binary_poly1_loss_with_logits_loss_incorrect(device: str) -> None:
     device = torch.device(device)
-    assert sigmoid_poly1_loss(
+    assert binary_poly1_loss_with_logits(
         torch.tensor([[1.0, -1.0, 1.0], [-1.0, 1.0, -1.0]], device=device),
         torch.tensor([[0.0, 1.0, 0.0], [1.0, 0.0, 1.0]], device=device),
     ).allclose(torch.tensor(2.044320355487445, device=device))
 
 
 @pytest.mark.parametrize("device", get_available_devices())
-def test_sigmoid_poly1_loss_partially_correct(device: str) -> None:
+def test_binary_poly1_loss_with_logits_loss_partially_correct(device: str) -> None:
     device = torch.device(device)
-    assert sigmoid_poly1_loss(
+    assert binary_poly1_loss_with_logits(
         torch.tensor([[1.0, -1.0, 1.0], [-1.0, 1.0, 1.0]], device=device),
         torch.tensor([[1.0, 1.0, 0.0], [0.0, 1.0, 0.0]], device=device),
     ).allclose(torch.tensor(1.3132617450544504, device=device))
 
 
 @pytest.mark.parametrize("device", get_available_devices())
-def test_sigmoid_poly1_loss_reduction_sum(device: str) -> None:
+def test_binary_poly1_loss_with_logits_loss_reduction_sum(device: str) -> None:
     device = torch.device(device)
-    assert sigmoid_poly1_loss(
+    assert binary_poly1_loss_with_logits(
         torch.tensor([[1.0, -1.0, 1.0], [-1.0, 1.0, 1.0]], device=device),
         torch.tensor([[1.0, 1.0, 0.0], [0.0, 1.0, 0.0]], device=device),
         reduction="sum",
@@ -147,9 +147,9 @@ def test_sigmoid_poly1_loss_reduction_sum(device: str) -> None:
 
 
 @pytest.mark.parametrize("device", get_available_devices())
-def test_sigmoid_poly1_loss_reduction_none(device: str) -> None:
+def test_binary_poly1_loss_with_logits_loss_reduction_none(device: str) -> None:
     device = torch.device(device)
-    assert sigmoid_poly1_loss(
+    assert binary_poly1_loss_with_logits(
         torch.tensor([[1.0, -1.0, 1.0], [-1.0, 1.0, 1.0]], device=device),
         torch.tensor([[1.0, 1.0, 0.0], [0.0, 1.0, 0.0]], device=device),
         reduction="none",
@@ -164,24 +164,24 @@ def test_sigmoid_poly1_loss_reduction_none(device: str) -> None:
     )
 
 
-def test_sigmoid_poly1_loss_reduction_incorrect() -> None:
+def test_binary_poly1_loss_with_logits_loss_reduction_incorrect() -> None:
     with pytest.raises(ValueError, match="Incorrect reduction: incorrect"):
-        sigmoid_poly1_loss(torch.ones(2, 3), torch.ones(2, 3), reduction="incorrect")
+        binary_poly1_loss_with_logits(torch.ones(2, 3), torch.ones(2, 3), reduction="incorrect")
 
 
 @pytest.mark.parametrize("device", get_available_devices())
 @pytest.mark.parametrize("shape", SHAPES)
-def test_sigmoid_poly1_loss_shape(device: str, shape: tuple[int, ...]) -> None:
+def test_binary_poly1_loss_with_logits_loss_shape(device: str, shape: tuple[int, ...]) -> None:
     device = torch.device(device)
-    assert sigmoid_poly1_loss(
+    assert binary_poly1_loss_with_logits(
         torch.ones(*shape, device=device), torch.ones(*shape, device=device)
     ).allclose(torch.tensor(0.5822031346214558, device=device))
 
 
 @pytest.mark.parametrize("device", get_available_devices())
-def test_sigmoid_poly1_loss_alpha_0_5(device: str) -> None:
+def test_binary_poly1_loss_with_logits_loss_alpha_0_5(device: str) -> None:
     device = torch.device(device)
-    assert sigmoid_poly1_loss(
+    assert binary_poly1_loss_with_logits(
         torch.tensor([[1.0, -1.0, 1.0], [-1.0, 1.0, 1.0]], device=device),
         torch.tensor([[1.0, 1.0, 0.0], [0.0, 1.0, 0.0]], device=device),
         alpha=0.5,
@@ -189,9 +189,9 @@ def test_sigmoid_poly1_loss_alpha_0_5(device: str) -> None:
 
 
 @pytest.mark.parametrize("device", get_available_devices())
-def test_sigmoid_poly1_loss_backward(device: str) -> None:
+def test_binary_poly1_loss_with_logits_loss_backward(device: str) -> None:
     device = torch.device(device)
-    loss = sigmoid_poly1_loss(
+    loss = binary_poly1_loss_with_logits(
         torch.tensor([[1.0, -1.0, 1.0], [-1.0, 1.0, -1.0]], device=device, requires_grad=True),
         torch.tensor([[1.0, 0.0, 1.0], [0.0, 1.0, 0.0]], device=device),
     )
