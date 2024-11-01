@@ -9,7 +9,6 @@ __all__ = [
     "AsinhNumericalEncoder",
     "AsinhSmoothL1Loss",
     "AverageFusion",
-    "BinaryFocalLoss",
     "Clamp",
     "ConcatFusion",
     "CosSinNumericalEncoder",
@@ -49,7 +48,6 @@ __all__ = [
     "ToLong",
     "TransformedLoss",
     "View",
-    "binary_focal_loss",
     "BinaryFocalLossWithLogits",
 ]
 
@@ -85,7 +83,6 @@ from karbonn.modules.fusion import (
 from karbonn.modules.loss import (
     AsinhMSELoss,
     AsinhSmoothL1Loss,
-    BinaryFocalLoss,
     BinaryFocalLossWithLogits,
     GeneralRobustRegressionLoss,
     PoissonRegressionLoss,
@@ -94,7 +91,6 @@ from karbonn.modules.loss import (
     RelativeMSELoss,
     RelativeSmoothL1Loss,
     TransformedLoss,
-    binary_focal_loss,
 )
 from karbonn.modules.nlinear import NLinear
 from karbonn.modules.numerical import (

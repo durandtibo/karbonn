@@ -7,7 +7,6 @@ __all__ = [
     "AsinhMSELoss",
     "AsinhSmoothL1Loss",
     "BaseRelativeIndicator",
-    "BinaryFocalLoss",
     "ClassicalRelativeIndicator",
     "GeneralRobustRegressionLoss",
     "GeometricMeanIndicator",
@@ -21,16 +20,11 @@ __all__ = [
     "RelativeSmoothL1Loss",
     "ReversedRelativeIndicator",
     "TransformedLoss",
-    "binary_focal_loss",
     "BinaryFocalLossWithLogits",
 ]
 
 from karbonn.modules.loss.asinh import AsinhMSELoss, AsinhSmoothL1Loss
-from karbonn.modules.loss.focal import (
-    BinaryFocalLoss,
-    BinaryFocalLossWithLogits,
-    binary_focal_loss,
-)
+from karbonn.modules.loss.focal import BinaryFocalLossWithLogits
 from karbonn.modules.loss.general_robust import GeneralRobustRegressionLoss
 from karbonn.modules.loss.indicators import (
     ArithmeticalMeanIndicator,
