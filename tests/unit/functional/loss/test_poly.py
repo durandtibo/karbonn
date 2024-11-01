@@ -104,9 +104,9 @@ def test_binary_poly1_loss_backward(device: str) -> None:
     assert loss.allclose(torch.tensor(0.2053605156578263, device=device))
 
 
-########################################
+########################################################
 #     Tests for binary_poly1_loss_with_logits_loss     #
-########################################
+########################################################
 
 
 @pytest.mark.parametrize("device", get_available_devices())
