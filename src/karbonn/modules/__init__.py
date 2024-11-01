@@ -48,6 +48,7 @@ __all__ = [
     "ToLong",
     "TransformedLoss",
     "View",
+    "BinaryFocalLoss",
     "BinaryFocalLossWithLogits",
 ]
 
@@ -83,6 +84,7 @@ from karbonn.modules.fusion import (
 from karbonn.modules.loss import (
     AsinhMSELoss,
     AsinhSmoothL1Loss,
+    BinaryFocalLoss,
     BinaryFocalLossWithLogits,
     GeneralRobustRegressionLoss,
     PoissonRegressionLoss,
