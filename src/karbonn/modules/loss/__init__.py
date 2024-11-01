@@ -23,6 +23,7 @@ __all__ = [
     "BinaryFocalLossWithLogits",
     "BinaryFocalLoss",
     "BinaryPoly1Loss",
+    "BinaryPoly1LossWithLogits",
 ]
 
 from karbonn.modules.loss.asinh import AsinhMSELoss, AsinhSmoothL1Loss
@@ -39,7 +40,7 @@ from karbonn.modules.loss.indicators import (
     ReversedRelativeIndicator,
 )
 from karbonn.modules.loss.poisson import PoissonRegressionLoss
-from karbonn.modules.loss.poly import BinaryPoly1Loss
+from karbonn.modules.loss.poly import BinaryPoly1Loss, BinaryPoly1LossWithLogits
 from karbonn.modules.loss.quantile import QuantileRegressionLoss
 from karbonn.modules.loss.relative import (
     RelativeLoss,
