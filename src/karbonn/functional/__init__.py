@@ -7,6 +7,8 @@ __all__ = [
     "absolute_relative_error",
     "asinh_mse_loss",
     "asinh_smooth_l1_loss",
+    "binary_focal_loss",
+    "binary_focal_loss_with_logits",
     "binary_poly1_loss",
     "binary_poly1_loss_with_logits",
     "check_loss_reduction_strategy",
@@ -19,9 +21,7 @@ __all__ = [
     "relative_loss",
     "safe_exp",
     "safe_log",
-    "binary_focal_loss_with_logits",
     "symmetric_absolute_relative_error",
-    "binary_focal_loss",
 ]
 
 from karbonn.functional.activations import safe_exp, safe_log

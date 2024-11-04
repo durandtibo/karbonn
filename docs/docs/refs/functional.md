@@ -12,11 +12,23 @@
 
 ### ::: karbonn.functional.asinh_smooth_l1_loss
 
+### ::: karbonn.functional.binary_focal_loss
+
+### ::: karbonn.functional.binary_focal_loss_with_logits
+
+### ::: karbonn.functional.binary_poly1_loss
+
+### ::: karbonn.functional.binary_poly1_loss_with_logits
+
 ### ::: karbonn.functional.general_robust_regression_loss
 
 ### ::: karbonn.functional.log_cosh_loss
 
 ### ::: karbonn.functional.msle_loss
+
+### ::: karbonn.functional.poisson_regression_loss
+
+### ::: karbonn.functional.quantile_regression_loss
 
 ### ::: karbonn.functional.reduce_loss
 
@@ -49,3 +61,7 @@
 ## Utility
 
 ### ::: karbonn.functional.check_loss_reduction_strategy
+
+## All
+
+### ::: karbonn.functional
