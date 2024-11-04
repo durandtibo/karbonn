@@ -9,6 +9,10 @@ __all__ = [
     "AsinhNumericalEncoder",
     "AsinhSmoothL1Loss",
     "AverageFusion",
+    "BinaryFocalLoss",
+    "BinaryFocalLossWithLogits",
+    "BinaryPoly1Loss",
+    "BinaryPoly1LossWithLogits",
     "Clamp",
     "ConcatFusion",
     "CosSinNumericalEncoder",
@@ -48,10 +52,6 @@ __all__ = [
     "ToLong",
     "TransformedLoss",
     "View",
-    "BinaryFocalLoss",
-    "BinaryFocalLossWithLogits",
-    "BinaryPoly1Loss",
-    "BinaryPoly1LossWithLogits",
 ]
 
 from karbonn.modules.activations import (

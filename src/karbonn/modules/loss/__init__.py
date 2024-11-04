@@ -7,6 +7,10 @@ __all__ = [
     "AsinhMSELoss",
     "AsinhSmoothL1Loss",
     "BaseRelativeIndicator",
+    "BinaryFocalLoss",
+    "BinaryFocalLossWithLogits",
+    "BinaryPoly1Loss",
+    "BinaryPoly1LossWithLogits",
     "ClassicalRelativeIndicator",
     "GeneralRobustRegressionLoss",
     "GeometricMeanIndicator",
@@ -20,10 +24,6 @@ __all__ = [
     "RelativeSmoothL1Loss",
     "ReversedRelativeIndicator",
     "TransformedLoss",
-    "BinaryFocalLossWithLogits",
-    "BinaryFocalLoss",
-    "BinaryPoly1Loss",
-    "BinaryPoly1LossWithLogits",
 ]
 
 from karbonn.modules.loss.asinh import AsinhMSELoss, AsinhSmoothL1Loss

@@ -6,6 +6,8 @@ __all__ = [
     "arithmetical_mean_indicator",
     "asinh_mse_loss",
     "asinh_smooth_l1_loss",
+    "binary_focal_loss",
+    "binary_focal_loss_with_logits",
     "binary_poly1_loss",
     "binary_poly1_loss_with_logits",
     "classical_relative_indicator",
@@ -20,8 +22,6 @@ __all__ = [
     "quantile_regression_loss",
     "relative_loss",
     "reversed_relative_indicator",
-    "binary_focal_loss_with_logits",
-    "binary_focal_loss",
 ]
 
 from karbonn.functional.loss.asinh import asinh_mse_loss, asinh_smooth_l1_loss
