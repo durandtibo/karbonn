@@ -72,11 +72,7 @@ class AbsoluteRelativeError(BaseStateMetric):
     ```
     """
 
-    def __init__(
-        self,
-        eps: float = 1e-8,
-        state: BaseState | dict | None = None,
-    ) -> None:
+    def __init__(self, eps: float = 1e-8, state: BaseState | dict | None = None) -> None:
         super().__init__(state=state or ErrorState())
         if eps <= 0:
             msg = (
@@ -172,11 +168,7 @@ class SymmetricAbsoluteRelativeError(BaseStateMetric):
     ```
     """
 
-    def __init__(
-        self,
-        eps: float = 1e-8,
-        state: BaseState | dict | None = None,
-    ) -> None:
+    def __init__(self, eps: float = 1e-8, state: BaseState | dict | None = None) -> None:
         super().__init__(state=state or ErrorState())
         if eps <= 0:
             msg = (

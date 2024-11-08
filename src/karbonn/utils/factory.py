@@ -39,7 +39,7 @@ def is_module_config(config: dict) -> bool:
 
     Returns:
         ``True`` if the input configuration is a configuration
-            for a ``torch.nn.Module`` object, otherwise ``False``..
+            for a ``torch.nn.Module`` object, otherwise ``False``.
 
     Example usage:
 

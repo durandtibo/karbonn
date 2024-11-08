@@ -64,10 +64,7 @@ class AbsoluteError(BaseStateMetric):
     ```
     """
 
-    def __init__(
-        self,
-        state: BaseState | dict | None = None,
-    ) -> None:
+    def __init__(self, state: BaseState | dict | None = None) -> None:
         super().__init__(state=state or ErrorState())
 
     def forward(self, prediction: Tensor, target: Tensor) -> None:

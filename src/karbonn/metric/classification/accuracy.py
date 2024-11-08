@@ -143,11 +143,7 @@ class TopKAccuracy(BaseMetric):
     ```
     """
 
-    def __init__(
-        self,
-        topk: Sequence[int] = (1, 5),
-        state: BaseState | dict | None = None,
-    ) -> None:
+    def __init__(self, topk: Sequence[int] = (1, 5), state: BaseState | dict | None = None) -> None:
         super().__init__()
         self._topk = topk if isinstance(topk, tuple) else tuple(topk)
         self._maxk = max(self._topk)
