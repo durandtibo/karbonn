@@ -1,4 +1,4 @@
-r"""Contains some modules."""
+r"""Contain some modules."""
 
 from __future__ import annotations
 

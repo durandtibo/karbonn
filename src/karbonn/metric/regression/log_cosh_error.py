@@ -70,11 +70,7 @@ class LogCoshError(BaseStateMetric):
     ```
     """
 
-    def __init__(
-        self,
-        scale: float = 1.0,
-        state: BaseState | dict | None = None,
-    ) -> None:
+    def __init__(self, scale: float = 1.0, state: BaseState | dict | None = None) -> None:
         super().__init__(state=state or ErrorState())
         if scale <= 0.0:
             msg = f"Incorrect scale {scale}. The scale has to be >0"
