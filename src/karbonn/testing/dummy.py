@@ -24,7 +24,7 @@ class DummyDataset(Dataset):
     >>> from karbonn.testing.dummy import DummyDataset
     >>> dataset = DummyDataset(num_examples=10, feature_size=7)
     >>> dataset[0]
-    {'input': tensor([...]), 'target': ...}
+    {'feature': tensor([...]), 'target': tensor([...])}
 
     ```
     """
