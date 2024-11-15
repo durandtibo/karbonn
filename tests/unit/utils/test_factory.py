@@ -7,9 +7,11 @@ from unittest.mock import patch
 import pytest
 import torch
 from torch import nn
+from torch.nn import Module, ReLU
 
 from karbonn.testing import objectory_available
 from karbonn.utils import create_sequential, is_module_config, setup_module
+from karbonn.utils.factory import setup_object, str_target_object
 from karbonn.utils.imports import is_objectory_available
 
 if TYPE_CHECKING:
@@ -94,3 +96,35 @@ def test_create_sequential_empty() -> None:
     module = create_sequential([])
     assert isinstance(module, nn.Sequential)
     assert len(module) == 0
+
+
+##################################
+#     Tests for setup_object     #
+##################################
+
+
+@objectory_available
+@pytest.mark.parametrize("module", [ReLU(), {OBJECT_TARGET: "torch.nn.ReLU"}])
+def test_setup_object(module: Module | dict) -> None:
+    assert isinstance(setup_object(module), ReLU)
+
+
+@objectory_available
+def test_setup_object_object() -> None:
+    module = ReLU()
+    assert setup_object(module) is module
+
+
+#######################################
+#     Tests for str_target_object     #
+#######################################
+
+
+@objectory_available
+def test_str_target_object_with_target() -> None:
+    assert str_target_object({OBJECT_TARGET: "something.MyClass"}) == "something.MyClass"
+
+
+@objectory_available
+def test_str_target_object_without_target() -> None:
+    assert str_target_object({}) == "N/A"
