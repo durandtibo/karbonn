@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from karbonn.creator.dataset import DatasetCreator
+from karbonn.testing import objectory_available
 from karbonn.testing.dummy import DummyDataset
 
 ####################################
@@ -32,6 +33,7 @@ def test_dataset_creator_str() -> None:
     ).startswith("DatasetCreator")
 
 
+@objectory_available
 def test_dataset_creator_create_dict() -> None:
     assert isinstance(
         DatasetCreator(

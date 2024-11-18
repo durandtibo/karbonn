@@ -5,10 +5,15 @@ from __future__ import annotations
 __all__ = ["BaseDatasetCreator"]
 
 import logging
-from abc import ABC, abstractmethod
+from abc import ABC, ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from objectory import AbstractFactory
+from karbonn.utils.imports import is_objectory_available
+
+if is_objectory_available():
+    from objectory import AbstractFactory
+else:  # pragma: no cover
+    AbstractFactory = ABCMeta
 
 if TYPE_CHECKING:
     from torch.utils.data import Dataset
