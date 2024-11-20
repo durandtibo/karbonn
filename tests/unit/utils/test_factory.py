@@ -10,8 +10,14 @@ from torch import nn
 from torch.nn import Module, ReLU
 
 from karbonn.testing import objectory_available
+from karbonn.testing.dummy import DummyDataset
 from karbonn.utils import create_sequential, is_module_config, setup_module
-from karbonn.utils.factory import setup_object, str_target_object
+from karbonn.utils.factory import (
+    is_dataset_config,
+    setup_dataset,
+    setup_object,
+    str_target_object,
+)
 from karbonn.utils.imports import is_objectory_available
 
 if TYPE_CHECKING:
@@ -21,6 +27,76 @@ if is_objectory_available():
     from objectory import OBJECT_TARGET
 else:  # pragma: no cover
     OBJECT_TARGET = "_target_"
+
+
+#######################################
+#     Tests for is_dataset_config     #
+#######################################
+
+
+@objectory_available
+def test_is_dataset_config_true() -> None:
+    assert is_dataset_config(
+        {
+            OBJECT_TARGET: "karbonn.testing.dummy.DummyDataset",
+            "num_examples": 10,
+            "feature_size": 4,
+        }
+    )
+
+
+@objectory_available
+def test_is_dataset_config_false() -> None:
+    assert not is_dataset_config({OBJECT_TARGET: "torch.nn.Identity"})
+
+
+###################################
+#     Tests for setup_dataset     #
+###################################
+
+
+@objectory_available
+@pytest.mark.parametrize(
+    "dataset",
+    [
+        DummyDataset(num_examples=10, feature_size=4),
+        {
+            OBJECT_TARGET: "karbonn.testing.dummy.DummyDataset",
+            "num_examples": 10,
+            "feature_size": 4,
+        },
+    ],
+)
+def test_setup_dataset(dataset: DummyDataset | dict) -> None:
+    assert isinstance(setup_dataset(dataset), DummyDataset)
+
+
+@objectory_available
+def test_setup_dataset_object() -> None:
+    dataset = DummyDataset(num_examples=10, feature_size=4)
+    assert setup_dataset(dataset) is dataset
+
+
+@objectory_available
+def test_setup_dataset_incorrect_type(caplog: pytest.LogCaptureFixture) -> None:
+    with caplog.at_level(level=logging.WARNING):
+        assert isinstance(setup_dataset({OBJECT_TARGET: "torch.nn.Identity"}), nn.Identity)
+        assert caplog.messages
+
+
+def test_setup_dataset_object_no_objectory() -> None:
+    with (
+        patch("karbonn.utils.imports.is_objectory_available", lambda: False),
+        pytest.raises(RuntimeError, match="'objectory' package is required but not installed."),
+    ):
+        setup_dataset(
+            {
+                OBJECT_TARGET: "karbonn.testing.dummy.DummyDataset",
+                "num_examples": 10,
+                "feature_size": 4,
+            }
+        )
+
 
 ######################################
 #     Tests for is_module_config     #
