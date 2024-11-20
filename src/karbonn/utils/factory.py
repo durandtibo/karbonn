@@ -5,12 +5,12 @@ from __future__ import annotations
 
 __all__ = [
     "create_sequential",
+    "is_dataset_config",
     "is_module_config",
+    "setup_dataset",
     "setup_module",
     "setup_object",
     "str_target_object",
-    "setup_dataset",
-    "is_dataset_config",
 ]
 
 import logging

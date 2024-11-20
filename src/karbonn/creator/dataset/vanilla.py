@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, TypeVar
 from coola.utils import str_indent, str_mapping
 
 from karbonn.creator.dataset.base import BaseDatasetCreator
-from karbonn.utils.factory import setup_object
+from karbonn.utils.factory import setup_dataset
 
 if TYPE_CHECKING:
     from torch.utils.data import Dataset
@@ -53,4 +53,4 @@ class DatasetCreator(BaseDatasetCreator[T]):
         return f"{self.__class__.__qualname__}(\n  {str_indent(str_mapping(config))}\n)"
 
     def create(self) -> Dataset[T]:
-        return setup_object(self._dataset)
+        return setup_dataset(self._dataset)
