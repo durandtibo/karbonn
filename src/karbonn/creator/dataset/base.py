@@ -101,9 +101,12 @@ def is_dataset_creator_config(config: dict) -> bool:
     >>> from karbonn.creator.dataset import is_dataset_creator_config
     >>> is_dataset_creator_config(
     ...     {
-    ...         "_target_": "karbonn.testing.dummy.DummyDataset",
-    ...         "num_examples": 10,
-    ...         "feature_size": 4,
+    ...         "_target_": "karbonn.creator.dataset.DatasetCreator",
+    ...         "dataset": {
+    ...             "_target_": "karbonn.testing.dummy.DummyDataset",
+    ...             "num_examples": 10,
+    ...             "feature_size": 4,
+    ...         },
     ...     }
     ... )
     True
@@ -130,13 +133,18 @@ def setup_dataset_creator(creator: BaseDatasetCreator | dict) -> BaseDatasetCrea
     >>> from karbonn.creator.dataset import setup_dataset_creator
     >>> creator = setup_dataset_creator(
     ...     {
-    ...         "_target_": "karbonn.testing.dummy.DummyDataset",
-    ...         "num_examples": 10,
-    ...         "feature_size": 4,
+    ...         "_target_": "karbonn.creator.dataset.DatasetCreator",
+    ...         "dataset": {
+    ...             "_target_": "karbonn.testing.dummy.DummyDataset",
+    ...             "num_examples": 10,
+    ...             "feature_size": 4,
+    ...         },
     ...     }
     ... )
     >>> creator
-    <lightning.pytorch.dataset_creator.dataset_creator.BaseDatasetCreator ...>
+    DatasetCreator(
+      (dataset): {'_target_': 'karbonn.testing.dummy.DummyDataset', 'num_examples': 10, 'feature_size': 4}
+    )
 
     ```
     """
