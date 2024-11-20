@@ -9,6 +9,8 @@ __all__ = [
     "setup_module",
     "setup_object",
     "str_target_object",
+    "setup_dataset",
+    "is_dataset_config",
 ]
 
 import logging
@@ -16,6 +18,7 @@ from typing import TYPE_CHECKING, TypeVar
 from unittest.mock import Mock
 
 from torch import nn
+from torch.utils.data import Dataset
 
 from karbonn.utils.imports import check_objectory, is_objectory_available
 
@@ -31,6 +34,77 @@ T = TypeVar("T")
 
 
 logger = logging.getLogger(__name__)
+
+
+def is_dataset_config(config: dict) -> bool:
+    r"""Indicate if the input configuration is a configuration for a
+    ``torch.nn.Module``.
+
+    This function only checks if the value of the key  ``_target_``
+    is valid. It does not check the other values. If ``_target_``
+    indicates a function, the returned type hint is used to check
+    the class.
+
+    Args:
+        config: The configuration to check.
+
+    Returns:
+        ``True`` if the input configuration is a configuration
+            for a ``torch.nn.Module`` object, otherwise ``False``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from karbonn.utils.factory import is_dataset_config
+    >>> is_dataset_config(
+    ...     {
+    ...         "_target_": "karbonn.testing.dummy.DummyDataset",
+    ...         "num_examples": 10,
+    ...         "feature_size": 4,
+    ...     }
+    ... )
+    True
+
+    ```
+    """
+    check_objectory()
+    return objectory.utils.is_object_config(config, Dataset)
+
+
+def setup_dataset(dataset: Dataset | dict) -> Dataset:
+    r"""Set up a ``torch.utils.data.Dataset`` object.
+
+    Args:
+        dataset: The dataset or its configuration.
+
+    Returns:
+        The instantiated ``torch.utils.data.Dataset`` object.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from karbonn.utils.factory import setup_dataset
+    >>> dataset = setup_dataset(
+    ...     {
+    ...         "_target_": "karbonn.testing.dummy.DummyDataset",
+    ...         "num_examples": 10,
+    ...         "feature_size": 4,
+    ...     }
+    ... )
+    >>> dataset
+    DummyDataset(num_examples=10, feature_size=4, rng_seed=14700295087918620795)
+
+    ```
+    """
+    if isinstance(dataset, dict):
+        logger.info("Initializing a 'torch.nn.Module' from its configuration... ")
+        check_objectory()
+        dataset = objectory.factory(**dataset)
+    if not isinstance(dataset, Dataset):
+        logger.warning(f"dataset is not a 'torch.nn.Module' (received: {type(dataset)})")
+    return dataset
 
 
 def is_module_config(config: dict) -> bool:
@@ -53,7 +127,7 @@ def is_module_config(config: dict) -> bool:
 
     ```pycon
 
-    >>> from karbonn.utils import is_module_config
+    >>> from karbonn.utils.factory import is_module_config
     >>> is_module_config({"_target_": "torch.nn.Identity"})
     True
 
@@ -76,7 +150,7 @@ def setup_module(module: nn.Module | dict) -> nn.Module:
 
     ```pycon
 
-    >>> from karbonn.utils import setup_module
+    >>> from karbonn.utils.factory import setup_module
     >>> linear = setup_module(
     ...     {"_target_": "torch.nn.Linear", "in_features": 4, "out_features": 6}
     ... )
