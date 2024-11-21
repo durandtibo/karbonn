@@ -9,6 +9,7 @@ __all__ = [
     "is_module_config",
     "setup_dataset",
     "setup_module",
+    "setup_optimizer",
     "setup_object",
     "str_target_object",
 ]
@@ -18,6 +19,7 @@ from typing import TYPE_CHECKING, TypeVar
 from unittest.mock import Mock
 
 from torch import nn
+from torch.optim import Optimizer
 from torch.utils.data import Dataset
 
 from karbonn.utils.imports import check_objectory, is_objectory_available
@@ -166,6 +168,48 @@ def setup_module(module: nn.Module | dict) -> nn.Module:
     if not isinstance(module, nn.Module):
         logger.warning(f"module is not a 'torch.nn.Module' (received: {type(module)})")
     return module
+
+
+def setup_optimizer(optimizer: Optimizer | dict) -> Optimizer:
+    r"""Set up a ``torch.optim.Optimizer`` object.
+
+    Args:
+        optimizer: The optimizer or its configuration.
+
+    Returns:
+        The instantiated ``torch.optim.Optimizer`` object.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from torch import nn
+    >>> from karbonn.utils.factory import setup_optimizer
+    >>> linear = nn.Linear(4, 6)
+    >>> sgd = setup_optimizer({"_target_": "torch.optim.SGD", "params": linear.parameters()})
+    >>> sgd
+    SGD (
+    Parameter Group 0
+        dampening: 0
+        differentiable: False
+        foreach: None
+        fused: None
+        lr: 0.001
+        maximize: False
+        momentum: 0
+        nesterov: False
+        weight_decay: 0
+    )
+
+    ```
+    """
+    if isinstance(optimizer, dict):
+        logger.info("Initializing a 'torch.optim.Optimizer' from its configuration... ")
+        check_objectory()
+        optimizer = objectory.factory(**optimizer)
+    if not isinstance(optimizer, Optimizer):
+        logger.warning(f"optimizer is not a 'torch.optim.Optimizer' (received: {type(optimizer)})")
+    return optimizer
 
 
 def create_sequential(modules: Sequence[nn.Module | dict]) -> nn.Sequential:
