@@ -16,6 +16,7 @@ from karbonn.utils.factory import (
     is_dataset_config,
     setup_dataset,
     setup_object,
+    setup_optimizer,
     str_target_object,
 )
 from karbonn.utils.imports import is_objectory_available
@@ -145,6 +146,46 @@ def test_setup_module_object_no_objectory() -> None:
         pytest.raises(RuntimeError, match="'objectory' package is required but not installed."),
     ):
         setup_module({OBJECT_TARGET: "torch.nn.ReLU"})
+
+
+#####################################
+#     Tests for setup_optimizer     #
+#####################################
+
+
+@objectory_available
+@pytest.mark.parametrize(
+    "optimizer",
+    [
+        torch.optim.SGD([torch.ones(2, 4, requires_grad=True)]),
+        {OBJECT_TARGET: "torch.optim.SGD", "params": [torch.ones(2, 4, requires_grad=True)]},
+    ],
+)
+def test_setup_optimizer(optimizer: torch.optim.Optimizer | dict) -> None:
+    assert isinstance(setup_optimizer(optimizer), torch.optim.SGD)
+
+
+@objectory_available
+def test_setup_optimizer_object() -> None:
+    optimizer = torch.optim.SGD([torch.ones(2, 4, requires_grad=True)])
+    assert setup_optimizer(optimizer) is optimizer
+
+
+@objectory_available
+def test_setup_optimizer_incorrect_type(caplog: pytest.LogCaptureFixture) -> None:
+    with caplog.at_level(level=logging.WARNING):
+        assert isinstance(setup_optimizer({OBJECT_TARGET: "torch.nn.ReLU"}), torch.nn.ReLU)
+        assert caplog.messages
+
+
+def test_setup_optimizer_object_no_objectory() -> None:
+    with (
+        patch("karbonn.utils.imports.is_objectory_available", lambda: False),
+        pytest.raises(RuntimeError, match="'objectory' package is required but not installed."),
+    ):
+        setup_optimizer(
+            {OBJECT_TARGET: "torch.optim.SGD", "params": [torch.ones(2, 4, requires_grad=True)]}
+        )
 
 
 #######################################
