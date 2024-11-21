@@ -7,6 +7,7 @@ __all__ = [
     "ModuleCreator",
     "is_module_creator_config",
     "setup_module_creator",
+    "CompiledModuleCreator",
 ]
 
 from karbonn.creator.module.base import (
@@ -14,4 +15,5 @@ from karbonn.creator.module.base import (
     is_module_creator_config,
     setup_module_creator,
 )
+from karbonn.creator.module.compiled import CompiledModuleCreator
 from karbonn.creator.module.vanilla import ModuleCreator
