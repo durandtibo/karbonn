@@ -7,10 +7,11 @@ __all__ = [
     "Creator",
     "CreatorList",
     "CreatorTuple",
+    "ListCreator",
     "is_creator_config",
     "setup_creator",
 ]
 
 from karbonn.creator.base import BaseCreator, is_creator_config, setup_creator
-from karbonn.creator.sequence import CreatorList, CreatorTuple
+from karbonn.creator.sequence import CreatorList, CreatorTuple, ListCreator
 from karbonn.creator.vanilla import Creator
