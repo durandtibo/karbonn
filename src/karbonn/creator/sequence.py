@@ -2,7 +2,7 @@ r"""Contain object creator implementations."""
 
 from __future__ import annotations
 
-__all__ = ["ListCreator"]
+__all__ = ["CreatorList"]
 
 from typing import TYPE_CHECKING, TypeVar
 
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 T = TypeVar("T")
 
 
-class ListCreator(BaseCreator[T]):
+class CreatorList(BaseCreator[T]):
     r"""Implement a list object creator.
 
     Args:
@@ -27,8 +27,8 @@ class ListCreator(BaseCreator[T]):
 
     ```pycon
 
-    >>> from karbonn.creator import ListCreator
-    >>> creator = ListCreator(
+    >>> from karbonn.creator import CreatorList
+    >>> creator = CreatorList(
     ...     [
     ...         {
     ...             "_target_": "torch.nn.Linear",
@@ -39,7 +39,7 @@ class ListCreator(BaseCreator[T]):
     ...     ]
     ... )
     >>> creator
-    ListCreator(
+    CreatorList(
       (0): {'_target_': 'torch.nn.Linear', 'in_features': 4, 'out_features': 6}
       (1): {'_target_': 'torch.nn.Identity'}
     )
