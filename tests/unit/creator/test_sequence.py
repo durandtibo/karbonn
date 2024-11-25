@@ -3,7 +3,13 @@ from __future__ import annotations
 import torch.nn
 from torch import nn
 
-from karbonn.creator import Creator, CreatorList, CreatorTuple, ListCreator
+from karbonn.creator import (
+    Creator,
+    CreatorList,
+    CreatorTuple,
+    ListCreator,
+    TupleCreator,
+)
 from karbonn.testing import objectory_available
 from karbonn.utils.imports import is_objectory_available
 
@@ -212,6 +218,73 @@ def test_list_creator_create_two_creators() -> None:
         ],
     ).create()
     assert isinstance(obj, list)
+    assert len(obj) == 2
+    assert isinstance(obj[0], nn.Linear)
+    assert isinstance(obj[1], nn.Identity)
+
+
+##################################
+#     Tests for TupleCreator     #
+##################################
+
+
+@objectory_available
+def test_tuple_creator_repr() -> None:
+    assert repr(
+        TupleCreator(
+            creators=[
+                {
+                    OBJECT_TARGET: "karbonn.creator.Creator",
+                    "obj_or_config": torch.nn.Linear(in_features=4, out_features=6),
+                },
+                Creator(torch.nn.Identity()),
+            ],
+        )
+    ).startswith("TupleCreator")
+
+
+@objectory_available
+def test_tuple_creator_str() -> None:
+    assert str(
+        TupleCreator(
+            creators=[
+                {
+                    OBJECT_TARGET: "karbonn.creator.Creator",
+                    "obj_or_config": torch.nn.Linear(in_features=4, out_features=6),
+                },
+                Creator(torch.nn.Identity()),
+            ],
+        )
+    ).startswith("TupleCreator")
+
+
+@objectory_available
+def test_tuple_creator_create_one_item() -> None:
+    obj = TupleCreator(
+        creators=[
+            {
+                OBJECT_TARGET: "karbonn.creator.Creator",
+                "obj_or_config": torch.nn.Linear(in_features=4, out_features=6),
+            },
+        ],
+    ).create()
+    assert isinstance(obj, tuple)
+    assert len(obj) == 1
+    assert isinstance(obj[0], nn.Linear)
+
+
+@objectory_available
+def test_tuple_creator_create_two_creators() -> None:
+    obj = TupleCreator(
+        creators=[
+            {
+                OBJECT_TARGET: "karbonn.creator.Creator",
+                "obj_or_config": torch.nn.Linear(in_features=4, out_features=6),
+            },
+            Creator(torch.nn.Identity()),
+        ],
+    ).create()
+    assert isinstance(obj, tuple)
     assert len(obj) == 2
     assert isinstance(obj[0], nn.Linear)
     assert isinstance(obj[1], nn.Identity)

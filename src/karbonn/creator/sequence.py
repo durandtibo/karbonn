@@ -2,7 +2,7 @@ r"""Contain object creator implementations."""
 
 from __future__ import annotations
 
-__all__ = ["CreatorList", "CreatorTuple", "ListCreator"]
+__all__ = ["CreatorList", "CreatorTuple", "ListCreator", "TupleCreator"]
 
 from typing import TYPE_CHECKING, TypeVar
 
@@ -159,3 +159,57 @@ class ListCreator(BaseCreator[T]):
 
     def create(self) -> list[T]:
         return [creator.create() for creator in self._creators]
+
+
+class TupleCreator(BaseCreator[T]):
+    r"""Implement a tuple object creator.
+
+    Args:
+        creators: The sequence of object creators or their
+            configurations.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from karbonn.creator import TupleCreator, Creator
+    >>> creator = TupleCreator(
+    ...     [
+    ...         Creator(
+    ...             {
+    ...                 "_target_": "torch.nn.Linear",
+    ...                 "in_features": 4,
+    ...                 "out_features": 6,
+    ...             }
+    ...         ),
+    ...         Creator({"_target_": "torch.nn.Identity"}),
+    ...     ]
+    ... )
+    >>> creator
+    TupleCreator(
+      (0): Creator(
+          (_target_): torch.nn.Linear
+          (in_features): 4
+          (out_features): 6
+        )
+      (1): Creator(
+          (_target_): torch.nn.Identity
+        )
+    )
+    >>> creator.create()
+    (Linear(in_features=4, out_features=6, bias=True), Identity())
+
+    ```
+    """
+
+    def __init__(self, creators: Sequence[BaseCreator[T] | dict]) -> None:
+        self._creators = tuple(setup_creator(creator) for creator in creators)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__qualname__}(\n  {repr_indent(repr_sequence(self._creators))}\n)"
+
+    def __str__(self) -> str:
+        return f"{self.__class__.__qualname__}(\n  {str_indent(str_sequence(self._creators))}\n)"
+
+    def create(self) -> tuple[T, ...]:
+        return tuple(creator.create() for creator in self._creators)
