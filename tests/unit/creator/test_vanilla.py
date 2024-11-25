@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+from typing import Any
+
+import pytest
+import torch.nn
 from torch import nn
 
 from karbonn.creator import Creator
@@ -11,33 +15,24 @@ if is_objectory_available():
 else:  # pragma: no cover
     OBJECT_TARGET = "_target_"
 
+OBJECTS_OR_CONFIGS = [
+    torch.nn.Linear(in_features=4, out_features=6),
+    {OBJECT_TARGET: "torch.nn.Linear", "in_features": 4, "out_features": 6},
+]
+
 #############################
 #     Tests for Creator     #
 #############################
 
 
-def test_creator_repr() -> None:
-    assert repr(
-        Creator(
-            obj_or_config={
-                OBJECT_TARGET: "torch.nn.Linear",
-                "in_features": 4,
-                "out_features": 6,
-            },
-        )
-    ).startswith("Creator")
+@pytest.mark.parametrize("obj_or_config", OBJECTS_OR_CONFIGS)
+def test_creator_repr(obj_or_config: Any) -> None:
+    assert repr(Creator(obj_or_config=obj_or_config)).startswith("Creator")
 
 
-def test_creator_str() -> None:
-    assert str(
-        Creator(
-            obj_or_config={
-                OBJECT_TARGET: "torch.nn.Linear",
-                "in_features": 4,
-                "out_features": 6,
-            },
-        )
-    ).startswith("Creator")
+@pytest.mark.parametrize("obj_or_config", OBJECTS_OR_CONFIGS)
+def test_creator_str(obj_or_config: Any) -> None:
+    assert str(Creator(obj_or_config=obj_or_config)).startswith("Creator")
 
 
 @objectory_available

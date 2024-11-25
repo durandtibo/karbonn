@@ -48,16 +48,20 @@ class Creator(BaseCreator[T]):
         self._obj_or_config = obj_or_config
 
     def __repr__(self) -> str:
-        return (
-            f"{self.__class__.__qualname__}(\n  "
-            f"{repr_indent(repr_mapping(self._obj_or_config))}\n)"
+        config = (
+            repr_mapping(self._obj_or_config)
+            if isinstance(self._obj_or_config, dict)
+            else self._obj_or_config
         )
+        return f"{self.__class__.__qualname__}(\n  {repr_indent(config)}\n)"
 
     def __str__(self) -> str:
-        return (
-            f"{self.__class__.__qualname__}(\n  "
-            f"{str_indent(str_mapping(self._obj_or_config))}\n)"
+        config = (
+            str_mapping(self._obj_or_config)
+            if isinstance(self._obj_or_config, dict)
+            else self._obj_or_config
         )
+        return f"{self.__class__.__qualname__}(\n  {str_indent(config)}\n)"
 
     def create(self) -> T:
         return setup_object(self._obj_or_config)
