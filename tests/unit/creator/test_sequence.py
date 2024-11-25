@@ -3,7 +3,7 @@ from __future__ import annotations
 import torch.nn
 from torch import nn
 
-from karbonn.creator import ListCreator
+from karbonn.creator import CreatorList
 from karbonn.testing import objectory_available
 from karbonn.utils.imports import is_objectory_available
 
@@ -13,13 +13,13 @@ else:  # pragma: no cover
     OBJECT_TARGET = "_target_"
 
 #################################
-#     Tests for ListCreator     #
+#     Tests for CreatorList     #
 #################################
 
 
-def test_list_creator_repr() -> None:
+def test_creator_list_repr() -> None:
     assert repr(
-        ListCreator(
+        CreatorList(
             items=[
                 {
                     OBJECT_TARGET: "torch.nn.Linear",
@@ -29,12 +29,12 @@ def test_list_creator_repr() -> None:
                 torch.nn.Identity(),
             ],
         )
-    ).startswith("ListCreator")
+    ).startswith("CreatorList")
 
 
-def test_list_creator_str() -> None:
+def test_creator_list_str() -> None:
     assert str(
-        ListCreator(
+        CreatorList(
             items=[
                 {
                     OBJECT_TARGET: "torch.nn.Linear",
@@ -44,12 +44,12 @@ def test_list_creator_str() -> None:
                 torch.nn.Identity(),
             ],
         )
-    ).startswith("ListCreator")
+    ).startswith("CreatorList")
 
 
 @objectory_available
-def test_list_creator_create_one_item() -> None:
-    obj = ListCreator(
+def test_creator_list_create_one_item() -> None:
+    obj = CreatorList(
         items=[
             {
                 OBJECT_TARGET: "torch.nn.Linear",
@@ -64,8 +64,8 @@ def test_list_creator_create_one_item() -> None:
 
 
 @objectory_available
-def test_list_creator_create_two_items() -> None:
-    obj = ListCreator(
+def test_creator_list_create_two_items() -> None:
+    obj = CreatorList(
         items=[
             {
                 OBJECT_TARGET: "torch.nn.Linear",
