@@ -4,10 +4,10 @@ from __future__ import annotations
 
 __all__ = [
     "BaseModuleCreator",
+    "CompiledModuleCreator",
     "ModuleCreator",
     "is_module_creator_config",
     "setup_module_creator",
-    "CompiledModuleCreator",
 ]
 
 from karbonn.creator.module.base import (
