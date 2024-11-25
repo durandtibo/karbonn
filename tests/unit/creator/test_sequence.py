@@ -155,6 +155,7 @@ def test_creator_tuple_create_two_items() -> None:
 #################################
 
 
+@objectory_available
 def test_list_creator_repr() -> None:
     assert repr(
         ListCreator(
@@ -169,6 +170,7 @@ def test_list_creator_repr() -> None:
     ).startswith("ListCreator")
 
 
+@objectory_available
 def test_list_creator_str() -> None:
     assert str(
         ListCreator(

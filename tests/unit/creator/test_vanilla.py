@@ -25,11 +25,13 @@ OBJECTS_OR_CONFIGS = [
 #############################
 
 
+@objectory_available
 @pytest.mark.parametrize("obj_or_config", OBJECTS_OR_CONFIGS)
 def test_creator_repr(obj_or_config: Any) -> None:
     assert repr(Creator(obj_or_config=obj_or_config)).startswith("Creator")
 
 
+@objectory_available
 @pytest.mark.parametrize("obj_or_config", OBJECTS_OR_CONFIGS)
 def test_creator_str(obj_or_config: Any) -> None:
     assert str(Creator(obj_or_config=obj_or_config)).startswith("Creator")
