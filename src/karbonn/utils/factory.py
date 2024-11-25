@@ -9,8 +9,8 @@ __all__ = [
     "is_module_config",
     "setup_dataset",
     "setup_module",
-    "setup_optimizer",
     "setup_object",
+    "setup_optimizer",
     "str_target_object",
 ]
 
