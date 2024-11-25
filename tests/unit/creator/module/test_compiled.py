@@ -65,20 +65,21 @@ def test_compiled_module_creator_str() -> None:
     ],
 )
 def test_compiled_module_creator_create(creator: BaseModuleCreator | dict) -> None:
-    assert isinstance(CompiledModuleCreator(creator=creator).create(), nn.Module)
+    module = CompiledModuleCreator(creator=creator).create()
+    assert isinstance(module, nn.Module)
+    assert not isinstance(module, nn.Linear)
 
 
 @objectory_available
 def test_compiled_module_creator_create_with_config() -> None:
-    assert isinstance(
-        CompiledModuleCreator(
-            creator=ModuleCreator(
-                module={OBJECT_TARGET: "torch.nn.Linear", "in_features": 4, "out_features": 6}
-            ),
-            config={"mode": "default"},
-        ).create(),
-        nn.Module,
-    )
+    module = CompiledModuleCreator(
+        creator=ModuleCreator(
+            module={OBJECT_TARGET: "torch.nn.Linear", "in_features": 4, "out_features": 6}
+        ),
+        config={"mode": "default"},
+    ).create()
+    assert isinstance(module, nn.Module)
+    assert not isinstance(module, nn.Linear)
 
 
 def test_compiled_module_creator_create_mock() -> None:
