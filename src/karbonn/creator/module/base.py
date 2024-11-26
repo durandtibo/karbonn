@@ -5,26 +5,24 @@ from __future__ import annotations
 __all__ = ["BaseModuleCreator", "is_module_creator_config", "setup_module_creator"]
 
 import logging
-from abc import ABC, ABCMeta, abstractmethod
-from typing import TYPE_CHECKING
+from abc import abstractmethod
 from unittest.mock import Mock
 
+from torch.nn import Module
+
+from karbonn.creator.base import BaseCreator
 from karbonn.utils.imports import check_objectory, is_objectory_available
 
 if is_objectory_available():
     import objectory
-    from objectory import AbstractFactory
 else:  # pragma: no cover
     objectory = Mock()
-    AbstractFactory = ABCMeta
 
-if TYPE_CHECKING:
-    from torch.nn import Module
 
 logger = logging.getLogger(__name__)
 
 
-class BaseModuleCreator(ABC, metaclass=AbstractFactory):
+class BaseModuleCreator(BaseCreator[Module]):
     r"""Define the base class to implement a module creator.
 
     Example usage:
