@@ -7,6 +7,7 @@ from torch import nn
 from torch.nn.parallel import DistributedDataParallel
 
 from karbonn.creator.module.ddp import to_ddp
+from karbonn.distributed import gloocontext, ncclcontext
 from karbonn.testing import (
     cuda_available,
     gloo_available,
