@@ -49,7 +49,7 @@ class Creator(BaseCreator[T]):
 
     def __repr__(self) -> str:
         config = (
-            repr_mapping(self._obj_or_config)
+            repr_mapping(self._obj_or_config, sorted_keys=True)
             if isinstance(self._obj_or_config, dict)
             else self._obj_or_config
         )
@@ -57,7 +57,7 @@ class Creator(BaseCreator[T]):
 
     def __str__(self) -> str:
         config = (
-            str_mapping(self._obj_or_config)
+            str_mapping(self._obj_or_config, sorted_keys=True)
             if isinstance(self._obj_or_config, dict)
             else self._obj_or_config
         )

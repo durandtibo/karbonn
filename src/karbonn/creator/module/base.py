@@ -40,7 +40,9 @@ class BaseModuleCreator(BaseCreator[Module]):
     ... )
     >>> creator
     ModuleCreator(
-      (module): {'_target_': 'torch.nn.Linear', 'in_features': 4, 'out_features': 6}
+      (_target_): torch.nn.Linear
+      (in_features): 4
+      (out_features): 6
     )
     >>> creator.create()
     Linear(in_features=4, out_features=6, bias=True)
@@ -140,7 +142,9 @@ def setup_module_creator(creator: BaseModuleCreator | dict) -> BaseModuleCreator
     ... )
     >>> creator
     ModuleCreator(
-      (module): {'_target_': 'torch.nn.Linear', 'in_features': 4, 'out_features': 6}
+      (_target_): torch.nn.Linear
+      (in_features): 4
+      (out_features): 6
     )
 
     ```

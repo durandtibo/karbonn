@@ -6,7 +6,7 @@ __all__ = ["ModuleCreator"]
 
 from typing import TYPE_CHECKING
 
-from coola.utils import str_indent, str_mapping
+from coola.utils import repr_indent, repr_mapping, str_indent, str_mapping
 
 from karbonn.creator.module.base import BaseModuleCreator
 from karbonn.utils import setup_module
@@ -35,7 +35,9 @@ class ModuleCreator(BaseModuleCreator):
     ... )
     >>> creator
     ModuleCreator(
-      (module): {'_target_': 'torch.nn.Linear', 'in_features': 4, 'out_features': 6}
+      (_target_): torch.nn.Linear
+      (in_features): 4
+      (out_features): 6
     )
     >>> creator.create()
     Linear(in_features=4, out_features=6, bias=True)
@@ -47,8 +49,20 @@ class ModuleCreator(BaseModuleCreator):
         self._module = module
 
     def __repr__(self) -> str:
-        config = {"module": self._module}
-        return f"{self.__class__.__qualname__}(\n  {str_indent(str_mapping(config))}\n)"
+        config = (
+            repr_mapping(self._module, sorted_keys=True)
+            if isinstance(self._module, dict)
+            else self._module
+        )
+        return f"{self.__class__.__qualname__}(\n  {repr_indent(config)}\n)"
+
+    def __str__(self) -> str:
+        config = (
+            str_mapping(self._module, sorted_keys=True)
+            if isinstance(self._module, dict)
+            else self._module
+        )
+        return f"{self.__class__.__qualname__}(\n  {str_indent(config)}\n)"
 
     def create(self) -> Module:
         return setup_module(self._module)
