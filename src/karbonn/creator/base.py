@@ -1,37 +1,39 @@
-r"""Contain the base class to implement a module creator."""
+r"""Contain the base class to implement a generic object creator."""
 
 from __future__ import annotations
 
-__all__ = ["BaseModuleCreator", "is_module_creator_config", "setup_module_creator"]
+__all__ = ["BaseCreator", "is_creator_config", "setup_creator"]
 
 import logging
-from abc import abstractmethod
+from abc import ABC, ABCMeta, abstractmethod
+from typing import Generic, TypeVar
 from unittest.mock import Mock
 
-from torch.nn import Module
-
-from karbonn.creator.base import BaseCreator
 from karbonn.utils.factory import setup_object_typed
 from karbonn.utils.imports import check_objectory, is_objectory_available
 
 if is_objectory_available():
     import objectory
+    from objectory import AbstractFactory
 else:  # pragma: no cover
     objectory = Mock()
+    AbstractFactory = ABCMeta
 
 
 logger = logging.getLogger(__name__)
 
+T = TypeVar("T")
 
-class BaseModuleCreator(BaseCreator[Module]):
-    r"""Define the base class to implement a module creator.
+
+class BaseCreator(Generic[T], ABC, metaclass=AbstractFactory):
+    r"""Define the base class to implement an object creator.
 
     Example usage:
 
     ```pycon
 
-    >>> from karbonn.creator.module import ModuleCreator
-    >>> creator = ModuleCreator(
+    >>> from karbonn.creator import Creator
+    >>> creator = Creator(
     ...     {
     ...         "_target_": "torch.nn.Linear",
     ...         "in_features": 4,
@@ -39,8 +41,10 @@ class BaseModuleCreator(BaseCreator[Module]):
     ...     }
     ... )
     >>> creator
-    ModuleCreator(
-      (module): {'_target_': 'torch.nn.Linear', 'in_features': 4, 'out_features': 6}
+    Creator(
+      (_target_): torch.nn.Linear
+      (in_features): 4
+      (out_features): 6
     )
     >>> creator.create()
     Linear(in_features=4, out_features=6, bias=True)
@@ -49,18 +53,18 @@ class BaseModuleCreator(BaseCreator[Module]):
     """
 
     @abstractmethod
-    def create(self) -> Module:
-        r"""Create a module.
+    def create(self) -> T:
+        r"""Create an object.
 
         Returns:
-            The created module.
+            The created object.
 
         Example usage:
 
         ```pycon
 
-        >>> from karbonn.creator.module import ModuleCreator
-        >>> creator = ModuleCreator(
+        >>> from karbonn.creator import Creator
+        >>> creator = Creator(
         ...     {
         ...         "_target_": "torch.nn.Linear",
         ...         "in_features": 4,
@@ -74,9 +78,9 @@ class BaseModuleCreator(BaseCreator[Module]):
         """
 
 
-def is_module_creator_config(config: dict) -> bool:
+def is_creator_config(config: dict) -> bool:
     r"""Indicate if the input configuration is a configuration for a
-    ``BaseModuleCreator``.
+    ``BaseCreator``.
 
     This function only checks if the value of the key  ``_target_``
     is valid. It does not check the other values. If ``_target_``
@@ -88,18 +92,17 @@ def is_module_creator_config(config: dict) -> bool:
 
     Returns:
         ``True`` if the input configuration is a configuration
-            for a ``BaseModuleCreator`` object,
-            otherwise ``False``.
+            for a ``BaseCreator`` object, otherwise ``False``.
 
     Example usage:
 
     ```pycon
 
-    >>> from karbonn.creator.module import is_module_creator_config
-    >>> is_module_creator_config(
+    >>> from karbonn.creator import is_creator_config
+    >>> is_creator_config(
     ...     {
-    ...         "_target_": "karbonn.creator.module.ModuleCreator",
-    ...         "module": {
+    ...         "_target_": "karbonn.creator.Creator",
+    ...         "obj_or_config": {
     ...             "_target_": "torch.nn.Linear",
     ...             "in_features": 4,
     ...             "out_features": 6,
@@ -111,27 +114,27 @@ def is_module_creator_config(config: dict) -> bool:
     ```
     """
     check_objectory()
-    return objectory.utils.is_object_config(config, BaseModuleCreator)
+    return objectory.utils.is_object_config(config, BaseCreator)
 
 
-def setup_module_creator(creator: BaseModuleCreator | dict) -> BaseModuleCreator:
-    r"""Set up a ``BaseModuleCreator`` object.
+def setup_creator(creator: BaseCreator | dict) -> BaseCreator:
+    r"""Set up a ``BaseCreator`` object.
 
     Args:
-        creator: The module creator or its configuration.
+        creator: The object creator or its configuration.
 
     Returns:
-        The instantiated ``BaseModuleCreator`` object.
+        The instantiated ``BaseCreator`` object.
 
     Example usage:
 
     ```pycon
 
-    >>> from karbonn.creator.module import setup_module_creator
-    >>> creator = setup_module_creator(
+    >>> from karbonn.creator import setup_creator
+    >>> creator = setup_creator(
     ...     {
-    ...         "_target_": "karbonn.creator.module.ModuleCreator",
-    ...         "module": {
+    ...         "_target_": "karbonn.creator.Creator",
+    ...         "obj_or_config": {
     ...             "_target_": "torch.nn.Linear",
     ...             "in_features": 4,
     ...             "out_features": 6,
@@ -139,12 +142,12 @@ def setup_module_creator(creator: BaseModuleCreator | dict) -> BaseModuleCreator
     ...     }
     ... )
     >>> creator
-    ModuleCreator(
-      (module): {'_target_': 'torch.nn.Linear', 'in_features': 4, 'out_features': 6}
+    Creator(
+      (_target_): torch.nn.Linear
+      (in_features): 4
+      (out_features): 6
     )
 
     ```
     """
-    return setup_object_typed(
-        obj_or_config=creator, cls=BaseModuleCreator, name="BaseModuleCreator"
-    )
+    return setup_object_typed(obj_or_config=creator, cls=BaseCreator, name="BaseCreator")
