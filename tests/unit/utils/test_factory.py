@@ -14,6 +14,7 @@ from karbonn.testing.dummy import DummyDataset
 from karbonn.utils import create_sequential, is_module_config, setup_module
 from karbonn.utils.factory import (
     is_dataset_config,
+    is_optimizer_config,
     setup_dataset,
     setup_object,
     setup_object_typed,
@@ -50,6 +51,38 @@ def test_is_dataset_config_true() -> None:
 @objectory_available
 def test_is_dataset_config_false() -> None:
     assert not is_dataset_config({OBJECT_TARGET: "torch.nn.Identity"})
+
+
+######################################
+#     Tests for is_module_config     #
+######################################
+
+
+@objectory_available
+def test_is_module_config_true() -> None:
+    assert is_module_config({OBJECT_TARGET: "torch.nn.Identity"})
+
+
+@objectory_available
+def test_is_module_config_false() -> None:
+    assert not is_module_config({OBJECT_TARGET: "torch.device"})
+
+
+#########################################
+#     Tests for is_optimizer_config     #
+#########################################
+
+
+@objectory_available
+def test_is_optimizer_config_true() -> None:
+    assert is_optimizer_config(
+        {OBJECT_TARGET: "torch.optim.SGD", "params": [torch.ones(2, 4, requires_grad=True)]}
+    )
+
+
+@objectory_available
+def test_is_optimizer_config_false() -> None:
+    assert not is_optimizer_config({OBJECT_TARGET: "torch.nn.Identity"})
 
 
 ###################################
@@ -98,21 +131,6 @@ def test_setup_dataset_object_no_objectory() -> None:
                 "feature_size": 4,
             }
         )
-
-
-######################################
-#     Tests for is_module_config     #
-######################################
-
-
-@objectory_available
-def test_is_module_config_true() -> None:
-    assert is_module_config({OBJECT_TARGET: "torch.nn.Identity"})
-
-
-@objectory_available
-def test_is_module_config_false() -> None:
-    assert not is_module_config({OBJECT_TARGET: "torch.device"})
 
 
 ##################################
