@@ -43,7 +43,9 @@ class BaseDatasetCreator(BaseCreator[Dataset[T]]):
     ... )
     >>> creator
     DatasetCreator(
-      (dataset): {'_target_': 'karbonn.testing.dummy.DummyDataset', 'num_examples': 10, 'feature_size': 4}
+      (_target_): karbonn.testing.dummy.DummyDataset
+      (feature_size): 4
+      (num_examples): 10
     )
     >>> creator.create()
     DummyDataset(num_examples=10, feature_size=4, rng_seed=14700295087918620795)
@@ -143,7 +145,9 @@ def setup_dataset_creator(creator: BaseDatasetCreator | dict) -> BaseDatasetCrea
     ... )
     >>> creator
     DatasetCreator(
-      (dataset): {'_target_': 'karbonn.testing.dummy.DummyDataset', 'num_examples': 10, 'feature_size': 4}
+      (_target_): karbonn.testing.dummy.DummyDataset
+      (feature_size): 4
+      (num_examples): 10
     )
 
     ```

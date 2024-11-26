@@ -38,7 +38,8 @@ class BaseOptimizerCreator(ABC, metaclass=AbstractFactory):
     >>> creator = OptimizerCreator({"_target_": "torch.optim.SGD", "lr": 0.001})
     >>> creator
     OptimizerCreator(
-      (optimizer): {'_target_': 'torch.optim.SGD', 'lr': 0.001}
+      (_target_): torch.optim.SGD
+      (lr): 0.001
     )
     >>> creator.create(linear)
     SGD (
@@ -151,7 +152,8 @@ def setup_optimizer_creator(creator: BaseOptimizerCreator | dict) -> BaseOptimiz
     ... )
     >>> creator
     OptimizerCreator(
-      (optimizer): {'_target_': 'torch.optim.SGD', 'lr': 0.001}
+      (_target_): torch.optim.SGD
+      (lr): 0.001
     )
 
     ```

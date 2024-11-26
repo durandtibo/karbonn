@@ -42,8 +42,10 @@ class CompiledModuleCreator(BaseModuleCreator):
     >>> creator
     CompiledModuleCreator(
       (creator): ModuleCreator(
-          (module): {'_target_': 'torch.nn.Linear', 'in_features': 4, 'out_features': 6}
-        )
+        (_target_): torch.nn.Linear
+        (in_features): 4
+        (out_features): 6
+      )
       (config): {}
     )
     >>> creator.create()
