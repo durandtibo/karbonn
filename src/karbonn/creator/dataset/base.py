@@ -12,6 +12,7 @@ from unittest.mock import Mock
 from torch.utils.data import Dataset
 
 from karbonn.creator.base import BaseCreator
+from karbonn.utils.factory import setup_object_typed
 from karbonn.utils.imports import check_objectory, is_objectory_available
 
 if is_objectory_available():
@@ -147,10 +148,6 @@ def setup_dataset_creator(creator: BaseDatasetCreator | dict) -> BaseDatasetCrea
 
     ```
     """
-    if isinstance(creator, dict):
-        logger.info("Initializing a 'BaseDatasetCreator' from its configuration... ")
-        check_objectory()
-        creator = objectory.factory(**creator)
-    if not isinstance(creator, BaseDatasetCreator):
-        logger.warning(f"creator is not a 'BaseDatasetCreator' object (received: {type(creator)})")
-    return creator
+    return setup_object_typed(
+        obj_or_config=creator, cls=BaseDatasetCreator, name="BaseDatasetCreator"
+    )

@@ -11,6 +11,7 @@ from unittest.mock import Mock
 from torch.nn import Module
 
 from karbonn.creator.base import BaseCreator
+from karbonn.utils.factory import setup_object_typed
 from karbonn.utils.imports import check_objectory, is_objectory_available
 
 if is_objectory_available():
@@ -144,10 +145,6 @@ def setup_module_creator(creator: BaseModuleCreator | dict) -> BaseModuleCreator
 
     ```
     """
-    if isinstance(creator, dict):
-        logger.info("Initializing a 'BaseModuleCreator' from its configuration... ")
-        check_objectory()
-        creator = objectory.factory(**creator)
-    if not isinstance(creator, BaseModuleCreator):
-        logger.warning(f"creator is not a 'BaseModuleCreator' object (received: {type(creator)})")
-    return creator
+    return setup_object_typed(
+        obj_or_config=creator, cls=BaseModuleCreator, name="BaseModuleCreator"
+    )
