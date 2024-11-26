@@ -19,7 +19,7 @@ import logging
 from typing import TYPE_CHECKING, TypeVar
 from unittest.mock import Mock
 
-from torch import nn
+from torch.nn import Module, Sequential
 from torch.optim import Optimizer
 from torch.utils.data import Dataset
 
@@ -101,13 +101,7 @@ def setup_dataset(dataset: Dataset | dict) -> Dataset:
 
     ```
     """
-    if isinstance(dataset, dict):
-        logger.info("Initializing a 'torch.utils.data.Dataset' from its configuration... ")
-        check_objectory()
-        dataset = objectory.factory(**dataset)
-    if not isinstance(dataset, Dataset):
-        logger.warning(f"dataset is not a 'torch.utils.data.Dataset' (received: {type(dataset)})")
-    return dataset
+    return setup_object_typed(obj_or_config=dataset, cls=Dataset, name="torch.utils.data.Dataset")
 
 
 def is_module_config(config: dict) -> bool:
@@ -137,10 +131,10 @@ def is_module_config(config: dict) -> bool:
     ```
     """
     check_objectory()
-    return objectory.utils.is_object_config(config, nn.Module)
+    return objectory.utils.is_object_config(config, Module)
 
 
-def setup_module(module: nn.Module | dict) -> nn.Module:
+def setup_module(module: Module | dict) -> Module:
     r"""Set up a ``torch.nn.Module`` object.
 
     Args:
@@ -162,13 +156,7 @@ def setup_module(module: nn.Module | dict) -> nn.Module:
 
     ```
     """
-    if isinstance(module, dict):
-        logger.info("Initializing a 'torch.nn.Module' from its configuration... ")
-        check_objectory()
-        module = objectory.factory(**module)
-    if not isinstance(module, nn.Module):
-        logger.warning(f"module is not a 'torch.nn.Module' (received: {type(module)})")
-    return module
+    return setup_object_typed(obj_or_config=module, cls=Module, name="torch.nn.Module")
 
 
 def setup_optimizer(optimizer: Optimizer | dict) -> Optimizer:
@@ -204,16 +192,10 @@ def setup_optimizer(optimizer: Optimizer | dict) -> Optimizer:
 
     ```
     """
-    if isinstance(optimizer, dict):
-        logger.info("Initializing a 'torch.optim.Optimizer' from its configuration... ")
-        check_objectory()
-        optimizer = objectory.factory(**optimizer)
-    if not isinstance(optimizer, Optimizer):
-        logger.warning(f"optimizer is not a 'torch.optim.Optimizer' (received: {type(optimizer)})")
-    return optimizer
+    return setup_object_typed(obj_or_config=optimizer, cls=Optimizer, name="torch.optim.Optimizer")
 
 
-def create_sequential(modules: Sequence[nn.Module | dict]) -> nn.Sequential:
+def create_sequential(modules: Sequence[Module | dict]) -> Sequential:
     r"""Create a ``torch.nn.Sequential`` from a sequence of modules.
 
     Args:
@@ -243,7 +225,7 @@ def create_sequential(modules: Sequence[nn.Module | dict]) -> nn.Sequential:
 
     ```
     """
-    return nn.Sequential(*[setup_module(module) for module in modules])
+    return Sequential(*[setup_module(module) for module in modules])
 
 
 def setup_object(obj_or_config: T | dict) -> T:

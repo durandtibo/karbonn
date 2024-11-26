@@ -9,6 +9,7 @@ from abc import ABC, ABCMeta, abstractmethod
 from typing import Generic, TypeVar
 from unittest.mock import Mock
 
+from karbonn.utils.factory import setup_object_typed
 from karbonn.utils.imports import check_objectory, is_objectory_available
 
 if is_objectory_available():
@@ -149,10 +150,4 @@ def setup_creator(creator: BaseCreator | dict) -> BaseCreator:
 
     ```
     """
-    if isinstance(creator, dict):
-        logger.info("Initializing a 'BaseCreator' from its configuration... ")
-        check_objectory()
-        creator = objectory.factory(**creator)
-    if not isinstance(creator, BaseCreator):
-        logger.warning(f"creator is not a 'BaseCreator' object (received: {type(creator)})")
-    return creator
+    return setup_object_typed(obj_or_config=creator, cls=BaseCreator, name="BaseCreator")
