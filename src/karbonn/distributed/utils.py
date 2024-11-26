@@ -2,15 +2,23 @@ r"""Contain utility functions for distributed computing."""
 
 from __future__ import annotations
 
-__all__ = ["UnknownBackendError", "distributed_context", "is_distributed", "is_main_process"]
+__all__ = [
+    "UnknownBackendError",
+    "auto_backend",
+    "distributed_context",
+    "is_distributed",
+    "is_main_process",
+    "resolve_backend",
+]
 
 import logging
 from contextlib import contextmanager
 from typing import TYPE_CHECKING
 
-from torch.distributed import get_rank, is_available, is_initialized
+import torch
+from torch.distributed import Backend, get_rank, is_available, is_initialized
 
-from karbonn.utils.imports import is_ignite_available
+from karbonn.utils.imports import check_ignite, is_ignite_available
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -94,6 +102,7 @@ def distributed_context(backend: str) -> Generator[None]:
 
     ```
     """
+    check_ignite()
     if backend not in idist.available_backends():
         msg = f"Unknown backend '{backend}'. Available backends: {idist.available_backends()}"
         raise UnknownBackendError(msg)
@@ -110,3 +119,72 @@ def distributed_context(backend: str) -> Generator[None]:
         logger.info("Destroying the distributed process...")
         idist.finalize()
         logger.info("Distributed process destroyed")
+
+
+def auto_backend() -> str | None:
+    r"""Find the best distributed backend for the current environment.
+
+    The rules to find the best distributed backend are:
+
+        - If the NCCL backend and a GPU are available, the best
+            distributed backend is NCCL
+        - If the GLOO backend is available, the best distributed
+            backend is GLOO
+        - Otherwise, ``None`` is returned because there is no
+            best distributed backend
+
+    Returns:
+        The name of the best distributed backend.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from karbonn import distributed as dist
+    >>> dist.auto_backend()
+    'gloo'
+
+    ```
+    """
+    check_ignite()
+    if torch.cuda.is_available() and Backend.NCCL in idist.available_backends():
+        return Backend.NCCL
+    if Backend.GLOO in idist.available_backends():
+        return Backend.GLOO
+    return None
+
+
+def resolve_backend(backend: str | None) -> str | None:
+    r"""Resolve the distributed backend if ``'auto'``.
+
+    Args:
+        backend: The distributed backend. If ``'auto'``, this function
+            will find the best option for the distributed backend
+            according to the context and some rules.
+
+    Returns:
+        The distributed backend or ``None`` if it should not use a
+            distributed backend.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from karbonn import distributed as dist
+    >>> backend = dist.resolve_backend("auto")
+    >>> backend  # doctest: +SKIP
+    gloo
+
+    ```
+    """
+    if backend is None:
+        return None
+    if backend == "auto":
+        return auto_backend()
+    if backend not in idist.available_backends():
+        msg = (
+            f"Unknown distributed backend '{backend}'. "
+            f"Available backends: {idist.available_backends()}"
+        )
+        raise UnknownBackendError(msg)
+    return backend

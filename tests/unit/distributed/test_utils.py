@@ -7,9 +7,11 @@ from torch.distributed import Backend
 
 from karbonn.distributed import (
     UnknownBackendError,
+    auto_backend,
     distributed_context,
     is_distributed,
     is_main_process,
+    resolve_backend,
 )
 from karbonn.utils.imports import ignite_available, is_ignite_available
 
@@ -99,3 +101,68 @@ def test_distributed_context_backend_raise_error() -> None:
         msg = "Fake error"
         raise RuntimeError(msg)
     assert idist.backend() is None
+
+
+##################################
+#     Tests for auto_backend     #
+##################################
+
+
+@ignite_available
+@pytest.mark.parametrize("cuda_is_available", [True, False])
+@patch("karbonn.distributed.utils.idist.available_backends", lambda: ())
+def test_auto_backend_no_backend(cuda_is_available: bool) -> None:
+    with patch("torch.cuda.is_available", lambda: cuda_is_available):
+        assert auto_backend() is None
+
+
+@ignite_available
+@patch("torch.cuda.is_available", lambda: False)
+def test_auto_backend_no_gpu() -> None:
+    assert auto_backend() == Backend.GLOO
+
+
+@ignite_available
+@patch("torch.cuda.is_available", lambda: False)
+@patch("karbonn.distributed.utils.idist.available_backends", lambda: (Backend.GLOO, Backend.NCCL))
+def test_auto_backend_no_gpu_and_nccl() -> None:
+    assert auto_backend() == Backend.GLOO
+
+
+@ignite_available
+@patch("torch.cuda.is_available", lambda: True)
+@patch("karbonn.distributed.utils.idist.available_backends", lambda: (Backend.GLOO,))
+def test_auto_backend_gpu_and_no_nccl() -> None:
+    assert auto_backend() == Backend.GLOO
+
+
+@ignite_available
+@patch("torch.cuda.is_available", lambda: True)
+@patch("karbonn.distributed.utils.idist.available_backends", lambda: (Backend.GLOO, Backend.NCCL))
+def test_auto_backend_gpu_and_nccl() -> None:
+    assert auto_backend() == Backend.NCCL
+
+
+#####################################
+#     Tests for resolve_backend     #
+#####################################
+
+
+@ignite_available
+@pytest.mark.parametrize("backend", [Backend.GLOO, Backend.NCCL, None])
+@patch("karbonn.distributed.utils.idist.available_backends", lambda: (Backend.GLOO, Backend.NCCL))
+def test_resolve_backend(backend: str | None) -> None:
+    assert resolve_backend(backend) == backend
+
+
+@ignite_available
+@pytest.mark.parametrize("backend", [Backend.GLOO, Backend.NCCL])
+def test_resolve_backend_auto(backend: str) -> None:
+    with patch("karbonn.distributed.utils.auto_backend", lambda: backend):
+        assert resolve_backend("auto") == backend
+
+
+@ignite_available
+def test_resolve_backend_incorrect_backend() -> None:
+    with pytest.raises(UnknownBackendError, match="Unknown distributed backend 'incorrect'"):
+        resolve_backend("incorrect")
