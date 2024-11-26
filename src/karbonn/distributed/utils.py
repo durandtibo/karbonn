@@ -6,8 +6,10 @@ __all__ = [
     "UnknownBackendError",
     "auto_backend",
     "distributed_context",
+    "gloocontext",
     "is_distributed",
     "is_main_process",
+    "ncclcontext",
     "resolve_backend",
 ]
 
@@ -92,9 +94,9 @@ def distributed_context(backend: str) -> Generator[None]:
     ```pycon
 
     >>> import torch
-    >>> from karbonn import distributed as dist
+    >>> from karbonn.distributed import distributed_context
     >>> from ignite import distributed as idist
-    >>> with dist.distributed_context(backend="gloo"):
+    >>> with distributed_context(backend="gloo"):  # doctest: +SKIP
     ...     idist.backend()
     ...     x = torch.ones(2, 3, device=idist.device())
     ...     idist.all_reduce(x, op="SUM")
@@ -140,8 +142,8 @@ def auto_backend() -> str | None:
 
     ```pycon
 
-    >>> from karbonn import distributed as dist
-    >>> dist.auto_backend()
+    >>> from karbonn.distributed import auto_backend
+    >>> auto_backend()
     'gloo'
 
     ```
@@ -170,8 +172,8 @@ def resolve_backend(backend: str | None) -> str | None:
 
     ```pycon
 
-    >>> from karbonn import distributed as dist
-    >>> backend = dist.resolve_backend("auto")
+    >>> from karbonn.distributed import resolve_backend
+    >>> backend = resolve_backend("auto")
     >>> backend  # doctest: +SKIP
     gloo
 
@@ -188,3 +190,62 @@ def resolve_backend(backend: str | None) -> str | None:
         )
         raise UnknownBackendError(msg)
     return backend
+
+
+@contextmanager
+def gloocontext() -> Generator[None]:
+    r"""Context manager to initialize a GLOO distributed context.
+
+    Raises:
+        RuntimeError: if GLOO is not available
+
+    Example usage:
+
+    ```pycon
+
+    >>> from karbonn.distributed import gloocontext
+    >>> from ignite import distributed as idist
+    >>> with gloocontext():  # doctest: +SKIP
+    ...     idist.backend()
+    ...
+    gloo
+
+    ```
+    """
+    check_ignite()
+    if Backend.GLOO not in idist.available_backends():
+        msg = f"GLOO backend is not available. Available backends: {idist.available_backends()}"
+        raise RuntimeError(msg)
+    with distributed_context(Backend.GLOO):
+        yield
+
+
+@contextmanager
+def ncclcontext() -> Generator[None]:
+    r"""Context manager to initialize the NCCL distributed context.
+
+    Raises:
+        RuntimeError: if NCCL or CUDA is not available
+
+    Example usage:
+
+    ```pycon
+
+    >>> from karbonn.distributed import ncclcontext
+    >>> from ignite import distributed as idist
+    >>> with ncclcontext():  # doctest: +SKIP
+    ...     idist.backend()
+    ...
+    nccl
+
+    ```
+    """
+    check_ignite()
+    if Backend.NCCL not in idist.available_backends():
+        msg = f"NCCL backend is not available. Available backends: {idist.available_backends()}"
+        raise RuntimeError(msg)
+    if not torch.cuda.is_available():
+        msg = "NCCL backend requires CUDA capable devices but CUDA is not available"
+        raise RuntimeError(msg)
+    with distributed_context(Backend.NCCL), torch.cuda.device(idist.get_local_rank()):
+        yield
