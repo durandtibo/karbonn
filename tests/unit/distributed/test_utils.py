@@ -9,8 +9,10 @@ from karbonn.distributed import (
     UnknownBackendError,
     auto_backend,
     distributed_context,
+    gloocontext,
     is_distributed,
     is_main_process,
+    ncclcontext,
     resolve_backend,
 )
 from karbonn.utils.imports import ignite_available, is_ignite_available
@@ -166,3 +168,57 @@ def test_resolve_backend_auto(backend: str) -> None:
 def test_resolve_backend_incorrect_backend() -> None:
     with pytest.raises(UnknownBackendError, match="Unknown distributed backend 'incorrect'"):
         resolve_backend("incorrect")
+
+
+#################################
+#     Tests for gloocontext     #
+#################################
+
+
+@ignite_available
+@patch("karbonn.distributed.utils.idist.available_backends", lambda: (Backend.GLOO,))
+def test_gloocontext() -> None:
+    with patch("karbonn.distributed.utils.distributed_context") as mock, gloocontext():
+        mock.assert_called_once_with(Backend.GLOO)
+
+
+@ignite_available
+@patch("karbonn.distributed.utils.idist.available_backends", lambda: ())
+def test_gloocontext_no_gloo_backend() -> None:
+    with pytest.raises(RuntimeError), gloocontext():
+        pass
+
+
+#################################
+#     Tests for ncclcontext     #
+#################################
+
+
+@ignite_available
+@patch("torch.cuda.is_available", lambda: True)
+@patch("karbonn.distributed.utils.idist.available_backends", lambda: (Backend.NCCL,))
+@patch("karbonn.distributed.utils.idist.get_local_rank", lambda: 1)
+def test_ncclcontext() -> None:
+    with (
+        patch("karbonn.distributed.utils.distributed_context") as mock,
+        patch("karbonn.distributed.utils.torch.cuda.device") as device,
+        ncclcontext(),
+    ):
+        mock.assert_called_once_with(Backend.NCCL)
+        device.assert_called_once_with(1)
+
+
+@ignite_available
+@patch("torch.cuda.is_available", lambda: True)
+@patch("karbonn.distributed.utils.idist.available_backends", lambda: ())
+def test_ncclcontext_no_nccl_backend() -> None:
+    with pytest.raises(RuntimeError), ncclcontext():
+        pass
+
+
+@ignite_available
+@patch("torch.cuda.is_available", lambda: False)
+@patch("karbonn.distributed.utils.idist.available_backends", lambda: (Backend.NCCL,))
+def test_ncclcontext_cuda_is_not_available() -> None:
+    with pytest.raises(RuntimeError), ncclcontext():
+        pass
