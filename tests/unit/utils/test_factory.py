@@ -16,6 +16,7 @@ from karbonn.utils.factory import (
     is_dataset_config,
     setup_dataset,
     setup_object,
+    setup_object_typed,
     setup_optimizer,
     str_target_object,
 )
@@ -230,6 +231,55 @@ def test_setup_object(module: Module | dict) -> None:
 def test_setup_object_object() -> None:
     module = ReLU()
     assert setup_object(module) is module
+
+
+def test_setup_object_object_no_objectory() -> None:
+    with (
+        patch("karbonn.utils.imports.is_objectory_available", lambda: False),
+        pytest.raises(RuntimeError, match="'objectory' package is required but not installed."),
+    ):
+        setup_object({OBJECT_TARGET: "torch.nn.ReLU"})
+
+
+########################################
+#     Tests for setup_object_typed     #
+########################################
+
+
+@objectory_available
+@pytest.mark.parametrize("module", [ReLU(), {OBJECT_TARGET: "torch.nn.ReLU"}])
+def test_setup_object_typed(module: Module | dict) -> None:
+    assert isinstance(setup_object_typed(module, cls=torch.nn.Module), ReLU)
+
+
+@objectory_available
+@pytest.mark.parametrize("module", [ReLU(), {OBJECT_TARGET: "torch.nn.ReLU"}])
+def test_setup_object_typed_with_name(module: Module | dict) -> None:
+    assert isinstance(setup_object_typed(module, cls=torch.nn.Module, name="torch.nn.Module"), ReLU)
+
+
+@objectory_available
+def test_setup_object_typed_object() -> None:
+    module = ReLU()
+    assert setup_object_typed(module, cls=torch.nn.Module) is module
+
+
+@objectory_available
+def test_setup_object_typed_incorrect_type(caplog: pytest.LogCaptureFixture) -> None:
+    with caplog.at_level(level=logging.WARNING):
+        assert isinstance(
+            setup_object_typed({OBJECT_TARGET: "torch.device", "type": "cpu"}, cls=torch.nn.Module),
+            torch.device,
+        )
+        assert caplog.messages
+
+
+def test_setup_object_typed_object_no_objectory() -> None:
+    with (
+        patch("karbonn.utils.imports.is_objectory_available", lambda: False),
+        pytest.raises(RuntimeError, match="'objectory' package is required but not installed."),
+    ):
+        setup_object_typed({OBJECT_TARGET: "torch.nn.ReLU"}, cls=torch.nn.Module)
 
 
 #######################################

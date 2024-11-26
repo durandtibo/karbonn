@@ -10,6 +10,7 @@ __all__ = [
     "setup_dataset",
     "setup_module",
     "setup_object",
+    "setup_object_typed",
     "setup_optimizer",
     "str_target_object",
 ]
@@ -101,11 +102,11 @@ def setup_dataset(dataset: Dataset | dict) -> Dataset:
     ```
     """
     if isinstance(dataset, dict):
-        logger.info("Initializing a 'torch.nn.Module' from its configuration... ")
+        logger.info("Initializing a 'torch.utils.data.Dataset' from its configuration... ")
         check_objectory()
         dataset = objectory.factory(**dataset)
     if not isinstance(dataset, Dataset):
-        logger.warning(f"dataset is not a 'torch.nn.Module' (received: {type(dataset)})")
+        logger.warning(f"dataset is not a 'torch.utils.data.Dataset' (received: {type(dataset)})")
     return dataset
 
 
@@ -254,6 +255,9 @@ def setup_object(obj_or_config: T | dict) -> T:
     Returns:
         The instantiated object.
 
+    Raises:
+        RuntimeError: if the ``objectory`` package is not installed.
+
     Example usage:
 
     ```pycon
@@ -270,11 +274,58 @@ def setup_object(obj_or_config: T | dict) -> T:
     ```
     """
     if isinstance(obj_or_config, dict):
+        check_objectory()
         logger.info(
             f"Initializing {str_target_object(obj_or_config)} object from its configuration... "
         )
         return objectory.factory(**obj_or_config)
     return obj_or_config
+
+
+def setup_object_typed(obj_or_config: T | dict, cls: type, name: str | None = None) -> T:
+    r"""Set up an object from its configuration.
+
+    Args:
+        obj_or_config: The object or its configuration.
+        cls: The targeted class to check the instantiated object type.
+        name: An optional custom name for the targeted class.
+
+    Returns:
+        The instantiated object.
+
+    Raises:
+        RuntimeError: if the ``objectory`` package is not installed.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import torch
+    >>> from karbonn.utils.factory import setup_object_typed
+    >>> linear = setup_object_typed(
+    ...     {"_target_": "torch.nn.Linear", "in_features": 4, "out_features": 6},
+    ...     cls=torch.nn.Module,
+    ... )
+    >>> linear
+    Linear(in_features=4, out_features=6, bias=True)
+    >>> setup_object_typed(
+    ...     linear, cls=torch.nn.Module
+    ... )  # Do nothing because the module is already instantiated
+    Linear(in_features=4, out_features=6, bias=True)
+
+    ```
+    """
+    if name is None:
+        name = cls.__qualname__
+    if isinstance(obj_or_config, dict):
+        check_objectory()
+        logger.info(f"Initializing a '{name}' from its configuration... ")
+        obj = objectory.factory(**obj_or_config)
+    else:
+        obj = obj_or_config
+    if not isinstance(obj, cls):
+        logger.warning(f"object is not a '{name}' (received: {type(obj)})")
+    return obj
 
 
 def str_target_object(config: dict) -> str:
