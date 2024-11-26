@@ -7,6 +7,7 @@ __all__ = [
     "create_sequential",
     "is_dataset_config",
     "is_module_config",
+    "is_optimizer_config",
     "setup_dataset",
     "setup_module",
     "setup_object",
@@ -75,35 +76,6 @@ def is_dataset_config(config: dict) -> bool:
     return objectory.utils.is_object_config(config, Dataset)
 
 
-def setup_dataset(dataset: Dataset | dict) -> Dataset:
-    r"""Set up a ``torch.utils.data.Dataset`` object.
-
-    Args:
-        dataset: The dataset or its configuration.
-
-    Returns:
-        The instantiated ``torch.utils.data.Dataset`` object.
-
-    Example usage:
-
-    ```pycon
-
-    >>> from karbonn.utils.factory import setup_dataset
-    >>> dataset = setup_dataset(
-    ...     {
-    ...         "_target_": "karbonn.testing.dummy.DummyDataset",
-    ...         "num_examples": 10,
-    ...         "feature_size": 4,
-    ...     }
-    ... )
-    >>> dataset
-    DummyDataset(num_examples=10, feature_size=4, rng_seed=14700295087918620795)
-
-    ```
-    """
-    return setup_object_typed(obj_or_config=dataset, cls=Dataset, name="torch.utils.data.Dataset")
-
-
 def is_module_config(config: dict) -> bool:
     r"""Indicate if the input configuration is a configuration for a
     ``torch.nn.Module``.
@@ -132,6 +104,67 @@ def is_module_config(config: dict) -> bool:
     """
     check_objectory()
     return objectory.utils.is_object_config(config, Module)
+
+
+def is_optimizer_config(config: dict) -> bool:
+    r"""Indicate if the input configuration is a configuration for a
+    ``torch.optim.Optimizer``.
+
+    This function only checks if the value of the key  ``_target_``
+    is valid. It does not check the other values. If ``_target_``
+    indicates a function, the returned type hint is used to check
+    the class.
+
+    Args:
+        config: The configuration to check.
+
+    Returns:
+        ``True`` if the input configuration is a configuration
+            for a ``torch.optim.Optimizer`` object, otherwise ``False``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from torch import nn
+    >>> from karbonn.utils.factory import is_optimizer_config
+    >>> linear = nn.Linear(4, 6)
+    >>> is_optimizer_config({"_target_": "torch.optim.SGD", "params": linear.parameters()})
+    True
+
+    ```
+    """
+    check_objectory()
+    return objectory.utils.is_object_config(config, Optimizer)
+
+
+def setup_dataset(dataset: Dataset | dict) -> Dataset:
+    r"""Set up a ``torch.utils.data.Dataset`` object.
+
+    Args:
+        dataset: The dataset or its configuration.
+
+    Returns:
+        The instantiated ``torch.utils.data.Dataset`` object.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from karbonn.utils.factory import setup_dataset
+    >>> dataset = setup_dataset(
+    ...     {
+    ...         "_target_": "karbonn.testing.dummy.DummyDataset",
+    ...         "num_examples": 10,
+    ...         "feature_size": 4,
+    ...     }
+    ... )
+    >>> dataset
+    DummyDataset(num_examples=10, feature_size=4, rng_seed=14700295087918620795)
+
+    ```
+    """
+    return setup_object_typed(obj_or_config=dataset, cls=Dataset, name="torch.utils.data.Dataset")
 
 
 def setup_module(module: Module | dict) -> Module:
