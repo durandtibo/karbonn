@@ -18,7 +18,7 @@ from karbonn.distributed import (
 from karbonn.utils.imports import ignite_available, is_ignite_available
 
 if is_ignite_available():  # pragma: no cover
-    from ignite import distributed as idist
+    pass
 
 ####################################
 #     Tests for is_distributed     #
@@ -92,17 +92,29 @@ def test_distributed_context_backend() -> None:
 
 @ignite_available
 def test_distributed_context_backend_incorrect() -> None:
-    with pytest.raises(UnknownBackendError), distributed_context(backend="incorrect backend"):
+    with (
+        pytest.raises(UnknownBackendError, match="Unknown backend"),
+        distributed_context(backend="incorrect backend"),
+    ):
         pass
 
 
 @ignite_available
+@patch("karbonn.distributed.utils.idist.available_backends", lambda: (Backend.GLOO,))
 def test_distributed_context_backend_raise_error() -> None:
     # Test if the `finalize` function is called to release the resources.
-    with pytest.raises(RuntimeError), distributed_context(backend=Backend.GLOO):  # noqa: PT012
+    with (  # noqa: PT012
+        pytest.raises(RuntimeError, match="Fake error"),
+        patch("karbonn.distributed.utils.idist.initialize") as initialize_mock,
+        patch("karbonn.distributed.utils.idist.barrier") as barrier_mock,
+        patch("karbonn.distributed.utils.idist.finalize") as finalize_mock,
+        distributed_context(Backend.GLOO),
+    ):
         msg = "Fake error"
         raise RuntimeError(msg)
-    assert idist.backend() is None
+    initialize_mock.assert_called_once_with(Backend.GLOO, init_method="env://")
+    barrier_mock.assert_called_once_with()
+    finalize_mock.assert_called_once_with()
 
 
 ##################################
