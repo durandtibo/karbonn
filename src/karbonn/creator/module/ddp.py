@@ -8,7 +8,7 @@ __all__ = ["to_ddp"]
 import logging
 from typing import TYPE_CHECKING
 
-from torch import distributed as dist
+from torch.distributed import Backend
 from torch.nn.parallel import DistributedDataParallel
 
 from karbonn.utils.imports import check_ignite, is_ignite_available
@@ -58,11 +58,11 @@ def to_ddp(module: nn.Module, ddp_kwargs: dict | None = None) -> nn.Module:
     ddp_kwargs = ddp_kwargs or {}
     check_ignite()
     backend = idist.backend()
-    if backend == dist.Backend.NCCL:
+    if backend == Backend.NCCL:
         lrank = idist.get_local_rank()
         logger.info(f"Applying 'DistributedDataParallel' on module, device id: {lrank}")
         return DistributedDataParallel(module, device_ids=[lrank], **ddp_kwargs)
-    if backend == dist.Backend.GLOO:
+    if backend == Backend.GLOO:
         logger.info("Applying 'DistributedDataParallel' on module")
         return DistributedDataParallel(module, **ddp_kwargs)
     return module
