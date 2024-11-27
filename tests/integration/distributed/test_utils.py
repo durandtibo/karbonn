@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import pytest
 from torch.distributed import Backend
 
 from karbonn.distributed import (
@@ -61,6 +62,17 @@ def test_distributed_context_gloo() -> None:
 def test_distributed_context_nccl() -> None:
     with distributed_context(Backend.NCCL):
         assert idist.backend() == Backend.NCCL
+    assert idist.backend() is None
+
+
+@ignite_available
+@distributed_available
+@gloo_available
+def test_distributed_context_backend_raise_error() -> None:
+    # Test if the `finalize` function is called to release the resources.
+    with pytest.raises(RuntimeError), distributed_context(backend=Backend.GLOO):  # noqa: PT012
+        msg = "Fake error"
+        raise RuntimeError(msg)
     assert idist.backend() is None
 
 
