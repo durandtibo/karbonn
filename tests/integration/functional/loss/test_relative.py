@@ -45,7 +45,7 @@ REDUCTIONS = ["mean", "sum"]
 
 @pytest.fixture
 def module() -> nn.Module:
-    return nn.Sequential(nn.Linear(10, 32), nn.ReLU(), nn.Linear(32, 8))
+    return nn.Sequential(nn.Linear(10, 32), nn.ReLU(), nn.Linear(32, 8), nn.Softplus())
 
 
 ###################################
