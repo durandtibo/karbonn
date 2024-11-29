@@ -14,7 +14,7 @@ SHAPES = [(2,), (2, 3), (2, 3, 4), (2, 3, 4, 5)]
 ###################################################
 
 
-@pytest.mark.parametrize("reduction", ["none", "mean", "sum"])
+@pytest.mark.parametrize("reduction", ["none", "mean", "sum", "batchmean"])
 def test_check_loss_reduction_strategy_valid(reduction: str) -> None:
     check_loss_reduction_strategy(reduction)
 
@@ -67,6 +67,27 @@ def test_reduce_loss_sum_shape(device: str, shape: tuple[int, ...]) -> None:
     device = torch.device(device)
     assert objects_are_equal(
         reduce_loss(torch.zeros(*shape, device=device), reduction="sum"),
+        torch.tensor(0.0, device=device),
+    )
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+def test_reduce_loss_batchmean(device: str) -> None:
+    device = torch.device(device)
+    assert objects_are_equal(
+        reduce_loss(
+            torch.tensor([[3.0, 2.0, 1.0], [1.0, 0.0, -1.0]], device=device), reduction="batchmean"
+        ),
+        torch.tensor(3.0, device=device),
+    )
+
+
+@pytest.mark.parametrize("device", get_available_devices())
+@pytest.mark.parametrize("shape", SHAPES)
+def test_reduce_loss_batchmean_shape(device: str, shape: tuple[int, ...]) -> None:
+    device = torch.device(device)
+    assert objects_are_equal(
+        reduce_loss(torch.zeros(*shape, device=device), reduction="batchmean"),
         torch.tensor(0.0, device=device),
     )
 
