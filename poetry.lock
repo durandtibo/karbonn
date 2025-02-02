@@ -2495,4 +2495,4 @@ all = ["numpy", "numpy", "objectory", "pytorch-ignite", "pytorch-ignite", "sciki
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<3.14"
-content-hash = "d93e4ec923ed18120f7a7348bb1708929828ea457bb1d6666795101cb16db589"
+content-hash = "24be678a1cca56addbef91657d9c6cc58608fb2c01bed54f9076aa3326136df0"
