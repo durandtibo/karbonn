@@ -1,3 +1,4 @@
+# noqa: A005
 r"""Contain functional implementation of some activation layers."""
 
 from __future__ import annotations
