@@ -24,7 +24,9 @@ __all__ = [
 from karbonn.utils.tracker.average import AverageTracker
 from karbonn.utils.tracker.average import AverageTracker as Average
 from karbonn.utils.tracker.base import BaseTracker
-from karbonn.utils.tracker.confmat import BaseConfusionMatrixTracker
+from karbonn.utils.tracker.confmat import (
+    BaseConfusionMatrixTracker,
+)
 from karbonn.utils.tracker.confmat import BinaryConfusionMatrixTracker
 from karbonn.utils.tracker.confmat import (
     BinaryConfusionMatrixTracker as BinaryConfusionMatrix,

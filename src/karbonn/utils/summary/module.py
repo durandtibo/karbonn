@@ -242,7 +242,7 @@ def parse_batch_dtype(
 
 @overload
 def parse_batch_dtype(
-    batch: Mapping[str, torch.Tensor]
+    batch: Mapping[str, torch.Tensor],
 ) -> dict[str, torch.dtype | None]: ...  # pragma: no cover
 
 
@@ -298,7 +298,7 @@ def parse_batch_shape(
 
 @overload
 def parse_batch_shape(
-    batch: Mapping[str, torch.Tensor]
+    batch: Mapping[str, torch.Tensor],
 ) -> dict[str, torch.Size | None]: ...  # pragma: no cover
 
 
@@ -575,7 +575,7 @@ def get_num_learnable_parameters(summary: dict[str, ModuleSummary]) -> list[int]
 
 
 def get_in_dtype(
-    summary: dict[str, ModuleSummary]
+    summary: dict[str, ModuleSummary],
 ) -> list[torch.dtype | Sequence[torch.dtype] | Mapping[str, torch.dtype]]:
     r"""Return the input tensors data type for each layer in the summary.
 
@@ -589,7 +589,7 @@ def get_in_dtype(
 
 
 def get_out_dtype(
-    summary: dict[str, ModuleSummary]
+    summary: dict[str, ModuleSummary],
 ) -> list[torch.dtype | Sequence[torch.dtype] | Mapping[str, torch.dtype]]:
     r"""Return the output tensors data type for each layer in the
     summary.
@@ -604,7 +604,7 @@ def get_out_dtype(
 
 
 def get_in_size(
-    summary: dict[str, ModuleSummary]
+    summary: dict[str, ModuleSummary],
 ) -> list[torch.Size | Sequence[torch.Size] | Mapping[str, torch.Size]]:
     r"""Return the input tensors shapes for each layer in the summary.
 
@@ -618,7 +618,7 @@ def get_in_size(
 
 
 def get_out_size(
-    summary: dict[str, ModuleSummary]
+    summary: dict[str, ModuleSummary],
 ) -> list[torch.Size | Sequence[torch.Size] | Mapping[str, torch.Size]]:
     r"""Return the output tensors shapes for each layer in the summary.
 
