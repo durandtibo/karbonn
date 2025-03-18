@@ -1,4 +1,3 @@
-# noqa: A005
 r"""Contain activation layers using mathematical functions."""
 
 from __future__ import annotations
