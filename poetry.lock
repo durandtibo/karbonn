@@ -1663,15 +1663,15 @@ six = ">=1.5"
 
 [[package]]
 name = "pytorch-ignite"
-version = "0.5.1"
+version = "0.5.2"
 description = "A lightweight library to help with training neural networks in PyTorch."
-optional = true
+optional = false
 python-versions = "*"
 groups = ["main"]
 markers = "extra == \"all\""
 files = [
-    {file = "pytorch_ignite-0.5.1-py3-none-any.whl", hash = "sha256:08c289f59c4185448cf0d97c0ef35f409f640fe1e7355f8fa13e504dcbe47b6d"},
-    {file = "pytorch_ignite-0.5.1.tar.gz", hash = "sha256:f41050bb0f85da6a4e5483cbc584ddf300382f537cd2f31cbb05ad62b8a6682e"},
+    {file = "pytorch_ignite-0.5.2-py3-none-any.whl", hash = "sha256:ae0843e7b45416041cc57700dcbdfae30ae6432f2dc5bc20dfbfe1dae3414c91"},
+    {file = "pytorch_ignite-0.5.2.tar.gz", hash = "sha256:63bdbafe3fb76bf243e4c7fa4b71c89a652fece6c4c2f6e3c5b448ac74447d98"},
 ]
 
 [package.dependencies]
@@ -2406,7 +2406,7 @@ test = ["big-O", "importlib-resources ; python_version < \"3.9\"", "jaraco.funct
 type = ["pytest-mypy"]
 
 [extras]
-all = ["numpy", "numpy", "objectory", "pytorch-ignite", "pytorch-ignite", "scikit-learn", "tabulate"]
+all = ["numpy", "numpy", "objectory", "pytorch-ignite", "scikit-learn", "tabulate"]
 
 [metadata]
 lock-version = "2.1"
