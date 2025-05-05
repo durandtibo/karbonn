@@ -153,7 +153,7 @@ jobs:
           pip install karbonn
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'coola'
           package-version: ${{ matrix.coola-version }}
@@ -189,7 +189,7 @@ jobs:
           pip install karbonn
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'minrecord'
           package-version: ${{ matrix.minrecord-version }}
@@ -233,7 +233,7 @@ jobs:
           pip install karbonn
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'torch'
           package-version: ${{ matrix.torch-version }}
@@ -283,7 +283,7 @@ jobs:
           pip install karbonn
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'numpy'
           package-version: ${{ matrix.numpy-version }}
@@ -319,7 +319,7 @@ jobs:
           pip install karbonn
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'objectory'
           package-version: ${{ matrix.objectory-version }}
@@ -355,7 +355,7 @@ jobs:
           pip install karbonn
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'pytorch-ignite'
           package-version: ${{ matrix.pytorch-ignite-version }}
@@ -391,7 +391,7 @@ jobs:
           pip install karbonn
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'scikit-learn'
           package-version: ${{ matrix.scikit-learn-version }}
