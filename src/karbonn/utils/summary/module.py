@@ -21,7 +21,6 @@ __all__ = [
 ]
 
 from collections.abc import Mapping, Sequence
-from itertools import starmap
 from typing import TYPE_CHECKING, Any, overload
 
 import torch
@@ -680,7 +679,7 @@ def merge_size_dtype(
         if isinstance(dtype, torch.dtype):
             output.append(to_str(size, dtype))
         elif isinstance(dtype, Sequence):
-            output.append(list(starmap(to_str, zip(size, dtype))))
+            output.append(list(map(to_str, size, dtype)))
         elif isinstance(dtype, Mapping):
             output.append({k: to_str(s, dtype[k]) for k, s in size.items()})
         else:
