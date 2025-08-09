@@ -52,8 +52,7 @@ class BaseConfusionMatrixTracker:
 
     def __str__(self) -> str:
         return (
-            f"{self.__class__.__qualname__}(num_classes={self.num_classes:,}, "
-            f"count={self.count:,})"
+            f"{self.__class__.__qualname__}(num_classes={self.num_classes:,}, count={self.count:,})"
         )
 
     @property
@@ -1052,8 +1051,7 @@ class BinaryConfusionMatrixTracker(BaseConfusionMatrixTracker):
         """
         if self.count == 0:
             msg = (
-                "It is not possible to compute the precision because the confusion "
-                "matrix is empty"
+                "It is not possible to compute the precision because the confusion matrix is empty"
             )
             raise EmptyTrackerError(msg)
         if self.predictive_positive == 0:

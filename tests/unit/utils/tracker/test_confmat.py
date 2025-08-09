@@ -405,8 +405,7 @@ def test_binary_confusion_matrix_tracker_f_beta_score_empty() -> None:
     with pytest.raises(
         EmptyTrackerError,
         match=(
-            "It is not possible to compute the F-beta score because "
-            "the confusion matrix is empty"
+            "It is not possible to compute the F-beta score because the confusion matrix is empty"
         ),
     ):
         BinaryConfusionMatrixTracker().f_beta_score()
@@ -462,8 +461,7 @@ def test_binary_confusion_matrix_tracker_jaccard_index_empty() -> None:
     with pytest.raises(
         EmptyTrackerError,
         match=(
-            "It is not possible to compute the Jaccard index because "
-            "the confusion matrix is empty"
+            "It is not possible to compute the Jaccard index because the confusion matrix is empty"
         ),
     ):
         BinaryConfusionMatrixTracker().jaccard_index()
@@ -1135,8 +1133,7 @@ def test_multiclass_confusion_matrix_f_beta_score_empty() -> None:
     with pytest.raises(
         EmptyTrackerError,
         match=(
-            "It is not possible to compute the F-beta score because "
-            "the confusion matrix is empty"
+            "It is not possible to compute the F-beta score because the confusion matrix is empty"
         ),
     ):
         MulticlassConfusionMatrixTracker.from_num_classes(3).f_beta_score()
@@ -1173,8 +1170,7 @@ def test_multiclass_confusion_matrix_macro_f_beta_score_empty() -> None:
     with pytest.raises(
         EmptyTrackerError,
         match=(
-            "It is not possible to compute the F-beta score because "
-            "the confusion matrix is empty"
+            "It is not possible to compute the F-beta score because the confusion matrix is empty"
         ),
     ):
         MulticlassConfusionMatrixTracker.from_num_classes(3).macro_f_beta_score()
@@ -1255,8 +1251,7 @@ def test_multiclass_confusion_matrix_weighted_f_beta_score_empty() -> None:
     with pytest.raises(
         EmptyTrackerError,
         match=(
-            "It is not possible to compute the F-beta score because "
-            "the confusion matrix is empty"
+            "It is not possible to compute the F-beta score because the confusion matrix is empty"
         ),
     ):
         MulticlassConfusionMatrixTracker.from_num_classes(3).weighted_f_beta_score()
@@ -1405,8 +1400,7 @@ def test_multiclass_confusion_matrix_micro_recall_empty() -> None:
     with pytest.raises(
         EmptyTrackerError,
         match=(
-            "It is not possible to compute the micro recall because "
-            "the confusion matrix is empty"
+            "It is not possible to compute the micro recall because the confusion matrix is empty"
         ),
     ):
         MulticlassConfusionMatrixTracker.from_num_classes(3).micro_recall()

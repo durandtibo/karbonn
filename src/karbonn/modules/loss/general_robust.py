@@ -87,8 +87,7 @@ class GeneralRobustRegressionLoss(nn.Module):
 
     def extra_repr(self) -> str:
         return (
-            f"alpha={self._alpha}, scale={self._scale}, max={self._max}, "
-            f"reduction={self.reduction}"
+            f"alpha={self._alpha}, scale={self._scale}, max={self._max}, reduction={self.reduction}"
         )
 
     def forward(self, prediction: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
