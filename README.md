@@ -10,22 +10,15 @@
     <a href="https://github.com/durandtibo/karbonn/actions">
         <img alt="Nightly Package Tests" src="https://github.com/durandtibo/karbonn/workflows/Nightly%20Package%20Tests/badge.svg">
     </a>
+    <a href="https://codecov.io/gh/durandtibo/karbonn">
+        <img alt="Codecov" src="https://codecov.io/gh/durandtibo/karbonn/branch/main/graph/badge.svg">
+    </a>
     <br/>
     <a href="https://durandtibo.github.io/karbonn/">
         <img alt="Documentation" src="https://github.com/durandtibo/karbonn/workflows/Documentation%20(stable)/badge.svg">
     </a>
     <a href="https://durandtibo.github.io/karbonn/">
         <img alt="Documentation" src="https://github.com/durandtibo/karbonn/workflows/Documentation%20(unstable)/badge.svg">
-    </a>
-    <br/>
-    <a href="https://codecov.io/gh/durandtibo/karbonn">
-        <img alt="Codecov" src="https://codecov.io/gh/durandtibo/karbonn/branch/main/graph/badge.svg">
-    </a>
-    <a href="https://codeclimate.com/github/durandtibo/karbonn/maintainability">
-        <img src="https://api.codeclimate.com/v1/badges/1d66f4218d5da81c2ed0/maintainability" />
-    </a>
-    <a href="https://codeclimate.com/github/durandtibo/karbonn/test_coverage">
-        <img src="https://api.codeclimate.com/v1/badges/1d66f4218d5da81c2ed0/test_coverage" />
     </a>
     <br/>
     <a href="https://github.com/psf/black">
@@ -58,6 +51,7 @@
         <img  alt="Monthly downloads" src="https://static.pepy.tech/badge/karbonn/month">
     </a>
     <br/>
+
 </p>
 
 A library of PyTorch modules
@@ -86,7 +80,7 @@ The following is the corresponding `karbonn` versions and tested dependencies.
 
 | `karbonn` | `coola`        | `minrecord`    | `numpy`<sup>*</sup> | `objectory`<sup>*</sup> | `pytorch-ignite`<sup>*</sup> | `tabulate`<sup>*</sup> | `torch`       | `python`      |
 |-----------|----------------|----------------|---------------------|-------------------------|------------------------------|------------------------|---------------|---------------|
-| `main`    | `>=0.8.6,<1.0` | `>=0.1,<1.0`   | `>=1.22,<3.0`       | `>=0.2,<1.0`            | `>=0.4.11,<1.0`              | `>=0.9,<0.10`          | `>=2.0,<3.0`  | `>=3.9,<3.14` |
+| `main`    | `>=0.8.6,<1.0` | `>=0.1,<1.0`   | `>=1.24,<3.0`       | `>=0.2,<1.0`            | `>=0.4.11,<1.0`              | `>=0.9,<0.10`          | `>=2.0,<3.0`  | `>=3.9,<3.14` |
 | `0.0.3`   | `>=0.8.2,<1.0` | `>=0.0.2,<1.0` | `>=1.22,<3.0`       | `>=0.1,<1.0`            | `>=0.4.11,<1.0`              | `>=0.9,<0.10`          | `>=1.12,<3.0` | `>=3.9,<3.13` |
 | `0.0.2`   | `>=0.8.2,<1.0` | `>=0.0.2,<1.0` | `>=1.22,<3.0`       | `>=0.1,<1.0`            | `>=0.4.11,<1.0`              | `>=0.9,<0.10`          | `>=1.12,<3.0` | `>=3.9,<3.13` |
 | `0.0.1`   | `>=0.5,<1.0`   |                | `>=1.22,<2.0`       | `>=0.1,<1.0`            |                              | `>=0.9,<0.10`          | `>=1.10,<3.0` | `>=3.9,<3.13` |

@@ -47,7 +47,6 @@ class MyModule(nn.Module):
 
 
 class MyModuleDict(nn.Module):
-
     def __init__(self, in_features: int = 4, out_features: int = 6) -> None:
         super().__init__()
         self.linear = nn.Linear(in_features, out_features)
