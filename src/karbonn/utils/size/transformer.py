@@ -14,7 +14,7 @@ from karbonn.utils.size.base import BaseSizeFinder, SizeNotFoundError
 from karbonn.utils.size.functional import find_in_features, find_out_features
 
 
-class TransformerLayerSizeFinder(BaseSizeFinder[nn.Module]):
+class TransformerLayerSizeFinder(BaseSizeFinder[nn.Module]):  # noqa: PLW1641
     r"""Implement a size finder for layers like
     ``torch.nn.TransformerEncoderLayer`` or
     ``torch.nn.TransformerDecoderLayer``.
@@ -63,7 +63,7 @@ class TransformerLayerSizeFinder(BaseSizeFinder[nn.Module]):
         return [find_out_features(module.self_attn)[0]]
 
 
-class TransformerSizeFinder(BaseSizeFinder[nn.Module]):
+class TransformerSizeFinder(BaseSizeFinder[nn.Module]):  # noqa: PLW1641
     r"""Implement a size finder for layers like
     ``torch.nn.TransformerEncoder`` or ``torch.nn.TransformerDecoder``.
 

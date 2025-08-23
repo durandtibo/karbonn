@@ -12,7 +12,7 @@ from karbonn.utils.size.base import BaseSizeFinder, SizeNotFoundError
 from karbonn.utils.size.functional import find_in_features, find_out_features
 
 
-class SequentialSizeFinder(BaseSizeFinder[nn.Sequential]):
+class SequentialSizeFinder(BaseSizeFinder[nn.Sequential]):  # noqa: PLW1641
     r"""Implement a size finder for ``torch.nn.Sequential`` layer.
 
     This module size finder iterates over the child modules until to

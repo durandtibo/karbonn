@@ -11,7 +11,7 @@ from torch import nn
 from karbonn.utils.size.base import BaseSizeFinder, SizeNotFoundError
 
 
-class MultiheadAttentionSizeFinder(BaseSizeFinder[nn.Module]):
+class MultiheadAttentionSizeFinder(BaseSizeFinder[nn.Module]):  # noqa: PLW1641
     r"""Implement a size finder for ``torch.nn.MultiheadAttention`` layer
     or similar layers.
 

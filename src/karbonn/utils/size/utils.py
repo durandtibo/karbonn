@@ -57,8 +57,8 @@ def get_karbonn_size_finders() -> dict[type[nn.Module], BaseSizeFinder]:
     ```
     """
     # Local import to avoid cyclic dependencies
-    from karbonn.modules import ExU
-    from karbonn.utils import size as size_finders
+    from karbonn.modules import ExU  # noqa: PLC0415
+    from karbonn.utils import size as size_finders  # noqa: PLC0415
 
     return {ExU: size_finders.LinearSizeFinder()}
 
@@ -82,7 +82,7 @@ def get_torch_size_finders() -> dict[type[nn.Module], BaseSizeFinder]:
     ```
     """
     # Local import to avoid cyclic dependencies
-    from karbonn.utils import size
+    from karbonn.utils import size  # noqa: PLC0415
 
     return {
         nn.Module: size.UnknownSizeFinder(),

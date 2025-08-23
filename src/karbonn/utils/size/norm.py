@@ -12,7 +12,7 @@ from torch import nn
 from karbonn.utils.size.base import BaseSizeFinder, SizeNotFoundError
 
 
-class BatchNormSizeFinder(BaseSizeFinder[nn.Module]):
+class BatchNormSizeFinder(BaseSizeFinder[nn.Module]):  # noqa: PLW1641
     r"""Implement a size finder for BatchNorm layers like
     ``torch.nn.BatchNorm1d``, ``torch.nn.BatchNorm2d``,
     ``torch.nn.BatchNorm3d``, or ``torch.nn.SyncBatchNorm``.
@@ -62,7 +62,7 @@ class BatchNormSizeFinder(BaseSizeFinder[nn.Module]):
         return [module.num_features]
 
 
-class GroupNormSizeFinder(BaseSizeFinder[nn.Module]):
+class GroupNormSizeFinder(BaseSizeFinder[nn.Module]):  # noqa: PLW1641
     r"""Implement a size finder for Group Normalization layers like
     ``torch.nn.GroupNorm``.
 

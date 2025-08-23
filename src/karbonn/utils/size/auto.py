@@ -165,7 +165,7 @@ def register_size_finders() -> None:
     ```
     """
     # Local import to avoid cyclic dependency
-    from karbonn.utils.size.utils import get_size_finders
+    from karbonn.utils.size.utils import get_size_finders  # noqa: PLC0415
 
     for module_type, finder in get_size_finders().items():
         if not AutoSizeFinder.has_size_finder(module_type):  # pragma: no cover

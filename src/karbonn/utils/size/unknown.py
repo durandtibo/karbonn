@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from torch import nn
 
 
-class UnknownSizeFinder(BaseSizeFinder):
+class UnknownSizeFinder(BaseSizeFinder):  # noqa: PLW1641
     r"""Implement a size finder for the modules where the input and
     output feature sizes are unknown.
 
