@@ -11,7 +11,7 @@ from torch import nn
 from karbonn.utils.size.base import BaseSizeFinder, SizeNotFoundError
 
 
-class ConvolutionSizeFinder(BaseSizeFinder[nn.Module]):
+class ConvolutionSizeFinder(BaseSizeFinder[nn.Module]):  # noqa: PLW1641
     r"""Implement a size finder for convolution layers like
     ``torch.nn.ConvNd`` and ``torch.nn.ConvTransposeNd``.
 

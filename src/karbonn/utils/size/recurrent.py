@@ -11,7 +11,7 @@ from torch import nn
 from karbonn.utils.size.base import BaseSizeFinder, SizeNotFoundError
 
 
-class RecurrentSizeFinder(BaseSizeFinder[nn.Module]):
+class RecurrentSizeFinder(BaseSizeFinder[nn.Module]):  # noqa: PLW1641
     r"""Implement a size finder for recurrent layers like
     ``torch.nn.RNN``, ``torch.nn.GRU``, and ``torch.nn.LSTM``.
 
