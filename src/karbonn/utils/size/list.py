@@ -14,7 +14,7 @@ from karbonn.utils.size.base import BaseSizeFinder, SizeNotFoundError
 from karbonn.utils.size.functional import find_in_features, find_out_features
 
 
-class ModuleListSizeFinder(BaseSizeFinder[nn.ModuleList]):
+class ModuleListSizeFinder(BaseSizeFinder[nn.ModuleList]):  # noqa: PLW1641
     r"""Implement a size finder for ``torch.nn.ModuleList`` layer or
     similar layers.
 

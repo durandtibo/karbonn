@@ -11,7 +11,7 @@ from torch import nn
 from karbonn.utils.size.base import BaseSizeFinder, SizeNotFoundError
 
 
-class EmbeddingSizeFinder(BaseSizeFinder[nn.Module]):
+class EmbeddingSizeFinder(BaseSizeFinder[nn.Module]):  # noqa: PLW1641
     r"""Implement a size finder for embedding layers like
     ``torch.nn.Embedding``.
 

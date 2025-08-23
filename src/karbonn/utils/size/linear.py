@@ -3,7 +3,7 @@ layers."""
 
 from __future__ import annotations
 
-__all__ = ["LinearSizeFinder"]
+__all__ = ["BilinearSizeFinder", "LinearSizeFinder"]
 
 
 from torch import nn
@@ -11,7 +11,7 @@ from torch import nn
 from karbonn.utils.size.base import BaseSizeFinder, SizeNotFoundError
 
 
-class LinearSizeFinder(BaseSizeFinder[nn.Module]):
+class LinearSizeFinder(BaseSizeFinder[nn.Module]):  # noqa: PLW1641
     r"""Implement a size finder for ``torch.nn.Linear`` layer or similar
     layers.
 
@@ -60,7 +60,7 @@ class LinearSizeFinder(BaseSizeFinder[nn.Module]):
         return [module.out_features]
 
 
-class BilinearSizeFinder(BaseSizeFinder):
+class BilinearSizeFinder(BaseSizeFinder):  # noqa: PLW1641
     r"""Implement a size finder for ``torch.nn.Bilinear`` layer or
     similar layers.
 

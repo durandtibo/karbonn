@@ -301,7 +301,7 @@ def setup_state(state: BaseState | dict) -> BaseState:
     return state
 
 
-class StateEqualityComparator(BaseEqualityComparator[BaseState]):
+class StateEqualityComparator(BaseEqualityComparator[BaseState]):  # noqa: PLW1641
     r"""Implement an equality comparator for ``BaseState`` objects."""
 
     def __init__(self) -> None:
