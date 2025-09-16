@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 T = TypeVar("T")
 
 
-class BaseCreator(Generic[T], ABC, metaclass=AbstractFactory):
+class BaseCreator(ABC, Generic[T], metaclass=AbstractFactory):
     r"""Define the base class to implement an object creator.
 
     Example usage:
