@@ -40,7 +40,7 @@ jobs:
           make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.4.0
+        uses: durandtibo/pip-install-package-action@v0.4.1
         with:
           package-name: 'coola'
           package-version: ${{ matrix.coola-version }}
@@ -88,7 +88,7 @@ jobs:
           make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.4.0
+        uses: durandtibo/pip-install-package-action@v0.4.1
         with:
           package-name: 'minrecord'
           package-version: ${{ matrix.minrecord-version }}
@@ -147,7 +147,7 @@ jobs:
           make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.4.0
+        uses: durandtibo/pip-install-package-action@v0.4.1
         with:
           package-name: 'torch'
           package-version: ${{ matrix.torch-version }}
@@ -213,7 +213,7 @@ jobs:
           make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.4.0
+        uses: durandtibo/pip-install-package-action@v0.4.1
         with:
           package-name: 'numpy'
           package-version: ${{ matrix.numpy-version }}
@@ -261,7 +261,7 @@ jobs:
           make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.4.0
+        uses: durandtibo/pip-install-package-action@v0.4.1
         with:
           package-name: 'objectory'
           package-version: ${{ matrix.objectory-version }}
@@ -309,7 +309,7 @@ jobs:
           make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.4.0
+        uses: durandtibo/pip-install-package-action@v0.4.1
         with:
           package-name: 'pytorch-ignite'
           package-version: ${{ matrix.pytorch-ignite-version }}
@@ -364,7 +364,7 @@ jobs:
           make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.4.0
+        uses: durandtibo/pip-install-package-action@v0.4.1
         with:
           package-name: 'scikit-learn'
           package-version: ${{ matrix.scikit-learn-version }}
