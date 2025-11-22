@@ -109,7 +109,7 @@ def test_moving_average_smoothed_average() -> None:
 
 def test_moving_average_smoothed_average_empty() -> None:
     tracker = MovingAverage()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.smoothed_average()
 
 
@@ -240,7 +240,7 @@ def test_exponential_moving_average_smoothed_average() -> None:
 
 def test_exponential_moving_average_smoothed_average_empty() -> None:
     tracker = ExponentialMovingAverage()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.smoothed_average()
 
 

@@ -50,7 +50,7 @@ def test_sequential_size_finder_find_in_features_no_sizes() -> None:
     module = nn.ModuleList([nn.Identity(), nn.ReLU()])
     with pytest.raises(
         SizeNotFoundError,
-        match="cannot find the input feature sizes because the indexed modules are not supported",
+        match=r"cannot find the input feature sizes because the indexed modules are not supported",
     ):
         size_finder.find_in_features(module)
 
@@ -79,7 +79,7 @@ def test_sequential_size_finder_find_out_features_no_sizes() -> None:
     module = nn.ModuleList([nn.Identity(), nn.ReLU()])
     with pytest.raises(
         SizeNotFoundError,
-        match="cannot find the output feature sizes because the indexed modules are not supported",
+        match=r"cannot find the output feature sizes because the indexed modules are not supported",
     ):
         size_finder.find_out_features(module)
 

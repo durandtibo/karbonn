@@ -224,7 +224,7 @@ def test_accuracy_forward_multiple_batches_with_reset(device: str, mode: bool) -
 
 
 def test_accuracy_value_empty() -> None:
-    with pytest.raises(EmptyMetricError, match="AccuracyState is empty"):
+    with pytest.raises(EmptyMetricError, match=r"AccuracyState is empty"):
         Accuracy().value()
 
 
@@ -590,7 +590,7 @@ def test_top_k_accuracy_forward_top_1_multiple_batches_with_reset(device: str, m
 
 
 def test_top_k_accuracy_value_empty() -> None:
-    with pytest.raises(EmptyMetricError, match="AccuracyState is empty"):
+    with pytest.raises(EmptyMetricError, match=r"AccuracyState is empty"):
         TopKAccuracy().value()
 
 

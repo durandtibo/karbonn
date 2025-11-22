@@ -63,7 +63,7 @@ def test_batch_norm_size_finder_find_in_features(module: ModuleSizes) -> None:
 def test_batch_norm_size_finder_find_in_features_incorrect() -> None:
     size_finder = BatchNormSizeFinder()
     module = nn.Identity()
-    with pytest.raises(SizeNotFoundError, match="module .* does not have attribute num_features"):
+    with pytest.raises(SizeNotFoundError, match=r"module .* does not have attribute num_features"):
         size_finder.find_in_features(module)
 
 
@@ -75,7 +75,7 @@ def test_batch_norm_size_finder_find_out_features(module: ModuleSizes) -> None:
 def test_batch_norm_size_finder_find_out_features_incorrect() -> None:
     size_finder = BatchNormSizeFinder()
     module = nn.Identity()
-    with pytest.raises(SizeNotFoundError, match="module .* does not have attribute num_features"):
+    with pytest.raises(SizeNotFoundError, match=r"module .* does not have attribute num_features"):
         size_finder.find_out_features(module)
 
 
@@ -108,7 +108,7 @@ def test_group_norm_size_finder_find_in_features(module: ModuleSizes) -> None:
 def test_group_norm_size_finder_find_in_features_incorrect() -> None:
     size_finder = GroupNormSizeFinder()
     module = nn.Identity()
-    with pytest.raises(SizeNotFoundError, match="module .* does not have attribute num_channels"):
+    with pytest.raises(SizeNotFoundError, match=r"module .* does not have attribute num_channels"):
         size_finder.find_in_features(module)
 
 
@@ -120,5 +120,5 @@ def test_group_norm_size_finder_find_out_features(module: ModuleSizes) -> None:
 def test_group_norm_size_finder_find_out_features_incorrect() -> None:
     size_finder = GroupNormSizeFinder()
     module = nn.Identity()
-    with pytest.raises(SizeNotFoundError, match="module .* does not have attribute num_channels"):
+    with pytest.raises(SizeNotFoundError, match=r"module .* does not have attribute num_channels"):
         size_finder.find_out_features(module)

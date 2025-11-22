@@ -97,7 +97,7 @@ def test_scalar_tracker_average() -> None:
 
 def test_scalar_tracker_average_empty() -> None:
     tracker = ScalarTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.average()
 
 
@@ -238,7 +238,7 @@ def test_scalar_tracker_max() -> None:
 
 def test_scalar_tracker_max_empty() -> None:
     tracker = ScalarTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.max()
 
 
@@ -253,7 +253,7 @@ def test_scalar_tracker_median() -> None:
 
 def test_scalar_tracker_median_empty() -> None:
     tracker = ScalarTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.median()
 
 
@@ -309,7 +309,7 @@ def test_scalar_tracker_min() -> None:
 
 def test_scalar_tracker_min_empty() -> None:
     tracker = ScalarTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.min()
 
 
@@ -360,7 +360,7 @@ def test_scalar_tracker_std() -> None:
 
 def test_scalar_tracker_std_empty() -> None:
     tracker = ScalarTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.std()
 
 
@@ -375,7 +375,7 @@ def test_scalar_tracker_sum() -> None:
 
 def test_scalar_tracker_sum_empty() -> None:
     tracker = ScalarTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.sum()
 
 

@@ -65,7 +65,7 @@ def test_average_tracker_average() -> None:
 
 def test_average_tracker_average_empty() -> None:
     tracker = AverageTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.average()
 
 
@@ -152,7 +152,7 @@ def test_average_tracker_sum() -> None:
 
 def test_average_tracker_sum_empty() -> None:
     tracker = AverageTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.sum()
 
 

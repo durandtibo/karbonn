@@ -233,7 +233,7 @@ def test_absolute_error_forward_multiple_batches_with_reset(device: str, mode: b
 
 
 def test_absolute_error_value_empty() -> None:
-    with pytest.raises(EmptyMetricError, match="ErrorState is empty"):
+    with pytest.raises(EmptyMetricError, match=r"ErrorState is empty"):
         AbsoluteError().value()
 
 

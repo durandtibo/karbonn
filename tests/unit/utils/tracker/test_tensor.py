@@ -111,7 +111,7 @@ def test_mean_tensor_tracker_average() -> None:
 
 def test_mean_tensor_tracker_average_empty() -> None:
     tracker = MeanTensorTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.average()
 
 
@@ -121,7 +121,7 @@ def test_mean_tensor_tracker_mean() -> None:
 
 def test_mean_tensor_tracker_mean_empty() -> None:
     tracker = MeanTensorTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.mean()
 
 
@@ -139,7 +139,7 @@ def test_mean_tensor_tracker_sum_float() -> None:
 
 def test_mean_tensor_tracker_sum_empty() -> None:
     tracker = MeanTensorTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.sum()
 
 
@@ -340,7 +340,7 @@ def test_extrema_tensor_tracker_max(max_value: float) -> None:
 
 def test_extrema_tensor_tracker_max_empty() -> None:
     tracker = ExtremaTensorTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.max()
 
 
@@ -351,7 +351,7 @@ def test_extrema_tensor_tracker_min(min_value: float) -> None:
 
 def test_extrema_tensor_tracker_min_empty() -> None:
     tracker = ExtremaTensorTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.min()
 
 
@@ -579,7 +579,7 @@ def test_tensor_tracker_average_long() -> None:
 
 def test_tensor_tracker_average_empty() -> None:
     tracker = TensorTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.average()
 
 
@@ -597,7 +597,7 @@ def test_tensor_tracker_max_long() -> None:
 
 def test_tensor_tracker_max_empty() -> None:
     tracker = TensorTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.max()
 
 
@@ -611,7 +611,7 @@ def test_tensor_tracker_mean_long() -> None:
 
 def test_tensor_tracker_mean_empty() -> None:
     tracker = TensorTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.mean()
 
 
@@ -625,7 +625,7 @@ def test_tensor_tracker_median_long() -> None:
 
 def test_tensor_tracker_median_empty() -> None:
     tracker = TensorTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.median()
 
 
@@ -643,7 +643,7 @@ def test_tensor_tracker_min_long() -> None:
 
 def test_tensor_tracker_min_empty() -> None:
     tracker = TensorTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.min()
 
 
@@ -665,7 +665,7 @@ def test_tensor_tracker_quantile_long() -> None:
 
 def test_tensor_tracker_quantile_empty() -> None:
     tracker = TensorTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.quantile(q=torch.tensor([0.5, 0.9]))
 
 
@@ -679,7 +679,7 @@ def test_tensor_tracker_std_long() -> None:
 
 def test_tensor_tracker_std_empty() -> None:
     tracker = TensorTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.std()
 
 
@@ -697,7 +697,7 @@ def test_tensor_tracker_sum_long() -> None:
 
 def test_tensor_tracker_sum_empty() -> None:
     tracker = TensorTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.sum()
 
 
@@ -899,7 +899,7 @@ def test_scalable_tensor_tracker_average() -> None:
 
 def test_scalable_tensor_tracker_average_empty() -> None:
     tracker = ScalableTensorTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.average()
 
 
@@ -913,7 +913,7 @@ def test_scalable_tensor_tracker_max(max_value: float) -> None:
 
 def test_scalable_tensor_tracker_max_empty() -> None:
     tracker = ScalableTensorTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.max()
 
 
@@ -923,7 +923,7 @@ def test_scalable_tensor_tracker_mean() -> None:
 
 def test_scalable_tensor_tracker_mean_empty() -> None:
     tracker = ScalableTensorTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.mean()
 
 
@@ -937,7 +937,7 @@ def test_scalable_tensor_tracker_min(min_value: float) -> None:
 
 def test_scalable_tensor_tracker_min_empty() -> None:
     tracker = ScalableTensorTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.min()
 
 
@@ -1072,7 +1072,7 @@ def test_scalable_tensor_tracker_sum(total: float) -> None:
 
 def test_scalable_tensor_tracker_sum_empty() -> None:
     tracker = ScalableTensorTracker()
-    with pytest.raises(EmptyTrackerError, match="The tracker is empty"):
+    with pytest.raises(EmptyTrackerError, match=r"The tracker is empty"):
         tracker.sum()
 
 

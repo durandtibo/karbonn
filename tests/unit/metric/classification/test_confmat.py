@@ -283,7 +283,7 @@ def test_binary_confusion_matrix_value_track_count_false(device: str, mode: bool
 
 
 def test_binary_confusion_matrix_value_empty() -> None:
-    with pytest.raises(EmptyMetricError, match="BinaryConfusionMatrix is empty"):
+    with pytest.raises(EmptyMetricError, match=r"BinaryConfusionMatrix is empty"):
         BinaryConfusionMatrix().value()
 
 
@@ -698,7 +698,7 @@ def test_categorical_confusion_matrix_value_track_count(device: str, mode: bool)
 
 
 def test_categorical_confusion_matrix_value_empty() -> None:
-    with pytest.raises(EmptyMetricError, match="CategoricalConfusionMatrix is empty"):
+    with pytest.raises(EmptyMetricError, match=r"CategoricalConfusionMatrix is empty"):
         CategoricalConfusionMatrix(num_classes=3).value()
 
 

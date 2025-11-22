@@ -43,7 +43,7 @@ def test_absolute_relative_error_init_eps_default() -> None:
 
 @pytest.mark.parametrize("eps", [0.0, -0.1])
 def test_absolute_relative_error_init_eps_incorrect(eps: float) -> None:
-    with pytest.raises(ValueError, match="Incorrect eps"):
+    with pytest.raises(ValueError, match=r"Incorrect eps"):
         AbsoluteRelativeError(eps=eps)
 
 
@@ -300,7 +300,7 @@ def test_absolute_relative_error_forward_multiple_batches_with_reset(
 
 
 def test_absolute_relative_error_value_empty() -> None:
-    with pytest.raises(EmptyMetricError, match="ErrorState is empty"):
+    with pytest.raises(EmptyMetricError, match=r"ErrorState is empty"):
         AbsoluteRelativeError().value()
 
 
@@ -378,7 +378,7 @@ def test_symmetric_absolute_relative_error_eps_default() -> None:
 
 @pytest.mark.parametrize("eps", [0.0, -0.1])
 def test_symmetric_absolute_relative_error_eps_incorrect(eps: float) -> None:
-    with pytest.raises(ValueError, match="Incorrect eps"):
+    with pytest.raises(ValueError, match=r"Incorrect eps"):
         SymmetricAbsoluteRelativeError(eps=eps)
 
 
@@ -656,7 +656,7 @@ def test_symmetric_absolute_relative_error_forward_multiple_batches_with_reset(
 
 
 def test_symmetric_absolute_relative_error_value_empty() -> None:
-    with pytest.raises(EmptyMetricError, match="ErrorState is empty"):
+    with pytest.raises(EmptyMetricError, match=r"ErrorState is empty"):
         SymmetricAbsoluteRelativeError().value()
 
 

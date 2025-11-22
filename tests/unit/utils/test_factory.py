@@ -122,7 +122,7 @@ def test_setup_dataset_incorrect_type(caplog: pytest.LogCaptureFixture) -> None:
 def test_setup_dataset_object_no_objectory() -> None:
     with (
         patch("karbonn.utils.imports.is_objectory_available", lambda: False),
-        pytest.raises(RuntimeError, match="'objectory' package is required but not installed."),
+        pytest.raises(RuntimeError, match=r"'objectory' package is required but not installed."),
     ):
         setup_dataset(
             {
@@ -162,7 +162,7 @@ def test_setup_module_incorrect_type(caplog: pytest.LogCaptureFixture) -> None:
 def test_setup_module_object_no_objectory() -> None:
     with (
         patch("karbonn.utils.imports.is_objectory_available", lambda: False),
-        pytest.raises(RuntimeError, match="'objectory' package is required but not installed."),
+        pytest.raises(RuntimeError, match=r"'objectory' package is required but not installed."),
     ):
         setup_module({OBJECT_TARGET: "torch.nn.ReLU"})
 
@@ -200,7 +200,7 @@ def test_setup_optimizer_incorrect_type(caplog: pytest.LogCaptureFixture) -> Non
 def test_setup_optimizer_object_no_objectory() -> None:
     with (
         patch("karbonn.utils.imports.is_objectory_available", lambda: False),
-        pytest.raises(RuntimeError, match="'objectory' package is required but not installed."),
+        pytest.raises(RuntimeError, match=r"'objectory' package is required but not installed."),
     ):
         setup_optimizer(
             {OBJECT_TARGET: "torch.optim.SGD", "params": [torch.ones(2, 4, requires_grad=True)]}
@@ -254,7 +254,7 @@ def test_setup_object_object() -> None:
 def test_setup_object_object_no_objectory() -> None:
     with (
         patch("karbonn.utils.imports.is_objectory_available", lambda: False),
-        pytest.raises(RuntimeError, match="'objectory' package is required but not installed."),
+        pytest.raises(RuntimeError, match=r"'objectory' package is required but not installed."),
     ):
         setup_object({OBJECT_TARGET: "torch.nn.ReLU"})
 
@@ -295,7 +295,7 @@ def test_setup_object_typed_incorrect_type(caplog: pytest.LogCaptureFixture) -> 
 def test_setup_object_typed_object_no_objectory() -> None:
     with (
         patch("karbonn.utils.imports.is_objectory_available", lambda: False),
-        pytest.raises(RuntimeError, match="'objectory' package is required but not installed."),
+        pytest.raises(RuntimeError, match=r"'objectory' package is required but not installed."),
     ):
         setup_object_typed({OBJECT_TARGET: "torch.nn.ReLU"}, cls=torch.nn.Module)
 

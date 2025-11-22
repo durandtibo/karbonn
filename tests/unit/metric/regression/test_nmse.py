@@ -161,7 +161,7 @@ def test_normalized_mean_squared_error_forward_multiple_batches_with_reset(
 
 
 def test_normalized_mean_squared_error_value_empty() -> None:
-    with pytest.raises(EmptyMetricError, match="NormalizedMeanSquaredErrorState is empty"):
+    with pytest.raises(EmptyMetricError, match=r"NormalizedMeanSquaredErrorState is empty"):
         NormalizedMeanSquaredError().value()
 
 

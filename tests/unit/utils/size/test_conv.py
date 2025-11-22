@@ -72,7 +72,7 @@ def test_convolution_size_finder_find_in_features(
 def test_convolution_size_finder_find_in_features_incorrect() -> None:
     size_finder = ConvolutionSizeFinder()
     module = nn.Identity()
-    with pytest.raises(SizeNotFoundError, match="module .* does not have attribute in_channels"):
+    with pytest.raises(SizeNotFoundError, match=r"module .* does not have attribute in_channels"):
         size_finder.find_in_features(module)
 
 
@@ -86,5 +86,5 @@ def test_convolution_size_finder_find_out_features(
 def test_convolution_size_finder_find_out_features_incorrect() -> None:
     size_finder = ConvolutionSizeFinder()
     module = nn.Identity()
-    with pytest.raises(SizeNotFoundError, match="module .* does not have attribute out_channels"):
+    with pytest.raises(SizeNotFoundError, match=r"module .* does not have attribute out_channels"):
         size_finder.find_out_features(module)

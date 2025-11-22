@@ -55,7 +55,7 @@ def test_multihead_attention_size_finder_find_in_features(module: ModuleSizes) -
 def test_multihead_attention_size_finder_find_in_features_incorrect() -> None:
     size_finder = MultiheadAttentionSizeFinder()
     module = nn.Identity()
-    with pytest.raises(SizeNotFoundError, match="module .* does not have attribute embed_dim"):
+    with pytest.raises(SizeNotFoundError, match=r"module .* does not have attribute embed_dim"):
         size_finder.find_in_features(module)
 
 
@@ -67,5 +67,5 @@ def test_multihead_attention_size_finder_find_out_features(module: ModuleSizes) 
 def test_multihead_attention_size_finder_find_out_features_incorrect() -> None:
     size_finder = MultiheadAttentionSizeFinder()
     module = nn.Identity()
-    with pytest.raises(SizeNotFoundError, match="module .* does not have attribute embed_dim"):
+    with pytest.raises(SizeNotFoundError, match=r"module .* does not have attribute embed_dim"):
         size_finder.find_out_features(module)

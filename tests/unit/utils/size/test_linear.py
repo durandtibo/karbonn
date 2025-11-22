@@ -57,7 +57,7 @@ def test_linear_size_finder_find_in_features(module: ModuleSizes) -> None:
 def test_linear_size_finder_find_in_features_incorrect() -> None:
     size_finder = LinearSizeFinder()
     module = nn.Identity()
-    with pytest.raises(SizeNotFoundError, match="module .* does not have attribute in_features"):
+    with pytest.raises(SizeNotFoundError, match=r"module .* does not have attribute in_features"):
         size_finder.find_in_features(module)
 
 
@@ -71,7 +71,7 @@ def test_linear_size_finder_find_out_features(
 def test_linear_size_finder_find_out_features_incorrect() -> None:
     size_finder = LinearSizeFinder()
     module = nn.Identity()
-    with pytest.raises(SizeNotFoundError, match="module .* does not have attribute out_features"):
+    with pytest.raises(SizeNotFoundError, match=r"module .* does not have attribute out_features"):
         size_finder.find_out_features(module)
 
 
@@ -106,7 +106,7 @@ def test_bilinear_size_finder_find_in_features(
 def test_bilinear_size_finder_find_in_features_incorrect() -> None:
     size_finder = BilinearSizeFinder()
     module = nn.Identity()
-    with pytest.raises(SizeNotFoundError, match="module .* does not have attribute in1_features"):
+    with pytest.raises(SizeNotFoundError, match=r"module .* does not have attribute in1_features"):
         size_finder.find_in_features(module)
 
 
@@ -120,5 +120,5 @@ def test_bilinear_size_finder_find_out_features(
 def test_bilinear_size_finder_find_out_features_incorrect() -> None:
     size_finder = BilinearSizeFinder()
     module = nn.Identity()
-    with pytest.raises(SizeNotFoundError, match="module .* does not have attribute out_features"):
+    with pytest.raises(SizeNotFoundError, match=r"module .* does not have attribute out_features"):
         size_finder.find_out_features(module)

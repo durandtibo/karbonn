@@ -93,7 +93,7 @@ def test_distributed_context_backend() -> None:
 @ignite_available
 def test_distributed_context_backend_incorrect() -> None:
     with (
-        pytest.raises(UnknownBackendError, match="Unknown backend"),
+        pytest.raises(UnknownBackendError, match=r"Unknown backend"),
         distributed_context(backend="incorrect backend"),
     ):
         pass
@@ -104,7 +104,7 @@ def test_distributed_context_backend_incorrect() -> None:
 def test_distributed_context_backend_raise_error() -> None:
     # Test if the `finalize` function is called to release the resources.
     with (  # noqa: PT012
-        pytest.raises(RuntimeError, match="Fake error"),
+        pytest.raises(RuntimeError, match=r"Fake error"),
         patch("karbonn.distributed.utils.idist.initialize") as initialize_mock,
         patch("karbonn.distributed.utils.idist.barrier") as barrier_mock,
         patch("karbonn.distributed.utils.idist.finalize") as finalize_mock,
@@ -178,7 +178,7 @@ def test_resolve_backend_auto(backend: str) -> None:
 
 @ignite_available
 def test_resolve_backend_incorrect_backend() -> None:
-    with pytest.raises(UnknownBackendError, match="Unknown distributed backend 'incorrect'"):
+    with pytest.raises(UnknownBackendError, match=r"Unknown distributed backend 'incorrect'"):
         resolve_backend("incorrect")
 
 

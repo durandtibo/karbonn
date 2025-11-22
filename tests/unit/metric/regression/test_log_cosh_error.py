@@ -40,7 +40,7 @@ def test_log_cosh_error_init_scale(scale: float) -> None:
 
 
 def test_log_cosh_error_init_scale_incorrect() -> None:
-    with pytest.raises(ValueError, match="Incorrect scale"):
+    with pytest.raises(ValueError, match=r"Incorrect scale"):
         LogCoshError(scale=0.0)
 
 
@@ -291,7 +291,7 @@ def test_log_cosh_error_forward_multiple_batches_with_reset(device: str, mode: b
 
 
 def test_log_cosh_error_value_empty() -> None:
-    with pytest.raises(EmptyMetricError, match="ErrorState is empty"):
+    with pytest.raises(EmptyMetricError, match=r"ErrorState is empty"):
         LogCoshError().value()
 
 

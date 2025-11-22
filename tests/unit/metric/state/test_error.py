@@ -169,7 +169,7 @@ def test_error_state_value_prefix_suffix(prefix: str, suffix: str) -> None:
 
 def test_error_state_value_empty() -> None:
     state = ErrorState()
-    with pytest.raises(EmptyMetricError, match="ErrorState is empty"):
+    with pytest.raises(EmptyMetricError, match=r"ErrorState is empty"):
         state.value()
 
 
@@ -362,7 +362,7 @@ def test_extended_error_state_value_prefix_suffix(prefix: str, suffix: str) -> N
 
 def test_extended_error_state_value_empty() -> None:
     state = ExtendedErrorState()
-    with pytest.raises(EmptyMetricError, match="ExtendedErrorState is empty"):
+    with pytest.raises(EmptyMetricError, match=r"ExtendedErrorState is empty"):
         state.value()
 
 
@@ -489,7 +489,7 @@ def test_mean_error_state_value_prefix_suffix(prefix: str, suffix: str) -> None:
 
 def test_mean_error_state_value_empty() -> None:
     state = MeanErrorState()
-    with pytest.raises(EmptyMetricError, match="MeanErrorState is empty"):
+    with pytest.raises(EmptyMetricError, match=r"MeanErrorState is empty"):
         state.value()
 
 
@@ -618,7 +618,7 @@ def test_root_mean_error_state_value_prefix_suffix(prefix: str, suffix: str) -> 
 
 def test_root_mean_error_state_value_empty() -> None:
     state = RootMeanErrorState()
-    with pytest.raises(EmptyMetricError, match="RootMeanErrorState is empty"):
+    with pytest.raises(EmptyMetricError, match=r"RootMeanErrorState is empty"):
         state.value()
 
 
@@ -768,5 +768,5 @@ def test_normalized_mean_squared_error_state_value_prefix_suffix(prefix: str, su
 
 def test_normalized_mean_squared_error_state_value_empty() -> None:
     state = NormalizedMeanSquaredErrorState()
-    with pytest.raises(EmptyMetricError, match="NormalizedMeanSquaredErrorState is empty"):
+    with pytest.raises(EmptyMetricError, match=r"NormalizedMeanSquaredErrorState is empty"):
         state.value()

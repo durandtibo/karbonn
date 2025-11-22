@@ -20,7 +20,7 @@ def test_check_loss_reduction_strategy_valid(reduction: str) -> None:
 
 
 def test_check_loss_reduction_strategy_incorrect() -> None:
-    with pytest.raises(ValueError, match="Incorrect reduction: incorrect."):
+    with pytest.raises(ValueError, match=r"Incorrect reduction: incorrect."):
         check_loss_reduction_strategy("incorrect")
 
 
@@ -112,5 +112,5 @@ def test_reduce_loss_none_shape(device: str, shape: tuple[int, ...]) -> None:
 
 
 def test_reduce_loss_reduction_incorrect() -> None:
-    with pytest.raises(ValueError, match="Incorrect reduction: incorrect."):
+    with pytest.raises(ValueError, match=r"Incorrect reduction: incorrect."):
         reduce_loss(torch.ones(2, 2), reduction="incorrect")

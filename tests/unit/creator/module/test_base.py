@@ -84,7 +84,7 @@ def test_setup_module_creator_incorrect_type(caplog: pytest.LogCaptureFixture) -
 def test_setup_module_creator_object_no_objectory() -> None:
     with (
         patch("karbonn.utils.imports.is_objectory_available", lambda: False),
-        pytest.raises(RuntimeError, match="'objectory' package is required but not installed."),
+        pytest.raises(RuntimeError, match=r"'objectory' package is required but not installed."),
     ):
         setup_module_creator(
             {

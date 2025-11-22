@@ -138,7 +138,7 @@ def test_accuracy_state_value_prefix_suffix(prefix: str, suffix: str) -> None:
 
 def test_accuracy_state_value_empty() -> None:
     state = AccuracyState()
-    with pytest.raises(EmptyMetricError, match="AccuracyState is empty"):
+    with pytest.raises(EmptyMetricError, match=r"AccuracyState is empty"):
         state.value()
 
 
@@ -313,5 +313,5 @@ def test_extended_accuracy_state_value_track_count_false() -> None:
 
 def test_extended_accuracy_state_value_empty() -> None:
     state = ExtendedAccuracyState()
-    with pytest.raises(EmptyMetricError, match="ExtendedAccuracyState is empty"):
+    with pytest.raises(EmptyMetricError, match=r"ExtendedAccuracyState is empty"):
         state.value()
