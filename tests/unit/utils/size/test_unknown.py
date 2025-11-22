@@ -58,7 +58,7 @@ def test_unknown_size_finder_find_in_features(
     module: ModuleSizes,
 ) -> None:
     size_finder = UnknownSizeFinder()
-    with pytest.raises(SizeNotFoundError, match="cannot find the input feature sizes of"):
+    with pytest.raises(SizeNotFoundError, match=r"cannot find the input feature sizes of"):
         size_finder.find_in_features(module.module)
 
 
@@ -67,5 +67,5 @@ def test_unknown_size_finder_find_out_features(
     module: ModuleSizes,
 ) -> None:
     size_finder = UnknownSizeFinder()
-    with pytest.raises(SizeNotFoundError, match="cannot find the output feature sizes of"):
+    with pytest.raises(SizeNotFoundError, match=r"cannot find the output feature sizes of"):
         size_finder.find_out_features(module.module)

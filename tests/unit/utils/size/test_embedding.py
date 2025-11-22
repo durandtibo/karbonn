@@ -57,5 +57,5 @@ def test_embedding_size_finder_find_out_features(module: ModuleSizes) -> None:
 def test_embedding_size_finder_find_out_features_incorrect() -> None:
     size_finder = EmbeddingSizeFinder()
     module = nn.Identity()
-    with pytest.raises(SizeNotFoundError, match="module .* does not have attribute embedding_dim"):
+    with pytest.raises(SizeNotFoundError, match=r"module .* does not have attribute embedding_dim"):
         size_finder.find_out_features(module)

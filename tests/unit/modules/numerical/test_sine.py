@@ -70,7 +70,7 @@ def test_cos_sin_numerical_encoder_phase_shift_2_features() -> None:
 
 
 def test_cos_sin_numerical_encoder_different_shape() -> None:
-    with pytest.raises(RuntimeError, match="'frequency' and 'phase_shift' shapes do not match:"):
+    with pytest.raises(RuntimeError, match=r"'frequency' and 'phase_shift' shapes do not match:"):
         CosSinNumericalEncoder(
             frequency=torch.ones(2, 4),
             phase_shift=torch.zeros(2, 3),
@@ -483,7 +483,7 @@ def test_asinh_cos_sin_numerical_encoder_phase_shift_2_features() -> None:
 
 
 def test_asinh_cos_sin_numerical_encoder_different_shape() -> None:
-    with pytest.raises(RuntimeError, match="'frequency' and 'phase_shift' shapes do not match:"):
+    with pytest.raises(RuntimeError, match=r"'frequency' and 'phase_shift' shapes do not match:"):
         AsinhCosSinNumericalEncoder(
             frequency=torch.ones(2, 4),
             phase_shift=torch.zeros(2, 3),
@@ -768,7 +768,7 @@ def test_prepare_tensor_param_2d() -> None:
 
 
 def test_prepare_tensor_param_incorrect_shape() -> None:
-    with pytest.raises(RuntimeError, match="Incorrect shape for 'scale':"):
+    with pytest.raises(RuntimeError, match=r"Incorrect shape for 'scale':"):
         prepare_tensor_param(torch.ones(2, 3, 4), name="scale")
 
 
@@ -782,13 +782,13 @@ def test_check_abs_range_valid() -> None:
 
 
 def test_check_abs_range_invalid_min_abs_value() -> None:
-    with pytest.raises(RuntimeError, match="'min_abs_value' has to be greater than 0"):
+    with pytest.raises(RuntimeError, match=r"'min_abs_value' has to be greater than 0"):
         check_abs_range(min_abs_value=-1, max_abs_value=5)
 
 
 def test_check_abs_range_invalid_max_abs_value() -> None:
     with pytest.raises(
-        RuntimeError, match="'max_abs_value' .* has to be greater than 'min_abs_value'"
+        RuntimeError, match=r"'max_abs_value' .* has to be greater than 'min_abs_value'"
     ):
         check_abs_range(min_abs_value=5, max_abs_value=1)
 
@@ -803,17 +803,17 @@ def test_check_frequency_valid() -> None:
 
 
 def test_check_frequency_invalid_num_frequencies() -> None:
-    with pytest.raises(RuntimeError, match="'num_frequencies' has to be greater or equal to 1"):
+    with pytest.raises(RuntimeError, match=r"'num_frequencies' has to be greater or equal to 1"):
         check_frequency(num_frequencies=0, min_frequency=0.2, max_frequency=1)
 
 
 def test_check_frequency_invalid_min_frequency() -> None:
-    with pytest.raises(RuntimeError, match="'min_frequency' has to be greater than 0"):
+    with pytest.raises(RuntimeError, match=r"'min_frequency' has to be greater than 0"):
         check_frequency(num_frequencies=3, min_frequency=-2, max_frequency=1)
 
 
 def test_check_frequency_invalid_max_frequency() -> None:
     with pytest.raises(
-        RuntimeError, match="'max_frequency' .* has to be greater than 'min_frequency'"
+        RuntimeError, match=r"'max_frequency' .* has to be greater than 'min_frequency'"
     ):
         check_frequency(num_frequencies=3, min_frequency=2, max_frequency=1)

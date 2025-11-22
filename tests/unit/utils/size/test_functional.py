@@ -24,7 +24,7 @@ def test_find_in_features(module: ModuleSizes) -> None:
 
 @pytest.mark.parametrize("module", UNKNOWN_MODULES)
 def test_find_in_features_incorrect(module: ModuleSizes) -> None:
-    with pytest.raises(SizeNotFoundError, match="cannot find the input feature sizes of"):
+    with pytest.raises(SizeNotFoundError, match=r"cannot find the input feature sizes of"):
         find_in_features(module.module)
 
 
@@ -40,5 +40,5 @@ def test_find_out_features(module: ModuleSizes) -> None:
 
 @pytest.mark.parametrize("module", UNKNOWN_MODULES)
 def test_find_out_features_incorrect(module: ModuleSizes) -> None:
-    with pytest.raises(SizeNotFoundError, match="cannot find the output feature sizes of"):
+    with pytest.raises(SizeNotFoundError, match=r"cannot find the output feature sizes of"):
         find_out_features(module.module)

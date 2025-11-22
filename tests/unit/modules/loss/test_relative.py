@@ -60,7 +60,7 @@ def test_relative_loss_reduction_none(device: str) -> None:
 
 
 def test_relative_loss_reduction_incorrect() -> None:
-    with pytest.raises(ValueError, match="Incorrect reduction:"):
+    with pytest.raises(ValueError, match=r"Incorrect reduction:"):
         RelativeLoss(criterion=nn.MSELoss(reduction="none"), reduction="incorrect")
 
 
@@ -117,7 +117,7 @@ def test_relative_loss_incorrect_shapes() -> None:
     prediction = torch.tensor([[-2.0, 1.0, 0.0], [-3.0, 5.0, -1.0]], requires_grad=True)
     target = torch.tensor([[0.0, 1.0, -1.0], [3.0, 1.0, -1.0]])
     criterion = RelativeLoss(criterion=nn.MSELoss())
-    with pytest.raises(RuntimeError, match="loss .* and indicator .* shapes do not match"):
+    with pytest.raises(RuntimeError, match=r"loss .* and indicator .* shapes do not match"):
         criterion(prediction=prediction, target=target)
 
 
@@ -168,7 +168,7 @@ def test_relative_mse_loss_reduction_none(device: str) -> None:
 
 
 def test_relative_mse_loss_reduction_incorrect() -> None:
-    with pytest.raises(ValueError, match="Incorrect reduction:"):
+    with pytest.raises(ValueError, match=r"Incorrect reduction:"):
         RelativeMSELoss(reduction="incorrect")
 
 
@@ -256,7 +256,7 @@ def test_relative_smooth_l1_loss_reduction_none(device: str) -> None:
 
 
 def test_relative_smooth_l1_loss_reduction_incorrect() -> None:
-    with pytest.raises(ValueError, match="Incorrect reduction:"):
+    with pytest.raises(ValueError, match=r"Incorrect reduction:"):
         RelativeSmoothL1Loss(reduction="incorrect")
 
 

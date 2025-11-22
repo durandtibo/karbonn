@@ -75,7 +75,7 @@ def test_transformer_layer_size_finder_find_in_features(module: ModuleSizes) -> 
 def test_transformer_layer_size_finder_find_in_features_incorrect() -> None:
     size_finder = TransformerLayerSizeFinder()
     module = nn.Identity()
-    with pytest.raises(SizeNotFoundError, match="module .* does not have attribute self_attn"):
+    with pytest.raises(SizeNotFoundError, match=r"module .* does not have attribute self_attn"):
         size_finder.find_in_features(module)
 
 
@@ -87,7 +87,7 @@ def test_transformer_layer_size_finder_find_out_features(module: ModuleSizes) ->
 def test_transformer_layer_size_finder_find_out_features_incorrect() -> None:
     size_finder = TransformerLayerSizeFinder()
     module = nn.Identity()
-    with pytest.raises(SizeNotFoundError, match="module .* does not have attribute self_attn"):
+    with pytest.raises(SizeNotFoundError, match=r"module .* does not have attribute self_attn"):
         size_finder.find_out_features(module)
 
 
@@ -120,7 +120,7 @@ def test_transformer_size_finder_find_in_features(module: ModuleSizes) -> None:
 def test_transformer_size_finder_find_in_features_incorrect() -> None:
     size_finder = TransformerSizeFinder()
     module = nn.Identity()
-    with pytest.raises(SizeNotFoundError, match="module .* does not have attribute layers"):
+    with pytest.raises(SizeNotFoundError, match=r"module .* does not have attribute layers"):
         size_finder.find_in_features(module)
 
 
@@ -132,5 +132,5 @@ def test_transformer_size_finder_find_out_features(module: ModuleSizes) -> None:
 def test_transformer_size_finder_find_out_features_incorrect() -> None:
     size_finder = TransformerSizeFinder()
     module = nn.Identity()
-    with pytest.raises(SizeNotFoundError, match="module .* does not have attribute layers"):
+    with pytest.raises(SizeNotFoundError, match=r"module .* does not have attribute layers"):
         size_finder.find_out_features(module)

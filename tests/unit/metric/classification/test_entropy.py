@@ -221,7 +221,7 @@ def test_categorical_cross_entropy_forward_multiple_batches_with_reset(
 
 
 def test_categorical_cross_entropy_value_empty() -> None:
-    with pytest.raises(EmptyMetricError, match="MeanErrorState is empty"):
+    with pytest.raises(EmptyMetricError, match=r"MeanErrorState is empty"):
         CategoricalCrossEntropy().value()
 
 

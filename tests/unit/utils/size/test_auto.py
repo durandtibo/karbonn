@@ -64,7 +64,7 @@ def test_auto_size_finder_find_in_features_incorrect(
     module: ModuleSizes,
 ) -> None:
     size_finder = AutoSizeFinder()
-    with pytest.raises(SizeNotFoundError, match="cannot find the input feature sizes of"):
+    with pytest.raises(SizeNotFoundError, match=r"cannot find the input feature sizes of"):
         size_finder.find_in_features(module.module)
 
 
@@ -78,7 +78,7 @@ def test_auto_size_finder_find_out_features_incorrect(
     module: ModuleSizes,
 ) -> None:
     size_finder = AutoSizeFinder()
-    with pytest.raises(SizeNotFoundError, match="cannot find the output feature sizes of"):
+    with pytest.raises(SizeNotFoundError, match=r"cannot find the output feature sizes of"):
         size_finder.find_out_features(module.module)
 
 
@@ -94,7 +94,7 @@ def test_auto_size_finder_add_size_finder_exist_ok_false() -> None:
     assert len(AutoSizeFinder.registry) == 0
     AutoSizeFinder.add_size_finder(nn.Linear, LinearSizeFinder())
     with pytest.raises(
-        RuntimeError, match="A size finder .* is already registered for the module type"
+        RuntimeError, match=r"A size finder .* is already registered for the module type"
     ):
         AutoSizeFinder.add_size_finder(nn.Linear, LinearSizeFinder())
 
@@ -120,7 +120,7 @@ def test_auto_size_finder_find_size_finder() -> None:
 
 
 def test_auto_size_finder_find_size_finder_missing() -> None:
-    with pytest.raises(TypeError, match="Incorrect module type:"):
+    with pytest.raises(TypeError, match=r"Incorrect module type:"):
         AutoSizeFinder.find_size_finder(str)
 
 

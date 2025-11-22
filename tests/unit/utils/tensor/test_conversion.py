@@ -49,5 +49,5 @@ def test_to_tensor_empty_list() -> None:
 
 
 def test_to_tensor_incorrect() -> None:
-    with pytest.raises(TypeError, match="Incorrect type:"):
+    with pytest.raises(TypeError, match=r"Incorrect type:"):
         to_tensor(Mock())

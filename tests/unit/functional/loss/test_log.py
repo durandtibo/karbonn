@@ -82,7 +82,7 @@ def test_log_cosh_loss_reduction_none(device: str) -> None:
 
 
 def test_log_cosh_loss_reduction_incorrect() -> None:
-    with pytest.raises(ValueError, match="Incorrect reduction: incorrect."):
+    with pytest.raises(ValueError, match=r"Incorrect reduction: incorrect."):
         log_cosh_loss(torch.ones(2, 2), torch.ones(2, 2), reduction="incorrect")
 
 
@@ -156,7 +156,7 @@ def test_msle_loss_reduction_none(device: str) -> None:
 
 
 def test_msle_loss_reduction_incorrect() -> None:
-    with pytest.raises(ValueError, match="incorrect is not a valid value for reduction"):
+    with pytest.raises(ValueError, match=r"incorrect is not a valid value for reduction"):
         msle_loss(torch.ones(2, 2), torch.eye(2), reduction="incorrect")
 
 

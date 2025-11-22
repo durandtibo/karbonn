@@ -48,7 +48,7 @@ def test_recurrent_size_finder_find_in_features(
 def test_recurrent_size_finder_find_in_features_incorrect() -> None:
     size_finder = RecurrentSizeFinder()
     module = nn.Identity()
-    with pytest.raises(SizeNotFoundError, match="module .* does not have attribute input_size"):
+    with pytest.raises(SizeNotFoundError, match=r"module .* does not have attribute input_size"):
         size_finder.find_in_features(module)
 
 
@@ -62,5 +62,5 @@ def test_recurrent_size_finder_find_out_features(
 def test_recurrent_size_finder_find_out_features_incorrect() -> None:
     size_finder = RecurrentSizeFinder()
     module = nn.Identity()
-    with pytest.raises(SizeNotFoundError, match="module .* does not have attribute hidden_size"):
+    with pytest.raises(SizeNotFoundError, match=r"module .* does not have attribute hidden_size"):
         size_finder.find_out_features(module)

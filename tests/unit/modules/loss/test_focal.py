@@ -33,7 +33,7 @@ def test_binary_focal_loss_valid_gamma(gamma: float) -> None:
 
 @pytest.mark.parametrize("gamma", [-1, -0.5])
 def test_binary_focal_loss_invalid_gamma(gamma: float) -> None:
-    with pytest.raises(ValueError, match="Incorrect parameter gamma"):
+    with pytest.raises(ValueError, match=r"Incorrect parameter gamma"):
         BinaryFocalLoss(gamma=gamma)
 
 
@@ -101,7 +101,7 @@ def test_binary_focal_loss_forward_reduction_none(device: str) -> None:
 
 
 def test_binary_focal_loss_forward_incorrect_reduction() -> None:
-    with pytest.raises(ValueError, match="Incorrect reduction: incorrect reduction."):
+    with pytest.raises(ValueError, match=r"Incorrect reduction: incorrect reduction."):
         BinaryFocalLoss(reduction="incorrect reduction")
 
 
@@ -180,7 +180,7 @@ def test_binary_focal_loss_with_logits_valid_gamma(gamma: float) -> None:
 
 @pytest.mark.parametrize("gamma", [-1, -0.5])
 def test_binary_focal_loss_with_logits_invalid_gamma(gamma: float) -> None:
-    with pytest.raises(ValueError, match="Incorrect parameter gamma"):
+    with pytest.raises(ValueError, match=r"Incorrect parameter gamma"):
         BinaryFocalLossWithLogits(gamma=gamma)
 
 
@@ -248,7 +248,7 @@ def test_binary_focal_loss_with_logits_forward_reduction_none(device: str) -> No
 
 
 def test_binary_focal_loss_with_logits_forward_incorrect_reduction() -> None:
-    with pytest.raises(ValueError, match="Incorrect reduction: incorrect reduction."):
+    with pytest.raises(ValueError, match=r"Incorrect reduction: incorrect reduction."):
         BinaryFocalLossWithLogits(reduction="incorrect reduction")
 
 
