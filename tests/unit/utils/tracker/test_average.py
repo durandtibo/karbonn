@@ -20,21 +20,19 @@ def test_average_tracker_repr() -> None:
 def test_average_tracker_str() -> None:
     assert (
         str(AverageTracker(total=6, count=2))
-        == """AverageTracker(
-  (average): 3.0
-  (count): 2.0
-  (total): 6.0
-)"""
+        == """AverageTracker( (average): 3.0 (count): 2.0.
+
+           (total): 6.0 )
+           """
     )
 
 
 def test_average_tracker_str_empty() -> None:
     assert str(AverageTracker()) == (
-        """AverageTracker(
-  (average): N/A (empty)
-  (count): 0.0
-  (total): 0.0
-)"""
+        """AverageTracker( (average): N/A (empty) (count): 0.0.
+
+        (total): 0.0 )
+        """
     )
 
 

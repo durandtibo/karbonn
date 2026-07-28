@@ -38,15 +38,12 @@ def test_scalar_tracker_str() -> None:
 
 def test_scalar_tracker_str_empty() -> None:
     assert str(ScalarTracker()) == (
-        """ScalarTracker(
-  (average): N/A (empty)
-  (count): 0.0
-  (max): N/A (empty)
-  (median): N/A (empty)
-  (min): N/A (empty)
-  (std): N/A (empty)
-  (sum): N/A (empty)
-)"""
+        """ScalarTracker( (average): N/A (empty) (count): 0.0 (max): N/A
+        (empty) (median): N/A (empty) (min): N/A (empty) (std): N/A
+        (empty)
+
+        (sum): N/A (empty) )
+        """
     )
 
 
