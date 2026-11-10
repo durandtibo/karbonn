@@ -26,12 +26,12 @@ from karbonn.utils.tracker.average import AverageTracker as Average
 from karbonn.utils.tracker.base import BaseTracker
 from karbonn.utils.tracker.confmat import (
     BaseConfusionMatrixTracker,
+    BinaryConfusionMatrixTracker,
+    MulticlassConfusionMatrixTracker,
 )
-from karbonn.utils.tracker.confmat import BinaryConfusionMatrixTracker
 from karbonn.utils.tracker.confmat import (
     BinaryConfusionMatrixTracker as BinaryConfusionMatrix,
 )
-from karbonn.utils.tracker.confmat import MulticlassConfusionMatrixTracker
 from karbonn.utils.tracker.confmat import (
     MulticlassConfusionMatrixTracker as MulticlassConfusionMatrix,
 )

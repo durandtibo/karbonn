@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import datetime
+import datetime as dt
 from typing import TYPE_CHECKING
 from unittest.mock import Mock
 
@@ -26,7 +26,7 @@ def parallel_gloo_2() -> Generator[idist.Parallel]:
         nnodes=1,
         master_addr="localhost",
         master_port=29507,
-        timeout=datetime.timedelta(seconds=60),
+        timeout=dt.timedelta(seconds=60),
     ) as parallel:
         yield parallel
 
@@ -40,6 +40,6 @@ def parallel_nccl_2() -> Generator[idist.Parallel]:
         nnodes=1,
         master_addr="localhost",
         master_port=29508,
-        timeout=datetime.timedelta(seconds=60),
+        timeout=dt.timedelta(seconds=60),
     ) as parallel:
         yield parallel
